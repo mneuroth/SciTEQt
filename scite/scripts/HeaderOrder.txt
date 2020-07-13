@@ -1,0 +1,141 @@
+// Define the standard order in which to include header files
+// All platform headers should be included before Scintilla headers
+// and each of these groups are then divided into directory groups.
+// Based on Scintilla's HeaderOrder.txt and compatible with it.
+
+// C standard library
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <time.h>
+#include <assert.h>
+#include <errno.h>
+#include <signal.h>
+
+// C++ wrappers of C standard library
+#include <cstddef>
+#include <cstdlib>
+#include <cstdint>
+#include <cassert>
+#include <cstring>
+#include <cstdio>
+#include <cstdarg>
+#include <ctime>
+#include <cmath>
+#include <clocale>
+#include <cerrno>
+
+// C++ standard library
+#include <stdexcept>
+#include <optional>
+#include <tuple>
+#include <string>
+#include <string_view>
+#include <vector>
+#include <deque>
+#include <map>
+#include <set>
+#include <algorithm>
+#include <functional>
+#include <memory>
+#include <chrono>
+#include <sstream>
+#include <iomanip>
+#include <atomic>
+#include <mutex>
+#include <thread>
+
+// POSIX
+// Also on Windows
+#include <fcntl.h>
+
+#include <unistd.h>
+#include <dirent.h>
+#include <dlfcn.h>
+
+// Also on Windows
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include <sys/wait.h>
+
+// GTK+ headers
+#include <glib.h>
+#include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
+
+// Windows headers
+#include <io.h>
+#include <windows.h>
+#include <commctrl.h>
+#include <richedit.h>
+#include <windowsx.h>
+#include <uxtheme.h>
+#include <vsstyle.h>
+#include <vssym32.h>
+#include <shlwapi.h>
+#include <shlobj.h>
+
+#include <direct.h>
+
+// Scintilla headers
+
+// Non-platform-specific headers
+
+// include
+
+#include "Sci_Position.h"
+#include "ILoader.h"
+#include "ILexer.h"
+#include "ScintillaTypes.h"
+#include "ScintillaMessages.h"
+#include "ScintillaCall.h"
+#include "Scintilla.h"
+#include "ScintillaWidget.h"
+
+#include "SciLexer.h"
+
+// SciTE headers
+
+#include "GUI.h"
+#include "ScintillaWindow.h"
+#include "StringList.h"
+#include "StringHelpers.h"
+#include "FilePath.h"
+#include "LexillaLibrary.h"
+#include "StyleDefinition.h"
+#include "PropSetFile.h"
+#include "StyleWriter.h"
+#include "Extender.h"
+#include "SciTE.h"
+#include "JobQueue.h"
+#include "pixmapsGNOME.h"
+#include "SciIcon.h"
+#include "Widget.h"
+
+#include "Cookie.h"
+#include "Worker.h"
+#include "FileWorker.h"
+#include "MatchMarker.h"
+#include "EditorConfig.h"
+#include "SciTEBase.h"
+#include "UniqueInstance.h"
+#include "StripDefinition.h"
+#include "Strips.h"
+#include "Utf8_16.h"
+
+#include "IFaceTable.h"
+#include "SciTEKeys.h"
+
+#include "SciTEWin.h"
+#include "DLLFunction.h"
+#include "MultiplexExtension.h"
+#include "DirectorExtension.h"
+#include "LuaExtension.h"
+
+// Lua headers
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+

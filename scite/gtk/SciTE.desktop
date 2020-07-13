@@ -1,0 +1,23 @@
+[Desktop Entry]
+Version=1.0
+Name=SciTE Text Editor
+Name[da]=SciTE-tekstredigering
+Name[de]=SciTE-Textbearbeitung
+Name[es]=Editor de textos SciTE
+Name[fr]=Éditeur de texte SciTE
+Name[ru]=Текстовый редактор SciTE
+Comment=Edit your source files
+Comment[da]=Rediger dine kildefiler
+Comment[de]=Quelltextdateien bearbeiten
+Comment[es]=Edita especializado para programación
+Comment[fr]=Éditer des fichiers sources
+Comment[ru]=Редактор исходных кодов
+GenericName=Text Editor
+GenericName[de]=Textbearbeitung
+Type=Application
+Exec=SciTE %F
+Icon=Sci48M
+Terminal=false
+StartupNotify=true
+Categories=TextEditor;Development;GTK;
+MimeType=text/plain;

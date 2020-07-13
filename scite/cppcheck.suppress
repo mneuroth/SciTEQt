@@ -1,0 +1,32 @@
+// File to suppress cppcheck warnings for files that will not be fixed.
+// Does not suppress warnings where an additional occurrence of the warning may be of interest.
+
+// unreadVariable has expanded in cppcheck 1.90 to match assigning a struct then reading
+// only from members which is a common idiom
+unreadVariable
+
+// These may be interesting but its not clear without examining each instance closely
+useStlAlgorithm
+
+// Coding style is to use assignments in constructor when there are many
+// members to initialize or the initialization is complex or has comments.
+useInitializationList
+
+// FilePath has a non-explicit constructor used for conversions
+noExplicitConstructor:scite/src/FilePath.h
+
+// The Flush call has side effects that change the result of the second condition
+duplicateCondition:scite/src/StyleWriter.cxx
+
+// Doesn't understand Win32 SetClipboardData is not leak
+memleak:scite/win32/SciTEWin.cxx
+
+// AddToPopUp is currently const but is not logically const and may change
+constParameter:scite/win32/Strips.cxx
+constParameter:scite/gtk/Widget.cxx
+
+// Menu::Show for Win32 is not logically const and is implemented differently on different platforms
+constParameter:scite/win32/GUIWin.cxx
+
+// Suppress everything in lua as that comes from the Lua distribution
+*:scite/lua/*

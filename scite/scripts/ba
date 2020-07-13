@@ -1,0 +1,13 @@
+sci_base=`pwd`
+cd $sci_base/scintilla/gtk
+make $*
+cd $sci_base/scite/gtk
+make $*
+#make install $*
+cd $sci_base/scintilla
+sh tgzsrc
+cd $sci_base/scite
+sh tgzsrc
+cd $sci_base/scite
+sh tgzgscite
+
