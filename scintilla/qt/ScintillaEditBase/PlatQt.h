@@ -7,6 +7,9 @@
 //
 // Additions Copyright (c) 2011 Archaeopteryx Software, Inc. d/b/a Wingware
 // Scintilla platform layer for Qt
+//
+// Additions Copyright (c) 2020 Michael Neuroth
+// Scintilla platform layer for Qt QML/Quick
 
 #ifndef PLATQT_H
 #define PLATQT_H
@@ -54,6 +57,13 @@ inline PRectangle PRectFromQRect(QRect qr)
 	return PRectangle(qr.x(), qr.y(), qr.x() + qr.width(), qr.y() + qr.height());
 }
 
+#ifdef PLAT_QT_QML
+inline PRectangle PRectFromQRectF(QRectF qr)
+{
+    return PRectangle(qr.x(), qr.y(), qr.x() + qr.width(), qr.y() + qr.height());
+}
+#endif
+
 inline Point PointFromQPoint(QPoint qp)
 {
 	return Point(qp.x(), qp.y());
@@ -77,7 +87,7 @@ public:
 	SurfaceImpl();
 	virtual ~SurfaceImpl();
 
-	void Init(WindowID wid) override;
+    void Init(WindowID wid, PainterID pid, bool flag) override;
 	void Init(SurfaceID sid, WindowID wid) override;
 	void InitPixMap(int width, int height,
 		Surface *surface, WindowID wid) override;

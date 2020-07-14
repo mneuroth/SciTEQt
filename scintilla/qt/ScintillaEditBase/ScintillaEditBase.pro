@@ -4,12 +4,13 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += qml quick core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = ScintillaEditBase
 TEMPLATE = lib
-CONFIG += lib_bundle
+#CONFIG += lib_bundle
+CONFIG += staticlib
 CONFIG += c++1z
 
 VERSION = 4.4.3
@@ -113,9 +114,9 @@ HEADERS  += \
 
 OTHER_FILES +=
 
-INCLUDEPATH += ../../include ../../src ../../lexlib
+INCLUDEPATH += ../../include ../../src ../../lexlib ../../lexilla/src
 
-DEFINES += SCINTILLA_QT=1 MAKING_LIBRARY=1 SCI_LEXER=1 _CRT_SECURE_NO_DEPRECATE=1
+DEFINES += SCINTILLA_QT_QML=1 MAKING_LIBRARY=1 SCI_LEXER=1 _CRT_SECURE_NO_DEPRECATE=1
 CONFIG(release, debug|release) {
     DEFINES += NDEBUG=1
 }

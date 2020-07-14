@@ -7,6 +7,9 @@
 //
 // Additions Copyright (c) 2011 Archaeopteryx Software, Inc. d/b/a Wingware
 // ScintillaWidget.h - Qt widget that wraps ScintillaQt and provides events and scrolling
+//
+// Additions Copyright (c) 2020 Michael Neuroth
+// Scintilla platform layer for Qt QML/Quick
 
 
 #ifndef SCINTILLAEDITBASE_H
@@ -21,7 +24,13 @@
 #include "Platform.h"
 #include "Scintilla.h"
 
+#ifdef PLAT_QT_QML
+#include <QFont>
+#include <QTimer>
+#include <QQuickPaintedItem>
+#else
 #include <QAbstractScrollArea>
+#endif
 #include <QMimeData>
 #include <QTime>
 
@@ -46,11 +55,45 @@ class SurfaceImpl;
 #endif
 #endif
 
-class EXPORT_IMPORT_API ScintillaEditBase : public QAbstractScrollArea {
+// REMARK:
+// In Qt QML/Quick modus the scrollbar handling should be handled outside
+// the scintilla editor control, for example in a ScrolView component.
+// This is needed to optimize the user interaction on touch devices.
+// In this modus the scintilla editor control runs alway with a (maximal)
+// surface area to show the control completely. Updating the implicitSize
+// of the scintilla editor control is handled in the overloaded paint(.) method.
+class EXPORT_IMPORT_API ScintillaEditBase : public
+#ifdef PLAT_QT_QML
+    QQuickPaintedItem
+#else
+    QAbstractScrollArea
+#endif
+{
 	Q_OBJECT
 
+#ifdef PLAT_QT_QML
+    Q_PROPERTY(QString text READ getText WRITE setText)
+    Q_PROPERTY(QFont font READ getFont WRITE setFont)
+    Q_PROPERTY(int logicalWidth READ getLogicalWidth NOTIFY logicalWidthChanged)
+    Q_PROPERTY(int logicalHeight READ getLogicalHeight NOTIFY logicalHeightChanged)
+    Q_PROPERTY(int charHeight READ getCharHeight NOTIFY charHeightChanged)
+    Q_PROPERTY(int charWidth READ getCharWidth NOTIFY charWidthChanged)
+    Q_PROPERTY(int totalLines READ getTotalLines NOTIFY totalLinesChanged)
+    Q_PROPERTY(int totalColumns READ getTotalColumns NOTIFY totalColumnsChanged)
+    Q_PROPERTY(int visibleLines READ getVisibleLines NOTIFY visibleLinesChanged)
+    Q_PROPERTY(int visibleColumns READ getVisibleColumns NOTIFY visibleColumnsChanged)
+    Q_PROPERTY(int firstVisibleLine READ getFirstVisibleLine WRITE setFirstVisisbleLine NOTIFY firstVisibleLineChanged)
+    Q_PROPERTY(int firstVisibleColumn READ getFirstVisibleColumn NOTIFY firstVisibleColumnChanged)
+    Q_PROPERTY(Qt::InputMethodHints inputMethodHints READ inputMethodHints WRITE setInputMethodHints NOTIFY inputMethodHintsChanged)
+    //QML_ELEMENT
+#endif
+
 public:
-	explicit ScintillaEditBase(QWidget *parent = 0);
+#ifdef PLAT_QT_QML
+    explicit ScintillaEditBase(QQuickItem/*QWidget*/ *parent = 0);
+#else
+    explicit ScintillaEditBase(QWidget *parent = 0);
+#endif
 	virtual ~ScintillaEditBase();
 
 	virtual sptr_t send(
@@ -63,6 +106,13 @@ public:
 		uptr_t wParam = 0,
 		const char *s = 0) const;
 
+#ifdef PLAT_QT_QML
+    Q_INVOKABLE void scrollRow(int deltaLines);
+    Q_INVOKABLE void scrollColumn(int deltaColumns);
+    Q_INVOKABLE void enableUpdate(bool enable);
+    Q_INVOKABLE void debug();
+#endif
+
 public slots:
 	// Scroll events coming from GUI to be sent to Scintilla.
 	void scrollHorizontal(int value);
@@ -71,6 +121,10 @@ public slots:
 	// Emit Scintilla notifications as signals.
 	void notifyParent(SCNotification scn);
 	void event_command(uptr_t wParam, sptr_t lParam);
+
+#ifdef PLAT_QT_QML
+    void onLongTouch();
+#endif
 
 signals:
 	void horizontalScrolled(int value);
@@ -120,29 +174,93 @@ signals:
 	void buttonReleased(QMouseEvent *event);
 	void keyPressed(QKeyEvent *event);
 	void resized();
+#ifdef PLAT_QT_QML
+    void logicalWidthChanged();
+    void logicalHeightChanged();
+    void charHeightChanged();
+    void charWidthChanged();
+    void totalLinesChanged();
+    void firstVisibleLineChanged();
+    void firstVisibleColumnChanged();
+    void totalColumnsChanged();
+    void visibleLinesChanged();
+    void visibleColumnsChanged();
+    void inputMethodHintsChanged();
+    void showContextMenu(const QPoint & pos);
+#endif
 
 protected:
 	bool event(QEvent *event) override;
-	void paintEvent(QPaintEvent *event) override;
-	void wheelEvent(QWheelEvent *event) override;
+#ifdef PLAT_QT_QML
+    void paint(QPainter *painter) override;
+#else
+    void paintEvent(QPaintEvent *event) override;
+#endif    
+    void wheelEvent(QWheelEvent *event) override;
 	void focusInEvent(QFocusEvent *event) override;
 	void focusOutEvent(QFocusEvent *event) override;
-	void resizeEvent(QResizeEvent *event) override;
+#ifdef PLAT_QT_QML
+    void geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry) override;
+    void hoverMoveEvent(QHoverEvent *event) override;
+#else
+    void resizeEvent(QResizeEvent *event) override;
+#endif
 	void keyPressEvent(QKeyEvent *event) override;
 	void mousePressEvent(QMouseEvent *event) override;
 	void mouseReleaseEvent(QMouseEvent *event) override;
 	void mouseDoubleClickEvent(QMouseEvent *event) override;
 	void mouseMoveEvent(QMouseEvent *event) override;
-	void contextMenuEvent(QContextMenuEvent *event) override;
+#ifndef PLAT_QT_QML
+    // TODO: implement context menu for Qt QML/Quick
+    void contextMenuEvent(QContextMenuEvent *event) override;
+#endif
 	void dragEnterEvent(QDragEnterEvent *event) override;
 	void dragLeaveEvent(QDragLeaveEvent *event) override;
 	void dragMoveEvent(QDragMoveEvent *event) override;
 	void dropEvent(QDropEvent *event) override;
 	void inputMethodEvent(QInputMethodEvent *event) override;
 	QVariant inputMethodQuery(Qt::InputMethodQuery query) const override;
-	void scrollContentsBy(int, int) override {}
+#ifndef PLAT_QT_QML
+    void scrollContentsBy(int, int) override {}
+#else
+    void touchEvent(QTouchEvent *event) override;
+#endif
 
 private:
+#ifdef PLAT_QT_QML
+    QString getText() const;
+    void setText(const QString & txt);
+    QFont getFont() const { return aFont; }
+    void setFont(const QFont & newFont);
+    void setStylesFont(const QFont &f, int style);
+    int getLogicalWidth() const;
+    int getLogicalHeight() const;
+    int getCharHeight() const;
+    int getCharWidth() const;
+    int getFirstVisibleLine() const;
+    void setFirstVisisbleLine(int lineNo);
+    int getTotalLines() const;
+    int getFirstVisibleColumn() const;
+    int getTotalColumns() const;
+    int getVisibleLines() const;
+    int getVisibleColumns() const;
+    Qt::InputMethodHints inputMethodHints() const;
+    void setInputMethodHints(Qt::InputMethodHints hints);
+
+    void UpdateQuickView();
+
+    Qt::InputMethodHints dataInputMethodHints;
+    QPoint mousePressedPoint;
+    bool enableUpdateFlag;
+    bool mouseMoved;
+    int mouseDeltaLineMove;
+    int logicalWidth;
+    int logicalHeight;
+    QFont aFont;
+    QPoint longTouchPoint;
+    QTimer aLongTouchTimer;
+#endif
+
 	Scintilla::ScintillaQt *sqt;
 
 	QTime time;

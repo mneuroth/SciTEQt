@@ -5811,6 +5811,8 @@ sptr_t Editor::WndProc(unsigned int iMessage, uptr_t wParam, sptr_t lParam) {
 	if (recordingMacro)
 		NotifyMacroRecord(iMessage, wParam, lParam);
 
+    //DebugOutput(iMessage);
+
 	switch (iMessage) {
 
 	case SCI_GETTEXT: {

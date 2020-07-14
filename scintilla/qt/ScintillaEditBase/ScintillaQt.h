@@ -7,6 +7,9 @@
 //
 // Additions Copyright (c) 2011 Archaeopteryx Software, Inc. d/b/a Wingware
 // ScintillaQt.h - Qt specific subclass of ScintillaBase
+//
+// Additions Copyright (c) 2020 Michael Neuroth
+// Scintilla platform layer for Qt QML/Quick
 
 #ifndef SCINTILLAQT_H
 #define SCINTILLAQT_H
@@ -60,7 +63,11 @@
 #include "CaseConvert.h"
 
 #include <QObject>
+#ifdef PLAT_QT_QML
+#include <QQuickPaintedItem>
+#else
 #include <QAbstractScrollArea>
+#endif
 #include <QAction>
 #include <QClipboard>
 #include <QPaintEvent>
@@ -73,7 +80,11 @@ class ScintillaQt : public QObject, public ScintillaBase {
 	Q_OBJECT
 
 public:
-	explicit ScintillaQt(QAbstractScrollArea *parent);
+#ifdef PLAT_QT_QML
+    explicit ScintillaQt(QQuickPaintedItem *parent);
+#else
+    explicit ScintillaQt(QAbstractScrollArea *parent);
+#endif
 	virtual ~ScintillaQt();
 
 signals:
@@ -103,6 +114,7 @@ private:
 	bool ValidCodePage(int codePage) const override;
 
 private:
+    //void DebugOutput(int value) override;
 	void ScrollText(Sci::Line linesToMove) override;
 	void SetVerticalScrollPos() override;
 	void SetHorizontalScrollPos() override;
@@ -143,9 +155,14 @@ private:
 	static sptr_t DirectFunction(sptr_t ptr,
 				     unsigned int iMessage, uptr_t wParam, sptr_t lParam);
 
+#ifdef PLAT_QT_QML
+    QPainter * GetPainter() { return currentPainter; }
+#endif
+
 protected:
 
-	void PartialPaint(const PRectangle &rect);
+    void PartialPaint(const PRectangle &rect);
+    void PartialPaintQml(const PRectangle & rect, QPainter *painter);
 
 	void DragEnter(const Point &point);
 	void DragMove(const Point &point);
@@ -156,7 +173,11 @@ protected:
 	void timerEvent(QTimerEvent *event) override;
 
 private:
-	QAbstractScrollArea *scrollArea;
+#ifdef PLAT_QT_QML
+    QQuickPaintedItem *scrollArea;
+#else
+    QAbstractScrollArea *scrollArea;
+#endif
 
 	int vMax, hMax;   // Scroll bar maximums.
 	int vPage, hPage; // Scroll bar page sizes.
@@ -164,6 +185,10 @@ private:
 	bool haveMouseCapture;
 	bool dragWasDropped;
 	int rectangularSelectionModifier;
+
+#ifdef PLAT_QT_QML
+    QPainter *currentPainter;  // temporary variable for paint() handling
+#endif
 
 	friend class ::ScintillaEditBase;
 };
