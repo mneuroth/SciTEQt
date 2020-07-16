@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>app.qml</file>
+        <file>SimpleScrollBar.qml</file>
+        <file alias="Embedded.properties">../src/Embedded.properties</file>
+    </qresource>
+</RCC>

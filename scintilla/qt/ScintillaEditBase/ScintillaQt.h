@@ -148,10 +148,11 @@ private:
 	std::string CaseMapString(const std::string &s, int caseMapping) override;
 
 	void CreateCallTipWindow(PRectangle rc) override;
-	void AddToPopUp(const char *label, int cmd = 0, bool enabled = true) override;
+    void AddToPopUp(const char *label, int cmd = 0, bool enabled = true) override;
+public:
 	sptr_t WndProc(unsigned int iMessage, uptr_t wParam, sptr_t lParam) override;
 	sptr_t DefWndProc(unsigned int iMessage, uptr_t wParam, sptr_t lParam) override;
-
+private:
 	static sptr_t DirectFunction(sptr_t ptr,
 				     unsigned int iMessage, uptr_t wParam, sptr_t lParam);
 
@@ -190,7 +191,7 @@ private:
     QPainter *currentPainter;  // temporary variable for paint() handling
 #endif
 
-	friend class ::ScintillaEditBase;
+    friend class ::ScintillaEditBase;
 };
 
 }

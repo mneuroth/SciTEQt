@@ -72,6 +72,8 @@ class EXPORT_IMPORT_API ScintillaEditBase : public
 	Q_OBJECT
 
 #ifdef PLAT_QT_QML
+    friend class SciTEQt;
+
     Q_PROPERTY(QString text READ getText WRITE setText)
     Q_PROPERTY(QFont font READ getFont WRITE setFont)
     Q_PROPERTY(int logicalWidth READ getLogicalWidth NOTIFY logicalWidthChanged)
