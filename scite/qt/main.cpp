@@ -101,8 +101,6 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("scintilla.org");
     app.setApplicationName("QuickScintillaDemoApp");
 
-    ApplicationData data(0);
-
     qRegisterMetaType<SCNotification>("SCNotification");
     qmlRegisterType<ScintillaEditBase>("Scintilla", 1, 0, "ScintillaEditBase");
 
@@ -114,6 +112,7 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
 
+    ApplicationData data(0, engine);
     engine.rootContext()->setContextProperty("applicationData", &data);
     engine.load(url);
 

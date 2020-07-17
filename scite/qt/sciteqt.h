@@ -58,6 +58,8 @@
 
 #include "SciTEBase.h"
 
+#include "applicationdata.h"
+
 #include <QEvent>
 
 #define POST_TO_MAIN (QEvent::User + 1)
@@ -134,25 +136,33 @@ public:
     virtual void EnableAMenuItem(int wIDCheckItem, bool val) override;
     virtual void AddToPopUp(const char *label, int cmd = 0, bool enabled = true) override;
 
-    void PostOnMainThread(int cmd, Worker *pWorker) override;
+    virtual void PostOnMainThread(int cmd, Worker *pWorker) override;
+    virtual void ReadEmbeddedProperties() override;
+
+    virtual bool event(QEvent *e) override;
 
     Q_INVOKABLE bool doOpen(const QString & sFileName);
     Q_INVOKABLE void setScintilla(QObject * obj);
     Q_INVOKABLE void setOutput(QObject * obj);
+    Q_INVOKABLE void setMainWindow(QObject * obj);
+
+    Q_INVOKABLE bool saveCurrentAs(const QString & sFileName);
 
     // menu commands
+    Q_INVOKABLE void CmdNew();
+    Q_INVOKABLE void CmdOpen();
+    Q_INVOKABLE void CmdClose();
     Q_INVOKABLE void CmdSave();
+    Q_INVOKABLE void CmdSaveAs();
     Q_INVOKABLE void CmdLineNumbers();
     Q_INVOKABLE void CmdUseMonospacedFont();
 
-    void ReadEmbeddedProperties() override;
-
-
-    virtual bool event(QEvent *e) override;
-
+    Q_INVOKABLE void setApplicationData(ApplicationData * pApplicationData);
 
 signals:
 
+private:
+    ApplicationData *       m_pApplicationData;
 };
 
 #endif // SCITEQT_H

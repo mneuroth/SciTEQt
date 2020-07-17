@@ -8,7 +8,9 @@
 
 #include "ScintillaEditBase.h"
 
-SciTEQt::SciTEQt(QObject *parent) : QObject(parent)
+SciTEQt::SciTEQt(QObject *parent)
+    : QObject(parent),
+      m_pApplicationData(0)
 {
     CreateBuffers();
 
@@ -18,8 +20,36 @@ SciTEQt::SciTEQt(QObject *parent) : QObject(parent)
     SetPropertiesInitial();
     ReadAbbrevPropFile();
 
-//    wEditor.SetId();
-//    wEditor.SetFnPtr();
+    // from SciTEWin.cxx Run():
+
+    // Load the default session file
+    if (props.GetInt("save.session") || props.GetInt("save.position") || props.GetInt("save.recent")) {
+        LoadSessionFile(GUI_TEXT(""));
+    }
+
+/* TODO: improve startup !
+
+    // Break up the command line into individual arguments
+    GUI::gui_string args = ProcessArgs(cmdLine);
+    // Read the command line parameters:
+    // In case the check.if.already.open property has been set or reset on the command line,
+    // we still get a last chance to force checking or to open a separate instance;
+    // Check if the user just want to print the file(s).
+    // Don't process files yet.
+    const bool bBatchProcessing = ProcessCommandLine(args, 0);
+
+    // No need to check for other instances when doing a batch job:
+    // perform some tasks and exit immediately.
+    if (!bBatchProcessing && props.GetInt("check.if.already.open") != 0) {
+        uniqueInstance.CheckOtherInstance();
+    }
+
+    // Open all files given on command line.
+    // The filenames containing spaces must be enquoted.
+    // In case of not using buffers they get closed immediately except
+    // the last one, but they move to the MRU file list
+    ProcessCommandLine(args, 1);
+*/
 }
 
 void SciTEQt::TabInsert(int index, const GUI::gui_char *title)
@@ -49,11 +79,23 @@ void SciTEQt::GetWindowPosition(int *left, int *top, int *width, int *height, in
 
 bool SciTEQt::OpenDialog(const FilePath &directory, const GUI::gui_char *filesFilter)
 {
+    if( m_pApplicationData != 0 )
+    {
+        m_pApplicationData->startFileDialog(directory.AbsolutePath().AsUTF8().c_str(), QString::fromWCharArray(filesFilter), true);
+        return true;
+    }
+
     return false;
 }
 
 bool SciTEQt::SaveAsDialog()
 {
+    if( m_pApplicationData != 0 )
+    {
+        m_pApplicationData->startFileDialog("", "", false);
+        return true;
+    }
+
     return false;
 }
 
@@ -296,9 +338,53 @@ void SciTEQt::setOutput(QObject * obj)
     wOutput.SetID(base->sqt);
 }
 
+void SciTEQt::setMainWindow(QObject * obj)
+{
+    QQuickWindow * window = reinterpret_cast<QQuickWindow *>(obj);
+
+    wSciTE.SetID(window);
+}
+
+bool SciTEQt::saveCurrentAs(const QString & sFileName)
+{
+    bool ret = false;
+    QUrl aUrl(sFileName);
+    QString sLocalFileName = aUrl.toLocalFile();
+    wchar_t * buf = new wchar_t[sLocalFileName.length()+1];
+    sLocalFileName.toWCharArray(buf);
+    buf[sLocalFileName.length()] = 0;
+    FilePath path(buf);
+    if(path.IsSet())
+    {
+        ret = SaveIfNotOpen(path, false);
+    }
+    delete [] buf;
+    return ret;
+}
+
+void SciTEQt::CmdNew()
+{
+    MenuCommand(IDM_NEW);
+}
+
+void SciTEQt::CmdOpen()
+{
+    MenuCommand(IDM_OPEN);
+}
+
+void SciTEQt::CmdClose()
+{
+    MenuCommand(IDM_CLOSE);
+}
+
 void SciTEQt::CmdSave()
 {
     MenuCommand(IDM_SAVE);
+}
+
+void SciTEQt::CmdSaveAs()
+{
+    MenuCommand(IDM_SAVEAS);
 }
 
 void SciTEQt::CmdLineNumbers()
@@ -316,7 +402,6 @@ void SciTEQt::ReadEmbeddedProperties()
     propsEmbed.Clear();
 
     QFile aFile(":/Embedded.properties");
-    int count = aFile.size();
     if( aFile.open(QIODevice::ReadOnly | QIODevice::Text) > 0 )
     {
         QByteArray data = aFile.readAll();
@@ -337,4 +422,9 @@ bool SciTEQt::event(QEvent *e)
         qDebug() << "WARNING: EVENT not handled !!! type=" << e->type() << endl;
     }
     return true;
+}
+
+void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
+{
+    m_pApplicationData = pApplicationData;
 }

@@ -7,7 +7,7 @@ import QtQuick.Dialogs 1.2
 import de.mneuroth.sciteqt 1.0
 
 ApplicationWindow {
-    id: myRoot
+    id: applicationWindow
     width: 600
     height: 400
     visible: true
@@ -17,6 +17,16 @@ ApplicationWindow {
     Component.onCompleted: {
         sciteQt.setScintilla(quickScintillaEditor)
         sciteQt.setOutput(quickScintillaOutput)
+        sciteQt.setMainWindow(applicationWindow)
+        sciteQt.setApplicationData(applicationData)
+    }
+
+    function startFileDialog(sDirectory, sFilter, bAsOpenDialog) {
+        //fileDialog.selectExisting = bAsOpenDialog
+        fileDialog.openMode = bAsOpenDialog
+        fileDialog.folder = sDirectory
+        //fileDialog.nameFilters = sFilter // as list of strings...
+        fileDialog.open()
     }
 
     function buildValidUrl(path) {
@@ -37,8 +47,14 @@ ApplicationWindow {
         return sUrl
     }
 
+    function writeCurrentDoc(url) {
+        console.log("write current... "+url)
+        sciteQt.saveCurrentAs(url)
+    }
+
     function readCurrentDoc(url) {
         // then read new document
+        console.log("read current doc "+url)
         var urlFileName = buildValidUrl(url)
         lblFileName.text = urlFileName
         sciteQt.doOpen(url)
@@ -53,23 +69,48 @@ ApplicationWindow {
             title: qsTr("File")
 
             MenuItem {
+                text: qsTr("New")
+                //icon.source: "share.svg"
+                onTriggered: {
+                    sciteQt.CmdNew()
+                }
+            }
+            MenuItem {
                 text: qsTr("Open...")
                 //icon.source: "share.svg"
                 onTriggered: {
-                    console.log("OPEN...")
-                    fileDialog.title = "Choose a file"
-                    fileDialog.selectExisting = true
-                    fileDialog.openMode = true
-                    fileDialog.open()
+                    sciteQt.CmdOpen()
                 }
             }
-
+            MenuItem {
+                text: qsTr("Close")
+                onTriggered: {
+                    sciteQt.CmdClose()
+                }
+            }
             MenuItem {
                 text: qsTr("Save")
                 onTriggered: {
                     sciteQt.CmdSave()
                 }
             }
+            MenuItem {
+                text: qsTr("Save as...")
+                onTriggered: {
+                    sciteQt.CmdSaveAs()
+                }
+            }
+        }
+
+        Menu {
+            id: editMenu
+            title: qsTr("Edit")
+        }
+
+
+        Menu {
+            id: searchMenu
+            title: qsTr("Search")
         }
 
         Menu {
@@ -84,6 +125,12 @@ ApplicationWindow {
                     sciteQt.CmdLineNumbers()
                 }
             }
+        }
+
+
+        Menu {
+            id: toolsMenu
+            title: qsTr("Tools")
         }
 
         Menu {
@@ -102,6 +149,17 @@ ApplicationWindow {
         }
 
         Menu {
+            id: languageMenu
+            title: qsTr("Language")
+        }
+
+
+        Menu {
+            id: buffersMenu
+            title: qsTr("Buffers")
+        }
+
+        Menu {
             id: helpMenu
             title: qsTr("Help")
         }
@@ -109,9 +167,11 @@ ApplicationWindow {
 
     header: ToolBar {
         contentHeight: readonlyIcon.implicitHeight
+        visible: false
 
         ToolButton {
             id: readonlyIcon
+            visible: false
             //icon.source: "edit.svg"
             text: "blub"
             //visible: stackView.currentItem === homePage
@@ -200,21 +260,24 @@ ApplicationWindow {
 
     FileDialog {
         id: fileDialog
+        objectName: "fileDialog"
         visible: false
         modality: Qt.WindowModal
-        title: "Choose a file"
+        //fileMode: openMode ? FileDialog.OpenFile : FileDialog.SaveFile
+        title: openMode ? qsTr("Choose a file") : qsTr("Save as")
         folder: "."
 
         property bool openMode: true
 
-        selectExisting: true
+        selectExisting: openMode ? true : false
         selectMultiple: false
         selectFolder: false
 
         onAccepted: {
             console.log("Accepted: " + /*currentFile*/fileUrl+" "+fileDialog.openMode)
             /*if(fileDialog.fileMode === FileDialog.SaveFile)*/if(!fileDialog.openMode) {
-                var ok = applicationData.writeFileContent(/*currentFile*/fileUrl, quickScintillaEditor.text)
+                //var ok = applicationData.writeFileContent(/*currentFile*/fileUrl, quickScintillaEditor.text)
+                writeCurrentDoc(fileUrl)
             }
             else {
                 readCurrentDoc(/*currentFile*/fileUrl)
@@ -276,6 +339,7 @@ ApplicationWindow {
     //Flickable {
     ScrollView {
         id: scrollView
+        objectName: "scrollView"
         focus: true
         clip: true
         //focusPolicy: Qt.StrongFocus
@@ -290,15 +354,15 @@ ApplicationWindow {
         //anchors.fill: parent
         //anchors.centerIn: parent
         anchors.top: lblFileName.bottom
-        anchors.right: parent.right
-        //anchors.bottom: parent.bottom /*parent.height - quickScintillaOutput.height - 5*/ quickScintillaOutput.top
+        anchors.right: quickScintillaOutput.left //parent.right
+        anchors.bottom: parent.bottom /*parent.height - quickScintillaOutput.height - 5*/ //quickScintillaOutput.top
         anchors.left: parent.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
         anchors.topMargin: 5
         anchors.bottomMargin: 5
 
-        height: parent.height - quickScintillaOutput.height - 100
+        //height: parent.height - quickScintillaOutput.height - 100
 
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
         ScrollBar.vertical.policy: ScrollBar.AlwaysOn
@@ -336,8 +400,8 @@ ApplicationWindow {
 
 //                implicitWidth: quickScintillaEditor.logicalWidth // 1600//1000
 //                implicitHeight: quickScintillaEditor.logicalHeight //1800//3000
-                font.family: "Courier New"  //*/ "Hack"
-                font.pointSize: 18
+                //font.family: "Courier New"  //*/ "Hack"
+                //font.pointSize: 18
                 focus: true
                 text: "Welcome scintilla in the Qt QML/Quick world !\nLine 2 for while if else blub done\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\nLine 9\nLine 10\nLine 11\nLine 12\nLine 13\nLine 14\nLine 15\nLine 16\nLine 17\nlast line is here!\n"+parent.x+ " "+parent.y+" "+x+" "+y
 /*
@@ -367,7 +431,7 @@ ApplicationWindow {
         }
 
         Menu {
-            id: editMenu
+            id: editContextMenu
 
             MenuItem {
                 text: "Copy"
@@ -470,8 +534,8 @@ ApplicationWindow {
 
             onShowContextMenu: {
                 console.log("CONTEXT MENU")
-                //editMenu.open()
-                editMenu.popup(pos)
+                //editContextMenu.open()
+                editContextMenu.popup(pos)
             }
 
             onDoubleClick: {
@@ -551,21 +615,22 @@ ApplicationWindow {
     ScintillaEditBase {
         id: quickScintillaOutput
 
-        //anchors.top: scrollView.bottom
+        anchors.top: parent.top
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.left: parent.left
+        //anchors.left: scrollView.right //parent.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
         anchors.topMargin: 5
         anchors.bottomMargin: 5
 
-        height: 150
+        //height: 150
+        width: 200
 
         Accessible.role: Accessible.EditableText
 
-        font.family: "Courier New"  //*/ "Hack"
-        font.pointSize: 18
+        //font.family: "Courier New"  //*/ "Hack"
+        //font.pointSize: 18
         focus: true
         text: "this is the output area !"
     }

@@ -241,6 +241,11 @@ void Window::InvalidateAll()
 
 void Window::SetTitle(const gui_char *s)
 {
+    QQuickWindow * window = reinterpret_cast<QQuickWindow *>(GetID());
+    if( window != 0 )
+    {
+        window->setTitle(QString::fromWCharArray(s));
+    }
 }
 
 void Menu::CreatePopUp()

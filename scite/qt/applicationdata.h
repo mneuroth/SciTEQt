@@ -2,6 +2,7 @@
 #define APPLICATIONDATA_H
 
 #include <QObject>
+#include <QQmlApplicationEngine>
 
 #ifdef Q_OS_WIN
 #define LOG_NAME "c:\\tmp\\mgv_quick_qdebug.log"
@@ -17,7 +18,7 @@ class ApplicationData : public QObject
     Q_OBJECT
 
 public:
-    explicit ApplicationData(QObject *parent);
+    explicit ApplicationData(QObject *parent, QQmlApplicationEngine & aEngine);
     ~ApplicationData();
 
     Q_INVOKABLE QString readFileContent(const QString & fileName) const;
@@ -26,6 +27,11 @@ public:
     Q_INVOKABLE bool deleteFile(const QString & fileName);
 
     Q_INVOKABLE QString readLog() const;
+
+    Q_INVOKABLE void startFileDialog(const QString & sDirectory, const QString & sFilter, bool bAsOpenDialog = true);
+
+private:
+    QQmlApplicationEngine &     m_aEngine;
 };
 
 #endif // APPLICATIONDATA_H
