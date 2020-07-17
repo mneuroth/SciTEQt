@@ -12,7 +12,8 @@
 // see: https://stackoverflow.com/questions/14791360/qt5-syntax-highlighting-in-qml
 template <class T> T childObject(QQmlApplicationEngine& engine,
                                  const QString& objectName,
-                                 const QString& propertyName)
+                                 const QString& propertyName,
+                                 bool bGetRoot = true)
 {
     QList<QObject*> rootObjects = engine.rootObjects();
     foreach (QObject* object, rootObjects)
@@ -22,7 +23,14 @@ template <class T> T childObject(QQmlApplicationEngine& engine,
         {
             if( propertyName.length()==0 )
             {
-                return dynamic_cast<T>(object);
+                if(bGetRoot)
+                {
+                    return dynamic_cast<T>(object);
+                }
+                else
+                {
+                    return dynamic_cast<T>(child);
+                }
             }
             else
             {
@@ -125,8 +133,7 @@ QString ApplicationData::readLog() const
 
 void ApplicationData::startFileDialog(const QString & sDirectory, const QString & sFilter, bool bAsOpenDialog)
 {
-//    qDebug() << "start fod " << sDirectory << " "  << sFilter << endl;
-    QObject* appWin = childObject<QObject*>(m_aEngine, "fileDialog", "");     //applicationWindow
+    QObject * appWin = childObject<QObject*>(m_aEngine, "fileDialog", "");
     if( appWin != 0 )
     {
         QMetaObject::invokeMethod(appWin, "startFileDialog",
@@ -135,4 +142,18 @@ void ApplicationData::startFileDialog(const QString & sDirectory, const QString 
                 Q_ARG(QVariant, sFilter),
                 Q_ARG(QVariant, bAsOpenDialog));
     }
+}
+
+QObject * ApplicationData::showInfoDialog(const QString & sInfoText)
+{
+    QVariant result;
+    QObject * appWin = childObject<QObject*>(m_aEngine, "infoDialog", "");
+    if( appWin != 0 )
+    {
+        QMetaObject::invokeMethod(appWin, "showInfoDialog",
+                QGenericReturnArgument(),
+                Q_ARG(QVariant, sInfoText));
+    }
+    QObject * infoDlg = childObject<QObject*>(m_aEngine, "infoDialog", "", false);
+    return infoDlg;
 }

@@ -21,6 +21,10 @@ ApplicationWindow {
         sciteQt.setApplicationData(applicationData)
     }
 
+    function max(v1, v2) {
+        return v1 < v2 ? v2 : v1;
+    }
+
     function startFileDialog(sDirectory, sFilter, bAsOpenDialog) {
         //fileDialog.selectExisting = bAsOpenDialog
         fileDialog.openMode = bAsOpenDialog
@@ -59,6 +63,11 @@ ApplicationWindow {
         lblFileName.text = urlFileName
         sciteQt.doOpen(url)
         //quickScintillaEditor.text = applicationData.readFileContent(urlFileName)
+    }
+
+    function showInfoDialog(infoText) {
+        infoDialog.text = infoText
+        infoDialog.open()
     }
 
     function processMenuItem(menuText, menuItem) {
@@ -170,92 +179,34 @@ ApplicationWindow {
         Menu {
             id: helpMenu
             title: qsTr("Help")
+
+            MenuItem {
+                text: qsTr("Debug info")
+                onTriggered: {
+                    showInfoDialog(quickScintillaEditor.text)
+                    /*for Tests only: */quickScintillaEditor.text = applicationData.readLog()
+                }
+            }
         }
     }
 
     header: ToolBar {
         contentHeight: readonlyIcon.implicitHeight
-        visible: false
+        visible: true
 
         ToolButton {
             id: readonlyIcon
-            visible: false
             //icon.source: "edit.svg"
-            text: "blub"
+            text: "Open"
             //visible: stackView.currentItem === homePage
             //anchors.right: readonlySwitch.left
             //anchors.rightMargin: 1
         }
     }
 
-    Button {
-        id: btnLoadFile
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.topMargin: 5
-        anchors.leftMargin: 5
-        text: "Load file"
-        onClicked: {
-            //fileDialog.fileMode = FileDialog.OpenFile
-            fileDialog.title = "Choose a file"
-            fileDialog.selectExisting = true
-            fileDialog.openMode = true
-            fileDialog.open()
-        }
-    }
-
-    Button {
-        id: btnSaveFile
-        //enabled: lblFileName.text.startsWith(urlPrefix)
-        anchors.top: parent.top
-        anchors.left: btnLoadFile.right
-        anchors.topMargin: 5
-        anchors.leftMargin: 5
-        text: "Save file as"
-        onClicked: {
-            //fileDialog.fileMode = FileDialog.SaveFile
-            fileDialog.title = "Save a file"
-            fileDialog.selectExisting = false
-            fileDialog.openMode = false
-            fileDialog.open()
-        }
-    }
-
-    Button {
-        id: btnClearText
-        anchors.top: parent.top
-        anchors.left: btnSaveFile.right
-        anchors.topMargin: 5
-        anchors.leftMargin: 5
-        text: "Clear"
-        onClicked: {
-            quickScintillaEditor.text = ""
-            lblFileName.text = "unknown.txt"
-            //for Tests only: Qt.inputMethod.show()
-            scrollView.focus = true
-            //quickScintillaEditor.focus = true
-        }
-    }
-
-    Button {
-        id: btnShowText
-        anchors.top: parent.top
-        anchors.left: btnClearText.right
-        anchors.topMargin: 5
-        anchors.leftMargin: 5
-        text: "Show text"
-        onClicked: {
-            infoDialog.text = quickScintillaEditor.text
-            //for Tests only: infoDialog.text = " "+scrollView.contentItem
-            infoDialog.open()
-            //for Tests only: readCurrentDoc("/sdcard/Texte/mgv_quick_qdebug.log")
-            /*for Tests only: */quickScintillaEditor.text = applicationData.readLog()
-        }
-    }
-
     Text {
         id: lblFileName
-        anchors.top: btnLoadFile.bottom
+        anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
         //anchors.verticalCenter: btnShowText.verticalCenter
@@ -282,39 +233,36 @@ ApplicationWindow {
         selectFolder: false
 
         onAccepted: {
-            console.log("Accepted: " + /*currentFile*/fileUrl+" "+fileDialog.openMode)
-            /*if(fileDialog.fileMode === FileDialog.SaveFile)*/if(!fileDialog.openMode) {
-                //var ok = applicationData.writeFileContent(/*currentFile*/fileUrl, quickScintillaEditor.text)
+            //console.log("Accepted: " + /*currentFile*/fileUrl+" "+fileDialog.openMode)
+            if(!fileDialog.openMode) {
                 writeCurrentDoc(fileUrl)
             }
             else {
-                readCurrentDoc(/*currentFile*/fileUrl)
+                readCurrentDoc(fileUrl)
             }
-            scrollView.focus = true
+            quickScintillaEditor.focus = true
         }
         onRejected: {
-            console.log("Rejected")
-            scrollView.focus = true
+            quickScintillaEditor.focus = true
         }
     }
 
     MessageDialog {
         id: infoDialog
+        objectName: "infoDialog"
         visible: false
         title: qsTr("Info")
+        //modal: true
+        //modality: Qt.WindowModality
         standardButtons: StandardButton.Ok
         onAccepted: {
-            console.log("Close info dialog")
-            scrollView.focus = true
-            //quickScintillaEditor.focus = true
+            quickScintillaEditor.focus = true
         }
     }
 
-    function max(v1, v2) {
-        return v1 < v2 ? v2 : v1;
-    }
-
     SplitView {
+        id: splitView
+
         //anchors.fill: parent
         anchors.top: lblFileName.bottom
         anchors.right: parent.right

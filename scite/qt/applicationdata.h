@@ -29,6 +29,7 @@ public:
     Q_INVOKABLE QString readLog() const;
 
     Q_INVOKABLE void startFileDialog(const QString & sDirectory, const QString & sFilter, bool bAsOpenDialog = true);
+    Q_INVOKABLE QObject * showInfoDialog(const QString & sInfoText);
 
 private:
     QQmlApplicationEngine &     m_aEngine;

@@ -161,10 +161,15 @@ public:
 
     Q_INVOKABLE void setApplicationData(ApplicationData * pApplicationData);
 
+public slots:
+    void OnOkClicked();
+
 signals:
 
 private:
     ApplicationData *       m_pApplicationData;
+
+    bool                    m_bWaitFlag;
 };
 
 #endif // SCITEQT_H

@@ -10,7 +10,8 @@
 
 SciTEQt::SciTEQt(QObject *parent)
     : QObject(parent),
-      m_pApplicationData(0)
+      m_pApplicationData(0),
+      m_bWaitFlag(false)
 {
     CreateBuffers();
 
@@ -165,7 +166,22 @@ void SciTEQt::Find()
 
 SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::gui_string &msg, MessageBoxStyle style)
 {
-    qDebug() << "NOT IMPLEMENTED: WindowMessageBox " << msg << endl;
+// TODO --> style (Buttons) behandeln
+    if( m_pApplicationData != 0 )
+    {
+        QObject * pMessageBox = m_pApplicationData->showInfoDialog(QString::fromStdWString(msg));
+        connect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnOkClicked()));
+
+        // simulate a synchronious call: wait for signal from MessageBox and then return with result
+        m_bWaitFlag = false;
+        while(!m_bWaitFlag)
+        {
+            QCoreApplication::processEvents();
+        }
+
+        disconnect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnOkClicked()));
+    }
+
     return (SciTEQt::MessageBoxChoice)0;
 }
 
@@ -448,4 +464,9 @@ bool SciTEQt::event(QEvent *e)
 void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
 {
     m_pApplicationData = pApplicationData;
+}
+
+void SciTEQt::OnOkClicked()
+{
+    m_bWaitFlag = true;
 }
