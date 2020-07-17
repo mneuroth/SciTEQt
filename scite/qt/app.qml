@@ -95,27 +95,43 @@ ApplicationWindow {
             }
             Action {
                 id: actionOpen
-                text: processMenuItem(qsTr("Open..."), actionOpen)
+                text: processMenuItem(qsTr("&Open..."), actionOpen)
                 //icon.source: "share.svg"
                 shortcut: "Ctrl+O"
                 onTriggered: sciteQt.CmdOpen()
             }
             Action {
+                id: actionRevert
+                text: processMenuItem(qsTr("&Revert"), actionRevert)
+                shortcut: "Ctrl+W"
+                onTriggered: sciteQt.CmdRevert()
+            }
+            Action {
                 id: actionClose
-                text: processMenuItem(qsTr("Close"), actionClose)
-                shortcut: "Alt+C"
+                text: processMenuItem(qsTr("&Close"), actionClose)
+                shortcut: "Ctrl+W"
                 onTriggered: sciteQt.CmdClose()
             }
             Action {
                 id: actionSave
-                text: processMenuItem(qsTr("Save"), actionSave)
+                text: processMenuItem(qsTr("&Save"), actionSave)
                 shortcut: "Ctrl+S"
                 onTriggered: sciteQt.CmdSave()
             }
             Action {
                 id: actionSaveAs
-                text: processMenuItem(qsTr("Save as..."), actionSaveAs)
+                text: processMenuItem(qsTr("Save &As..."), actionSaveAs)
                 onTriggered: sciteQt.CmdSaveAs()
+            }
+            Action {
+                id: actionCopyPath
+                text: processMenuItem(qsTr("Copy Pat&h"), actionCopyPath)
+                onTriggered: sciteQt.CmdCopyPath()
+            }
+            Action {
+                id: actionExit
+                text: processMenuItem(qsTr("E&xit"), actionExit)
+                onTriggered: sciteQt.CmdExit()
             }
         }
 

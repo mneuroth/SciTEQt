@@ -7,6 +7,7 @@
 #include "ScintillaQt.h"
 
 #include <QtQuick/QQuickView>
+#include <QThread>
 
 namespace GUI {
 
@@ -31,11 +32,15 @@ bool IsDBCSLeadByte(int codePage, char ch) {
         // same so none is considered a lead byte.
         return false;
     else
+#ifdef Q_OS_WIN
         return ::IsDBCSLeadByteEx(codePage, ch) != 0;
+#else
+        return false;
+#endif
 }
 
 void SleepMilliseconds(int sleepTime) {
-    ::Sleep(sleepTime);
+    QThread::msleep(sleepTime);
 }
 
 static unsigned int UTF8Length(const wchar_t *uptr, size_t tlen) noexcept {

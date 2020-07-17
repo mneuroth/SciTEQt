@@ -122,6 +122,7 @@ public:
     virtual void SetFileProperties(PropSetFile &ps) override;
     virtual void AboutDialog() override;
     virtual void QuitProgram() override;
+    virtual void CopyPath() override;
     virtual void SetStatusBarText(const char *s) override;
     virtual void ShowToolBar() override;
     virtual void ShowTabBar() override;
@@ -153,9 +154,12 @@ public:
     // menu commands
     Q_INVOKABLE void CmdNew();
     Q_INVOKABLE void CmdOpen();
+    Q_INVOKABLE void CmdRevert();
     Q_INVOKABLE void CmdClose();
     Q_INVOKABLE void CmdSave();
     Q_INVOKABLE void CmdSaveAs();
+    Q_INVOKABLE void CmdCopyPath();
+    Q_INVOKABLE void CmdExit();
     Q_INVOKABLE void CmdLineNumbers();
     Q_INVOKABLE void CmdUseMonospacedFont();
 

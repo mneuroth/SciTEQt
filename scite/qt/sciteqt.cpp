@@ -3,6 +3,9 @@
 #include <QUrl>
 #include <QDir>
 #include <QResource>
+#include <QThread>
+#include <QGuiApplication>
+#include <QClipboard>
 
 #include <QDebug>
 
@@ -177,6 +180,7 @@ SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::g
         while(!m_bWaitFlag)
         {
             QCoreApplication::processEvents();
+            QThread::msleep(10);
         }
 
         disconnect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnOkClicked()));
@@ -262,7 +266,15 @@ void SciTEQt::AboutDialog()
 
 void SciTEQt::QuitProgram()
 {
+    QGuiApplication::quit();
+}
 
+void SciTEQt::CopyPath()
+{
+    const GUI::gui_string clipText(filePath.AsInternal());
+
+    QClipboard * pClipboard = QGuiApplication::clipboard();
+    pClipboard->setText(QString::fromWCharArray(clipText.c_str()));
 }
 
 void SciTEQt::SetStatusBarText(const char *s)
@@ -409,6 +421,11 @@ void SciTEQt::CmdOpen()
     MenuCommand(IDM_OPEN);
 }
 
+void SciTEQt::CmdRevert()
+{
+    MenuCommand(IDM_REVERT);
+}
+
 void SciTEQt::CmdClose()
 {
     MenuCommand(IDM_CLOSE);
@@ -422,6 +439,16 @@ void SciTEQt::CmdSave()
 void SciTEQt::CmdSaveAs()
 {
     MenuCommand(IDM_SAVEAS);
+}
+
+void SciTEQt::CmdCopyPath()
+{
+    MenuCommand(IDM_COPYPATH);
+}
+
+void SciTEQt::CmdExit()
+{
+    MenuCommand(IDM_QUIT);
 }
 
 void SciTEQt::CmdLineNumbers()
