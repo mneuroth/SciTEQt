@@ -359,6 +359,7 @@ void SciTEQt::setMainWindow(QObject * obj)
     wSciTE.SetID(window);
 }
 
+// copy file with translations "locale.properties" into directory of the executable
 QString SciTEQt::getLocalisedText(const QString & textInput)
 {
     auto localisedText = localiser.Text(textInput.toStdString().c_str(),true);

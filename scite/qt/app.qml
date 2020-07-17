@@ -314,31 +314,17 @@ ApplicationWindow {
         return v1 < v2 ? v2 : v1;
     }
 
-//    ScintillaEditBase {
-//        id: quickScintillaEditor
+    SplitView {
+        //anchors.fill: parent
+        anchors.top: lblFileName.bottom
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
 
-//        anchors.top: lblFileName.bottom
-//        anchors.right: parent.right
-//        anchors.bottom: parent.bottom
-//        anchors.left: parent.left
-//        anchors.rightMargin: 5
-//        anchors.leftMargin: 5
-//        anchors.topMargin: 5
-//        anchors.bottomMargin: 5
-
-//        // position of the QuickScintilla controll will be changed in response of signals from the ScrollView
-//        x : 0
-//        y : 0
-
-//        Accessible.role: Accessible.EditableText
-
-//        //implicitWidth: 1600//1000
-//        //implicitHeight: 1800//3000
-//        font.family: "Courier New"  //*/ "Hack"
-//        font.pointSize: 18
-//        focus: true
-//        text: "Welcome scintilla in the Qt QML/Quick world !\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\nLine 9\nLine 10\nLine 11\nLine 12\nLine 13\nLine 14\nLine 15\nLine 16\nLine 17\nlast line is here!\n"+parent.x+ " "+parent.y+" "+x+" "+y
-//    }
 
     // Use Scrollview to handle ScrollBars for QuickScintilla control.
     // Scrollbar uses Rectangle as flickable item which has the implicitSize of the QuickScintilla control
@@ -359,17 +345,20 @@ ApplicationWindow {
         //property alias vScrollBar: ScrollBar.vertical
         property bool actionFromKeyboard: false
 
+        SplitView.preferredWidth: parent.width / 2
+
         //anchors.fill: parent
         //anchors.centerIn: parent
+/*
         anchors.top: lblFileName.bottom
         anchors.right: quickScintillaOutput.left //parent.right
-        anchors.bottom: parent.bottom /*parent.height - quickScintillaOutput.height - 5*/ //quickScintillaOutput.top
+        anchors.bottom: parent.bottom //parent.height - quickScintillaOutput.height - 5 //quickScintillaOutput.top
         anchors.left: parent.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
         anchors.topMargin: 5
         anchors.bottomMargin: 5
-
+*/
         //height: parent.height - quickScintillaOutput.height - 100
 
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
@@ -623,6 +612,10 @@ ApplicationWindow {
     ScintillaEditBase {
         id: quickScintillaOutput
 
+        //anchors.fill: parent
+
+        SplitView.preferredWidth: parent.width / 2
+/*
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.bottom: parent.bottom
@@ -631,9 +624,9 @@ ApplicationWindow {
         anchors.leftMargin: 5
         anchors.topMargin: 5
         anchors.bottomMargin: 5
-
+*/
         //height: 150
-        width: 200
+        //width: 200
 
         Accessible.role: Accessible.EditableText
 
@@ -643,6 +636,7 @@ ApplicationWindow {
         text: "this is the output area !"
     }
 
+    } // SplitView
 
    SciTEQt {
        id: sciteQt
