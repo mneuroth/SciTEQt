@@ -263,5 +263,5 @@ void Menu::Show(Point pt, Window &w)
 }   // namespace
 
 extern "C" {
-const GUI::gui_char appName[] = GUI_TEXT("Sc1");
+const GUI::gui_char appName[] = GUI_TEXT("SciTEQt");
 }

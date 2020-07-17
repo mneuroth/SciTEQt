@@ -1,5 +1,7 @@
 QT += quick quickcontrols2 widgets printsupport
 
+TARGET = sciteqt
+
 CONFIG += c++1z
 
 HEADERS += applicationdata.h\
@@ -110,7 +112,7 @@ LIBS += ../../scintilla/bin/ScintillaEditBase.lib
 #LIBS += ../../scintilla/bin/libScintillaEditBase.a
 #LIBS += ../../scintilla/bin/libScintillaEditBase.a
 
-RESOURCES += quickscintillademoapp.qrc
+RESOURCES += sciteqt.qrc
 
 #DESTPATH = $$[QT_INSTALL_EXAMPLES]/qml/tutorials/extending-qml/chapter1-basics
 #target.path = $$DESTPATH

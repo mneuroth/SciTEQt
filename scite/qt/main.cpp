@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     app.setOrganizationName("scintilla.org");
     app.setOrganizationDomain("scintilla.org");
-    app.setApplicationName("QuickScintillaDemoApp");
+    app.setApplicationName("SciTEQt");
 
     app.setWindowIcon(QIcon("scite_logo.png"));
 
