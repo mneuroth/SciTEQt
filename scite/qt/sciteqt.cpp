@@ -16,6 +16,20 @@ SciTEQt::SciTEQt(QObject *parent)
 
     ReadEnvironment();
 
+#ifdef Q_OS_WINDOWS
+    propsPlatform.Set("PLAT_WIN", "1");
+    propsPlatform.Set("PLAT_WINNT", "1");
+#endif
+#ifdef Q_OS_LINUX
+    propsPlatform.Set("PLAT_GTK", "1");
+#endif
+#ifdef Q_OS_MACOS
+    propsPlatform.Set("PLAT_MACOSX", "1");
+#endif
+#ifdef Q_OS_ANDROID
+    propsPlatform.Set("PLAT_GTK", "1");
+#endif
+
     ReadGlobalPropFile();
     SetPropertiesInitial();
     ReadAbbrevPropFile();
