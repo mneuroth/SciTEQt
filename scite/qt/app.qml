@@ -2,7 +2,7 @@ import Scintilla 1.0
 import QtQuick 2.9
 import QtQuick.Controls 2.14
 import QtQuick.Dialogs 1.2
-//import Qt.labs.platform 1.1
+import Qt.labs.platform 1.1 as Platform
 
 import de.mneuroth.sciteqt 1.0
 
@@ -61,44 +61,52 @@ ApplicationWindow {
         //quickScintillaEditor.text = applicationData.readFileContent(urlFileName)
     }
 
+    function processMenuItem(menuText, menuItem) {
+        var s = sciteQt.getLocalisedText(menuText)
+        if( menuItem !== null && menuItem.shortcut !== undefined)
+        {
+            s += "\t" + menuItem.shortcut
+        }
+        return s
+    }
+
     menuBar: MenuBar {
         id: menuBar
 
         Menu {
             id: fileMenu
-            title: qsTr("File")
+            title: processMenuItem(qsTr("&File"),null)
 
-            MenuItem {
-                text: qsTr("New")
+            Action {
+                id: actionNew
+                text: processMenuItem(qsTr("&New"), actionNew)
                 //icon.source: "share.svg"
-                onTriggered: {
-                    sciteQt.CmdNew()
-                }
+                shortcut: "Ctrl+N"
+                onTriggered: sciteQt.CmdNew()
             }
-            MenuItem {
-                text: qsTr("Open...")
+            Action {
+                id: actionOpen
+                text: processMenuItem(qsTr("Open..."), actionOpen)
                 //icon.source: "share.svg"
-                onTriggered: {
-                    sciteQt.CmdOpen()
-                }
+                shortcut: "Ctrl+O"
+                onTriggered: sciteQt.CmdOpen()
             }
-            MenuItem {
-                text: qsTr("Close")
-                onTriggered: {
-                    sciteQt.CmdClose()
-                }
+            Action {
+                id: actionClose
+                text: processMenuItem(qsTr("Close"), actionClose)
+                shortcut: "Alt+C"
+                onTriggered: sciteQt.CmdClose()
             }
-            MenuItem {
-                text: qsTr("Save")
-                onTriggered: {
-                    sciteQt.CmdSave()
-                }
+            Action {
+                id: actionSave
+                text: processMenuItem(qsTr("Save"), actionSave)
+                shortcut: "Ctrl+S"
+                onTriggered: sciteQt.CmdSave()
             }
-            MenuItem {
-                text: qsTr("Save as...")
-                onTriggered: {
-                    sciteQt.CmdSaveAs()
-                }
+            Action {
+                id: actionSaveAs
+                text: processMenuItem(qsTr("Save as..."), actionSaveAs)
+                onTriggered: sciteQt.CmdSaveAs()
             }
         }
 
@@ -115,10 +123,10 @@ ApplicationWindow {
 
         Menu {
             id: viewMenu
-            title: qsTr("View")
+            title: qsTr("&View")
 
             MenuItem {
-                text: qsTr("Line Numbers")
+                text: qsTr("Line &Numbers")
                 checkable: true
                 checked: false
                 onTriggered: {

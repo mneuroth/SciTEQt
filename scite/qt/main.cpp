@@ -101,6 +101,8 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("scintilla.org");
     app.setApplicationName("QuickScintillaDemoApp");
 
+    app.setWindowIcon(QIcon("scite_logo.png"));
+
     qRegisterMetaType<SCNotification>("SCNotification");
     qmlRegisterType<ScintillaEditBase>("Scintilla", 1, 0, "ScintillaEditBase");
 

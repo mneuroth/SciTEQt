@@ -359,6 +359,12 @@ void SciTEQt::setMainWindow(QObject * obj)
     wSciTE.SetID(window);
 }
 
+QString SciTEQt::getLocalisedText(const QString & textInput)
+{
+    auto localisedText = localiser.Text(textInput.toStdString().c_str(),true);
+    return QString::fromStdWString(localisedText);
+}
+
 bool SciTEQt::saveCurrentAs(const QString & sFileName)
 {
     bool ret = false;

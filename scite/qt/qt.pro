@@ -11,6 +11,8 @@ SOURCES += applicationdata.cpp\
            main.cpp \
            sciteqt.cpp
 
+RC_ICONS = ../win32/SciBall.ico
+
 HEADERS += ../src/Cookie.h\
             ../src/EditorConfig.h\
             ../src/Extender.h\

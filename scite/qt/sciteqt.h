@@ -146,6 +146,8 @@ public:
     Q_INVOKABLE void setOutput(QObject * obj);
     Q_INVOKABLE void setMainWindow(QObject * obj);
 
+    Q_INVOKABLE QString getLocalisedText(const QString & textInput);
+
     Q_INVOKABLE bool saveCurrentAs(const QString & sFileName);
 
     // menu commands
