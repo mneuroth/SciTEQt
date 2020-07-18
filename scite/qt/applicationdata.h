@@ -19,6 +19,7 @@ class ApplicationData : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY(bool showToolBar READ isShowToolBar WRITE setShowToolBar NOTIFY showToolBarChanged)
     Q_PROPERTY(bool showStatusBar READ isShowStatusBar WRITE setShowStatusBar NOTIFY showStatusBarChanged)
     Q_PROPERTY(QString statusBarText READ getStatusBarText WRITE setStatusBarText NOTIFY statusBarTextChanged)
 
@@ -38,6 +39,8 @@ public:
 
     Q_INVOKABLE void onStatusbarClicked();
 
+    bool isShowToolBar() const;
+    void setShowToolBar(bool val);
     bool isShowStatusBar() const;
     void setShowStatusBar(bool val);
     QString getStatusBarText() const;
@@ -46,6 +49,7 @@ public:
     void setSciteQt(SciTEQt * pScite);
 
 signals:
+    void showToolBarChanged();
     void showStatusBarChanged();
     void statusBarTextChanged();
 
@@ -53,8 +57,9 @@ private:
     QQmlApplicationEngine &     m_aEngine;
     SciTEQt *                   m_pSciteQt; // not an owner !
 
-    bool m_bShowStatusBar;
-    QString m_sStatusBarText;
+    bool                        m_bShowToolBar;
+    bool                        m_bShowStatusBar;
+    QString                     m_sStatusBarText;
 };
 
 #endif // APPLICATIONDATA_H

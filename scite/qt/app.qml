@@ -216,6 +216,13 @@ ApplicationWindow {
             title: processMenuItem(qsTr("&View"),null)
 
             MenuItem {
+                id: actionShowToolBar
+                text: processMenuItem(qsTr("&Tool Bar"), actionShowToolBar)
+                checkable: true
+                checked: applicationData !== null ? applicationData.showToolBar : false
+                onTriggered: sciteQt.CmdShowToolBar()
+            }
+            MenuItem {
                 id: actionShowStatusBar
                 text: processMenuItem(qsTr("&Status Bar"), actionShowStatusBar)
                 checkable: true
@@ -276,13 +283,13 @@ ApplicationWindow {
 
     header: ToolBar {
         contentHeight: readonlyIcon.implicitHeight
-        visible: true
+        visible: applicationData !== null ? applicationData.showToolBar : false
 
         ToolButton {
             id: readonlyIcon
             //icon.source: "edit.svg"
             text: "Open"
-            //visible: stackView.currentItem === homePage
+            //visible: true // applicationData !== null ? applicationData.showToolBar : false
             //anchors.right: readonlySwitch.left
             //anchors.rightMargin: 1
         }

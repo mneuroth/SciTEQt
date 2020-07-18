@@ -52,6 +52,7 @@ template <class T> T childObject(QQmlApplicationEngine& engine,
 ApplicationData::ApplicationData(QObject *parent, QQmlApplicationEngine & aEngine)
     : QObject(parent),
       m_aEngine(aEngine),
+      m_bShowToolBar(false),
       m_bShowStatusBar(false)
 {
 }
@@ -178,6 +179,20 @@ void ApplicationData::setShowStatusBar(bool val)
     {
         m_bShowStatusBar = val;
         emit showStatusBarChanged();
+    }
+}
+
+bool ApplicationData::isShowToolBar() const
+{
+    return m_bShowToolBar;
+}
+
+void ApplicationData::setShowToolBar(bool val)
+{
+    if(val != m_bShowToolBar)
+    {
+        m_bShowToolBar = val;
+        emit showToolBarChanged();
     }
 }
 

@@ -313,12 +313,14 @@ void SciTEQt::SetStatusBarText(const char *s)
 
 void SciTEQt::ShowToolBar()
 {
-
+    if(m_pApplicationData!=0)
+    {
+        m_pApplicationData->setShowToolBar(tbVisible);
+    }
 }
 
 void SciTEQt::ShowTabBar()
 {
-
 }
 
 void SciTEQt::ShowStatusBar()
@@ -523,6 +525,11 @@ void SciTEQt::CmdFindNext()
 void SciTEQt::CmdFindPrevious()
 {
     MenuCommand(IDM_FINDNEXTBACK);
+}
+
+void SciTEQt::CmdShowToolBar()
+{
+    MenuCommand(IDM_VIEWTOOLBAR);
 }
 
 void SciTEQt::CmdShowStatusBar()
