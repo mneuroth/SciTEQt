@@ -17,6 +17,9 @@ class ApplicationData : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY(bool showStatusBar READ isShowStatusBar WRITE setShowStatusBar NOTIFY showStatusBarChanged)
+    Q_PROPERTY(QString statusBarText READ getStatusBarText WRITE setStatusBarText NOTIFY statusBarTextChanged)
+
 public:
     explicit ApplicationData(QObject *parent, QQmlApplicationEngine & aEngine);
     ~ApplicationData();
@@ -29,10 +32,22 @@ public:
     Q_INVOKABLE QString readLog() const;
 
     Q_INVOKABLE void startFileDialog(const QString & sDirectory, const QString & sFilter, bool bAsOpenDialog = true);
-    Q_INVOKABLE QObject * showInfoDialog(const QString & sInfoText);
+    Q_INVOKABLE QObject * showInfoDialog(const QString & sInfoText, int style);
+
+    bool isShowStatusBar() const;
+    void setShowStatusBar(bool val);
+    QString getStatusBarText() const;
+    void setStatusBarText(const QString & txt);
+
+signals:
+    void showStatusBarChanged();
+    void statusBarTextChanged();
 
 private:
     QQmlApplicationEngine &     m_aEngine;
+
+    bool m_bShowStatusBar;
+    QString m_sStatusBarText;
 };
 
 #endif // APPLICATIONDATA_H

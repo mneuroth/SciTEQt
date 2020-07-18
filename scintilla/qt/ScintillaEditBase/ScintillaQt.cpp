@@ -60,6 +60,13 @@ ScintillaQt::ScintillaQt(QAbstractScrollArea *parent)
 	}
 }
 
+#ifdef PLAT_QT_QML
+void ScintillaQt::UpdateInfos(int winId)
+{
+    SetCtrlID(winId);
+}
+#endif
+
 ScintillaQt::~ScintillaQt()
 {
 	CancelTimers();

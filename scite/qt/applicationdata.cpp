@@ -49,7 +49,8 @@ template <class T> T childObject(QQmlApplicationEngine& engine,
 
 ApplicationData::ApplicationData(QObject *parent, QQmlApplicationEngine & aEngine)
     : QObject(parent),
-      m_aEngine(aEngine)
+      m_aEngine(aEngine),
+      m_bShowStatusBar(false)
 {
 }
 
@@ -144,7 +145,7 @@ void ApplicationData::startFileDialog(const QString & sDirectory, const QString 
     }
 }
 
-QObject * ApplicationData::showInfoDialog(const QString & sInfoText)
+QObject * ApplicationData::showInfoDialog(const QString & sInfoText, int style)
 {
     QVariant result;
     QObject * appWin = childObject<QObject*>(m_aEngine, "infoDialog", "");
@@ -152,8 +153,37 @@ QObject * ApplicationData::showInfoDialog(const QString & sInfoText)
     {
         QMetaObject::invokeMethod(appWin, "showInfoDialog",
                 QGenericReturnArgument(),
-                Q_ARG(QVariant, sInfoText));
+                Q_ARG(QVariant, sInfoText),
+                Q_ARG(QVariant, style));
     }
     QObject * infoDlg = childObject<QObject*>(m_aEngine, "infoDialog", "", false);
     return infoDlg;
+}
+
+bool ApplicationData::isShowStatusBar() const
+{
+    return m_bShowStatusBar;
+}
+
+void ApplicationData::setShowStatusBar(bool val)
+{
+    if(val != m_bShowStatusBar)
+    {
+        m_bShowStatusBar = val;
+        emit showStatusBarChanged();
+    }
+}
+
+QString ApplicationData::getStatusBarText() const
+{
+    return m_sStatusBarText;
+}
+
+void ApplicationData::setStatusBarText(const QString & txt)
+{
+    if(m_sStatusBarText != txt)
+    {
+        m_sStatusBarText = txt;
+        emit statusBarTextChanged();
+    }
 }

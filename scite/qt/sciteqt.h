@@ -160,20 +160,41 @@ public:
     Q_INVOKABLE void CmdSaveAs();
     Q_INVOKABLE void CmdCopyPath();
     Q_INVOKABLE void CmdExit();
+    Q_INVOKABLE void CmdUndo();
+    Q_INVOKABLE void CmdRedo();
+    Q_INVOKABLE void CmdCut();
+    Q_INVOKABLE void CmdCopy();
+    Q_INVOKABLE void CmdPaste();
+    Q_INVOKABLE void CmdFind();
+    Q_INVOKABLE void CmdFindNext();
+    Q_INVOKABLE void CmdFindPrevious();
+    Q_INVOKABLE void CmdShowStatusBar();
     Q_INVOKABLE void CmdLineNumbers();
     Q_INVOKABLE void CmdUseMonospacedFont();
 
     Q_INVOKABLE void setApplicationData(ApplicationData * pApplicationData);
 
 public slots:
-    void OnOkClicked();
+    void OnAcceptedClicked();
+    void OnRejectedClicked();
+    void OnYesClicked();
+    void OnNoClicked();
+
+    void OnNotifiedFromScintilla(SCNotification scn);
+    void OnNotifiedFromOutput(SCNotification scn);
 
 signals:
 
 private:
     ApplicationData *       m_pApplicationData;
 
-    bool                    m_bWaitFlag;
+    bool                    m_bWaitDoneFlag;
+    int                     m_iMessageDialogAccepted;
 };
+
+#define MSGBOX_RESULT_CANCEL 0
+#define MSGBOX_RESULT_OK 1
+#define MSGBOX_RESULT_NO 2
+#define MSGBOX_RESULT_YES 3
 
 #endif // SCITEQT_H

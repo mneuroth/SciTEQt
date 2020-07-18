@@ -10,11 +10,13 @@
 #include <QDebug>
 
 #include "ScintillaEditBase.h"
+#include "ScintillaQt.h"
 
 SciTEQt::SciTEQt(QObject *parent)
     : QObject(parent),
       m_pApplicationData(0),
-      m_bWaitFlag(false)
+      m_bWaitDoneFlag(false),
+      m_iMessageDialogAccepted(MSGBOX_RESULT_CANCEL)
 {
     CreateBuffers();
 
@@ -169,24 +171,48 @@ void SciTEQt::Find()
 
 SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::gui_string &msg, MessageBoxStyle style)
 {
-// TODO --> style (Buttons) behandeln
+    //qDebug() << "MessageBox " << msg << " style=" << style << endl;
     if( m_pApplicationData != 0 )
     {
-        QObject * pMessageBox = m_pApplicationData->showInfoDialog(QString::fromStdWString(msg));
-        connect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnOkClicked()));
+        QObject * pMessageBox = m_pApplicationData->showInfoDialog(QString::fromStdWString(msg), style);
+        connect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnAcceptedClicked()));
+        connect(pMessageBox,SIGNAL(rejected()),this,SLOT(OnRejectedClicked()));
+        connect(pMessageBox,SIGNAL(yes()),this,SLOT(OnYesClicked()));
+        connect(pMessageBox,SIGNAL(no()),this,SLOT(OnNoClicked()));
 
         // simulate a synchronious call: wait for signal from MessageBox and then return with result
-        m_bWaitFlag = false;
-        while(!m_bWaitFlag)
+        m_bWaitDoneFlag = false;
+        while(!m_bWaitDoneFlag)
         {
             QCoreApplication::processEvents();
             QThread::msleep(10);
         }
 
-        disconnect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnOkClicked()));
+        disconnect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnAcceptedClicked()));
+        disconnect(pMessageBox,SIGNAL(rejected()),this,SLOT(OnRejectedClicked()));
+        disconnect(pMessageBox,SIGNAL(yes()),this,SLOT(OnYesClicked()));
+        disconnect(pMessageBox,SIGNAL(no()),this,SLOT(OnNoClicked()));
     }
 
-    return (SciTEQt::MessageBoxChoice)0;
+    SciTEQt::MessageBoxChoice result;
+    switch(m_iMessageDialogAccepted)
+    {
+        case MSGBOX_RESULT_CANCEL:
+            result = SciTEQt::MessageBoxChoice::mbCancel;
+            break;
+        case MSGBOX_RESULT_OK:
+            result = SciTEQt::MessageBoxChoice::mbOK;
+            break;
+        case MSGBOX_RESULT_NO:
+            result = SciTEQt::MessageBoxChoice::mbNo;
+            break;
+        case MSGBOX_RESULT_YES:
+            result = SciTEQt::MessageBoxChoice::mbYes;
+            break;
+        default:
+            result = SciTEQt::MessageBoxChoice::mbCancel;
+    }
+    return result;
 }
 
 void SciTEQt::FindMessageBox(const std::string &msg, const std::string *findItem)
@@ -261,7 +287,7 @@ void SciTEQt::SetFileProperties(PropSetFile &ps)
 
 void SciTEQt::AboutDialog()
 {
-
+    // TODO: see: SciTEBase::SetAboutMessage
 }
 
 void SciTEQt::QuitProgram()
@@ -279,7 +305,7 @@ void SciTEQt::CopyPath()
 
 void SciTEQt::SetStatusBarText(const char *s)
 {
-
+    m_pApplicationData->setStatusBarText(s);
 }
 
 void SciTEQt::ShowToolBar()
@@ -294,7 +320,7 @@ void SciTEQt::ShowTabBar()
 
 void SciTEQt::ShowStatusBar()
 {
-
+    m_pApplicationData->setShowStatusBar(sbVisible);
 }
 
 void SciTEQt::ActivateWindow(const char *timestamp)
@@ -361,13 +387,15 @@ bool SciTEQt::doOpen(const QString & sFileName)
 
 void SciTEQt::setScintilla(QObject * obj)
 {
-// TODO
     ScintillaEditBase * base = reinterpret_cast<ScintillaEditBase *>(obj);
 
     SciFnDirect fn_ = reinterpret_cast<SciFnDirect>(base->send(SCI_GETDIRECTFUNCTION, 0, 0));
     const sptr_t ptr_ = base->send(SCI_GETDIRECTPOINTER, 0, 0);
     wEditor.SetFnPtr(fn_, ptr_);
     wEditor.SetID(base->sqt);
+    base->sqt->UpdateInfos(IDM_SRCWIN);
+
+    connect(base->sqt,SIGNAL(notifyParent(SCNotification)),this,SLOT(OnNotifiedFromScintilla(SCNotification)));
 }
 
 void SciTEQt::setOutput(QObject * obj)
@@ -451,6 +479,51 @@ void SciTEQt::CmdExit()
     MenuCommand(IDM_QUIT);
 }
 
+void SciTEQt::CmdUndo()
+{
+    MenuCommand(IDM_UNDO);
+}
+
+void SciTEQt::CmdRedo()
+{
+    MenuCommand(IDM_REDO);
+}
+
+void SciTEQt::CmdCut()
+{
+    MenuCommand(IDM_CUT);
+}
+
+void SciTEQt::CmdCopy()
+{
+    MenuCommand(IDM_COPY);
+}
+
+void SciTEQt::CmdPaste()
+{
+    MenuCommand(IDM_PASTE);
+}
+
+void SciTEQt::CmdFind()
+{
+    MenuCommand(IDM_FIND);
+}
+
+void SciTEQt::CmdFindNext()
+{
+    MenuCommand(IDM_FINDNEXT);
+}
+
+void SciTEQt::CmdFindPrevious()
+{
+    MenuCommand(IDM_FINDNEXTBACK);
+}
+
+void SciTEQt::CmdShowStatusBar()
+{
+    MenuCommand(IDM_VIEWSTATUSBAR);
+}
+
 void SciTEQt::CmdLineNumbers()
 {
     MenuCommand(IDM_LINENUMBERMARGIN);
@@ -475,17 +548,17 @@ void SciTEQt::ReadEmbeddedProperties()
 
 bool SciTEQt::event(QEvent *e)
 {
-    qDebug() << "EVENT " << e->type() << endl;
+    //qDebug() << "EVENT " << e->type() << endl;
     if(e->type() == POST_TO_MAIN)
     {
         QSciTEQtEvent * pSciteEvent = (QSciTEQtEvent *)e;
         WorkerCommand(pSciteEvent->GetCmd(), pSciteEvent->GetWorker());
+        return true;
     }
     else
     {
-        qDebug() << "WARNING: EVENT not handled !!! type=" << e->type() << endl;
+        return QObject::event(e);
     }
-    return true;
 }
 
 void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
@@ -493,7 +566,35 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     m_pApplicationData = pApplicationData;
 }
 
-void SciTEQt::OnOkClicked()
+void SciTEQt::OnAcceptedClicked()
 {
-    m_bWaitFlag = true;
+    m_bWaitDoneFlag = true;
+    m_iMessageDialogAccepted = MSGBOX_RESULT_OK;
+}
+
+void SciTEQt::OnRejectedClicked()
+{
+    m_bWaitDoneFlag = true;
+    m_iMessageDialogAccepted = MSGBOX_RESULT_CANCEL;
+}
+
+void SciTEQt::OnYesClicked()
+{
+    m_bWaitDoneFlag = true;
+    m_iMessageDialogAccepted = MSGBOX_RESULT_YES;
+}
+
+void SciTEQt::OnNoClicked()
+{
+    m_bWaitDoneFlag = true;
+    m_iMessageDialogAccepted = MSGBOX_RESULT_NO;
+}
+
+void SciTEQt::OnNotifiedFromScintilla(SCNotification scn)
+{
+    Notify(&scn);
+}
+
+void SciTEQt::OnNotifiedFromOutput(SCNotification scn)
+{
 }

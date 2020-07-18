@@ -65,7 +65,21 @@ ApplicationWindow {
         //quickScintillaEditor.text = applicationData.readFileContent(urlFileName)
     }
 
-    function showInfoDialog(infoText) {
+    function showInfoDialog(infoText,style) {
+        //mbsOK = 0,
+        //mbsYesNo = 4,
+        //mbsYesNoCancel = 3,
+        //mbsIconQuestion = 0x20,
+        //mbsIconWarning = 0x30
+        if((style & 7) === 4)
+        {
+            infoDialog.standardButtons = StandardButton.Yes | StandardButton.No
+        }
+        if((style & 7) === 3)
+        {
+            infoDialog.standardButtons = StandardButton.Yes | StandardButton.No | StandardButton.Cancel
+        }
+
         infoDialog.text = infoText
         infoDialog.open()
     }
@@ -128,6 +142,7 @@ ApplicationWindow {
                 text: processMenuItem(qsTr("Copy Pat&h"), actionCopyPath)
                 onTriggered: sciteQt.CmdCopyPath()
             }
+            MenuSeparator {}
             Action {
                 id: actionExit
                 text: processMenuItem(qsTr("E&xit"), actionExit)
@@ -137,67 +152,120 @@ ApplicationWindow {
 
         Menu {
             id: editMenu
-            title: qsTr("Edit")
-        }
+            title: processMenuItem(qsTr("Edit"),null)
 
+            Action {
+                id: actionUndo
+                text: processMenuItem(qsTr("&Undo"), actionUndo)
+                shortcut: "Ctrl+Z"
+                onTriggered: sciteQt.CmdUndo()
+            }
+            Action {
+                id: actionRedo
+                text: processMenuItem(qsTr("&Redo"), actionRedo)
+                shortcut: "Ctrl+Y"
+                onTriggered: sciteQt.CmdRedo()
+            }
+            MenuSeparator {}
+            Action {
+                id: actionCut
+                text: processMenuItem(qsTr("Cu&t"), actionCut)
+                shortcut: "Ctrl+X"
+                onTriggered: sciteQt.CmdCut()
+            }
+            Action {
+                id: actionCopy
+                text: processMenuItem(qsTr("&Copy"), actionCopy)
+                shortcut: "Ctrl+C"
+                onTriggered: sciteQt.CmdCopy()
+            }
+            Action {
+                id: actionPaste
+                text: processMenuItem(qsTr("&Paste"), actionPaste)
+                shortcut: "Ctrl+V"
+                onTriggered: sciteQt.CmdPaste()
+            }
+        }
 
         Menu {
             id: searchMenu
-            title: qsTr("Search")
+            title: processMenuItem(qsTr("Search"),null)
+
+            Action {
+                id: actionFind
+                text: processMenuItem(qsTr("&Find..."), actionFind)
+                shortcut: "Ctrl+F"
+                onTriggered: sciteQt.CmdFind()
+            }
+            Action {
+                id: actionFindNext
+                text: processMenuItem(qsTr("Find &Next"), actionFindNext)
+                shortcut: "F3"
+                onTriggered: sciteQt.CmdFindNext()
+            }
+            Action {
+                id: actionFindPrevious
+                text: processMenuItem(qsTr("Find &Next"), actionFindPrevious)
+                shortcut: "Shift+F3"
+                onTriggered: sciteQt.CmdFindPrevious()
+            }
         }
 
         Menu {
             id: viewMenu
-            title: qsTr("&View")
+            title: processMenuItem(qsTr("&View"),null)
 
+            MenuItem {
+                id: actionShowStatusBar
+                text: processMenuItem(qsTr("&Status Bar"), actionShowStatusBar)
+                checkable: true
+                checked: applicationData !== null ? applicationData.showStatusBar : false
+                onTriggered: sciteQt.CmdShowStatusBar()
+            }
             MenuItem {
                 text: qsTr("Line &Numbers")
                 checkable: true
                 checked: false
-                onTriggered: {
-                    sciteQt.CmdLineNumbers()
-                }
+                onTriggered: sciteQt.CmdLineNumbers()
             }
         }
 
 
         Menu {
             id: toolsMenu
-            title: qsTr("Tools")
+            title: processMenuItem(qsTr("Tools"),null)
         }
 
         Menu {
             id: optionsMenu
-            title: qsTr("Options")
+            title: processMenuItem(qsTr("Options"),null)
 
             MenuItem {
-                text: qsTr("Use Monospaced Font")
+                text: processMenuItem(qsTr("Use Monospaced Font"),null)
                 checkable: true
                 checked: false
-                onTriggered: {
-                    sciteQt.CmdUseMonospacedFont()
-                }
-
+                onTriggered: sciteQt.CmdUseMonospacedFont()
             }
         }
 
         Menu {
             id: languageMenu
-            title: qsTr("Language")
+            title: processMenuItem(qsTr("Language"),null)
         }
 
 
         Menu {
             id: buffersMenu
-            title: qsTr("Buffers")
+            title: processMenuItem(qsTr("Buffers"),null)
         }
 
         Menu {
             id: helpMenu
-            title: qsTr("Help")
+            title: processMenuItem(qsTr("Help"),null)
 
             MenuItem {
-                text: qsTr("Debug info")
+                id: actionDebugInfo
+                text: processMenuItem(qsTr("Debug info"),actionDebugInfo)
                 onTriggered: {
                     showInfoDialog(quickScintillaEditor.text)
                     /*for Tests only: */quickScintillaEditor.text = applicationData.readLog()
@@ -217,6 +285,20 @@ ApplicationWindow {
             //visible: stackView.currentItem === homePage
             //anchors.right: readonlySwitch.left
             //anchors.rightMargin: 1
+        }
+    }
+
+    footer:  Text {
+        id: statusBarText
+        visible: applicationData !== null ? applicationData.showStatusBar : false
+
+        text: applicationData !== null ? applicationData.statusBarText : ""
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                console.log("click status bar !")
+            }
         }
     }
 
@@ -271,9 +353,15 @@ ApplicationWindow {
         //modal: true
         //modality: Qt.WindowModality
         standardButtons: StandardButton.Ok
+        /*
         onAccepted: {
             quickScintillaEditor.focus = true
+            console.log("accept")
         }
+        onRejected: console.log("reject")
+        onYes: console.log("yes")
+        onNo: console.log("no")
+        */
     }
 
     SplitView {
@@ -310,5 +398,4 @@ ApplicationWindow {
    SciTEQt {
        id: sciteQt
    }
-
 }

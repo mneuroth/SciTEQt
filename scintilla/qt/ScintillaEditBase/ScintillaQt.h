@@ -82,6 +82,7 @@ class ScintillaQt : public QObject, public ScintillaBase {
 public:
 #ifdef PLAT_QT_QML
     explicit ScintillaQt(QQuickPaintedItem *parent);
+    void UpdateInfos(int winId);
 #else
     explicit ScintillaQt(QAbstractScrollArea *parent);
 #endif
