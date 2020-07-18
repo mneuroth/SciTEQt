@@ -296,9 +296,7 @@ ApplicationWindow {
 
         MouseArea {
             anchors.fill: parent
-            onClicked: {
-                console.log("click status bar !")
-            }
+            onClicked: applicationData.onStatusbarClicked()
         }
     }
 

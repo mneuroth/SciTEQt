@@ -174,6 +174,8 @@ public:
 
     Q_INVOKABLE void setApplicationData(ApplicationData * pApplicationData);
 
+    void UpdateStatusbarView();
+
 public slots:
     void OnAcceptedClicked();
     void OnRejectedClicked();

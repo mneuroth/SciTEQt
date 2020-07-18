@@ -1,5 +1,7 @@
 #include "applicationdata.h"
 
+#include "sciteqt.h"
+
 #include <QDir>
 #include <QUrl>
 #include <QFile>
@@ -160,6 +162,11 @@ QObject * ApplicationData::showInfoDialog(const QString & sInfoText, int style)
     return infoDlg;
 }
 
+void ApplicationData::onStatusbarClicked()
+{
+    m_pSciteQt->UpdateStatusbarView();
+}
+
 bool ApplicationData::isShowStatusBar() const
 {
     return m_bShowStatusBar;
@@ -186,4 +193,9 @@ void ApplicationData::setStatusBarText(const QString & txt)
         m_sStatusBarText = txt;
         emit statusBarTextChanged();
     }
+}
+
+void ApplicationData::setSciteQt(SciTEQt * pScite)
+{
+    m_pSciteQt = pScite;
 }

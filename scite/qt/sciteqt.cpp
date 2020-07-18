@@ -305,7 +305,10 @@ void SciTEQt::CopyPath()
 
 void SciTEQt::SetStatusBarText(const char *s)
 {
-    m_pApplicationData->setStatusBarText(s);
+    if(m_pApplicationData!=0)
+    {
+        m_pApplicationData->setStatusBarText(s);
+    }
 }
 
 void SciTEQt::ShowToolBar()
@@ -320,7 +323,10 @@ void SciTEQt::ShowTabBar()
 
 void SciTEQt::ShowStatusBar()
 {
-    m_pApplicationData->setShowStatusBar(sbVisible);
+    if(m_pApplicationData!=0)
+    {
+        m_pApplicationData->setShowStatusBar(sbVisible);
+    }
 }
 
 void SciTEQt::ActivateWindow(const char *timestamp)
@@ -564,6 +570,19 @@ bool SciTEQt::event(QEvent *e)
 void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
 {
     m_pApplicationData = pApplicationData;
+    if(m_pApplicationData!=0)
+    {
+        m_pApplicationData->setSciteQt(this);
+    }
+}
+
+void SciTEQt::UpdateStatusbarView()
+{
+    sbNum++;
+    if (sbNum > props.GetInt("statusbar.number")) {
+        sbNum = 1;
+    }
+    UpdateStatusBar(true);
 }
 
 void SciTEQt::OnAcceptedClicked()

@@ -13,6 +13,8 @@
 
 // **************************************************************************
 
+class SciTEQt;
+
 class ApplicationData : public QObject
 {
     Q_OBJECT
@@ -34,10 +36,14 @@ public:
     Q_INVOKABLE void startFileDialog(const QString & sDirectory, const QString & sFilter, bool bAsOpenDialog = true);
     Q_INVOKABLE QObject * showInfoDialog(const QString & sInfoText, int style);
 
+    Q_INVOKABLE void onStatusbarClicked();
+
     bool isShowStatusBar() const;
     void setShowStatusBar(bool val);
     QString getStatusBarText() const;
     void setStatusBarText(const QString & txt);
+
+    void setSciteQt(SciTEQt * pScite);
 
 signals:
     void showStatusBarChanged();
@@ -45,6 +51,7 @@ signals:
 
 private:
     QQmlApplicationEngine &     m_aEngine;
+    SciTEQt *                   m_pSciteQt; // not an owner !
 
     bool m_bShowStatusBar;
     QString m_sStatusBarText;
