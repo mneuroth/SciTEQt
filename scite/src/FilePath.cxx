@@ -335,6 +335,7 @@ FilePath FilePath::AbsolutePath() const {
 
 #ifdef __ANDROID__
 #define MAX_BUF_LEN 512
+// TODO: static buffers are not good for multithread calls and recursive calls !!! --> find a better solution !
 GUI::gui_char g_sBuf[MAX_BUF_LEN];
 char g_sCharBuf[MAX_BUF_LEN];
 GUI::gui_char * _ToWChar(char * txt)
@@ -352,6 +353,7 @@ const char * _ToChar(const GUI::gui_char * txt)
 //#define TO_GUICHARX(x) std::string s = x; GUI::gui_char buf[512]; mbstowcs(buf, s.c_str(), 512); GUI::gui_char *pdir = buf;
 #else
 #define TO_GUICHAR(x) x
+#define FROM_GUICHAR(x) x
 #endif
 
 FilePath FilePath::GetWorkingDirectory() {
