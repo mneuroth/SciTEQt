@@ -172,6 +172,10 @@ public:
     Q_INVOKABLE void CmdShowStatusBar();
     Q_INVOKABLE void CmdLineNumbers();
     Q_INVOKABLE void CmdUseMonospacedFont();
+    Q_INVOKABLE void CmdBuffersPrevious();
+    Q_INVOKABLE void CmdBuffersNext();
+    Q_INVOKABLE void CmdBuffersCloseAll();
+    Q_INVOKABLE void CmdBuffersSaveAll();
 
     Q_INVOKABLE void setApplicationData(ApplicationData * pApplicationData);
 

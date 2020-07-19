@@ -263,7 +263,46 @@ ApplicationWindow {
 
         Menu {
             id: buffersMenu
-            title: processMenuItem(qsTr("Buffers"),null)
+            title: processMenuItem(qsTr("&Buffers"),null)
+
+            Action {
+                id: actionBuffersPrevious
+                text: processMenuItem(qsTr("&Previous"), actionBuffersPrevious)
+                shortcut: "Shift+F6"
+                onTriggered: sciteQt.CmdBuffersPrevious()
+            }
+            Action {
+                id: actionBuffersNext
+                text: processMenuItem(qsTr("&Next"), actionBuffersNext)
+                shortcut: "F6"
+                onTriggered: sciteQt.CmdBuffersNext()
+            }
+            Action {
+                id: actionBuffersCloseAll
+                text: processMenuItem(qsTr("&Close All"), actionBuffersCloseAll)
+                onTriggered: sciteQt.CmdBuffersCloseAll()
+            }
+            Action {
+                id: actionBuffersSaveAll
+                text: processMenuItem(qsTr("&Save All"), actionBuffersSaveAll)
+                onTriggered: sciteQt.CmdBuffersSaveAll()
+            }
+            MenuSeparator {}
+            MenuItem {
+                id: buffersPos1
+                text: "pos 1"
+            }
+            MenuItem {
+                id: buffersPos2
+                text: "pos 2"
+                visible: true
+                height: visible ? implicitHeight : 0
+            }
+            MenuItem {
+                id: buffersPos3
+                text: "pos 3" // applicationData.getBuffersMenuText(3)
+                // qobj.property() / setProperty
+            }
         }
 
         Menu {
@@ -345,6 +384,7 @@ ApplicationWindow {
                 writeCurrentDoc(fileUrl)
             }
             else {
+                //Android: quickScintillaEditor.text = fileUrl
                 readCurrentDoc(fileUrl)
             }
             quickScintillaEditor.focus = true

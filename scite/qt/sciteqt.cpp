@@ -18,10 +18,6 @@ SciTEQt::SciTEQt(QObject *parent)
       m_bWaitDoneFlag(false),
       m_iMessageDialogAccepted(MSGBOX_RESULT_CANCEL)
 {
-    CreateBuffers();
-
-    ReadEnvironment();
-
 #ifdef Q_OS_WINDOWS
     propsPlatform.Set("PLAT_WIN", "1");
     propsPlatform.Set("PLAT_WINNT", "1");
@@ -36,9 +32,13 @@ SciTEQt::SciTEQt(QObject *parent)
     propsPlatform.Set("PLAT_GTK", "1");
 #endif
 
+    ReadEnvironment();
+
     ReadGlobalPropFile();
     SetPropertiesInitial();
     ReadAbbrevPropFile();
+
+    CreateBuffers();
 
     // from SciTEWin.cxx Run():
 
@@ -292,7 +292,18 @@ void SciTEQt::AboutDialog()
 
 void SciTEQt::QuitProgram()
 {
-    QGuiApplication::quit();
+    quitting = false;
+    if (SaveIfUnsureAll() != saveCancelled) {
+        //if (fullScreen)	// Ensure tray visible on exit
+        //	FullScreenToggle();
+        quitting = true;
+        // If ongoing saves, wait for them to complete.
+        if (!buffers.SavingInBackground()) {
+            QGuiApplication::quit();
+            //::PostQuitMessage(0);
+            wSciTE.Destroy();
+        }
+    }
 }
 
 void SciTEQt::CopyPath()
@@ -349,27 +360,35 @@ void SciTEQt::SizeSubWindows()
 void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
              const GUI::gui_char *text, const GUI::gui_char *mnemonic)
 {
+    // 0 18 1000    // buffers
+    // MenuID  7  pos= 5   1200
+    // Menu 7 == Buffers --> create
 
+    // TODO: dynamisches menu handling implementieren
+
+    // 6 0 1400
+    // 6 1 1401
+    qDebug() << "Set Menu Item " << menuNumber << " pos=" << position << " " << itemID << " " << QString::fromWCharArray(text) << " " << QString::fromWCharArray(mnemonic) << endl;
 }
 
 void SciTEQt::DestroyMenuItem(int menuNumber, int itemID)
 {
-
+    qDebug() << "DestroyMenuItem" << menuNumber << " " << itemID << endl;
 }
 
 void SciTEQt::CheckAMenuItem(int wIDCheckItem, bool val)
 {
-
+    qDebug() << "CheckAMenuItem" << wIDCheckItem << " " << val << endl;
 }
 
 void SciTEQt::EnableAMenuItem(int wIDCheckItem, bool val)
 {
-
+    qDebug() << "EnableAMenuItem" << wIDCheckItem << " " << val << endl;
 }
 
 void SciTEQt::AddToPopUp(const char *label, int cmd, bool enabled)
 {
-
+    qDebug() << "AddToPopup " << label << " " << cmd << " " << enabled << endl;
 }
 
 void SciTEQt::PostOnMainThread(int cmd, Worker *pWorker)
@@ -545,6 +564,26 @@ void SciTEQt::CmdLineNumbers()
 void SciTEQt::CmdUseMonospacedFont()
 {
     MenuCommand(IDM_MONOFONT);
+}
+
+void SciTEQt::CmdBuffersPrevious()
+{
+    MenuCommand(IDM_PREVFILE);
+}
+
+void SciTEQt::CmdBuffersNext()
+{
+    MenuCommand(IDM_NEXTFILE);
+}
+
+void SciTEQt::CmdBuffersCloseAll()
+{
+    MenuCommand(IDM_CLOSEALL);
+}
+
+void SciTEQt::CmdBuffersSaveAll()
+{
+    MenuCommand(IDM_SAVEALL);
 }
 
 void SciTEQt::ReadEmbeddedProperties()
