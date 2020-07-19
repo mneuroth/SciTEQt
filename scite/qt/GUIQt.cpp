@@ -201,6 +201,8 @@ gui_string HexStringFromInteger(long i) {
     return gui_string(gnumber);
 }
 
+#ifdef WIN32
+
 std::string LowerCaseUTF8(std::string_view sv) {
     if (sv.empty()) {
         return std::string();
@@ -212,6 +214,19 @@ std::string LowerCaseUTF8(std::string_view sv) {
     ::LCMapString(LOCALE_SYSTEM_DEFAULT, LCMAP_LOWERCASE, gs.c_str(), static_cast<int>(gs.size()), lc.data(), chars);
     return UTF8FromString(lc);
 }
+
+#endif
+
+#ifdef __ANDROID__
+
+std::string LowerCaseUTF8(std::string_view sv) {
+// TODO: check that this is ok for android...
+    QString sLower = QString::fromUtf8(sv.data());
+    sLower = sLower.toLower();
+    return sLower.toStdString();
+}
+
+#endif
 
 void Window::Destroy()
 {

@@ -292,6 +292,10 @@ ApplicationWindow {
             //visible: true // applicationData !== null ? applicationData.showToolBar : false
             //anchors.right: readonlySwitch.left
             //anchors.rightMargin: 1
+            onClicked: {
+                fileDialog.openMode = true
+                fileDialog.open()
+            }
         }
     }
 
