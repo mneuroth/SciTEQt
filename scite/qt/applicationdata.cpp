@@ -8,6 +8,7 @@
 #include <QBuffer>
 #include <QByteArray>
 #include <QTextStream>
+#include <QQmlApplicationEngine>
 
 #include <QDebug>
 
@@ -213,4 +214,9 @@ void ApplicationData::setStatusBarText(const QString & txt)
 void ApplicationData::setSciteQt(SciTEQt * pScite)
 {
     m_pSciteQt = pScite;
+}
+
+QQmlApplicationEngine & ApplicationData::GetQmlApplicationEngine()
+{
+    return m_aEngine;
 }

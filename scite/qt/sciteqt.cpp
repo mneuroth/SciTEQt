@@ -6,6 +6,7 @@
 #include <QThread>
 #include <QGuiApplication>
 #include <QClipboard>
+#include <QQmlContext>
 
 #include <QDebug>
 
@@ -368,22 +369,81 @@ void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
 
     // 6 0 1400
     // 6 1 1401
+
+    if(menuNumber == 7)
+    {
+        if( itemID >= IDM_BUFFER && itemID < IDM_IMPORT)
+        {
+            QStandardItem * item = new QStandardItem(QString::fromWCharArray(text));
+            int posForThisItem = itemID - IDM_BUFFER;
+            if( posForThisItem >= m_aBuffers.rowCount( ))
+            {
+                m_aBuffers.setItem(m_aBuffers.rowCount(), item);
+            }
+            else
+            {
+                m_aBuffers.setItem(posForThisItem, item);
+            }
+        }
+    }
+    if(menuNumber == 6)
+    {
+        if( itemID >= IDM_LANGUAGE && itemID < IDM_LANGUAGE+100 )
+        {
+            QStandardItem * item = new QStandardItem(QString::fromWCharArray(text));
+            item->setCheckable(true);
+            item->setCheckState(Qt::Unchecked); //(itemID % 2 == 1 ? Qt::Checked : Qt::Unchecked);
+            int posForThisItem = itemID - IDM_LANGUAGE;
+            if( posForThisItem >= m_aLanguages.rowCount( ))
+            {
+                m_aLanguages.setItem(m_aLanguages.rowCount(), item);
+            }
+            else
+            {
+                m_aLanguages.setItem(posForThisItem, item);
+            }
+
+            qDebug() << "LANG: " << m_aLanguages.roleNames() << endl;
+        }
+    }
+
     qDebug() << "Set Menu Item " << menuNumber << " pos=" << position << " " << itemID << " " << QString::fromWCharArray(text) << " " << QString::fromWCharArray(mnemonic) << endl;
 }
 
 void SciTEQt::DestroyMenuItem(int menuNumber, int itemID)
 {
-    qDebug() << "DestroyMenuItem" << menuNumber << " " << itemID << endl;
+//    qDebug() << "DestroyMenuItem" << menuNumber << " " << itemID << endl;
+    if(menuNumber == 7)
+    {
+        int posForThisItem = itemID - IDM_BUFFER;
+        if( posForThisItem < m_aBuffers.rowCount( ) )
+        {
+            m_aBuffers.removeRow(posForThisItem);
+        }
+    }
 }
 
 void SciTEQt::CheckAMenuItem(int wIDCheckItem, bool val)
 {
+    QStandardItem * pItem;
     qDebug() << "CheckAMenuItem" << wIDCheckItem << " " << val << endl;
+    if( wIDCheckItem >= IDM_BUFFER && wIDCheckItem < IDM_IMPORT )
+    {
+        pItem = m_aBuffers.item(wIDCheckItem-IDM_BUFFER);
+        if(pItem)
+            pItem->setCheckState(val ? Qt::Checked : Qt::Unchecked);
+    }
+    if( wIDCheckItem >= IDM_LANGUAGE && wIDCheckItem < IDM_LANGUAGE+100 )
+    {
+        pItem = m_aLanguages.item(wIDCheckItem-IDM_LANGUAGE);
+        if(pItem)
+            pItem->setCheckState(val ? Qt::Checked : Qt::Unchecked);
+    }
 }
 
 void SciTEQt::EnableAMenuItem(int wIDCheckItem, bool val)
 {
-    qDebug() << "EnableAMenuItem" << wIDCheckItem << " " << val << endl;
+//    qDebug() << "EnableAMenuItem" << wIDCheckItem << " " << val << endl;
 }
 
 void SciTEQt::AddToPopUp(const char *label, int cmd, bool enabled)
@@ -586,6 +646,16 @@ void SciTEQt::CmdBuffersSaveAll()
     MenuCommand(IDM_SAVEALL);
 }
 
+void SciTEQt::CmdSelectBuffer(int index)
+{
+    MenuCommand(IDM_BUFFER+index);
+}
+
+void SciTEQt::CmdSelectLanguage(int index)
+{
+    MenuCommand(IDM_LANGUAGE+index);
+}
+
 void SciTEQt::ReadEmbeddedProperties()
 {
     propsEmbed.Clear();
@@ -619,7 +689,13 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     if(m_pApplicationData!=0)
     {
         m_pApplicationData->setSciteQt(this);
+
+        m_pApplicationData->GetQmlApplicationEngine().rootContext()->setContextProperty("buffersModel", &m_aBuffers);
+        m_pApplicationData->GetQmlApplicationEngine().rootContext()->setContextProperty("languagesModel", &m_aLanguages);
     }
+
+    // open the untitled (empty) document at startup
+    Open(FilePath());
 }
 
 void SciTEQt::UpdateStatusbarView()
@@ -662,4 +738,16 @@ void SciTEQt::OnNotifiedFromScintilla(SCNotification scn)
 
 void SciTEQt::OnNotifiedFromOutput(SCNotification scn)
 {
+}
+
+DynamicMenuModel::DynamicMenuModel()
+    : m_aRoles(QStandardItemModel::roleNames())
+{
+    // see: https://forum.qt.io/topic/88211/binding-qstandarditemmodel-from-c-with-qml/3
+    m_aRoles[Qt::CheckStateRole] = "checkState";
+}
+
+QHash<int,QByteArray> DynamicMenuModel::roleNames() const
+{
+    return m_aRoles;
 }

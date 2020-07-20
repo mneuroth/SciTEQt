@@ -48,6 +48,8 @@ public:
 
     void setSciteQt(SciTEQt * pScite);
 
+    QQmlApplicationEngine & GetQmlApplicationEngine();
+
 signals:
     void showToolBarChanged();
     void showStatusBarChanged();

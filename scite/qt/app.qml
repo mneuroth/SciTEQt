@@ -14,6 +14,11 @@ ApplicationWindow {
 
     property string urlPrefix: "file://"
 
+    onClosing: {
+        sciteQt.CmdExit()
+        close.accepted = false
+    }
+
     Component.onCompleted: {
         sciteQt.setScintilla(quickScintillaEditor.scintilla)
         sciteQt.setOutput(quickScintillaOutput.scintilla)
@@ -258,8 +263,21 @@ ApplicationWindow {
         Menu {
             id: languageMenu
             title: processMenuItem(qsTr("Language"),null)
-        }
 
+            Instantiator {
+                id: currentLanguagesItems
+                model: languagesModel
+                delegate: MenuItem {
+                    checkable: true
+                    checked: model !== null ? model.checkState : false
+                    text: model.display // index is also available
+                    onTriggered: sciteQt.CmdSelectLanguage(index)
+                }
+
+                onObjectAdded: languageMenu.insertItem(index, object)
+                onObjectRemoved: languageMenu.removeItem(object)
+            }
+        }
 
         Menu {
             id: buffersMenu
@@ -287,21 +305,21 @@ ApplicationWindow {
                 text: processMenuItem(qsTr("&Save All"), actionBuffersSaveAll)
                 onTriggered: sciteQt.CmdBuffersSaveAll()
             }
+
             MenuSeparator {}
-            MenuItem {
-                id: buffersPos1
-                text: "pos 1"
-            }
-            MenuItem {
-                id: buffersPos2
-                text: "pos 2"
-                visible: true
-                height: visible ? implicitHeight : 0
-            }
-            MenuItem {
-                id: buffersPos3
-                text: "pos 3" // applicationData.getBuffersMenuText(3)
-                // qobj.property() / setProperty
+
+            Instantiator {
+                id: currentBufferItems
+                model: buffersModel
+                delegate: MenuItem {
+                    checkable: true
+                    checked: model !== null ? model.checkState : false
+                    text: model.display // index is also available
+                    onTriggered: sciteQt.CmdSelectBuffer(index) // console.log("trigger "+index+" "+model.display)
+                }
+
+                onObjectAdded: buffersMenu.insertItem(index+5, object)
+                onObjectRemoved: buffersMenu.removeItem(object)
             }
         }
 
@@ -429,22 +447,44 @@ ApplicationWindow {
         ScintillaText {
             id: quickScintillaEditor
 
-            SplitView.preferredWidth: parent.width / 2
+            SplitView.preferredWidth: 2 * parent.width / 3
 
-            text: "editor area !"
+            //text: "editor area !"
         }
 
         ScintillaText {
             id: quickScintillaOutput
 
-            SplitView.preferredWidth: parent.width / 2
+            SplitView.preferredWidth: parent.width / 3
 
-            text: "blub output !"
+            //text: "blub output !"
         }
+/*
+        ListView {
+            id: listView
 
+            model: buffersModel
+            delegate: Text {
+                      text: "idx=" + index+ " obj=" + model.display
+                  }
+
+            SplitView.preferredWidth: parent.width / 2
+        }
+*/
     }
 
-   SciTEQt {
+    ListModel {
+        id: myModel
+
+        ListElement {
+            name: "item 1"
+        }
+        ListElement {
+            name: "item 2"
+        }
+    }
+
+    SciTEQt {
        id: sciteQt
    }
 }

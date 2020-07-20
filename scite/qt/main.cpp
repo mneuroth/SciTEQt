@@ -94,8 +94,6 @@ int main(int argc, char *argv[])
     qInstallMessageHandler(PrivateMessageHandler);
 #endif
 
-    AddToLog("Start QuickScintilla !!!");
-
     QGuiApplication app(argc, argv);
     app.setOrganizationName("scintilla.org");
     app.setOrganizationDomain("scintilla.org");
@@ -104,6 +102,8 @@ int main(int argc, char *argv[])
     app.setWindowIcon(QIcon("scite_logo.png"));
 
     qRegisterMetaType<SCNotification>("SCNotification");
+    qRegisterMetaType<SCNotification>("uptr_t");
+    qRegisterMetaType<SCNotification>("sptr_t");
     qmlRegisterType<ScintillaEditBase>("Scintilla", 1, 0, "ScintillaEditBase");
 
     QQmlApplicationEngine engine;

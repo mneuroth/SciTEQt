@@ -61,6 +61,8 @@
 #include "applicationdata.h"
 
 #include <QEvent>
+#include <QQmlApplicationEngine>
+#include <QStandardItemModel>
 
 #define POST_TO_MAIN (QEvent::User + 1)
 
@@ -78,6 +80,17 @@ public:
 private:
     int         m_cmd;
     Worker *    m_pWorker;
+};
+
+class DynamicMenuModel : public QStandardItemModel
+{
+public:
+    DynamicMenuModel();
+
+    virtual QHash<int,QByteArray> roleNames() const override;
+
+private:
+    QHash<int,QByteArray> m_aRoles;
 };
 
 class SciTEQt : public QObject, public SciTEBase
@@ -176,6 +189,8 @@ public:
     Q_INVOKABLE void CmdBuffersNext();
     Q_INVOKABLE void CmdBuffersCloseAll();
     Q_INVOKABLE void CmdBuffersSaveAll();
+    Q_INVOKABLE void CmdSelectBuffer(int index);
+    Q_INVOKABLE void CmdSelectLanguage(int index);
 
     Q_INVOKABLE void setApplicationData(ApplicationData * pApplicationData);
 
@@ -197,6 +212,9 @@ private:
 
     bool                    m_bWaitDoneFlag;
     int                     m_iMessageDialogAccepted;
+
+    DynamicMenuModel        m_aBuffers;
+    DynamicMenuModel        m_aLanguages;
 };
 
 #define MSGBOX_RESULT_CANCEL 0
