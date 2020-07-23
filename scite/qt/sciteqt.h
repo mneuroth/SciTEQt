@@ -81,7 +81,7 @@ private:
     int         m_cmd;
     Worker *    m_pWorker;
 };
-
+/*
 class DynamicMenuModel : public QStandardItemModel
 {
 public:
@@ -92,12 +92,17 @@ public:
 private:
     QHash<int,QByteArray> m_aRoles;
 };
-
+*/
 class SciTEQt : public QObject, public SciTEBase
 {
     Q_OBJECT
+
+    Q_PROPERTY(bool showToolBar READ isShowToolBar WRITE setShowToolBar NOTIFY showToolBarChanged)
+    Q_PROPERTY(bool showStatusBar READ isShowStatusBar WRITE setShowStatusBar NOTIFY showStatusBarChanged)
+    Q_PROPERTY(QString statusBarText READ getStatusBarText WRITE setStatusBarText NOTIFY statusBarTextChanged)
+
 public:
-    explicit SciTEQt(QObject *parent = nullptr);
+    explicit SciTEQt(QObject *parent=nullptr, QQmlApplicationEngine * pEngine=nullptr);
 
     virtual void TabInsert(int index, const GUI::gui_char *title) override;
     virtual void TabSelect(int index) override;
@@ -155,6 +160,13 @@ public:
 
     virtual bool event(QEvent *e) override;
 
+    bool isShowToolBar() const;
+    void setShowToolBar(bool val);
+    bool isShowStatusBar() const;
+    void setShowStatusBar(bool val);
+    QString getStatusBarText() const;
+    void setStatusBarText(const QString & txt);
+
     Q_INVOKABLE bool doOpen(const QString & sFileName);
     Q_INVOKABLE void setScintilla(QObject * obj);
     Q_INVOKABLE void setOutput(QObject * obj);
@@ -184,6 +196,7 @@ public:
     Q_INVOKABLE void CmdShowToolBar();
     Q_INVOKABLE void CmdShowStatusBar();
     Q_INVOKABLE void CmdLineNumbers();
+    Q_INVOKABLE void CmdAlwaysOnTop();
     Q_INVOKABLE void CmdUseMonospacedFont();
     Q_INVOKABLE void CmdBuffersPrevious();
     Q_INVOKABLE void CmdBuffersNext();
@@ -191,6 +204,11 @@ public:
     Q_INVOKABLE void CmdBuffersSaveAll();
     Q_INVOKABLE void CmdSelectBuffer(int index);
     Q_INVOKABLE void CmdSelectLanguage(int index);
+    Q_INVOKABLE void CmdHelp();
+    Q_INVOKABLE void CmdSciteHelp();
+    Q_INVOKABLE void CmdAboutScite();
+
+    Q_INVOKABLE void onStatusbarClicked();
 
     Q_INVOKABLE void setApplicationData(ApplicationData * pApplicationData);
 
@@ -206,15 +224,31 @@ public slots:
     void OnNotifiedFromOutput(SCNotification scn);
 
 signals:
+    void showToolBarChanged();
+    void showStatusBarChanged();
+    void statusBarTextChanged();
+    void setMenuChecked(int menuID, bool val);
+
+    void setInBuffersModel(int index, const QString & txt, bool checked);
+    void removeInBuffersModel(int index);
+    void checkStateInBuffersModel(int index, bool checked);
+    void setInLanguagesModel(int index, const QString & txt, bool checked);
+    void removeInLanguagesModel(int index);
+    void checkStateInLanguagesModel(int index, bool checked);
 
 private:
-    ApplicationData *       m_pApplicationData;
+    void startFileDialog(const QString & sDirectory, const QString & sFilter, bool bAsOpenDialog = true);
+    QObject * showInfoDialog(const QString & sInfoText, int style);
+
+    ApplicationData *       m_pApplicationData;     // not an owner !
+    QQmlApplicationEngine * m_pEngine;
 
     bool                    m_bWaitDoneFlag;
     int                     m_iMessageDialogAccepted;
 
-    DynamicMenuModel        m_aBuffers;
-    DynamicMenuModel        m_aLanguages;
+    bool                    m_bShowToolBar;
+    bool                    m_bShowStatusBar;
+    QString                 m_sStatusBarText;
 };
 
 #define MSGBOX_RESULT_CANCEL 0

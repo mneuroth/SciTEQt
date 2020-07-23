@@ -77,7 +77,11 @@ int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    qmlRegisterType<SciTEQt>("de.mneuroth.sciteqt", 1, 0, "SciTEQt");
+    qRegisterMetaType<SCNotification>("SCNotification");
+    qRegisterMetaType<SCNotification>("uptr_t");
+    qRegisterMetaType<SCNotification>("sptr_t");
+    qmlRegisterType<ScintillaEditBase>("Scintilla", 1, 0, "ScintillaEditBase");
+    qmlRegisterType<SciTEQt>("org.scintilla.sciteqt", 1, 0, "SciTEQt");
 
     LexillaSetDefaultDirectory(/*GetSciTEPath(FilePath()).AsUTF8()*/".");
     Scintilla_LinkLexers();
@@ -85,10 +89,6 @@ int main(int argc, char *argv[])
     LexillaSetDefault([](const char *name) {
         return CreateLexer(name);
     });
-
-    //    auto pLexer = CreateLexer("cpp");
-
-    SciTEQt aWinMain;
 
 #ifdef _WITH_QDEBUG_REDIRECT
     qInstallMessageHandler(PrivateMessageHandler);
@@ -101,11 +101,6 @@ int main(int argc, char *argv[])
 
     app.setWindowIcon(QIcon("scite_logo.png"));
 
-    qRegisterMetaType<SCNotification>("SCNotification");
-    qRegisterMetaType<SCNotification>("uptr_t");
-    qRegisterMetaType<SCNotification>("sptr_t");
-    qmlRegisterType<ScintillaEditBase>("Scintilla", 1, 0, "ScintillaEditBase");
-
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/app.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
@@ -117,6 +112,8 @@ int main(int argc, char *argv[])
     ApplicationData data(0, engine);
     engine.rootContext()->setContextProperty("applicationData", &data);
     engine.load(url);
+
+    qDebug() << "LOAD QML DONE" << endl;
 
     return app.exec();
 }

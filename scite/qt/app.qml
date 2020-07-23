@@ -1,15 +1,15 @@
-import Scintilla 1.0
 import QtQuick 2.9
 import QtQuick.Controls 2.14
 import QtQuick.Dialogs 1.2
+import QtQml.Models 2.14
 import Qt.labs.platform 1.1 as Platform
 
-import de.mneuroth.sciteqt 1.0
+import org.scintilla.sciteqt 1.0
 
 ApplicationWindow {
     id: applicationWindow
-    width: 600
-    height: 400
+    width: 800
+    height: 600
     visible: true
 
     property string urlPrefix: "file://"
@@ -20,10 +20,12 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
+        console.log("ON Completed")
         sciteQt.setScintilla(quickScintillaEditor.scintilla)
         sciteQt.setOutput(quickScintillaOutput.scintilla)
         sciteQt.setMainWindow(applicationWindow)
         sciteQt.setApplicationData(applicationData)
+        console.log("ON Completed done")
     }
 
     function max(v1, v2) {
@@ -220,21 +222,21 @@ ApplicationWindow {
             id: viewMenu
             title: processMenuItem(qsTr("&View"),null)
 
-            MenuItem {
+            Action {
                 id: actionShowToolBar
                 text: processMenuItem(qsTr("&Tool Bar"), actionShowToolBar)
                 checkable: true
-                checked: applicationData !== null ? applicationData.showToolBar : false
+                checked: scitQt.showToolBar
                 onTriggered: sciteQt.CmdShowToolBar()
             }
-            MenuItem {
+            Action {
                 id: actionShowStatusBar
                 text: processMenuItem(qsTr("&Status Bar"), actionShowStatusBar)
                 checkable: true
-                checked: applicationData !== null ? applicationData.showStatusBar : false
+                checked: scitQt.showStatusBar //applicationData !== null ? applicationData.showStatusBar : false
                 onTriggered: sciteQt.CmdShowStatusBar()
             }
-            MenuItem {
+            Action {
                 text: qsTr("Line &Numbers")
                 checkable: true
                 checked: false
@@ -252,8 +254,16 @@ ApplicationWindow {
             id: optionsMenu
             title: processMenuItem(qsTr("Options"),null)
 
-            MenuItem {
-                text: processMenuItem(qsTr("Use Monospaced Font"),null)
+            Action {
+                id: actionAlwaysOnTop
+                text: processMenuItem(qsTr("&Always On Top"),actionAlwaysOnTop)
+                checkable: true
+                checked: false
+                onTriggered: sciteQt.CmdAlwaysOnTop()
+            }
+            Action {
+                id: actionUseMonospacedFont
+                text: processMenuItem(qsTr("Use &Monospaced Font"),actionUseMonospacedFont)
                 checkable: true
                 checked: false
                 onTriggered: sciteQt.CmdUseMonospacedFont()
@@ -268,8 +278,8 @@ ApplicationWindow {
                 id: currentLanguagesItems
                 model: languagesModel
                 delegate: MenuItem {
-                    checkable: true
-                    checked: model !== null ? model.checkState : false
+                    //checkable: true
+                    //checked: model !== null ? model.checkState : false
                     text: model.display // index is also available
                     onTriggered: sciteQt.CmdSelectLanguage(index)
                 }
@@ -313,9 +323,9 @@ ApplicationWindow {
                 model: buffersModel
                 delegate: MenuItem {
                     checkable: true
-                    checked: model !== null ? model.checkState : false
+                    checked: model.checkState ? Qt.Checked : Qt.Unchecked
                     text: model.display // index is also available
-                    onTriggered: sciteQt.CmdSelectBuffer(index) // console.log("trigger "+index+" "+model.display)
+                    onTriggered: sciteQt.CmdSelectBuffer(index)
                 }
 
                 onObjectAdded: buffersMenu.insertItem(index+5, object)
@@ -327,26 +337,65 @@ ApplicationWindow {
             id: helpMenu
             title: processMenuItem(qsTr("Help"),null)
 
+            Action {
+                id: actionHelp
+                shortcut: "F1"
+                text: processMenuItem(qsTr("&Help"),actionHelp)
+                onTriggered: sciteQt.CmdHelp()
+            }
+            Action {
+                id: actionSciteHelp
+                text: processMenuItem(qsTr("&SciTE Help"),actionSciteHelp)
+                onTriggered: sciteQt.CmdSciteHelp()
+            }
+            Action {
+                id: actionAboutScite
+                text: processMenuItem(qsTr("&About SciTE"),actionAboutScite)
+                onTriggered: sciteQt.CmdAboutScite()
+            }
+
+            MenuSeparator {}
+
             MenuItem {
                 id: actionDebugInfo
                 text: processMenuItem(qsTr("Debug info"),actionDebugInfo)
                 onTriggered: {
-                    showInfoDialog(quickScintillaEditor.text)
-                    /*for Tests only: */quickScintillaEditor.text = applicationData.readLog()
+                    //showInfoDialog(quickScintillaEditor.text)
+                    ///*for Tests only: */quickScintillaEditor.text = applicationData.readLog()
+                    //console.log("dbg: "+myModel+" "+myModel.count)
+                    //myModel.append({"display":"blub blub"})
+                    //console.log("dbg: "+myModel+" "+myModel.count+" "+myModel.get(0))
+                    removeInBuffersModel(0)
                 }
             }
+/*
+            Instantiator {
+                id: dynamicTestMenu
+                model: buffersModel
+                delegate: MenuItem {
+                    checkable: true
+                    checked: model.checkState ? Qt.Checked : Qt.Unchecked
+                    text: model.display
+                    onTriggered: console.log(index)
+                }
+
+                onObjectAdded: helpMenu.insertItem(index+6, object)
+                onObjectRemoved: helpMenu.removeItem(object)
+            }
+*/
+
         }
     }
 
     header: ToolBar {
         contentHeight: readonlyIcon.implicitHeight
-        visible: applicationData !== null ? applicationData.showToolBar : false
+        visible: sciteQt.showToolBar
 
         ToolButton {
             id: readonlyIcon
             //icon.source: "edit.svg"
             text: "Open"
-            //visible: true // applicationData !== null ? applicationData.showToolBar : false
+            visible: sciteQt.showToolBar
             //anchors.right: readonlySwitch.left
             //anchors.rightMargin: 1
             onClicked: {
@@ -358,13 +407,13 @@ ApplicationWindow {
 
     footer:  Text {
         id: statusBarText
-        visible: applicationData !== null ? applicationData.showStatusBar : false
+        visible: sciteQt.showStatusBar
 
-        text: applicationData !== null ? applicationData.statusBarText : ""
+        text: sciteQt.statusBarText
 
         MouseArea {
             anchors.fill: parent
-            onClicked: applicationData.onStatusbarClicked()
+            onClicked: sciteQt.onStatusbarClicked()
         }
     }
 
@@ -477,14 +526,95 @@ ApplicationWindow {
         id: myModel
 
         ListElement {
-            name: "item 1"
+            display: "item 1"
         }
         ListElement {
-            name: "item 2"
+            display: "item 2"
         }
+    }
+
+    function clearBuffersModel(model) {
+        model.clear()
+    }
+    function writeInBuffersModel(model,index, name, checked) {
+        model.set(index, {"display":name, "checkState":checked})
+    }
+    function removeInBuffersModel(model,index) {
+        if(index < model.count) {
+            model.remove(index)
+        }
+    }
+    function setCheckStateInBuffersModel(model,index, checked) {
+        if(index < model.count) {
+            model.setProperty(index,"checkState",checked)
+        }
+    }
+
+    function handleMenuChecked(menuId, val) {
+        switch(menuId) {
+            case 450:  //IDM_MONOFONT
+                console.log("SET MONSPACED check! "+val)
+                actionUseMonospacedFont.checked = val
+                break;
+            case 411:  //IDM_VIEWSTATUSBAR
+                console.log("SET STATUSBar check! "+val)
+                actionShowStatusBar.checked = val
+                break;
+            case 408:  //IDM_VIEWTOOLBAR
+                console.log("SET ToolBar check! "+val)
+                actionShowToolBar.checked = val
+                break;
+        }
+    }
+
+    ListModel {
+        id: buffersModel
+        /*
+        ListElement {
+            display: "hello"
+            checkState: true
+        }
+        */
+    }
+
+    ListModel {
+        id: languagesModel
+        /*
+        ListElement {
+            display: "hello"
+            checkState: true
+        }
+        */
     }
 
     SciTEQt {
        id: sciteQt
-   }
+    }
+
+    Connections {
+        target: sciteQt
+
+        onSetMenuChecked: {
+            handleMenuChecked(menuID, val)
+        }
+
+        onSetInBuffersModel: {
+            writeInBuffersModel(buffersModel, index, txt, checked)
+        }
+        onRemoveInBuffersModel: {
+            removeInBuffersModel(buffersModel, index)
+        }
+        onCheckStateInBuffersModel: {
+            setCheckStateInBuffersModel(buffersModel, index, checked)
+        }
+        onSetInLanguagesModel: {
+            writeInBuffersModel(languagesModel, index, txt, checked)
+        }
+        onRemoveInLanguagesModel: {
+            removeInLanguagesModel(languagesModel, index)
+        }
+        onCheckStateInLanguagesModel: {
+            setCheckStateInLanguagesModel(languagesModel, index, checked)
+        }
+    }
 }

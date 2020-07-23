@@ -13,11 +13,116 @@
 #include "ScintillaEditBase.h"
 #include "ScintillaQt.h"
 
-SciTEQt::SciTEQt(QObject *parent)
+// see: https://stackoverflow.com/questions/14791360/qt5-syntax-highlighting-in-qml
+template <class T> T childObject(QQmlApplicationEngine& engine,
+                                 const QString& objectName,
+                                 const QString& propertyName,
+                                 bool bGetRoot = true)
+{
+    QList<QObject*> rootObjects = engine.rootObjects();
+qDebug() << "ROOT obj: "    << rootObjects << endl;
+    foreach (QObject* object, rootObjects)
+    {
+        QObject* child = object->findChild<QObject*>(objectName);
+   qDebug() << "child obj: "    << child << endl;
+        if (child != 0)
+        {
+            if( propertyName.length()==0 )
+            {
+                if(bGetRoot)
+                {
+                    return dynamic_cast<T>(object);
+                }
+                else
+                {
+                    return dynamic_cast<T>(child);
+                }
+            }
+            else
+            {
+                std::string s = propertyName.toStdString();
+                QObject* object = child->property(s.c_str()).value<QObject*>();
+                Q_ASSERT(object != 0);
+                T prop = dynamic_cast<T>(object);
+                Q_ASSERT(prop != 0);
+                return prop;
+            }
+        }
+    }
+    return (T) 0;
+}
+
+/*
+void SciTEGTK::Run(int argc, char *argv[]) {
+    // Load the default session file
+    if (props.GetInt("save.session") || props.GetInt("save.position") || props.GetInt("save.recent")) {
+        LoadSessionFile("");
+    }
+
+    // Find the SciTE executable, first trying to use argv[0] and converting
+    // to an absolute path and if that fails, searching the path.
+    sciteExecutable = FilePath(argv[0]).AbsolutePath();
+    if (!sciteExecutable.Exists()) {
+        gchar *progPath = g_find_program_in_path(argv[0]);
+        sciteExecutable = FilePath(progPath);
+        g_free(progPath);
+    }
+
+    // Collect the argv into one string with each argument separated by '\n'
+    GUI::gui_string args;
+    for (int arg = 1; arg < argc; arg++) {
+        if (arg > 1)
+            args += '\n';
+        args += argv[arg];
+    }
+
+    // Process any initial switches
+    ProcessCommandLine(args, 0);
+
+    // Check if SciTE is already running.
+    if ((props.GetString("ipc.director.name").size() == 0) && props.GetInt ("check.if.already.open")) {
+        if (CheckForRunningInstance (argc, argv)) {
+            // Returning from this function exits the program.
+            return;
+        }
+    }
+
+    CreateUI();
+    if ((props.GetString("ipc.director.name").size() == 0) && props.GetInt ("check.if.already.open"))
+        unlink(uniqueInstance.c_str()); // Unlock.
+
+    // Process remaining switches and files
+#ifndef GDK_VERSION_3_6
+    gdk_threads_enter();
+#endif
+    ProcessCommandLine(args, 1);
+#ifndef GDK_VERSION_3_6
+    gdk_threads_leave();
+#endif
+
+    CheckMenus();
+    SizeSubWindows();
+    SetFocus(wEditor);
+    gtk_widget_grab_focus(GTK_WIDGET(PWidget(wSciTE)));
+
+#ifndef GDK_VERSION_3_6
+    gdk_threads_enter();
+#endif
+    gtk_main();
+#ifndef GDK_VERSION_3_6
+    gdk_threads_leave();
+#endif
+}
+*/
+
+SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
     : QObject(parent),
       m_pApplicationData(0),
+      m_pEngine(pEngine),
       m_bWaitDoneFlag(false),
-      m_iMessageDialogAccepted(MSGBOX_RESULT_CANCEL)
+      m_iMessageDialogAccepted(MSGBOX_RESULT_CANCEL),
+      m_bShowToolBar(false),
+      m_bShowStatusBar(false)
 {
 #ifdef Q_OS_WINDOWS
     propsPlatform.Set("PLAT_WIN", "1");
@@ -47,30 +152,6 @@ SciTEQt::SciTEQt(QObject *parent)
     if (props.GetInt("save.session") || props.GetInt("save.position") || props.GetInt("save.recent")) {
         LoadSessionFile(GUI_TEXT(""));
     }
-
-/* TODO: improve startup !
-
-    // Break up the command line into individual arguments
-    GUI::gui_string args = ProcessArgs(cmdLine);
-    // Read the command line parameters:
-    // In case the check.if.already.open property has been set or reset on the command line,
-    // we still get a last chance to force checking or to open a separate instance;
-    // Check if the user just want to print the file(s).
-    // Don't process files yet.
-    const bool bBatchProcessing = ProcessCommandLine(args, 0);
-
-    // No need to check for other instances when doing a batch job:
-    // perform some tasks and exit immediately.
-    if (!bBatchProcessing && props.GetInt("check.if.already.open") != 0) {
-        uniqueInstance.CheckOtherInstance();
-    }
-
-    // Open all files given on command line.
-    // The filenames containing spaces must be enquoted.
-    // In case of not using buffers they get closed immediately except
-    // the last one, but they move to the MRU file list
-    ProcessCommandLine(args, 1);
-*/
 }
 
 void SciTEQt::TabInsert(int index, const GUI::gui_char *title)
@@ -100,24 +181,14 @@ void SciTEQt::GetWindowPosition(int *left, int *top, int *width, int *height, in
 
 bool SciTEQt::OpenDialog(const FilePath &directory, const GUI::gui_char *filesFilter)
 {
-    if( m_pApplicationData != 0 )
-    {
-        m_pApplicationData->startFileDialog(directory.AbsolutePath().AsUTF8().c_str(), QString::fromWCharArray(filesFilter), true);
-        return true;
-    }
-
-    return false;
+    startFileDialog(directory.AbsolutePath().AsUTF8().c_str(), QString::fromWCharArray(filesFilter), true);
+    return true;
 }
 
 bool SciTEQt::SaveAsDialog()
 {
-    if( m_pApplicationData != 0 )
-    {
-        m_pApplicationData->startFileDialog("", "", false);
-        return true;
-    }
-
-    return false;
+    startFileDialog("", "", false);
+    return true;
 }
 
 void SciTEQt::SaveACopy()
@@ -173,27 +244,24 @@ void SciTEQt::Find()
 SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::gui_string &msg, MessageBoxStyle style)
 {
     //qDebug() << "MessageBox " << msg << " style=" << style << endl;
-    if( m_pApplicationData != 0 )
+    QObject * pMessageBox = showInfoDialog(QString::fromStdWString(msg), style);
+    connect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnAcceptedClicked()));
+    connect(pMessageBox,SIGNAL(rejected()),this,SLOT(OnRejectedClicked()));
+    connect(pMessageBox,SIGNAL(yes()),this,SLOT(OnYesClicked()));
+    connect(pMessageBox,SIGNAL(no()),this,SLOT(OnNoClicked()));
+
+    // simulate a synchronious call: wait for signal from MessageBox and then return with result
+    m_bWaitDoneFlag = false;
+    while(!m_bWaitDoneFlag)
     {
-        QObject * pMessageBox = m_pApplicationData->showInfoDialog(QString::fromStdWString(msg), style);
-        connect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnAcceptedClicked()));
-        connect(pMessageBox,SIGNAL(rejected()),this,SLOT(OnRejectedClicked()));
-        connect(pMessageBox,SIGNAL(yes()),this,SLOT(OnYesClicked()));
-        connect(pMessageBox,SIGNAL(no()),this,SLOT(OnNoClicked()));
-
-        // simulate a synchronious call: wait for signal from MessageBox and then return with result
-        m_bWaitDoneFlag = false;
-        while(!m_bWaitDoneFlag)
-        {
-            QCoreApplication::processEvents();
-            QThread::msleep(10);
-        }
-
-        disconnect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnAcceptedClicked()));
-        disconnect(pMessageBox,SIGNAL(rejected()),this,SLOT(OnRejectedClicked()));
-        disconnect(pMessageBox,SIGNAL(yes()),this,SLOT(OnYesClicked()));
-        disconnect(pMessageBox,SIGNAL(no()),this,SLOT(OnNoClicked()));
+        QCoreApplication::processEvents();
+        QThread::msleep(10);
     }
+
+    disconnect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnAcceptedClicked()));
+    disconnect(pMessageBox,SIGNAL(rejected()),this,SLOT(OnRejectedClicked()));
+    disconnect(pMessageBox,SIGNAL(yes()),this,SLOT(OnYesClicked()));
+    disconnect(pMessageBox,SIGNAL(no()),this,SLOT(OnNoClicked()));
 
     SciTEQt::MessageBoxChoice result;
     switch(m_iMessageDialogAccepted)
@@ -317,18 +385,13 @@ void SciTEQt::CopyPath()
 
 void SciTEQt::SetStatusBarText(const char *s)
 {
-    if(m_pApplicationData!=0)
-    {
-        m_pApplicationData->setStatusBarText(s);
-    }
+    setStatusBarText(s);
 }
 
 void SciTEQt::ShowToolBar()
 {
-    if(m_pApplicationData!=0)
-    {
-        m_pApplicationData->setShowToolBar(tbVisible);
-    }
+    qDebug() << "TRY SHOW tool BAR "<< tbVisible << endl;
+    setShowToolBar(tbVisible);
 }
 
 void SciTEQt::ShowTabBar()
@@ -337,10 +400,8 @@ void SciTEQt::ShowTabBar()
 
 void SciTEQt::ShowStatusBar()
 {
-    if(m_pApplicationData!=0)
-    {
-        m_pApplicationData->setShowStatusBar(sbVisible);
-    }
+    qDebug() << "TRY SHOW status BAR "<< sbVisible << endl;
+    setShowStatusBar(sbVisible);
 }
 
 void SciTEQt::ActivateWindow(const char *timestamp)
@@ -374,40 +435,22 @@ void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
     {
         if( itemID >= IDM_BUFFER && itemID < IDM_IMPORT)
         {
-            QStandardItem * item = new QStandardItem(QString::fromWCharArray(text));
             int posForThisItem = itemID - IDM_BUFFER;
-            if( posForThisItem >= m_aBuffers.rowCount( ))
-            {
-                m_aBuffers.setItem(m_aBuffers.rowCount(), item);
-            }
-            else
-            {
-                m_aBuffers.setItem(posForThisItem, item);
-            }
+
+            emit setInBuffersModel(posForThisItem, QString::fromWCharArray(text), false);
         }
     }
     if(menuNumber == 6)
     {
         if( itemID >= IDM_LANGUAGE && itemID < IDM_LANGUAGE+100 )
         {
-            QStandardItem * item = new QStandardItem(QString::fromWCharArray(text));
-            item->setCheckable(true);
-            item->setCheckState(Qt::Unchecked); //(itemID % 2 == 1 ? Qt::Checked : Qt::Unchecked);
             int posForThisItem = itemID - IDM_LANGUAGE;
-            if( posForThisItem >= m_aLanguages.rowCount( ))
-            {
-                m_aLanguages.setItem(m_aLanguages.rowCount(), item);
-            }
-            else
-            {
-                m_aLanguages.setItem(posForThisItem, item);
-            }
 
-            qDebug() << "LANG: " << m_aLanguages.roleNames() << endl;
+            emit setInLanguagesModel(posForThisItem, QString::fromWCharArray(text), false);
         }
     }
 
-    qDebug() << "Set Menu Item " << menuNumber << " pos=" << position << " " << itemID << " " << QString::fromWCharArray(text) << " " << QString::fromWCharArray(mnemonic) << endl;
+//    qDebug() << "Set Menu Item " << menuNumber << " pos=" << position << " " << itemID << " " << QString::fromWCharArray(text) << " " << QString::fromWCharArray(mnemonic) << endl;
 }
 
 void SciTEQt::DestroyMenuItem(int menuNumber, int itemID)
@@ -416,28 +459,29 @@ void SciTEQt::DestroyMenuItem(int menuNumber, int itemID)
     if(menuNumber == 7)
     {
         int posForThisItem = itemID - IDM_BUFFER;
-        if( posForThisItem < m_aBuffers.rowCount( ) )
-        {
-            m_aBuffers.removeRow(posForThisItem);
-        }
+        emit removeInBuffersModel(posForThisItem);
+    }
+    else if(menuNumber == 6)
+    {
+        int posForThisItem = itemID - IDM_LANGUAGE;
+        emit removeInBuffersModel(posForThisItem);
     }
 }
 
 void SciTEQt::CheckAMenuItem(int wIDCheckItem, bool val)
 {
-    QStandardItem * pItem;
-    qDebug() << "CheckAMenuItem" << wIDCheckItem << " " << val << endl;
+//qDebug() << "CheckAMenuItem" << wIDCheckItem << " " << val << endl;
     if( wIDCheckItem >= IDM_BUFFER && wIDCheckItem < IDM_IMPORT )
     {
-        pItem = m_aBuffers.item(wIDCheckItem-IDM_BUFFER);
-        if(pItem)
-            pItem->setCheckState(val ? Qt::Checked : Qt::Unchecked);
+        emit checkStateInBuffersModel(wIDCheckItem-IDM_BUFFER, val);
     }
-    if( wIDCheckItem >= IDM_LANGUAGE && wIDCheckItem < IDM_LANGUAGE+100 )
+    else if( wIDCheckItem >= IDM_LANGUAGE && wIDCheckItem < IDM_LANGUAGE+100 )
     {
-        pItem = m_aLanguages.item(wIDCheckItem-IDM_LANGUAGE);
-        if(pItem)
-            pItem->setCheckState(val ? Qt::Checked : Qt::Unchecked);
+        emit checkStateInLanguagesModel(wIDCheckItem-IDM_LANGUAGE, val);
+    }
+    else
+    {
+        emit setMenuChecked(wIDCheckItem, val);
     }
 }
 
@@ -455,6 +499,48 @@ void SciTEQt::PostOnMainThread(int cmd, Worker *pWorker)
 {
     QSciTEQtEvent * pEvent = new QSciTEQtEvent(cmd, pWorker);
     QCoreApplication::postEvent(this, pEvent);
+}
+
+bool SciTEQt::isShowStatusBar() const
+{
+    return m_bShowStatusBar;
+}
+
+void SciTEQt::setShowStatusBar(bool val)
+{
+    if(val != m_bShowStatusBar)
+    {
+        m_bShowStatusBar = val;
+        emit showStatusBarChanged();
+    }
+}
+
+bool SciTEQt::isShowToolBar() const
+{
+    return m_bShowToolBar;
+}
+
+void SciTEQt::setShowToolBar(bool val)
+{
+    if(val != m_bShowToolBar)
+    {
+        m_bShowToolBar = val;
+        emit showToolBarChanged();
+    }
+}
+
+QString SciTEQt::getStatusBarText() const
+{
+    return m_sStatusBarText;
+}
+
+void SciTEQt::setStatusBarText(const QString & txt)
+{
+    if(m_sStatusBarText != txt)
+    {
+        m_sStatusBarText = txt;
+        emit statusBarTextChanged();
+    }
 }
 
 bool SciTEQt::doOpen(const QString & sFileName)
@@ -613,12 +699,18 @@ void SciTEQt::CmdShowToolBar()
 
 void SciTEQt::CmdShowStatusBar()
 {
+    qDebug() << "show status bar" << endl;
     MenuCommand(IDM_VIEWSTATUSBAR);
 }
 
 void SciTEQt::CmdLineNumbers()
 {
     MenuCommand(IDM_LINENUMBERMARGIN);
+}
+
+void SciTEQt::CmdAlwaysOnTop()
+{
+    MenuCommand(IDM_ONTOP);
 }
 
 void SciTEQt::CmdUseMonospacedFont()
@@ -656,6 +748,21 @@ void SciTEQt::CmdSelectLanguage(int index)
     MenuCommand(IDM_LANGUAGE+index);
 }
 
+void SciTEQt::CmdHelp()
+{
+    MenuCommand(IDM_HELP);
+}
+
+void SciTEQt::CmdSciteHelp()
+{
+    MenuCommand(IDM_HELP_SCITE);
+}
+
+void SciTEQt::CmdAboutScite()
+{
+    MenuCommand(IDM_ABOUT);
+}
+
 void SciTEQt::ReadEmbeddedProperties()
 {
     propsEmbed.Clear();
@@ -683,19 +790,158 @@ bool SciTEQt::event(QEvent *e)
     }
 }
 
+void SciTEQt::onStatusbarClicked()
+{
+    UpdateStatusbarView();
+}
+
+void SciTEQt::startFileDialog(const QString & sDirectory, const QString & sFilter, bool bAsOpenDialog)
+{
+    QObject * appWin = childObject<QObject*>(*m_pEngine, "fileDialog", "");
+    if( appWin != 0 )
+    {
+        QMetaObject::invokeMethod(appWin, "startFileDialog",
+                QGenericReturnArgument(),
+                Q_ARG(QVariant, sDirectory),
+                Q_ARG(QVariant, sFilter),
+                Q_ARG(QVariant, bAsOpenDialog));
+    }
+}
+
+QObject * SciTEQt::showInfoDialog(const QString & sInfoText, int style)
+{
+    QVariant result;
+    QObject * appWin = childObject<QObject*>(*m_pEngine, "infoDialog", "");
+    if( appWin != 0 )
+    {
+        QMetaObject::invokeMethod(appWin, "showInfoDialog",
+                QGenericReturnArgument(),
+                Q_ARG(QVariant, sInfoText),
+                Q_ARG(QVariant, style));
+    }
+    QObject * infoDlg = childObject<QObject*>(*m_pEngine, "infoDialog", "", false);
+    return infoDlg;
+}
+
 void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
 {
     m_pApplicationData = pApplicationData;
     if(m_pApplicationData!=0)
     {
-        m_pApplicationData->setSciteQt(this);
+        m_pEngine = &pApplicationData->GetQmlApplicationEngine();
 
-        m_pApplicationData->GetQmlApplicationEngine().rootContext()->setContextProperty("buffersModel", &m_aBuffers);
-        m_pApplicationData->GetQmlApplicationEngine().rootContext()->setContextProperty("languagesModel", &m_aLanguages);
+        if(m_pEngine!=0)
+        {
+// TODO --> diese properties nach main verschieben... damit sie gleich zu beginn der qmlengine da sind
+// ==> ApplicationData -> ApplicationInitData oder scite auch als property am context setzen ?
+            //m_pEngine->rootContext()->setContextProperty("buffersModel", &m_aBuffers);
+            //m_pEngine->rootContext()->setContextProperty("languagesModel", &m_aLanguages);
+        }
+
+        QStringList cmdArgs = QGuiApplication::arguments();
+        cmdArgs.removeAt(0);
+        QString s = cmdArgs.join("\n");
+        qDebug() << "INIT " << s << endl;
+
+        GUI::gui_char buf[512];
+        int count = s.toWCharArray((wchar_t *)buf);
+        buf[count] = 0;
+        GUI::gui_string args = buf;
+
+        // Collect the argv into one string with each argument separated by '\n'
+    //    GUI::gui_string args;
+    //    for (int arg = 1; arg < argc; arg++) {
+    //        if (arg > 1)
+    //            args += '\n';
+    //        args += argv[arg];
+    //    }
+
+        // Process any initial switches
+//        ProcessCommandLine(args, 0);
+
+    /*
+        // Break up the command line into individual arguments
+        GUI::gui_string args = ProcessArgs(cmdLine);
+        // Read the command line parameters:
+        // In case the check.if.already.open property has been set or reset on the command line,
+        // we still get a last chance to force checking or to open a separate instance;
+        // Check if the user just want to print the file(s).
+        // Don't process files yet.
+        const bool bBatchProcessing = ProcessCommandLine(args, 0);
+    */
+        // No need to check for other instances when doing a batch job:
+        // perform some tasks and exit immediately.
+    //	if (!bBatchProcessing && props.GetInt("check.if.already.open") != 0) {
+    //		uniqueInstance.CheckOtherInstance();
+    //	}
+
+        // CreateUI();
+    /*
+        if (bBatchProcessing) {
+            // Reprocess the command line and read the files
+            ProcessCommandLine(args, 1);
+            Print(false);	// Don't ask user for print parameters
+            // Done, we exit the program
+            ::PostQuitMessage(0);
+            wSciTE.Destroy();
+            return;
+        }
+
+        if (props.GetInt("check.if.already.open") != 0 && uniqueInstance.FindOtherInstance()) {
+            uniqueInstance.SendCommands(GUI::UTF8FromString(cmdLine).c_str());
+
+            // Kill itself, leaving room to the previous instance
+            ::PostQuitMessage(0);
+            wSciTE.Destroy();
+            return;	// Don't do anything else
+        }
+
+        // OK, the instance will be displayed
+        SizeSubWindows();
+        wSciTE.Show();
+        if (cmdShow) {	// assume SW_MAXIMIZE only
+            ::ShowWindow(MainHWND(), cmdShow);
+        }
+    */
+
+    // TODO --> nach setApplicationData --> besser applicationdata direkt beim konstruieren rein reichen... ??? Property binding?
+//        ProcessCommandLine(args, 1);
+
+        CheckMenus();
+        SizeSubWindows();
+        //SetFocus(wEditor);
+
+    qDebug() << "SciteQt::SciteQt " << (void *)this << endl;
+    /* TODO: improve startup !
+
+        // Break up the command line into individual arguments
+        GUI::gui_string args = ProcessArgs(cmdLine);
+        // Read the command line parameters:
+        // In case the check.if.already.open property has been set or reset on the command line,
+        // we still get a last chance to force checking or to open a separate instance;
+        // Check if the user just want to print the file(s).
+        // Don't process files yet.
+        const bool bBatchProcessing = ProcessCommandLine(args, 0);
+
+        // No need to check for other instances when doing a batch job:
+        // perform some tasks and exit immediately.
+        if (!bBatchProcessing && props.GetInt("check.if.already.open") != 0) {
+            uniqueInstance.CheckOtherInstance();
+        }
+
+        // Open all files given on command line.
+        // The filenames containing spaces must be enquoted.
+        // In case of not using buffers they get closed immediately except
+        // the last one, but they move to the MRU file list
+        ProcessCommandLine(args, 1);
+    */
     }
+
+    qDebug() << "----> OPEN" << endl;
 
     // open the untitled (empty) document at startup
     Open(FilePath());
+// TODO --> update ui components wie statusbar etc.
 }
 
 void SciTEQt::UpdateStatusbarView()
@@ -739,7 +985,7 @@ void SciTEQt::OnNotifiedFromScintilla(SCNotification scn)
 void SciTEQt::OnNotifiedFromOutput(SCNotification scn)
 {
 }
-
+/*
 DynamicMenuModel::DynamicMenuModel()
     : m_aRoles(QStandardItemModel::roleNames())
 {
@@ -751,3 +997,4 @@ QHash<int,QByteArray> DynamicMenuModel::roleNames() const
 {
     return m_aRoles;
 }
+*/
