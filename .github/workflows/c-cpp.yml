@@ -53,12 +53,15 @@ jobs:
         ls -lrt
         ls -lrt scintilla
         ls -lrt scintilla/qt
+        ls -lrt scintilla/qt/ScintillaEditBase
         ls -lrt scite 
         ls -lrt scite/qt
         cd scintilla        
         cd qt
+        cd ScintillaEditBase
         make -j 4
         ls -lrt
+        cd ..
         cd ..
         cd ..
         cd scite
@@ -118,8 +121,9 @@ jobs:
         dir
         nmake
         dir
-        dir src
-        dir src\release
+        dir scite
+        dir scite\qt
+        dir scite\qt\release
         #dir src\dist\packages\org.scintilla.sciteqt\data
         #cd src\dist\packages\org.scintilla.sciteqt\data
         #windeployqt --release --no-system-d3d-compiler sciteqt.exe
