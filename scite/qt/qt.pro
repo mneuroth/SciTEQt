@@ -108,25 +108,7 @@ SOURCES +=  ../src/Cookie.cxx\
 
 INCLUDEPATH += ../lua/src ../src ../../scintilla/qt/ScintillaEdit ../../scintilla/qt/ScintillaEditBase ../../scintilla/include ../../scintilla/src ../../scintilla/lexilla/src ../../scintilla/lexlib
 
-win32 {
-    LIBS += ../../scintilla/bin/ScintillaEditBase.lib
-}
-win32-g++ {
-    LIBS += ../../scintilla/bin/libScintillaEditBase.a
-}
-android {
-    LIBS += ../../scintilla/bin/libScintillaEditBase.a
-}
-unix {
-    LIBS += ../../scintilla/bin/libScintillaEditBase.a
-}
-macx {
-    LIBS += ../../scintilla/bin/libScintillaEditBase.a
-}
-ios {
-    LIBS += ../../scintilla/bin/libScintillaEditBase.a
-}
-
+LIBS += -L$$OUT_PWD/../../scintilla/bin/ -lScintillaEditBase
 
 RESOURCES += sciteqt.qrc
 

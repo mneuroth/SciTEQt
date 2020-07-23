@@ -90,6 +90,8 @@ void SleepMilliseconds(int sleepTime) {
     QThread::msleep(sleepTime);
 }
 
+#ifdef WIN32
+
 static unsigned int UTF8Length(const wchar_t *uptr, size_t tlen) noexcept {
     unsigned int len = 0;
     for (size_t i = 0; i < tlen && uptr[i];) {
@@ -247,8 +249,6 @@ gui_string HexStringFromInteger(long i) {
     gnumber[n] = 0;
     return gui_string(gnumber);
 }
-
-#ifdef WIN32
 
 std::string LowerCaseUTF8(std::string_view sv) {
     if (sv.empty()) {
