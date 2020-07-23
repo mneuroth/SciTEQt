@@ -1,9 +1,56 @@
-#include "ScintillaEditBase.h"
 
-#include "Scintilla.h"
+#include <cstddef>
+#include <cstdlib>
+#include <cstdint>
+#include <cstring>
+#include <cstdio>
+#include <cstdarg>
+#include <ctime>
+#include <cmath>
+
+#include <string>
+#include <string_view>
+#include <vector>
+#include <map>
+#include <set>
+#include <algorithm>
+#include <memory>
+#include <chrono>
+#include <atomic>
+#include <mutex>
+#include <thread>
+
+#include <fcntl.h>
+#include <sys/stat.h>
+
+#include "ILoader.h"
 
 #include "ScintillaTypes.h"
+#include "ScintillaMessages.h"
+#include "ScintillaCall.h"
+
+#include "Scintilla.h"
+#include "SciLexer.h"
+
 #include "GUI.h"
+#include "ScintillaWindow.h"
+#include "StringList.h"
+#include "StringHelpers.h"
+#include "FilePath.h"
+#include "StyleDefinition.h"
+#include "PropSetFile.h"
+#include "StyleWriter.h"
+#include "Extender.h"
+#include "SciTE.h"
+#include "JobQueue.h"
+
+#include "Cookie.h"
+#include "Worker.h"
+#include "FileWorker.h"
+#include "MatchMarker.h"
+#include "EditorConfig.h"
+#include "SciTEBase.h"
+
 #include "ScintillaQt.h"
 
 #include <QtQuick/QQuickView>
@@ -282,6 +329,4 @@ void Menu::Show(Point pt, Window &w)
 
 }   // namespace
 
-extern "C" {
 const GUI::gui_char appName[] = GUI_TEXT("SciTEQt");
-}

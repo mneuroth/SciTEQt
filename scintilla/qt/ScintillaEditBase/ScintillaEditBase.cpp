@@ -127,25 +127,6 @@ ScintillaEditBase::ScintillaEditBase(QQuickItem/*QWidget*/ *parent)
     connect(&aLongTouchTimer, SIGNAL(timeout()), this, SLOT(onLongTouch()));
 #endif
 
-    // show line numbers
-    send(SCI_SETMARGINWIDTHN,0,75);
-
-    //auto result = send(SCI_SETLEXER, SCLEX_PYTHON);
-
-    char buf[256];
-    char sKeywords[512];
-    strcpy(buf, "python");  // "cpp" "python" SCLEX_PYTHON
-    strcpy(sKeywords, "for if else try catch while string import def return blub");
-    auto result2 = send(SCI_SETLEXERLANGUAGE, 0, (sptr_t)buf);
-    int v1 = send(SCI_GETLEXERLANGUAGE, 0, (sptr_t)buf);
-    qDebug() << "lexer= " << buf << endl;
-    int v2 = send(SCI_SETKEYWORDS, 0, (sptr_t)sKeywords);
-    QColor col(255,0,0);
-    sptr_t lParam = (col.blue() << 16) | (col.green() << 8) | col.red();
-    int v3 = send(SCI_STYLESETFORE, 5, lParam);
-    qDebug() << "INIT: " << result2 << " " << v1 << " " << v2 << " " << v3 << endl;
-
-
     // TODO: performance optimizations... ?
     //setRenderTarget(QQuickPaintedItem::FramebufferObject);
 }

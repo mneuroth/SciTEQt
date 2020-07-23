@@ -52,11 +52,14 @@ jobs:
         qmake -r sciteqt.pro
         ls -lrt
         ls -lrt scintilla
+        ls -lrt scintilla/qt
         ls -lrt scite 
         ls -lrt scite/qt
         cd scintilla        
+        cd qt
         make -j 4
         ls -lrt
+        cd ..
         cd ..
         cd scite
         cd qt
