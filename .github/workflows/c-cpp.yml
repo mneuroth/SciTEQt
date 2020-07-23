@@ -7,7 +7,8 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+    
+  linux_build:
 
     runs-on: ubuntu-latest
       
@@ -48,6 +49,12 @@ jobs:
         ls -lrt ../Qt/Tools
         python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
         ls -lrt ../Qt/Tools
+        cd scite/gtk
+        make -j 4
+        ls -lrt
+        make clean
+        ls -lrt
+        cd ../..
         which qmake
         qmake -r sciteqt.pro
         ls -lrt
@@ -179,12 +186,36 @@ jobs:
         ls -lrt ../Qt/Tools
         which qmake
         qmake -r sciteqt.pro
-        make -j 4
-        ls -lrt 
-        ls -lrt scite
-        ls -lrt scite/qt
-        cd scite/qt
-        which macdeployqt
-        macdeployqt sciteqt.app -dmg -verbose=1
         ls -lrt
+        ls -lrt scintilla
+        ls -lrt scintilla/qt
+        ls -lrt scintilla/qt/ScintillaEditBase
+        ls -lrt scite 
+        ls -lrt scite/qt
+        cd scintilla        
+        cd qt
+        cd ScintillaEditBase
+        make -j 4
+        ls -lrt
+        cd ..
+        cd ..
+        cd ..
+        cd scite
+        cd qt
+        ls -lrt
+        make -j 4        
+        ls -lrt
+        cd ..
+        cd ..
+        ls -lrt scite 
+        ls -lrt scite/qt
+
+        #make -j 4
+        #ls -lrt 
+        #ls -lrt scite
+        #ls -lrt scite/qt
+        #cd scite/qt
+        #which macdeployqt
+        #macdeployqt sciteqt.app -dmg -verbose=1
+        #ls -lrt
         
