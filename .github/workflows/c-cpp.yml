@@ -18,7 +18,7 @@ jobs:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '5.12.8'
+        version: '5.14.2'
         # Host platform
         host: # optional
         # Target platform for build
@@ -50,7 +50,82 @@ jobs:
         ls -lrt ../Qt/Tools
         which qmake
         qmake -r sciteqt.pro
-        make -j 4
-        ls -lrt 
+        ls -lrt
+        ls -lrt scintilla
         ls -lrt scite 
         ls -lrt scite/qt
+        cd scintilla        
+        make -j 4
+        ls -lrt
+        cd ..
+        cd scite
+        cd qt
+        ls -lrt
+        make -j 4        
+        ls -lrt
+        cd ..
+        cd ..
+        ls -lrt scite 
+        ls -lrt scite/qt
+
+  windows_msc_build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: ilammy/msvc-dev-cmd@v1.0.0
+    - uses: jurplel/install-qt-action@v2.6.2
+      with:
+        # Directory to install Qt
+        dir: # optional
+        # Version of Qt to install
+        version: '5.14.2'
+        # Host platform
+        host: # optional
+        # Target platform for build
+        target: 'desktop'
+        # Architecture for Windows/Android
+        arch: 'win64_msvc2017_64'
+        # Whether or not to install Qt dependencies on Linux
+        install-deps: 'true'
+        # Additional Qt modules to install
+        modules: 'qtscript qtscripttools'
+        # Force a Qt mirror in case the default is not working
+        mirror: # optional
+        # Whether or not to actually download Qt
+        cached: # optional, default is false
+        # Version of aqtinstall to use in case of issues
+        aqtversion: # optional, default is ==0.8
+        # Version of py7zr to use in case of issues
+        py7zrversion: # optional, default is ==0.6
+        # Any extra arguments to append to the back
+        extra: # optional
+    - name: Install Qt and compile
+      run: |
+        cd 
+        dir
+        d:
+        dir 
+        python -m aqt tool -O d:\a\SciteQt/Qt windows tools_ifw 3.2.2 win-x86
+        dir d:\a\SciteQt\Qt\Tools
+        cl
+        where qmake
+        qmake -r sciteqt.pro
+        dir
+        nmake
+        dir
+        dir src
+        dir src\release
+        #dir src\dist\packages\org.scintilla.sciteqt\data
+        #cd src\dist\packages\org.scintilla.sciteqt\data
+        #windeployqt --release --no-system-d3d-compiler sciteqt.exe
+        #dir
+        #cd ..\..\..
+        #dir
+        #d:\a\SciteQt\Qt\Tools\QtInstallerFramework\3.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciteQtInstaller.exe
+        #dir 
+        #echo %path%
+        #where binarycreator
+        #binarycreator
+        
