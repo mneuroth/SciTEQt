@@ -352,8 +352,16 @@ const char * _ToChar(const GUI::gui_char * txt)
 #define FROM_GUICHAR(x) _ToChar(x)
 //#define TO_GUICHARX(x) std::string s = x; GUI::gui_char buf[512]; mbstowcs(buf, s.c_str(), 512); GUI::gui_char *pdir = buf;
 #else
-#define TO_GUICHAR(x) x
-#define FROM_GUICHAR(x) x
+inline GUI::gui_char * _ToWChar(wchar_t * txt)
+{
+    return txt;
+}
+inline const wchar_t * _ToChar(const GUI::gui_char * txt)
+{
+    return txt;
+}
+#define TO_GUICHAR(x) _ToWChar(x)
+#define FROM_GUICHAR(x) _ToChar(x)
 #endif
 
 FilePath FilePath::GetWorkingDirectory() {
