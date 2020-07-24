@@ -1187,7 +1187,7 @@ public:
 	~SurfaceD2D() override;
 
 	void SetScale(WindowID wid) noexcept;
-	void Init(WindowID wid) override;
+        void Init(WindowID wid, PainterID pid, bool flag) override;
 	void Init(SurfaceID sid, WindowID wid) override;
 	void InitPixMap(int width, int height, Surface *surface_, WindowID wid) override;
 
@@ -1296,7 +1296,7 @@ HRESULT SurfaceD2D::FlushDrawing() {
 	return pRenderTarget->Flush();
 }
 
-void SurfaceD2D::Init(WindowID wid) {
+void SurfaceD2D::Init(WindowID wid, PainterID pid, bool flag) {
 	Release();
 	SetScale(wid);
 }

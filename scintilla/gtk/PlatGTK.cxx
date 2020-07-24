@@ -158,7 +158,7 @@ public:
 	SurfaceImpl&operator=(SurfaceImpl&&) = delete;
 	~SurfaceImpl() override;
 
-	void Init(WindowID wid) override;
+        void Init(WindowID wid, PainterID pid, bool flag) override;
 	void Init(SurfaceID sid, WindowID wid) override;
 	void InitPixMap(int width, int height, Surface *surface_, WindowID wid) override;
 
@@ -322,7 +322,7 @@ bool SurfaceImpl::Initialised() {
 	return inited;
 }
 
-void SurfaceImpl::Init(WindowID wid) {
+void SurfaceImpl::Init(WindowID wid, PainterID pid, bool flag) {
 	Release();
 	PLATFORM_ASSERT(wid);
 	// if we are only created from a window ID, we can't perform drawing
