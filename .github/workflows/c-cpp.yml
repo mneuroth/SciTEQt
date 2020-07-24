@@ -351,6 +351,8 @@ jobs:
         ls -lrt
         make -j 4
         ls -lrt
+        cd ..
+        ls -lrt bin
 
   windows_msc_scite_org:
 
@@ -373,4 +375,7 @@ jobs:
         dir 
         nmake -f scite.mak
         dir
+        cd ..
+        dir 
+        dir bin
         

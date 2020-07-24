@@ -513,7 +513,7 @@ public:
 
 	~SurfaceGDI() noexcept override;
 
-	void Init(WindowID wid) override;
+        void Init(WindowID wid, PainterID pid, bool flag) override;
 	void Init(SurfaceID sid, WindowID wid) override;
 	void InitPixMap(int width, int height, Surface *surface_, WindowID wid) override;
 
@@ -604,7 +604,7 @@ bool SurfaceGDI::Initialised() {
 	return hdc != 0;
 }
 
-void SurfaceGDI::Init(WindowID wid) {
+void SurfaceGDI::Init(WindowID wid, PainterID pid, bool flag) {
 	Release();
 	hdc = ::CreateCompatibleDC({});
 	hdcOwned = true;
