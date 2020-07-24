@@ -60,34 +60,7 @@ jobs:
         ls -lrt
         make
         ls -lrt
-        cd scite
-        cd qt
-        ls -lrt
-#        which qmake
-#        qmake -r sciteqt.pro
-#        ls -lrt
-#        ls -lrt scintilla
-#        ls -lrt scintilla/qt
-#        ls -lrt scintilla/qt/ScintillaEditBase
-#        ls -lrt scite 
-#        ls -lrt scite/qt
-#        cd scintilla        
-#        cd qt
-#        cd ScintillaEditBase
-#        make -j 4
-#        ls -lrt
-#        cd ..
-#        cd ..
-#        cd ..
-#        cd scite
-#        cd qt
-#        ls -lrt
-#        make -j 4        
-#        ls -lrt
-#        cd ..
-#        cd ..
-#        ls -lrt scite 
-#        ls -lrt scite/qt
+        ls -lrt scite/qt
 
   linux_build_5_13_2:
 
@@ -129,33 +102,8 @@ jobs:
         ls -lrt
         make
         ls -lrt
-        cd scite
-        cd qt
-        ls -lrt
-#        qmake -r sciteqt.pro
-#        ls -lrt
-#        ls -lrt scintilla
-#        ls -lrt scintilla/qt
-#        ls -lrt scintilla/qt/ScintillaEditBase
-#        ls -lrt scite 
-#        ls -lrt scite/qt
-#        cd scintilla        
-#        cd qt
-#        cd ScintillaEditBase
-#        make -j 4
-#        ls -lrt
-#        cd ..
-#        cd ..
-#        cd ..
-#        cd scite
-#        cd qt
-#        ls -lrt
-#        make -j 4        
-#        ls -lrt
-#        cd ..
-#        cd ..
-#        ls -lrt scite 
-#        ls -lrt scite/qt
+        ls -lrt scite/qt
+
 
   linux_build_5_15_0:
 
@@ -197,9 +145,7 @@ jobs:
         ls -lrt
         make
         ls -lrt
-        cd scite
-        cd qt
-        ls -lrt
+        ls -lrt scite/qt
 
 # mingw32 build has some problems with unresolved externals...
 #  windows_gcc_build:
@@ -370,33 +316,7 @@ jobs:
         ls -lrt
         make
         ls -lrt
-        cd scite
-        cd qt
-        ls -lrt
-#        qmake -r sciteqt.pro
-#        ls -lrt
-#        ls -lrt scintilla
-#        ls -lrt scintilla/qt
-#        ls -lrt scintilla/qt/ScintillaEditBase
-#        ls -lrt scite 
-#        ls -lrt scite/qt
-#        cd scintilla        
-#        cd qt
-#        cd ScintillaEditBase
-#        make -j 4
-#        ls -lrt
-#        cd ..
-#        cd ..
-#        cd ..
-#        cd scite
-#        cd qt
-#        ls -lrt
-#        make -j 4        
-#        ls -lrt
-#        cd ..
-#        cd ..
-#        ls -lrt scite 
-#        ls -lrt scite/qt
+        ls -lrt scite/qt
 
         #make -j 4
         #ls -lrt 
@@ -406,4 +326,34 @@ jobs:
         #which macdeployqt
         #macdeployqt sciteqt.app -dmg -verbose=1
         #ls -lrt
+
+  linux_scite_org:
+
+    runs-on: ubuntu-latest
+      
+    steps:
+    - uses: actions/checkout@v2
+    - name: Compile SciTE
+      run: |
+        sudo apt-get install libgtk-3-dev
+        pwd 
+        cd scite/gtk
+        make
+        ls -lrt
+
+  windows_scite_org:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: ilammy/msvc-dev-cmd@v1.0.0
+    - name: Compile SciTE
+      run: |
+        cd scite
+        cd win
+        dir 
+        make
+        nmake -f scite.mak
+        dir
         
