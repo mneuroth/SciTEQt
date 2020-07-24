@@ -340,7 +340,14 @@ jobs:
         sudo apt-get install libgtk2.0-dev
         sudo apt-get install libglib2.0-dev
         pwd 
+        ls -lrt
+        cd scintilla/gtk
+        make
+        ls -lrt
+        cd ..
+        cd ..
         cd scite/gtk
+        ls -lrt
         make
         ls -lrt
 
@@ -353,10 +360,15 @@ jobs:
     - uses: ilammy/msvc-dev-cmd@v1.0.0
     - name: Compile SciTE
       run: |
-        cd scite
+        cd scintilla
         cd win32
+        nmake -f scintilla.mak
+        dir
+        cd ..
+        cd ..
+        cd scite
+        cd win32        
         dir 
-        make
         nmake -f scite.mak
         dir
         
