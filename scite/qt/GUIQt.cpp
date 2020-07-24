@@ -265,7 +265,7 @@ std::string LowerCaseUTF8(std::string_view sv) {
     return UTF8FromString(lc);
 }
 
-#elif defined(__ANDROID__) || defined(__linux__)
+#elif defined(__ANDROID__) || defined(__linux__) || defined(__APPLE__)
 
 // from GUIGTK.cxx
 

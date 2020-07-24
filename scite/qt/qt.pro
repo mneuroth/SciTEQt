@@ -110,6 +110,13 @@ INCLUDEPATH += ../lua/src ../src ../../scintilla/qt/ScintillaEdit ../../scintill
 
 LIBS += -L$$OUT_PWD/../../scintilla/bin/ -lScintillaEditBase
 
+unix {
+    LIBS += -ldl
+}
+macx {
+    LIBS += -ldl
+}
+
 RESOURCES += sciteqt.qrc
 
 #DESTPATH = $$[QT_INSTALL_EXAMPLES]/qml/tutorials/extending-qml/chapter1-basics
