@@ -45,6 +45,7 @@ endif
 datadir=$(prefix)/share
 pixmapdir=$(datadir)/pixmaps
 bindir=$(prefix)/bin
+libdir=$(prefix)/lib/scite
 SYSCONF_PATH=$(prefix)/share/scite
 
 INSTALL=install
@@ -149,7 +150,7 @@ SRC_OBJS = \
 	Utf8_16.o
 
 $(PROG): SciTEGTK.o GUIGTK.o Widget.o DirectorExtension.o $(SRC_OBJS) $(LUA_OBJS)
-	$(CXX) $(BASE_FLAGS) -rdynamic -Wl,--as-needed -Wl,-rpath,'$${ORIGIN}' -Wl,--version-script $(srcdir)/lua.vers $^ -o $@ $(CONFIGLIB) $(LIBS) -L ../../scintilla/bin -lscintilla $(LDLIBS)
+	$(CXX) $(BASE_FLAGS) -rdynamic -Wl,--as-needed -Wl,-rpath,'$${ORIGIN}' -Wl,--version-script $(srcdir)/lua.vers -Wl,-rpath,$(libdir) $^ -o $@ $(CONFIGLIB) $(LIBS) -L ../../scintilla/bin -lscintilla $(LDLIBS)
 
 # Automatically generate header dependencies with "make deps"
 include deps.mak
@@ -159,10 +160,11 @@ include deps.mak
 # Dead:	install -D SciTEGTK.properties $(SYSCONF_PATH)/SciTEGlobal.properties
 install:
 	$(INSTALL) -m 755 -d $(DESTDIR)$(bindir) $(DESTDIR)$(SYSCONF_PATH)
+	$(INSTALL) -m 755 -d $(DESTDIR)$(libdir)
 
 	$(INSTALL) -m 755 $(PROG) $(DESTDIR)$(bindir)
-	$(INSTALL) -m 755 $(COMPONENT) $(DESTDIR)$(bindir)
-	$(INSTALL) -m 755 $(LEXILLA) $(DESTDIR)$(bindir)
+	$(INSTALL) -m 755 $(COMPONENT) $(DESTDIR)$(libdir)
+	$(INSTALL) -m 755 $(LEXILLA) $(DESTDIR)$(libdir)
 
 	for files in $(srcdir)/../src/*.properties $(srcdir)/../doc/*.html $(srcdir)/../doc/SciTEIco.png $(srcdir)/../doc/PrintHi.png $(srcdir)/../doc/SciTEIndicators.png; \
 	do \
@@ -177,8 +179,8 @@ endif
 
 uninstall:
 	rm -f $(DESTDIR)$(bindir)/SciTE
-	rm -f $(DESTDIR)$(bindir)/libscintilla.so
-	rm -f $(DESTDIR)$(bindir)/liblexilla.so
+	rm -f $(DESTDIR)$(libdir)/libscintilla.so
+	rm -f $(DESTDIR)$(libdir)/liblexilla.so
 	rm -rf $(DESTDIR)$(SYSCONF_PATH)
 ifdef gnomeprefix
 	rm -f $(DESTDIR)$(datadir)/applications/SciTE.desktop

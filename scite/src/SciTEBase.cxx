@@ -3776,14 +3776,14 @@ void SciTEBase::EnsureRangeVisible(GUI::ScintillaWindow &win, SA::Range range, b
 bool SciTEBase::MarginClick(SA::Position position, int modifiers) {
 	const SA::Line lineClick = wEditor.LineFromPosition(position);
 	const SA::KeyMod km = static_cast<SA::KeyMod>(modifiers);
-	if (((km & SA::KeyMod::Shift) == SA::KeyMod::Shift) && ((km & SA::KeyMod::Ctrl) == SA::KeyMod::Ctrl)) {
+	if ((FlagIsSet(km, SA::KeyMod::Shift)) && (FlagIsSet(km, SA::KeyMod::Ctrl))) {
 		FoldAll();
 	} else {
 		const SA::FoldLevel levelClick = wEditor.FoldLevel(lineClick);
 		if (LevelIsHeader(levelClick)) {
-			if ((km & SA::KeyMod::Shift) == SA::KeyMod::Shift) {
+			if (FlagIsSet(km, SA::KeyMod::Shift)) {
 				EnsureAllChildrenVisible(lineClick, levelClick);
-			} else if ((km & SA::KeyMod::Ctrl) == SA::KeyMod::Ctrl) {
+			} else if (FlagIsSet(km, SA::KeyMod::Ctrl)) {
 				ToggleFoldRecursive(lineClick, levelClick);
 			} else {
 				// Toggle this line
@@ -3852,10 +3852,10 @@ void SciTEBase::UpdateUI(const SCNotification *notification) {
 		RemoveFindMarks();
 	}
 	const SA::Update updated = static_cast<SA::Update>(notification->updated);
-	if (static_cast<int>(updated & (SA::Update::Selection | SA::Update::Content))) {
+	if (FlagIsSet(updated, SA::Update::Selection) || FlagIsSet(updated, SA::Update::Content)) {
 		if ((notification->nmhdr.idFrom == IDM_SRCWIN) == (pwFocussed == &wEditor)) {
 			// Only highlight focused pane.
-			if ((updated & SA::Update::Selection) == SA::Update::Selection) {
+			if (FlagIsSet(updated, SA::Update::Selection)) {
 				currentWordHighlight.statesOfDelay = currentWordHighlight.noDelay; // Selection has just been updated, so delay is disabled.
 				currentWordHighlight.textHasChanged = false;
 				HighlightCurrentWord(true);
@@ -3869,17 +3869,16 @@ void SciTEBase::UpdateUI(const SCNotification *notification) {
 void SciTEBase::Modified(const SCNotification *notification) {
 	const SA::ModificationFlags modificationType =
 		static_cast<SA::ModificationFlags>(notification->modificationType);
-	const SA::ModificationFlags insertOrDelete =
-		SA::ModificationFlags::InsertText | SA::ModificationFlags::DeleteText;
-	if ((notification->nmhdr.idFrom == IDM_SRCWIN) &&
-			((modificationType & insertOrDelete) != SA::ModificationFlags::None))
+	const bool textWasModified = FlagIsSet(modificationType, SA::ModificationFlags::InsertText) ||
+		FlagIsSet(modificationType, SA::ModificationFlags::DeleteText);
+	if ((notification->nmhdr.idFrom == IDM_SRCWIN) && textWasModified)
 		CurrentBuffer()->DocumentModified();
-	if ((modificationType & SA::ModificationFlags::LastStepInUndoRedo) != SA::ModificationFlags::None) {
+	if (FlagIsSet(modificationType, SA::ModificationFlags::LastStepInUndoRedo)) {
 		// When the user hits undo or redo, several normal insert/delete
 		// notifications may fire, but we will end up here in the end
 		EnableAMenuItem(IDM_UNDO, CallFocusedElseDefault(true, SA::Message::CanUndo));
 		EnableAMenuItem(IDM_REDO, CallFocusedElseDefault(true, SA::Message::CanRedo));
-	} else if ((modificationType & insertOrDelete) != SA::ModificationFlags::None) {
+	} else if (textWasModified) {
 		if ((notification->nmhdr.idFrom == IDM_SRCWIN) == (pwFocussed == &wEditor)) {
 			currentWordHighlight.textHasChanged = true;
 		}
@@ -3895,7 +3894,7 @@ void SciTEBase::Modified(const SCNotification *notification) {
 		SetLineNumberWidth();
 	}
 
-	if ((modificationType & SA::ModificationFlags::ChangeFold) != SA::ModificationFlags::None) {
+	if (FlagIsSet(modificationType, SA::ModificationFlags::ChangeFold)) {
 		FoldChanged(notification->line,
 			    static_cast<SA::FoldLevel>(notification->foldLevelNow),
 			    static_cast<SA::FoldLevel>(notification->foldLevelPrev));

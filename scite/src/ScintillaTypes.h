@@ -444,6 +444,12 @@ enum class LineEndType {
 	Unicode = 1,
 };
 
+enum class EOLAnnotationVisible {
+	Hidden = 0,
+	Standard = 1,
+	Boxed = 2,
+};
+
 enum class TypeProperty {
 	Boolean = 0,
 	Integer = 1,
@@ -474,7 +480,8 @@ enum class ModificationFlags {
 	LexerState = 0x80000,
 	InsertCheck = 0x100000,
 	ChangeTabStops = 0x200000,
-	EventMaskAll = 0x3FFFFF,
+	ChangeEOLAnnotation = 0x400000,
+	EventMaskAll = 0x7FFFFF,
 };
 
 enum class Update {
@@ -620,34 +627,16 @@ struct Range {
 	}
 };
 
-// Functions to manipulate fields from a Update
-
-constexpr Update operator|(Update a, Update b) noexcept {
-	return static_cast<Update>(static_cast<int>(a) | static_cast<int>(b));
-}
-
-constexpr Update operator&(Update a, Update b) noexcept {
-	return static_cast<Update>(static_cast<int>(a) & static_cast<int>(b));
-}
-
 // Functions to manipulate fields from a ModificationFlags
 
 constexpr ModificationFlags operator|(ModificationFlags a, ModificationFlags b) noexcept {
 	return static_cast<ModificationFlags>(static_cast<int>(a) | static_cast<int>(b));
 }
 
-constexpr ModificationFlags operator&(ModificationFlags a, ModificationFlags b) noexcept {
-	return static_cast<ModificationFlags>(static_cast<int>(a) & static_cast<int>(b));
-}
-
 // Functions to manipulate fields from a KeyMod
 
 constexpr KeyMod operator|(KeyMod a, KeyMod b) noexcept {
 	return static_cast<KeyMod>(static_cast<int>(a) | static_cast<int>(b));
-}
-
-constexpr KeyMod operator&(KeyMod a, KeyMod b) noexcept {
-	return static_cast<KeyMod>(static_cast<int>(a) & static_cast<int>(b));
 }
 
 // Functions to retrieve and manipulate fields from a FoldLevel

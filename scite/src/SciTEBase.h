@@ -1017,4 +1017,10 @@ int ControlIDOfCommand(unsigned long) noexcept;
 SA::Colour ColourOfProperty(const PropSetFile &props, const char *key, SA::Colour colourDefault);
 void WindowSetFocus(GUI::ScintillaWindow &w);
 
+// Test if an enum class value has the bit flag(s) of test set.
+template <typename T>
+constexpr bool FlagIsSet(T value, T test) {
+	return (static_cast<int>(value) & static_cast<int>(test)) == static_cast<int>(test);
+}
+
 #endif

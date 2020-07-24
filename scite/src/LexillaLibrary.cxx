@@ -122,8 +122,12 @@ bool LexillaLoad(std::string_view sharedLibraryPaths) {
 			paths.remove_prefix(separator + 1);
 		}
 		if (path == ".") {
-			path = directoryLoadDefault;
-			path += pathSeparator;
+			if (directoryLoadDefault.empty()) {
+				path = "";
+			} else {
+				path = directoryLoadDefault;
+				path += pathSeparator;
+			}
 			path += defaultName;
 		}
 		if (!NameContainsDot(path)) {

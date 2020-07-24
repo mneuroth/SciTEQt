@@ -210,7 +210,7 @@ protected:	// ScintillaBase subclass needs access to much of Editor
 	int dwellDelay;
 	int ticksToDwell;
 	bool dwelling;
-	enum { selChar, selWord, selSubLine, selWholeLine } selectionType;
+	enum class TextUnit { character, word, subLine, wholeLine } selectionUnit;
 	Point ptMouseLast;
 	enum { ddNone, ddInitial, ddDragging } inDragDrop;
 	bool dropWentOutside;
@@ -326,7 +326,7 @@ protected:	// ScintillaBase subclass needs access to much of Editor
 	void SetSelection(int currentPos_);
 	void SetEmptySelection(SelectionPosition currentPos_);
 	void SetEmptySelection(Sci::Position currentPos_);
-	enum AddNumber { addOne, addEach };
+	enum class AddNumber { one, each };
 	void MultipleSelectAdd(AddNumber addNumber);
 	bool RangeContainsProtected(Sci::Position start, Sci::Position end) const noexcept;
 	bool SelectionContainsProtected() const;
@@ -388,9 +388,8 @@ protected:	// ScintillaBase subclass needs access to much of Editor
 	void RefreshPixMaps(Surface *surfaceWindow);
 	void Paint(Surface *surfaceWindow, PRectangle rcArea);
 	Sci::Position FormatRange(bool draw, const Sci_RangeToFormat *pfr);
-	int TextWidth(int style, const char *text);
+	long TextWidth(uptr_t style, const char *text);
 
-    //virtual void DebugOutput(int value) = 0;
 	virtual void SetVerticalScrollPos() = 0;
 	virtual void SetHorizontalScrollPos() = 0;
 	virtual bool ModifyScrollBars(Sci::Line nMax, Sci::Line nPage) = 0;
@@ -547,6 +546,7 @@ protected:	// ScintillaBase subclass needs access to much of Editor
 	virtual void SetDocPointer(Document *document);
 
 	void SetAnnotationVisible(int visible);
+	void SetEOLAnnotationVisible(int visible);
 
 	Sci::Line ExpandLine(Sci::Line line);
 	void SetFoldExpanded(Sci::Line lineDoc, bool expanded);
@@ -642,7 +642,7 @@ private:
 	std::unique_ptr<Surface> surf;
 public:
     AutoSurface(const Editor *ed, PainterID pid = nullptr, int technology = -1) {
-		if (ed->wMain.GetID()) {
+        if (ed->wMain.GetID()) {
 			surf.reset(Surface::Allocate(technology != -1 ? technology : ed->technology));
             surf->Init(ed->wMain.GetID(), pid, false);  // is QQuickPaintedItem here
 			surf->SetUnicodeMode(SC_CP_UTF8 == ed->CodePage());

@@ -485,6 +485,7 @@ public:
 	void BraceBadLight(Position pos);
 	void BraceBadLightIndicator(bool useSetting, int indicator);
 	Position BraceMatch(Position pos, int maxReStyle);
+	Position BraceMatchNext(Position pos, Position startPos);
 	bool ViewEOL();
 	void SetViewEOL(bool visible);
 	void *DocPointer();
@@ -755,6 +756,16 @@ public:
 	int Representation(const char *encodedCharacter, char *representation);
 	std::string Representation(const char *encodedCharacter);
 	void ClearRepresentation(const char *encodedCharacter);
+	void EOLAnnotationSetText(Line line, const char *text);
+	int EOLAnnotationGetText(Line line, char *text);
+	std::string EOLAnnotationGetText(Line line);
+	void EOLAnnotationSetStyle(Line line, int style);
+	int EOLAnnotationGetStyle(Line line);
+	void EOLAnnotationClearAll();
+	void EOLAnnotationSetVisible(API::EOLAnnotationVisible visible);
+	API::EOLAnnotationVisible EOLAnnotationGetVisible();
+	void EOLAnnotationSetStyleOffset(int style);
+	int EOLAnnotationGetStyleOffset();
 	void StartRecord();
 	void StopRecord();
 	void SetLexer(int lexer);

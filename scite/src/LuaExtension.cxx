@@ -1337,6 +1337,7 @@ static bool InitGlobalScope(bool checkProperties, bool forceReload = false) {
 
 		lua_pushglobaltable(luaState);
 		clear_table(luaState, -1, true);
+		lua_pop(luaState, 1);
 
 		// Lua 5.1: _LOADED is in LUA_REGISTRYINDEX, so it must be cleared before
 		// loading libraries or they will not load because Lua's package system

@@ -240,6 +240,13 @@ SciTEWin::SciTEWin(Extension *ext) : SciTEBase(ext) {
 
 	ReadGlobalPropFile();
 
+	if (props.GetInt("create.hidden.console")) {
+		// Prevent a flashing console window whenever Lua calls os.execute or
+		// io.popen by creating a hidden console to share.
+		::AllocConsole();
+		::ShowWindow(::GetConsoleWindow(), SW_HIDE);
+	}
+
 	tbLarge = props.GetInt("toolbar.large");
 	/// Need to copy properties to variables before setting up window
 	SetPropertiesInitial();

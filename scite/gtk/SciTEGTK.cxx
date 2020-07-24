@@ -5463,7 +5463,6 @@ int main(int argc, char *argv[]) {
 		executableDirectory = FilePath(selfExe).Directory();
 	}
 #endif
-	LexillaSetDefaultDirectory(executableDirectory.AsInternal());
 
 	// Get this now because gtk_init() clears it
 	const gchar *startup_id = g_getenv("DESKTOP_STARTUP_ID");

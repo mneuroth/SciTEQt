@@ -1883,6 +1883,10 @@ Position ScintillaCall::BraceMatch(Position pos, int maxReStyle) {
 	return Call(Message::BraceMatch, pos, maxReStyle);
 }
 
+Position ScintillaCall::BraceMatchNext(Position pos, Position startPos) {
+	return Call(Message::BraceMatchNext, pos, startPos);
+}
+
 bool ScintillaCall::ViewEOL() {
 	return Call(Message::GetViewEOL);
 }
@@ -2961,6 +2965,46 @@ std::string ScintillaCall::Representation(const char *encodedCharacter) {
 
 void ScintillaCall::ClearRepresentation(const char *encodedCharacter) {
 	Call(Message::ClearRepresentation, reinterpret_cast<uintptr_t>(encodedCharacter));
+}
+
+void ScintillaCall::EOLAnnotationSetText(Line line, const char *text) {
+	CallString(Message::EOLAnnotationSetText, line, text);
+}
+
+int ScintillaCall::EOLAnnotationGetText(Line line, char *text) {
+	return static_cast<int>(CallPointer(Message::EOLAnnotationGetText, line, text));
+}
+
+std::string ScintillaCall::EOLAnnotationGetText(Line line) {
+	return CallReturnString(Message::EOLAnnotationGetText, line);
+}
+
+void ScintillaCall::EOLAnnotationSetStyle(Line line, int style) {
+	Call(Message::EOLAnnotationSetStyle, line, style);
+}
+
+int ScintillaCall::EOLAnnotationGetStyle(Line line) {
+	return static_cast<int>(Call(Message::EOLAnnotationGetStyle, line));
+}
+
+void ScintillaCall::EOLAnnotationClearAll() {
+	Call(Message::EOLAnnotationClearAll);
+}
+
+void ScintillaCall::EOLAnnotationSetVisible(API::EOLAnnotationVisible visible) {
+	Call(Message::EOLAnnotationSetVisible, static_cast<uintptr_t>(visible));
+}
+
+EOLAnnotationVisible ScintillaCall::EOLAnnotationGetVisible() {
+	return static_cast<API::EOLAnnotationVisible>(Call(Message::EOLAnnotationGetVisible));
+}
+
+void ScintillaCall::EOLAnnotationSetStyleOffset(int style) {
+	Call(Message::EOLAnnotationSetStyleOffset, style);
+}
+
+int ScintillaCall::EOLAnnotationGetStyleOffset() {
+	return static_cast<int>(Call(Message::EOLAnnotationGetStyleOffset));
 }
 
 void ScintillaCall::StartRecord() {

@@ -1,10 +1,6 @@
 // File to suppress cppcheck warnings for files that will not be fixed.
 // Does not suppress warnings where an additional occurrence of the warning may be of interest.
 
-// unreadVariable has expanded in cppcheck 1.90 to match assigning a struct then reading
-// only from members which is a common idiom
-unreadVariable
-
 // These may be interesting but its not clear without examining each instance closely
 useStlAlgorithm
 

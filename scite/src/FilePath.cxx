@@ -46,7 +46,7 @@
 
 #include "FilePath.h"
 
-#if defined(__unix__) || defined(__APPLE__) || defined(__ANDROID__)
+#if defined(__unix__) || defined(__APPLE__)
 const GUI::gui_char pathSepString[] = "/";
 const GUI::gui_char pathSepChar = '/';
 const GUI::gui_char listSepString[] = ":";
@@ -157,7 +157,7 @@ bool FilePath::IsRoot() const {
 		return true; // UNC path like \\server
 	return (fileName.length() == 3) && (fileName[1] == ':') && (fileName[2] == pathSepChar);
 #else
-    return fileName == "/";
+	return fileName == "/";
 #endif
 }
 
@@ -338,7 +338,7 @@ FilePath FilePath::GetWorkingDirectory() {
 #ifdef WIN32
 	GUI::gui_char *pdir = _wgetcwd(nullptr, 0);
 #else
-    GUI::gui_char *pdir = getcwd(nullptr, 0);
+	GUI::gui_char *pdir = getcwd(nullptr, 0);
 #endif
 	if (pdir) {
 		GUI::gui_string gswd(pdir);
@@ -354,7 +354,7 @@ FilePath FilePath::GetWorkingDirectory() {
 }
 
 bool FilePath::SetWorkingDirectory() const noexcept {
-    return chdir(AsInternal()) == 0;
+	return chdir(AsInternal()) == 0;
 }
 
 void FilePath::List(FilePathSet &directories, FilePathSet &files) const {
@@ -382,16 +382,16 @@ void FilePath::List(FilePathSet &directories, FilePathSet &files) const {
 	}
 #else
 	errno = 0;
-    DIR *dp = opendir(AsInternal());
+	DIR *dp = opendir(AsInternal());
 	if (dp == NULL) {
 		//~ fprintf(stderr, "%s: cannot open for reading: %s\n", AsInternal(), strerror(errno));
 		return;
 	}
 	struct dirent *ent;
 	while ((ent = readdir(dp)) != NULL) {
-        std::string_view entryName = ent->d_name;
-        if ((entryName != currentDirectory) && (entryName != parentDirectory)) {
-            FilePath pathFull(AsInternal(), ent->d_name);
+		std::string_view entryName = ent->d_name;
+		if ((entryName != currentDirectory) && (entryName != parentDirectory)) {
+			FilePath pathFull(AsInternal(), ent->d_name);
 			if (pathFull.IsDirectory()) {
 				directories.push_back(pathFull);
 			} else {
@@ -408,7 +408,7 @@ void FilePath::List(FilePathSet &directories, FilePathSet &files) const {
 
 FILE *FilePath::Open(const GUI::gui_char *mode) const noexcept {
 	if (IsSet()) {
-        return fopen(fileName.c_str(), mode);
+		return fopen(fileName.c_str(), mode);
 	} else {
 		return nullptr;
 	}
@@ -433,7 +433,7 @@ std::string FilePath::Read() const {
 }
 
 void FilePath::Remove() const noexcept {
-    unlink(AsInternal());
+	unlink(AsInternal());
 }
 
 #ifndef R_OK
@@ -444,7 +444,7 @@ void FilePath::Remove() const noexcept {
 time_t FilePath::ModifiedTime() const {
 	if (IsUntitled())
 		return 0;
-    if (access(AsInternal(), R_OK) == -1)
+	if (access(AsInternal(), R_OK) == -1)
 		return 0;
 #ifdef _WIN32
 #if defined(_MSC_VER)
@@ -455,7 +455,7 @@ time_t FilePath::ModifiedTime() const {
 #else
 	struct stat statusFile;
 #endif
-    if (stat(AsInternal(), &statusFile) != -1)
+	if (stat(AsInternal(), &statusFile) != -1)
 		return statusFile.st_mtime;
 	else
 		return 0;
@@ -474,7 +474,7 @@ long long FilePath::GetFileLength() const noexcept {
 	return liSze.QuadPart;
 #else
 	struct stat statusFile;
-    if (stat(AsInternal(), &statusFile) != -1)
+	if (stat(AsInternal(), &statusFile) != -1)
 		return statusFile.st_size;
 	return 0;
 #endif
@@ -502,7 +502,7 @@ bool FilePath::IsDirectory() const noexcept {
 #else
 	struct stat statusFile;
 #endif
-    if (stat(AsInternal(), &statusFile) != -1)
+	if (stat(AsInternal(), &statusFile) != -1)
 #ifdef WIN32
 		return (statusFile.st_mode & _S_IFDIR) != 0;
 #else
@@ -570,7 +570,7 @@ bool FilePath::Matches(const GUI::gui_char *pattern) const {
 		if (PatternMatch(patElement, nameCopy)) {
 			return true;
 		}
-        start += strlen(patElement) + 1;
+		start += strlen(patElement) + 1;
 	}
 	return false;
 }
@@ -736,7 +736,7 @@ std::string CommandExecute(const GUI::gui_char *command, const GUI::gui_char *di
 #else
 	FilePath startDirectory= FilePath::GetWorkingDirectory();	// Save
 	FilePath(directoryForRun).SetWorkingDirectory();
-    FILE *fp = popen(command, "r");
+	FILE *fp = popen(command, "r");
 	if (fp) {
 		char buffer[16 * 1024];
 		size_t lenData = fread(buffer, 1, sizeof(buffer), fp);
