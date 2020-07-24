@@ -15,6 +15,7 @@
 #endif
 
 #include <QDir>
+#include <QDateTime>
 
 #include "ILexer.h"
 #include "Scintilla.h"
