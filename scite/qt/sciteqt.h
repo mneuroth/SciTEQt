@@ -256,4 +256,7 @@ private:
 #define MSGBOX_RESULT_NO 2
 #define MSGBOX_RESULT_YES 3
 
+QString ConvertGuiCharToQString(const GUI::gui_char * s);
+QString ConvertGuiStringToQString(const GUI::gui_string & s);
+
 #endif // SCITEQT_H

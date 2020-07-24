@@ -46,11 +46,11 @@
 
 #include "FilePath.h"
 
-#if defined(__unix__) || defined(__APPLE__)
-const GUI::gui_char pathSepString[] = L"/";
-const GUI::gui_char pathSepChar = L'/';
-const GUI::gui_char listSepString[] = L":";
-const GUI::gui_char configFileVisibilityString[] = L".";
+#if defined(__unix__) || defined(__APPLE__) || defined(__ANDROID__)
+const GUI::gui_char pathSepString[] = "/";
+const GUI::gui_char pathSepChar = '/';
+const GUI::gui_char listSepString[] = ":";
+const GUI::gui_char configFileVisibilityString[] = ".";
 #endif
 #ifdef WIN32
 // Windows
@@ -157,7 +157,7 @@ bool FilePath::IsRoot() const {
 		return true; // UNC path like \\server
 	return (fileName.length() == 3) && (fileName[1] == ':') && (fileName[2] == pathSepChar);
 #else
-    return fileName == L"/";
+    return fileName == "/";
 #endif
 }
 
@@ -333,48 +333,12 @@ FilePath FilePath::AbsolutePath() const {
 #endif
 }
 
-#ifdef __ANDROID__
-#define MAX_BUF_LEN 512
-// TODO: static buffers are not good for multithread calls and recursive calls !!! --> find a better solution !
-GUI::gui_char g_sBuf[MAX_BUF_LEN];
-char g_sCharBuf[MAX_BUF_LEN];
-GUI::gui_char * _ToWChar(char * txt)
-{
-    mbstowcs(g_sBuf, txt, MAX_BUF_LEN);
-    return (GUI::gui_char *)g_sBuf;
-}
-const char * _ToChar(const GUI::gui_char * txt)
-{
-    wcstombs(g_sCharBuf, txt, MAX_BUF_LEN);
-    return g_sCharBuf;
-}
-#define TO_GUICHAR(x) _ToWChar(x)
-#define FROM_GUICHAR(x) _ToChar(x)
-//#define TO_GUICHARX(x) std::string s = x; GUI::gui_char buf[512]; mbstowcs(buf, s.c_str(), 512); GUI::gui_char *pdir = buf;
-#else
-inline GUI::gui_char * _ToWChar(wchar_t * txt)
-{
-    return txt;
-}
-inline const wchar_t * _ToChar(const GUI::gui_char * txt)
-{
-    return txt;
-}
-#define TO_GUICHAR(x) _ToWChar(x)
-#define FROM_GUICHAR(x) _ToChar(x)
-#endif
-
 FilePath FilePath::GetWorkingDirectory() {
 	// Call getcwd with (nullptr, 0) to always allocate
 #ifdef WIN32
 	GUI::gui_char *pdir = _wgetcwd(nullptr, 0);
 #else
-    //std::string s = getcwd(nullptr, 0);
-    //GUI::gui_char buf[512];
-    //mbstowcs(buf, s.c_str(), 512);
-    //GUI::gui_char *pdir = buf;
-    //GUI::gui_char *pdir = ToWChar(getcwd(nullptr, 0));
-    GUI::gui_char *pdir = TO_GUICHAR(getcwd(nullptr, 0));
+    GUI::gui_char *pdir = getcwd(nullptr, 0);
 #endif
 	if (pdir) {
 		GUI::gui_string gswd(pdir);
@@ -390,7 +354,7 @@ FilePath FilePath::GetWorkingDirectory() {
 }
 
 bool FilePath::SetWorkingDirectory() const noexcept {
-    return chdir(FROM_GUICHAR(AsInternal())) == 0;
+    return chdir(AsInternal()) == 0;
 }
 
 void FilePath::List(FilePathSet &directories, FilePathSet &files) const {
@@ -418,7 +382,7 @@ void FilePath::List(FilePathSet &directories, FilePathSet &files) const {
 	}
 #else
 	errno = 0;
-    DIR *dp = opendir(FROM_GUICHAR(AsInternal()));
+    DIR *dp = opendir(AsInternal());
 	if (dp == NULL) {
 		//~ fprintf(stderr, "%s: cannot open for reading: %s\n", AsInternal(), strerror(errno));
 		return;
@@ -426,8 +390,8 @@ void FilePath::List(FilePathSet &directories, FilePathSet &files) const {
 	struct dirent *ent;
 	while ((ent = readdir(dp)) != NULL) {
         std::string_view entryName = ent->d_name;
-        if ((entryName != FROM_GUICHAR(currentDirectory)) && (entryName != FROM_GUICHAR(parentDirectory))) {
-            FilePath pathFull(AsInternal(), TO_GUICHAR(ent->d_name));
+        if ((entryName != currentDirectory) && (entryName != parentDirectory)) {
+            FilePath pathFull(AsInternal(), ent->d_name);
 			if (pathFull.IsDirectory()) {
 				directories.push_back(pathFull);
 			} else {
@@ -444,7 +408,7 @@ void FilePath::List(FilePathSet &directories, FilePathSet &files) const {
 
 FILE *FilePath::Open(const GUI::gui_char *mode) const noexcept {
 	if (IsSet()) {
-        return fopen(FROM_GUICHAR(fileName.c_str()), FROM_GUICHAR(mode));
+        return fopen(fileName.c_str(), mode);
 	} else {
 		return nullptr;
 	}
@@ -469,7 +433,7 @@ std::string FilePath::Read() const {
 }
 
 void FilePath::Remove() const noexcept {
-    unlink(FROM_GUICHAR(AsInternal()));
+    unlink(AsInternal());
 }
 
 #ifndef R_OK
@@ -480,7 +444,7 @@ void FilePath::Remove() const noexcept {
 time_t FilePath::ModifiedTime() const {
 	if (IsUntitled())
 		return 0;
-    if (access(FROM_GUICHAR(AsInternal()), R_OK) == -1)
+    if (access(AsInternal(), R_OK) == -1)
 		return 0;
 #ifdef _WIN32
 #if defined(_MSC_VER)
@@ -491,7 +455,7 @@ time_t FilePath::ModifiedTime() const {
 #else
 	struct stat statusFile;
 #endif
-    if (stat(FROM_GUICHAR(AsInternal()), &statusFile) != -1)
+    if (stat(AsInternal(), &statusFile) != -1)
 		return statusFile.st_mtime;
 	else
 		return 0;
@@ -510,7 +474,7 @@ long long FilePath::GetFileLength() const noexcept {
 	return liSze.QuadPart;
 #else
 	struct stat statusFile;
-    if (stat(FROM_GUICHAR(AsInternal()), &statusFile) != -1)
+    if (stat(AsInternal(), &statusFile) != -1)
 		return statusFile.st_size;
 	return 0;
 #endif
@@ -538,7 +502,7 @@ bool FilePath::IsDirectory() const noexcept {
 #else
 	struct stat statusFile;
 #endif
-    if (stat(FROM_GUICHAR(AsInternal()), &statusFile) != -1)
+    if (stat(AsInternal(), &statusFile) != -1)
 #ifdef WIN32
 		return (statusFile.st_mode & _S_IFDIR) != 0;
 #else
@@ -606,7 +570,7 @@ bool FilePath::Matches(const GUI::gui_char *pattern) const {
 		if (PatternMatch(patElement, nameCopy)) {
 			return true;
 		}
-        start += strlen(FROM_GUICHAR(patElement)) + 1;
+        start += strlen(patElement) + 1;
 	}
 	return false;
 }
@@ -772,7 +736,7 @@ std::string CommandExecute(const GUI::gui_char *command, const GUI::gui_char *di
 #else
 	FilePath startDirectory= FilePath::GetWorkingDirectory();	// Save
 	FilePath(directoryForRun).SetWorkingDirectory();
-    FILE *fp = popen(FROM_GUICHAR(command), "r");
+    FILE *fp = popen(command, "r");
 	if (fp) {
 		char buffer[16 * 1024];
 		size_t lenData = fread(buffer, 1, sizeof(buffer), fp);

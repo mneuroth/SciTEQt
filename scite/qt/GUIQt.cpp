@@ -10,6 +10,7 @@
 
 #include <string>
 #include <string_view>
+#include <sstream>
 #include <vector>
 #include <map>
 #include <set>
@@ -56,6 +57,8 @@
 #include <QtQuick/QQuickView>
 #include <QThread>
 
+extern QString ConvertGuiCharToQString(const GUI::gui_char * s);
+
 namespace GUI {
 
 enum { SURROGATE_LEAD_FIRST = 0xD800 };
@@ -90,7 +93,7 @@ void SleepMilliseconds(int sleepTime) {
     QThread::msleep(sleepTime);
 }
 
-#ifdef WIN32
+#if defined(WIN32)
 
 static unsigned int UTF8Length(const wchar_t *uptr, size_t tlen) noexcept {
     unsigned int len = 0;
@@ -262,9 +265,44 @@ std::string LowerCaseUTF8(std::string_view sv) {
     return UTF8FromString(lc);
 }
 
-#endif
+#elif defined(__ANDROID__) || defined(Q_OS_LINUX)
 
-#ifdef __ANDROID__
+// from GUIGTK.cxx
+
+gui_string StringFromUTF8(const char *s) {
+    if (s)
+        return gui_string(s);
+    else
+        return gui_string("");
+}
+
+gui_string StringFromUTF8(const std::string &s) {
+    return s;
+}
+
+std::string UTF8FromString(const gui_string &s) {
+    return s;
+}
+
+gui_string StringFromInteger(long i) {
+    char number[32];
+    sprintf(number, "%0ld", i);
+    return gui_string(number);
+}
+
+gui_string StringFromLongLong(long long i) {
+    try {
+        std::ostringstream strstrm;
+        strstrm << i;
+        return StringFromUTF8(strstrm.str());
+    } catch (std::exception &) {
+        // Exceptions not enabled on stream but still causes diagnostic in Coverity.
+        // Simply swallow the failure and return the default value.
+    }
+    return gui_string();
+}
+
+//#ifdef __ANDROID__
 
 std::string LowerCaseUTF8(std::string_view sv) {
 // TODO: check that this is ok for android...
@@ -273,7 +311,19 @@ std::string LowerCaseUTF8(std::string_view sv) {
     return sLower.toStdString();
 }
 
+//#else
+
+//std::string LowerCaseUTF8(std::string_view sv) {
+//    gchar *lower = g_utf8_strdown(sv.data(), sv.length());
+//    const std::string sLower(lower);
+//    g_free(lower);
+//    return sLower;
+//}
+
+//#endif
+
 #endif
+
 
 void Window::Destroy()
 {
@@ -311,7 +361,7 @@ void Window::SetTitle(const gui_char *s)
     QQuickWindow * window = reinterpret_cast<QQuickWindow *>(GetID());
     if( window != 0 )
     {
-        window->setTitle(QString::fromWCharArray(s));
+        window->setTitle(ConvertGuiCharToQString(s));
     }
 }
 

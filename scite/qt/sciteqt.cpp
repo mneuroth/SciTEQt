@@ -13,6 +13,24 @@
 #include "ScintillaEditBase.h"
 #include "ScintillaQt.h"
 
+QString ConvertGuiCharToQString(const GUI::gui_char * s)
+{
+#ifdef Q_OS_WINDOWS
+    return QString::fromWCharArray(s);
+#else
+    return QString(s);
+#endif
+}
+
+QString ConvertGuiStringToQString(const GUI::gui_string & s)
+{
+#ifdef Q_OS_WINDOWS
+    return QString::fromWCharArray(s.c_str());
+#else
+    return QString(s.c_str());
+#endif
+}
+
 // see: https://stackoverflow.com/questions/14791360/qt5-syntax-highlighting-in-qml
 template <class T> T childObject(QQmlApplicationEngine& engine,
                                  const QString& objectName,
@@ -181,7 +199,7 @@ void SciTEQt::GetWindowPosition(int *left, int *top, int *width, int *height, in
 
 bool SciTEQt::OpenDialog(const FilePath &directory, const GUI::gui_char *filesFilter)
 {
-    startFileDialog(directory.AbsolutePath().AsUTF8().c_str(), QString::fromWCharArray(filesFilter), true);
+    startFileDialog(directory.AbsolutePath().AsUTF8().c_str(), ConvertGuiCharToQString(filesFilter), true);
     return true;
 }
 
@@ -244,7 +262,7 @@ void SciTEQt::Find()
 SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::gui_string &msg, MessageBoxStyle style)
 {
     //qDebug() << "MessageBox " << msg << " style=" << style << endl;
-    QObject * pMessageBox = showInfoDialog(QString::fromStdWString(msg), style);
+    QObject * pMessageBox = showInfoDialog(ConvertGuiStringToQString(msg), style);
     connect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnAcceptedClicked()));
     connect(pMessageBox,SIGNAL(rejected()),this,SLOT(OnRejectedClicked()));
     connect(pMessageBox,SIGNAL(yes()),this,SLOT(OnYesClicked()));
@@ -380,7 +398,7 @@ void SciTEQt::CopyPath()
     const GUI::gui_string clipText(filePath.AsInternal());
 
     QClipboard * pClipboard = QGuiApplication::clipboard();
-    pClipboard->setText(QString::fromWCharArray(clipText.c_str()));
+    pClipboard->setText(ConvertGuiCharToQString(clipText.c_str()));
 }
 
 void SciTEQt::SetStatusBarText(const char *s)
@@ -437,7 +455,7 @@ void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
         {
             int posForThisItem = itemID - IDM_BUFFER;
 
-            emit setInBuffersModel(posForThisItem, QString::fromWCharArray(text), false);
+            emit setInBuffersModel(posForThisItem, ConvertGuiCharToQString(text), false);
         }
     }
     if(menuNumber == 6)
@@ -446,7 +464,7 @@ void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
         {
             int posForThisItem = itemID - IDM_LANGUAGE;
 
-            emit setInLanguagesModel(posForThisItem, QString::fromWCharArray(text), false);
+            emit setInLanguagesModel(posForThisItem, ConvertGuiCharToQString(text), false);
         }
     }
 
@@ -592,7 +610,7 @@ void SciTEQt::setMainWindow(QObject * obj)
 QString SciTEQt::getLocalisedText(const QString & textInput)
 {
     auto localisedText = localiser.Text(textInput.toStdString().c_str(),true);
-    return QString::fromStdWString(localisedText);
+    return ConvertGuiStringToQString(localisedText);
 }
 
 bool SciTEQt::saveCurrentAs(const QString & sFileName)
@@ -600,15 +618,21 @@ bool SciTEQt::saveCurrentAs(const QString & sFileName)
     bool ret = false;
     QUrl aUrl(sFileName);
     QString sLocalFileName = aUrl.toLocalFile();
+#ifdef Q_OS_WINDOWS
     wchar_t * buf = new wchar_t[sLocalFileName.length()+1];
     sLocalFileName.toWCharArray(buf);
     buf[sLocalFileName.length()] = 0;
     FilePath path(buf);
+#else
+    FilePath path(sFileName.toStdString());
+#endif
     if(path.IsSet())
     {
         ret = SaveIfNotOpen(path, false);
     }
+#ifdef Q_OS_WINDOWS
     delete [] buf;
+#endif
     return ret;
 }
 
