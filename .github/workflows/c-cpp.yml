@@ -55,32 +55,39 @@ jobs:
         #ls -lrt
         #make clean
         #ls -lrt
-        #cd ../..
-        which qmake
+        #cd ../..        
         qmake -r sciteqt.pro
         ls -lrt
-        ls -lrt scintilla
-        ls -lrt scintilla/qt
-        ls -lrt scintilla/qt/ScintillaEditBase
-        ls -lrt scite 
-        ls -lrt scite/qt
-        cd scintilla        
-        cd qt
-        cd ScintillaEditBase
-        make -j 4
+        make
         ls -lrt
-        cd ..
-        cd ..
-        cd ..
         cd scite
         cd qt
         ls -lrt
-        make -j 4        
-        ls -lrt
-        cd ..
-        cd ..
-        ls -lrt scite 
-        ls -lrt scite/qt
+#        which qmake
+#        qmake -r sciteqt.pro
+#        ls -lrt
+#        ls -lrt scintilla
+#        ls -lrt scintilla/qt
+#        ls -lrt scintilla/qt/ScintillaEditBase
+#        ls -lrt scite 
+#        ls -lrt scite/qt
+#        cd scintilla        
+#        cd qt
+#        cd ScintillaEditBase
+#        make -j 4
+#        ls -lrt
+#        cd ..
+#        cd ..
+#        cd ..
+#        cd scite
+#        cd qt
+#        ls -lrt
+#        make -j 4        
+#        ls -lrt
+#        cd ..
+#        cd ..
+#        ls -lrt scite 
+#        ls -lrt scite/qt
 
   linux_build_5_13_2:
 
@@ -120,28 +127,35 @@ jobs:
         which qmake
         qmake -r sciteqt.pro
         ls -lrt
-        ls -lrt scintilla
-        ls -lrt scintilla/qt
-        ls -lrt scintilla/qt/ScintillaEditBase
-        ls -lrt scite 
-        ls -lrt scite/qt
-        cd scintilla        
-        cd qt
-        cd ScintillaEditBase
-        make -j 4
+        make
         ls -lrt
-        cd ..
-        cd ..
-        cd ..
         cd scite
         cd qt
         ls -lrt
-        make -j 4        
-        ls -lrt
-        cd ..
-        cd ..
-        ls -lrt scite 
-        ls -lrt scite/qt
+#        qmake -r sciteqt.pro
+#        ls -lrt
+#        ls -lrt scintilla
+#        ls -lrt scintilla/qt
+#        ls -lrt scintilla/qt/ScintillaEditBase
+#        ls -lrt scite 
+#        ls -lrt scite/qt
+#        cd scintilla        
+#        cd qt
+#        cd ScintillaEditBase
+#        make -j 4
+#        ls -lrt
+#        cd ..
+#        cd ..
+#        cd ..
+#        cd scite
+#        cd qt
+#        ls -lrt
+#        make -j 4        
+#        ls -lrt
+#        cd ..
+#        cd ..
+#        ls -lrt scite 
+#        ls -lrt scite/qt
 
   linux_build_5_15_0:
 
@@ -181,7 +195,7 @@ jobs:
         which qmake
         qmake -r sciteqt.pro
         ls -lrt
-        make
+        make -j 4
         ls -lrt
         cd scite
         cd qt
@@ -234,7 +248,7 @@ jobs:
         cd scintilla        
         cd qt
         cd ScintillaEditBase
-        mingw32-make 
+        mingw32-make
         cd ..
         cd ..
         cd ..
