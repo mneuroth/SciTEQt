@@ -45,7 +45,7 @@ public:
 	}
 };
 
-#if defined(GTK) || defined(__APPLE__) || defined(__ANDROID__) || defined(Q_OS_LINUX)
+#if defined(GTK) || defined(__APPLE__) || defined(__ANDROID__) || defined(__linux__)
 
 // On GTK and OS X use UTF-8 char strings
 
