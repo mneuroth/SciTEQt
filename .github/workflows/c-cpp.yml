@@ -120,11 +120,28 @@ jobs:
         which qmake
         qmake -r sciteqt.pro
         ls -lrt
+        ls -lrt scintilla
+        ls -lrt scintilla/qt
+        ls -lrt scintilla/qt/ScintillaEditBase
+        ls -lrt scite 
+        ls -lrt scite/qt
+        cd scintilla        
+        cd qt
+        cd ScintillaEditBase
         make -j 4
         ls -lrt
+        cd ..
+        cd ..
+        cd ..
         cd scite
         cd qt
         ls -lrt
+        make -j 4        
+        ls -lrt
+        cd ..
+        cd ..
+        ls -lrt scite 
+        ls -lrt scite/qt
 
   linux_build_5_15_0:
 
@@ -164,7 +181,7 @@ jobs:
         which qmake
         qmake -r sciteqt.pro
         ls -lrt
-        make -j 4
+        make
         ls -lrt
         cd scite
         cd qt
@@ -210,8 +227,24 @@ jobs:
         gcc -v
         qmake -r sciteqt.pro
         dir
-        mingw32-make -j 4
+        #mingw32-make -j 4
+        #dir
+        #dir scite\qt
+        #
+        cd scintilla        
+        cd qt
+        cd ScintillaEditBase
+        mingw32-make 
+        cd ..
+        cd ..
+        cd ..
+        cd scite
+        cd qt
+        mingw32-make
         dir
+        cd ..
+        cd ..
+        dir scite 
         dir scite\qt
         
   windows_msc_build:
