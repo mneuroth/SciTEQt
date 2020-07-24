@@ -8,152 +8,12 @@ on:
 
 jobs:
     
-  linux_build_5_14_2:
-
-    runs-on: ubuntu-latest
-      
-    steps:
-    - uses: actions/checkout@v2
-    - uses: jurplel/install-qt-action@v2.6.2
-      with:
-        # Directory to install Qt
-        dir: # optional
-        # Version of Qt to install
-        version: '5.14.2'
-        # Host platform
-        host: # optional
-        # Target platform for build
-        target: 'desktop'
-        # Architecture for Windows/Android
-        arch: # optional
-        # Whether or not to install Qt dependencies on Linux
-        install-deps: 'true'
-        # Additional Qt modules to install
-        modules: 'qtscript qtscripttools' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
-        # Force a Qt mirror in case the default is not working
-        mirror: # optional
-        # Whether or not to actually download Qt
-        cached: # optional, default is false
-        # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
-        # Version of py7zr to use in case of issues
-        py7zrversion: # optional, default is ==0.6
-        # Any extra arguments to append to the back
-        extra: # optional
-    - name: Install Qt and compile
-      run: |
-        #sudo apt-get install libgtk-3-dev
-        pwd 
-        ls -lrt
-        ls -lrt ..
-        ls -lrt ../Qt
-        ls -lrt ../Qt/Tools
-        python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
-        ls -lrt ../Qt/Tools
-        #cd scite/gtk
-        #make -j 4
-        #ls -lrt
-        #make clean
-        #ls -lrt
-        #cd ../..        
-        qmake -r sciteqt.pro
-        ls -lrt
-        make
-        ls -lrt
-        ls -lrt scite/qt
-
-  linux_build_5_13_2:
-
-    runs-on: ubuntu-latest
-      
-    steps:
-    - uses: actions/checkout@v2
-    - uses: jurplel/install-qt-action@v2.6.2
-      with:
-        # Directory to install Qt
-        dir: # optional
-        # Version of Qt to install
-        version: '5.13.2'
-        # Host platform
-        host: # optional
-        # Target platform for build
-        target: 'desktop'
-        # Architecture for Windows/Android
-        arch: # optional
-        # Whether or not to install Qt dependencies on Linux
-        install-deps: 'true'
-        # Additional Qt modules to install
-        modules: 'qtscript qtscripttools' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
-        # Force a Qt mirror in case the default is not working
-        mirror: # optional
-        # Whether or not to actually download Qt
-        cached: # optional, default is false
-        # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
-        # Version of py7zr to use in case of issues
-        py7zrversion: # optional, default is ==0.6
-        # Any extra arguments to append to the back
-        extra: # optional
-    - name: Install Qt and compile
-      run: |
-        python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
-        which qmake
-        qmake -r sciteqt.pro
-        ls -lrt
-        make
-        ls -lrt
-        ls -lrt scite/qt
-
-
-  linux_build_5_15_0:
-
-    runs-on: ubuntu-latest
-      
-    steps:
-    - uses: actions/checkout@v2
-    - uses: jurplel/install-qt-action@v2.6.2
-      with:
-        # Directory to install Qt
-        dir: # optional
-        # Version of Qt to install
-        version: '5.15.0'
-        # Host platform
-        host: # optional
-        # Target platform for build
-        target: 'desktop'
-        # Architecture for Windows/Android
-        arch: # optional
-        # Whether or not to install Qt dependencies on Linux
-        install-deps: 'true'
-        # Additional Qt modules to install
-        modules: 'qtscript qtscripttools' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
-        # Force a Qt mirror in case the default is not working
-        mirror: # optional
-        # Whether or not to actually download Qt
-        cached: # optional, default is false
-        # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
-        # Version of py7zr to use in case of issues
-        py7zrversion: # optional, default is ==0.6
-        # Any extra arguments to append to the back
-        extra: # optional
-    - name: Install Qt and compile
-      run: |
-        python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
-        which qmake
-        qmake -r sciteqt.pro
-        ls -lrt
-        make
-        ls -lrt
-        ls -lrt scite/qt
-
-# mingw32 build has some problems with unresolved externals...
-#  windows_gcc_build:
+#  linux_build_5_14_2:
 #
-#    runs-on: windows-latest
-#
+#    runs-on: ubuntu-latest
+#      
 #    steps:
-#    - uses: actions/checkout@v1
+#    - uses: actions/checkout@v2
 #    - uses: jurplel/install-qt-action@v2.6.2
 #      with:
 #        # Directory to install Qt
@@ -165,7 +25,208 @@ jobs:
 #        # Target platform for build
 #        target: 'desktop'
 #        # Architecture for Windows/Android
-#        arch: 'win64_mingw73'
+#        arch: # optional
+#        # Whether or not to install Qt dependencies on Linux
+#        install-deps: 'true'
+#        # Additional Qt modules to install
+#        modules: 'qtscript qtscripttools' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
+#        # Force a Qt mirror in case the default is not working
+#        mirror: # optional
+#        # Whether or not to actually download Qt
+#        cached: # optional, default is false
+#        # Version of aqtinstall to use in case of issues
+#        aqtversion: # optional, default is ==0.8
+#        # Version of py7zr to use in case of issues
+#        py7zrversion: # optional, default is ==0.6
+#        # Any extra arguments to append to the back
+#        extra: # optional
+#    - name: Install Qt and compile
+#      run: |
+#        #sudo apt-get install libgtk-3-dev
+#        pwd 
+#        ls -lrt
+#        ls -lrt ..
+#        ls -lrt ../Qt
+#        ls -lrt ../Qt/Tools
+#        python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
+#        ls -lrt ../Qt/Tools
+#        #cd scite/gtk
+#        #make -j 4
+#        #ls -lrt
+#        #make clean
+#        #ls -lrt
+#        #cd ../..        
+#        qmake -r sciteqt.pro
+#        ls -lrt
+#        make
+#        ls -lrt
+#        ls -lrt scite/qt
+#
+#  linux_build_5_13_2:
+#
+#    runs-on: ubuntu-latest
+#      
+#    steps:
+#    - uses: actions/checkout@v2
+#    - uses: jurplel/install-qt-action@v2.6.2
+#      with:
+#        # Directory to install Qt
+#        dir: # optional
+#        # Version of Qt to install
+#        version: '5.13.2'
+#        # Host platform
+#        host: # optional
+#        # Target platform for build
+#        target: 'desktop'
+#        # Architecture for Windows/Android
+#        arch: # optional
+#        # Whether or not to install Qt dependencies on Linux
+#        install-deps: 'true'
+#        # Additional Qt modules to install
+#        modules: 'qtscript qtscripttools' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
+#        # Force a Qt mirror in case the default is not working
+#        mirror: # optional
+#        # Whether or not to actually download Qt
+#        cached: # optional, default is false
+#        # Version of aqtinstall to use in case of issues
+#        aqtversion: # optional, default is ==0.8
+#        # Version of py7zr to use in case of issues
+#        py7zrversion: # optional, default is ==0.6
+#        # Any extra arguments to append to the back
+#        extra: # optional
+#    - name: Install Qt and compile
+#      run: |
+#        python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
+#        which qmake
+#        qmake -r sciteqt.pro
+#        ls -lrt
+#        make
+#        ls -lrt
+#        ls -lrt scite/qt
+#
+#
+#  linux_build_5_15_0:
+#
+#    runs-on: ubuntu-latest
+#      
+#    steps:
+#    - uses: actions/checkout@v2
+#    - uses: jurplel/install-qt-action@v2.6.2
+#      with:
+#        # Directory to install Qt
+#        dir: # optional
+#        # Version of Qt to install
+#        version: '5.15.0'
+#        # Host platform
+#        host: # optional
+#        # Target platform for build
+#        target: 'desktop'
+#        # Architecture for Windows/Android
+#        arch: # optional
+#        # Whether or not to install Qt dependencies on Linux
+#        install-deps: 'true'
+#        # Additional Qt modules to install
+#        modules: 'qtscript qtscripttools' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
+#        # Force a Qt mirror in case the default is not working
+#        mirror: # optional
+#        # Whether or not to actually download Qt
+#        cached: # optional, default is false
+#        # Version of aqtinstall to use in case of issues
+#        aqtversion: # optional, default is ==0.8
+#        # Version of py7zr to use in case of issues
+#        py7zrversion: # optional, default is ==0.6
+#        # Any extra arguments to append to the back
+#        extra: # optional
+#    - name: Install Qt and compile
+#      run: |
+#        python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
+#        which qmake
+#        qmake -r sciteqt.pro
+#        ls -lrt
+#        make
+#        ls -lrt
+#        ls -lrt scite/qt
+#
+## mingw32 build has some problems with unresolved externals...
+##  windows_gcc_build:
+##
+##    runs-on: windows-latest
+##
+##    steps:
+##    - uses: actions/checkout@v1
+##    - uses: jurplel/install-qt-action@v2.6.2
+##      with:
+##        # Directory to install Qt
+##        dir: # optional
+##        # Version of Qt to install
+##        version: '5.14.2'
+##        # Host platform
+##        host: # optional
+##        # Target platform for build
+##        target: 'desktop'
+##        # Architecture for Windows/Android
+##        arch: 'win64_mingw73'
+##        # Whether or not to install Qt dependencies on Linux
+##        install-deps: 'true'
+##        # Additional Qt modules to install
+##        modules: 'qtscript qtscripttools'
+##        # Force a Qt mirror in case the default is not working
+##        mirror: # optional
+##        # Whether or not to actually download Qt
+##        cached: # optional, default is false
+##        # Version of aqtinstall to use in case of issues
+##        aqtversion: # optional, default is ==0.8
+##        # Version of py7zr to use in case of issues
+##        py7zrversion: # optional, default is ==0.6
+##        # Any extra arguments to append to the back
+##        extra: # optional
+##    - name: Install Qt and compile
+##      run: |
+##        d:
+##        dir 
+##        python -m aqt tool -O d:\a\SciTEQt/Qt windows tools_ifw 3.2.2 win-x86
+##        gcc -v
+##        qmake -r sciteqt.pro
+##        dir
+##        #mingw32-make -j 4
+##        #dir
+##        #dir scite\qt
+##        #
+##        cd scintilla        
+##        cd qt
+##        cd ScintillaEditBase
+##        mingw32-make
+##        cd ..
+##        cd ..
+##        cd ..
+##        cd scite
+##        cd qt
+##        mingw32-make
+##        dir
+##        cd ..
+##        cd ..
+##        dir scite 
+##        dir scite\qt
+#        
+#  windows_msc_build:
+#
+#    runs-on: windows-latest
+#
+#    steps:
+#    - uses: actions/checkout@v1
+#    - uses: ilammy/msvc-dev-cmd@v1.0.0
+#    - uses: jurplel/install-qt-action@v2.6.2
+#      with:
+#        # Directory to install Qt
+#        dir: # optional
+#        # Version of Qt to install
+#        version: '5.14.2'
+#        # Host platform
+#        host: # optional
+#        # Target platform for build
+#        target: 'desktop'
+#        # Architecture for Windows/Android
+#        arch: 'win64_msvc2017_64'
 #        # Whether or not to install Qt dependencies on Linux
 #        install-deps: 'true'
 #        # Additional Qt modules to install
@@ -182,150 +243,89 @@ jobs:
 #        extra: # optional
 #    - name: Install Qt and compile
 #      run: |
+#        cd 
+#        dir
 #        d:
 #        dir 
-#        python -m aqt tool -O d:\a\SciTEQt/Qt windows tools_ifw 3.2.2 win-x86
-#        gcc -v
+#        python -m aqt tool -O d:\a\SciteQt/Qt windows tools_ifw 3.2.2 win-x86
+#        dir d:\a\SciteQt\Qt\Tools
+#        cl
+#        where qmake
 #        qmake -r sciteqt.pro
 #        dir
-#        #mingw32-make -j 4
-#        #dir
-#        #dir scite\qt
-#        #
-#        cd scintilla        
-#        cd qt
-#        cd ScintillaEditBase
-#        mingw32-make
-#        cd ..
-#        cd ..
-#        cd ..
-#        cd scite
-#        cd qt
-#        mingw32-make
+#        nmake
 #        dir
-#        cd ..
-#        cd ..
-#        dir scite 
+#        dir scite
 #        dir scite\qt
-        
-  windows_msc_build:
-
-    runs-on: windows-latest
-
-    steps:
-    - uses: actions/checkout@v1
-    - uses: ilammy/msvc-dev-cmd@v1.0.0
-    - uses: jurplel/install-qt-action@v2.6.2
-      with:
-        # Directory to install Qt
-        dir: # optional
-        # Version of Qt to install
-        version: '5.14.2'
-        # Host platform
-        host: # optional
-        # Target platform for build
-        target: 'desktop'
-        # Architecture for Windows/Android
-        arch: 'win64_msvc2017_64'
-        # Whether or not to install Qt dependencies on Linux
-        install-deps: 'true'
-        # Additional Qt modules to install
-        modules: 'qtscript qtscripttools'
-        # Force a Qt mirror in case the default is not working
-        mirror: # optional
-        # Whether or not to actually download Qt
-        cached: # optional, default is false
-        # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
-        # Version of py7zr to use in case of issues
-        py7zrversion: # optional, default is ==0.6
-        # Any extra arguments to append to the back
-        extra: # optional
-    - name: Install Qt and compile
-      run: |
-        cd 
-        dir
-        d:
-        dir 
-        python -m aqt tool -O d:\a\SciteQt/Qt windows tools_ifw 3.2.2 win-x86
-        dir d:\a\SciteQt\Qt\Tools
-        cl
-        where qmake
-        qmake -r sciteqt.pro
-        dir
-        nmake
-        dir
-        dir scite
-        dir scite\qt
-        dir scite\qt\release
-        #dir src\dist\packages\org.scintilla.sciteqt\data
-        #cd src\dist\packages\org.scintilla.sciteqt\data
-        #windeployqt --release --no-system-d3d-compiler sciteqt.exe
-        #dir
-        #cd ..\..\..
-        #dir
-        #d:\a\SciteQt\Qt\Tools\QtInstallerFramework\3.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciteQtInstaller.exe
-        #dir 
-        #echo %path%
-        #where binarycreator
-        #binarycreator
-        
-  macos_build:
-
-    runs-on: macos-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: jurplel/install-qt-action@v2.6.2
-      with:
-        # Directory to install Qt
-        dir: # optional
-        # Version of Qt to install
-        version: '5.14.2'
-        # Host platform
-        host: 'mac'
-        # Target platform for build
-        target: 'desktop'
-        # Architecture for Windows/Android
-        arch: # optional
-        # Whether or not to install Qt dependencies on Linux
-        install-deps: 'true'
-        # Additional Qt modules to install
-        modules: 'qtscript qtscripttools'
-        # Force a Qt mirror in case the default is not working
-        mirror: # optional
-        # Whether or not to actually download Qt
-        cached: # optional, default is false
-        # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
-        # Version of py7zr to use in case of issues
-        py7zrversion: # optional, default is ==0.6
-        # Any extra arguments to append to the back
-        extra: # optional
-    - name: Install Qt and compile
-      run: |
-        pwd 
-        ls -lrt
-        ls -lrt ..
-        ls -lrt ../Qt
-        ls -lrt ../Qt/Tools
-        python3 -m aqt tool -O ../Qt mac tools_ifw 3.2.2 mac-x64
-        ls -lrt ../Qt/Tools
-        which qmake
-        qmake -r sciteqt.pro
-        ls -lrt
-        make
-        ls -lrt
-        ls -lrt scite/qt
-
-        #make -j 4
-        #ls -lrt 
-        #ls -lrt scite
-        #ls -lrt scite/qt
-        #cd scite/qt
-        #which macdeployqt
-        #macdeployqt sciteqt.app -dmg -verbose=1
-        #ls -lrt
+#        dir scite\qt\release
+#        #dir src\dist\packages\org.scintilla.sciteqt\data
+#        #cd src\dist\packages\org.scintilla.sciteqt\data
+#        #windeployqt --release --no-system-d3d-compiler sciteqt.exe
+#        #dir
+#        #cd ..\..\..
+#        #dir
+#        #d:\a\SciteQt\Qt\Tools\QtInstallerFramework\3.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciteQtInstaller.exe
+#        #dir 
+#        #echo %path%
+#        #where binarycreator
+#        #binarycreator
+#        
+#  macos_build:
+#
+#    runs-on: macos-latest
+#
+#    steps:
+#    - uses: actions/checkout@v2
+#    - uses: jurplel/install-qt-action@v2.6.2
+#      with:
+#        # Directory to install Qt
+#        dir: # optional
+#        # Version of Qt to install
+#        version: '5.14.2'
+#        # Host platform
+#        host: 'mac'
+#        # Target platform for build
+#        target: 'desktop'
+#        # Architecture for Windows/Android
+#        arch: # optional
+#        # Whether or not to install Qt dependencies on Linux
+#        install-deps: 'true'
+#        # Additional Qt modules to install
+#        modules: 'qtscript qtscripttools'
+#        # Force a Qt mirror in case the default is not working
+#        mirror: # optional
+#        # Whether or not to actually download Qt
+#        cached: # optional, default is false
+#        # Version of aqtinstall to use in case of issues
+#        aqtversion: # optional, default is ==0.8
+#        # Version of py7zr to use in case of issues
+#        py7zrversion: # optional, default is ==0.6
+#        # Any extra arguments to append to the back
+#        extra: # optional
+#    - name: Install Qt and compile
+#      run: |
+#        pwd 
+#        ls -lrt
+#        ls -lrt ..
+#        ls -lrt ../Qt
+#        ls -lrt ../Qt/Tools
+#        python3 -m aqt tool -O ../Qt mac tools_ifw 3.2.2 mac-x64
+#        ls -lrt ../Qt/Tools
+#        which qmake
+#        qmake -r sciteqt.pro
+#        ls -lrt
+#        make
+#        ls -lrt
+#        ls -lrt scite/qt
+#
+#        #make -j 4
+#        #ls -lrt 
+#        #ls -lrt scite
+#        #ls -lrt scite/qt
+#        #cd scite/qt
+#        #which macdeployqt
+#        #macdeployqt sciteqt.app -dmg -verbose=1
+#        #ls -lrt
 
   linux_scite_org:
 
@@ -335,7 +335,10 @@ jobs:
     - uses: actions/checkout@v2
     - name: Compile SciTE
       run: |
-        sudo apt-get install libgtk-3-dev
+        uname -a
+        #sudo apt-get install libgtk-3-dev
+        sudo apt-get install libgtk2.0-dev
+        sudo apt-get install libglib2.0-dev
         pwd 
         cd scite/gtk
         make
@@ -351,7 +354,7 @@ jobs:
     - name: Compile SciTE
       run: |
         cd scite
-        cd win
+        cd win32
         dir 
         make
         nmake -f scite.mak
