@@ -197,7 +197,9 @@ public:
     Q_INVOKABLE void CmdFind();
     Q_INVOKABLE void CmdFindNext();
     Q_INVOKABLE void CmdFindPrevious();
+    Q_INVOKABLE void CmdFullScreen();
     Q_INVOKABLE void CmdShowToolBar();
+    Q_INVOKABLE void CmdShowTabBar();
     Q_INVOKABLE void CmdShowStatusBar();
     Q_INVOKABLE void CmdLineNumbers();
     Q_INVOKABLE void CmdAlwaysOnTop();

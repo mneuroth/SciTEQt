@@ -223,11 +223,27 @@ ApplicationWindow {
             title: processMenuItem(qsTr("&View"),null)
 
             Action {
+                id: actionFullScreen
+                text: processMenuItem(qsTr("Full Scree&n"), actionFullScreen)
+                shortcut: "F11"
+                enabled: false
+                checkable: true
+                checked: false
+                onTriggered: sciteQt.CmdFullScreen()
+            }
+            Action {
                 id: actionShowToolBar
                 text: processMenuItem(qsTr("&Tool Bar"), actionShowToolBar)
                 checkable: true
                 checked: false
                 onTriggered: sciteQt.CmdShowToolBar()
+            }
+            Action {
+                id: actionShowTabBar
+                text: processMenuItem(qsTr("Tab &Bar"), actionShowTabBar)
+                checkable: true
+                checked: false
+                onTriggered: sciteQt.CmdShowTabBar()
             }
             Action {
                 id: actionShowStatusBar
@@ -236,6 +252,8 @@ ApplicationWindow {
                 checked: false
                 onTriggered: sciteQt.CmdShowStatusBar()
             }
+            MenuSeparator {}
+
             Action {
                 id: actionLineNumbers
                 text: qsTr("Line &Numbers")

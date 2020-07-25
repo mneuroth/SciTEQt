@@ -722,14 +722,23 @@ void SciTEQt::CmdFindPrevious()
     MenuCommand(IDM_FINDNEXTBACK);
 }
 
+void SciTEQt::CmdFullScreen()
+{
+    MenuCommand(IDM_FULLSCREEN);
+}
+
 void SciTEQt::CmdShowToolBar()
 {
     MenuCommand(IDM_VIEWTOOLBAR);
 }
 
+void SciTEQt::CmdShowTabBar()
+{
+    MenuCommand(IDM_VIEWTABBAR);
+}
+
 void SciTEQt::CmdShowStatusBar()
 {
-    qDebug() << "show status bar" << endl;
     MenuCommand(IDM_VIEWSTATUSBAR);
 }
 
