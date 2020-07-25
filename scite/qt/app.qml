@@ -435,6 +435,20 @@ ApplicationWindow {
                 onTriggered: sciteQt.CmdVerticalSplit()
             }
             Action {
+                id: actionWrap
+                text: processMenuItem(qsTr("&Wrap"), actionWrap)
+                checkable: true
+                checked: false
+                onTriggered: sciteQt.CmdWrap()
+            }
+            Action {
+                id: actionWrapOutput
+                text: processMenuItem(qsTr("Wrap &Output"), actionWrapOutput)
+                checkable: true
+                checked: false
+                onTriggered: sciteQt.CmdWrapOutput()
+            }
+            Action {
                 id: actionReadOnly
                 text: processMenuItem(qsTr("&Read-Only"), actionReadOnly)
                 checkable: true
@@ -448,6 +462,34 @@ ApplicationWindow {
                 checked: false
                 onTriggered: sciteQt.CmdUseMonospacedFont()
             }
+            MenuSeparator {}
+            Menu {
+                id: menuLineEndCharacters
+                title: processMenuItem(qsTr("&Line End Characters"), menuLineEndCharacters)
+
+                Action {
+                    id: actionCrLf
+                    text: processMenuItem(qsTr("CR &+ LF"), actionCrLf)
+                    checkable: true
+                    checked: false
+                    onTriggered: sciteQt.CmdCrLf()
+                }
+                Action {
+                    id: actionCr
+                    text: processMenuItem(qsTr("&CR"), actionCr)
+                    checkable: true
+                    checked: false
+                    onTriggered: sciteQt.CmdCr()
+                }
+                Action {
+                    id: actionLf
+                    text: processMenuItem(qsTr("&LF"), actionLf)
+                    checkable: true
+                    checked: false
+                    onTriggered: sciteQt.CmdLf()
+                }
+            }
+
         }
 
         Menu {
@@ -757,8 +799,23 @@ ApplicationWindow {
             case 401:  //IDM_SPLITVERTICAL
                 actionVerticalSplit.checked = val
                 break;
+            case 414:  //IDM_WRAP
+                actionWrap.checked = val
+                break;
+            case 415:  //IDM_WRAPOUTPUT
+                actionWrapOutput.checked = val
+                break;
             case 416:  //IDM_READONLY
                 actionReadOnly.checked = val
+                break;
+            case 430:  //IDM_EOL_CRLF
+                actionCrLf.checked = val
+                break;
+            case 431:  //IDM_EOL_CR
+                actionCr.checked = val
+                break;
+            case 432:  //IDM_EOL_LF
+                actionLf.checked = val
                 break;
             default:
                 console.log("unhandled menu checked "+menuId)
