@@ -796,6 +796,52 @@ void SciTEQt::CmdParameters()
     MenuCommand(IDM_TOGGLEPARAMETERS);
 }
 
+void SciTEQt::CmdCompile()
+{
+    MenuCommand(IDM_COMPILE);
+}
+
+void SciTEQt::CmdBuild()
+{
+    MenuCommand(IDM_BUILD);
+}
+
+void SciTEQt::CmdClean()
+{
+    MenuCommand(IDM_CLEAN);
+}
+
+void SciTEQt::CmdGo()
+{
+// TODO implement !
+    MenuCommand(IDM_GO);
+}
+
+void SciTEQt::CmdStopExecuting()
+{
+    MenuCommand(IDM_STOPEXECUTE);
+}
+
+void SciTEQt::CmdNextMessage()
+{
+    MenuCommand(IDM_NEXTMSG);
+}
+
+void SciTEQt::CmdPreviousMessage()
+{
+    MenuCommand(IDM_PREVMSG);
+}
+
+void SciTEQt::CmdClearOutput()
+{
+    MenuCommand(IDM_CLEAROUTPUT);
+}
+
+void SciTEQt::CmdSwitchPane()
+{
+    MenuCommand(IDM_SWITCHPANE);
+}
+
 void SciTEQt::CmdAlwaysOnTop()
 {
     MenuCommand(IDM_ONTOP);

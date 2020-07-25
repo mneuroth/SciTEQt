@@ -209,8 +209,17 @@ public:
     Q_INVOKABLE void CmdLineNumbers();
     Q_INVOKABLE void CmdMargin();
     Q_INVOKABLE void CmdFoldMargin();
-    Q_INVOKABLE void CmdParameters();
     Q_INVOKABLE void CmdToggleOutput();
+    Q_INVOKABLE void CmdParameters();
+    Q_INVOKABLE void CmdCompile();
+    Q_INVOKABLE void CmdBuild();
+    Q_INVOKABLE void CmdClean();
+    Q_INVOKABLE void CmdGo();
+    Q_INVOKABLE void CmdStopExecuting();
+    Q_INVOKABLE void CmdNextMessage();
+    Q_INVOKABLE void CmdPreviousMessage();
+    Q_INVOKABLE void CmdClearOutput();
+    Q_INVOKABLE void CmdSwitchPane();
     Q_INVOKABLE void CmdAlwaysOnTop();
     Q_INVOKABLE void CmdUseMonospacedFont();
     Q_INVOKABLE void CmdBuffersPrevious();

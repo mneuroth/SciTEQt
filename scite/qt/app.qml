@@ -333,6 +333,80 @@ ApplicationWindow {
         Menu {
             id: toolsMenu
             title: processMenuItem(qsTr("Tools"),null)
+
+            Action {
+                id: actionCompile
+                text: processMenuItem(qsTr("&Compile"), actionCompile)
+                shortcut: "Ctrl+F7"
+                //checkable: true
+                //checked: false
+                onTriggered: sciteQt.CmdCompile()
+            }
+            Action {
+                id: actionBuild
+                text: processMenuItem(qsTr("&Build"), actionBuild)
+                shortcut: "F7"
+                //checkable: true
+                //checked: false
+                onTriggered: sciteQt.CmdBuild()
+            }
+            Action {
+                id: actionClean
+                text: processMenuItem(qsTr("&Clean"), actionClean)
+                shortcut: "Shift+F7"
+                //checkable: true
+                //checked: false
+                onTriggered: sciteQt.CmdClean()
+            }
+            Action {
+                id: actionGo
+                text: processMenuItem(qsTr("&Go"), actionGo)
+                shortcut: "F5"
+                //checkable: true
+                //checked: false
+                onTriggered: sciteQt.CmdGo()
+            }
+            Action {
+                id: actionStopExecuting
+                text: processMenuItem(qsTr("&Stop Executing"), actionStopExecuting)
+                shortcut: "Ctrl+Break"
+                //checkable: true
+                //checked: false
+                onTriggered: sciteQt.CmdStopExecuting()
+            }
+            MenuSeparator {}
+            Action {
+                id: actionNextMessage
+                text: processMenuItem(qsTr("&Next Message"), actionNextMessage)
+                shortcut: "F4"
+                //checkable: true
+                //checked: false
+                onTriggered: sciteQt.CmdNextMessage()
+            }
+            Action {
+                id: actionPreviousMessage
+                text: processMenuItem(qsTr("&Previous Message"), actionPreviousMessage)
+                shortcut: "Shift+F4"
+                //checkable: true
+                //checked: false
+                onTriggered: sciteQt.CmdPreviousMessage()
+            }
+            Action {
+                id: actionClearOutput
+                text: processMenuItem(qsTr("Clear &Output"), actionClearOutput)
+                shortcut: "Shift+F5"
+                //checkable: true
+                //checked: false
+                onTriggered: sciteQt.CmdClearOutput()
+            }
+            Action {
+                id: actionSwitchPane
+                text: processMenuItem(qsTr("&Switch Pane"), actionSwitchPane)
+                shortcut: "Ctrl+F6"
+                //checkable: true
+                //checked: false
+                onTriggered: sciteQt.CmdSwitchPane()
+            }
         }
 
         Menu {
