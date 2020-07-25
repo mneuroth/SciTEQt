@@ -858,6 +858,32 @@ void SciTEQt::CmdReadOnly()
     MenuCommand(IDM_READONLY);
 }
 
+void SciTEQt::CmdCrLf()
+{
+// TODO implement ...
+    MenuCommand(IDM_EOL_CRLF);
+}
+
+void SciTEQt::CmdCr()
+{
+    MenuCommand(IDM_EOL_CR);
+}
+
+void SciTEQt::CmdLf()
+{
+    MenuCommand(IDM_EOL_LF);
+}
+
+void SciTEQt::CmdWrap()
+{
+    MenuCommand(IDM_WRAP);
+}
+
+void SciTEQt::CmdWrapOutput()
+{
+    MenuCommand(IDM_WRAPOUTPUT);
+}
+
 void SciTEQt::CmdVerticalSplit()
 {
 // TODO implement !
@@ -924,6 +950,15 @@ void SciTEQt::ReadEmbeddedProperties()
         QByteArray data = aFile.readAll();
         propsEmbed.ReadFromMemory(static_cast<const char *>(data.data()), data.size(), FilePath(), filter, NULL, 0);
     }
+}
+
+void SciTEQt::CheckMenus()
+{
+    SciTEBase::CheckMenus();
+
+// TODO implement:
+    // - EOL_ Menu Items selektieren --> radio button
+    // - IDM_ENCODING_DEFAULT Menu Items selektieren
 }
 
 bool SciTEQt::event(QEvent *e)

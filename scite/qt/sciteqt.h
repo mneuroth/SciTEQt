@@ -161,6 +161,8 @@ public:
     virtual void PostOnMainThread(int cmd, Worker *pWorker) override;
     virtual void ReadEmbeddedProperties() override;
 
+    virtual void CheckMenus() override;
+
     virtual bool event(QEvent *e) override;
 
     bool isShowToolBar() const;
@@ -223,7 +225,12 @@ public:
     Q_INVOKABLE void CmdAlwaysOnTop();
     Q_INVOKABLE void CmdOpenFilesHere();
     Q_INVOKABLE void CmdVerticalSplit();
+    Q_INVOKABLE void CmdWrap();
+    Q_INVOKABLE void CmdWrapOutput();
     Q_INVOKABLE void CmdReadOnly();
+    Q_INVOKABLE void CmdCrLf();
+    Q_INVOKABLE void CmdCr();
+    Q_INVOKABLE void CmdLf();
     Q_INVOKABLE void CmdUseMonospacedFont();
     Q_INVOKABLE void CmdBuffersPrevious();
     Q_INVOKABLE void CmdBuffersNext();
