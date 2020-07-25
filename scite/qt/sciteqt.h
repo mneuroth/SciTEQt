@@ -236,9 +236,11 @@ signals:
     void removeInLanguagesModel(int index);
     void checkStateInLanguagesModel(int index, bool checked);
 
-private:
     void startFileDialog(const QString & sDirectory, const QString & sFilter, bool bAsOpenDialog = true);
-    QObject * showInfoDialog(const QString & sInfoText, int style);
+    void showInfoDialog(const QString & sInfoText, int style);
+
+private:
+    QObject * getCurrentInfoDialog();
 
     ApplicationData *       m_pApplicationData;     // not an owner !
     QQmlApplicationEngine * m_pEngine;

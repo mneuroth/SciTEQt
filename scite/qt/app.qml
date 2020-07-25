@@ -594,6 +594,13 @@ ApplicationWindow {
     Connections {
         target: sciteQt
 
+        onStartFileDialog: {
+            startFileDialog(sDirectory, sFilter, bAsOpenDialog)
+        }
+        onShowInfoDialog: {
+            showInfoDialog(sInfoText, style)
+        }
+
         onSetMenuChecked: {
             handleMenuChecked(menuID, val)
         }

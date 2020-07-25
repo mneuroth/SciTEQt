@@ -369,6 +369,7 @@ jobs:
         nmake -f scintilla.mak
         dir
         cd ..
+        dir bin
         cd ..
         cd scite
         cd win32        

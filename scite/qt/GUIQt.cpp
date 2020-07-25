@@ -69,11 +69,6 @@ intptr_t ScintillaPrimitive::Send(unsigned int msg, uintptr_t wParam, intptr_t l
 
     Scintilla::ScintillaQt * scintilla = reinterpret_cast<Scintilla::ScintillaQt *>(GetID());
     return scintilla->WndProc(msg, wParam, lParam);
-
-    //Q_ASSERT(false);
-
-// TODO: really needed for Qt ?
-    //return 0; // ::SendMessage(static_cast<HWND>(GetID()), msg, wParam, lParam);
 }
 
 bool IsDBCSLeadByte(int codePage, char ch) {
@@ -94,6 +89,8 @@ void SleepMilliseconds(int sleepTime) {
 }
 
 #if defined(WIN32)
+
+// from GUIWin.cxx
 
 static unsigned int UTF8Length(const wchar_t *uptr, size_t tlen) noexcept {
     unsigned int len = 0;

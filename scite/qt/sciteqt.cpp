@@ -38,11 +38,9 @@ template <class T> T childObject(QQmlApplicationEngine& engine,
                                  bool bGetRoot = true)
 {
     QList<QObject*> rootObjects = engine.rootObjects();
-qDebug() << "ROOT obj: "    << rootObjects << endl;
     foreach (QObject* object, rootObjects)
     {
         QObject* child = object->findChild<QObject*>(objectName);
-   qDebug() << "child obj: "    << child << endl;
         if (child != 0)
         {
             if( propertyName.length()==0 )
@@ -199,13 +197,13 @@ void SciTEQt::GetWindowPosition(int *left, int *top, int *width, int *height, in
 
 bool SciTEQt::OpenDialog(const FilePath &directory, const GUI::gui_char *filesFilter)
 {
-    startFileDialog(directory.AbsolutePath().AsUTF8().c_str(), ConvertGuiCharToQString(filesFilter), true);
+    emit startFileDialog(directory.AbsolutePath().AsUTF8().c_str(), ConvertGuiCharToQString(filesFilter), true);
     return true;
 }
 
 bool SciTEQt::SaveAsDialog()
 {
-    startFileDialog("", "", false);
+    emit startFileDialog("", "", false);
     return true;
 }
 
@@ -261,8 +259,9 @@ void SciTEQt::Find()
 
 SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::gui_string &msg, MessageBoxStyle style)
 {
-    //qDebug() << "MessageBox " << msg << " style=" << style << endl;
-    QObject * pMessageBox = showInfoDialog(ConvertGuiStringToQString(msg), style);
+    emit showInfoDialog(ConvertGuiStringToQString(msg), style);
+
+    QObject * pMessageBox = getCurrentInfoDialog();
     connect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnAcceptedClicked()));
     connect(pMessageBox,SIGNAL(rejected()),this,SLOT(OnRejectedClicked()));
     connect(pMessageBox,SIGNAL(yes()),this,SLOT(OnYesClicked()));
@@ -408,7 +407,6 @@ void SciTEQt::SetStatusBarText(const char *s)
 
 void SciTEQt::ShowToolBar()
 {
-    qDebug() << "TRY SHOW tool BAR "<< tbVisible << endl;
     setShowToolBar(tbVisible);
 }
 
@@ -418,7 +416,6 @@ void SciTEQt::ShowTabBar()
 
 void SciTEQt::ShowStatusBar()
 {
-    qDebug() << "TRY SHOW status BAR "<< sbVisible << endl;
     setShowStatusBar(sbVisible);
 }
 
@@ -819,30 +816,8 @@ void SciTEQt::onStatusbarClicked()
     UpdateStatusbarView();
 }
 
-void SciTEQt::startFileDialog(const QString & sDirectory, const QString & sFilter, bool bAsOpenDialog)
+QObject * SciTEQt::getCurrentInfoDialog()
 {
-    QObject * appWin = childObject<QObject*>(*m_pEngine, "fileDialog", "");
-    if( appWin != 0 )
-    {
-        QMetaObject::invokeMethod(appWin, "startFileDialog",
-                QGenericReturnArgument(),
-                Q_ARG(QVariant, sDirectory),
-                Q_ARG(QVariant, sFilter),
-                Q_ARG(QVariant, bAsOpenDialog));
-    }
-}
-
-QObject * SciTEQt::showInfoDialog(const QString & sInfoText, int style)
-{
-    QVariant result;
-    QObject * appWin = childObject<QObject*>(*m_pEngine, "infoDialog", "");
-    if( appWin != 0 )
-    {
-        QMetaObject::invokeMethod(appWin, "showInfoDialog",
-                QGenericReturnArgument(),
-                Q_ARG(QVariant, sInfoText),
-                Q_ARG(QVariant, style));
-    }
     QObject * infoDlg = childObject<QObject*>(*m_pEngine, "infoDialog", "", false);
     return infoDlg;
 }
