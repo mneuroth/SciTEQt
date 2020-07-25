@@ -421,6 +421,7 @@ void SciTEQt::ShowToolBar()
 
 void SciTEQt::ShowTabBar()
 {
+    // TODO: implement tab bar ui
 }
 
 void SciTEQt::ShowStatusBar()
@@ -435,12 +436,13 @@ void SciTEQt::ActivateWindow(const char *timestamp)
 
 void SciTEQt::SizeContentWindows()
 {
+    qDebug() << "SizeContentWindows " << heightOutput << " " << endl;
 
 }
 
 void SciTEQt::SizeSubWindows()
 {
-
+    qDebug() << "SizeSubWindows " << heightOutput << " " << endl;
 }
 
 void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
@@ -722,6 +724,16 @@ void SciTEQt::CmdFindPrevious()
     MenuCommand(IDM_FINDNEXTBACK);
 }
 
+void SciTEQt::CmdToggleCurrentFold()
+{
+    MenuCommand(IDM_EXPAND);
+}
+
+void SciTEQt::CmdToggleAllFolds()
+{
+    MenuCommand(IDM_TOGGLE_FOLDALL);
+}
+
 void SciTEQt::CmdFullScreen()
 {
     MenuCommand(IDM_FULLSCREEN);
@@ -742,9 +754,46 @@ void SciTEQt::CmdShowStatusBar()
     MenuCommand(IDM_VIEWSTATUSBAR);
 }
 
+void SciTEQt::CmdShowWhitespace()
+{
+    MenuCommand(IDM_VIEWSPACE);
+}
+
+void SciTEQt::CmdShowEndOfLine()
+{
+    MenuCommand(IDM_VIEWEOL);
+}
+
+void SciTEQt::CmdIndentionGuides()
+{
+    MenuCommand(IDM_VIEWGUIDES);
+}
+
 void SciTEQt::CmdLineNumbers()
 {
     MenuCommand(IDM_LINENUMBERMARGIN);
+}
+
+void SciTEQt::CmdMargin()
+{
+    MenuCommand(IDM_SELMARGIN);
+}
+
+void SciTEQt::CmdFoldMargin()
+{
+    MenuCommand(IDM_FOLDMARGIN);
+}
+
+void SciTEQt::CmdToggleOutput()
+{
+// TODO implement !
+    MenuCommand(IDM_TOGGLEOUTPUT);
+}
+
+void SciTEQt::CmdParameters()
+{
+// TODO implement !
+    MenuCommand(IDM_TOGGLEPARAMETERS);
 }
 
 void SciTEQt::CmdAlwaysOnTop()
@@ -1001,6 +1050,7 @@ void SciTEQt::OnNotifiedFromScintilla(SCNotification scn)
 
 void SciTEQt::OnNotifiedFromOutput(SCNotification scn)
 {
+    qDebug() << "OnNotifiedFromOutput " << scn.message << endl;
 }
 /*
 DynamicMenuModel::DynamicMenuModel()

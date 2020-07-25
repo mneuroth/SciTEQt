@@ -223,6 +223,21 @@ ApplicationWindow {
             title: processMenuItem(qsTr("&View"),null)
 
             Action {
+                id: actionToggleCurrentFold
+                text: processMenuItem(qsTr("Toggle &current fold"), actionToggleCurrentFold)
+                //checkable: true
+                //checked: false
+                onTriggered: sciteQt.CmdToggleCurrentFold()
+            }
+            Action {
+                id: actionToggleAllFolds
+                text: processMenuItem(qsTr("Toggle &all folds"), actionToggleAllFolds)
+                //checkable: true
+                //checked: false
+                onTriggered: sciteQt.CmdToggleAllFolds()
+            }
+            MenuSeparator {}
+            Action {
                 id: actionFullScreen
                 text: processMenuItem(qsTr("Full Scree&n"), actionFullScreen)
                 shortcut: "F11"
@@ -253,16 +268,67 @@ ApplicationWindow {
                 onTriggered: sciteQt.CmdShowStatusBar()
             }
             MenuSeparator {}
-
+            Action {
+                id: actionShowWhitespace
+                text: processMenuItem(qsTr("&Whitespace"), actionShowWhitespace)
+                shortcut: "Ctrl+Shift+8"
+                checkable: true
+                checked: false
+                onTriggered: sciteQt.CmdShowWhitespace()
+            }
+            Action {
+                id: actionShowEndOfLine
+                text: processMenuItem(qsTr("&End of Line"), actionShowEndOfLine)
+                shortcut: "Ctrl+Shift+9"
+                checkable: true
+                checked: false
+                onTriggered: sciteQt.CmdShowEndOfLine()
+            }
+            Action {
+                id: actionIndentaionGuides
+                text: processMenuItem(qsTr("&Indentation Guides"), actionIndentaionGuides)
+                checkable: true
+                checked: false
+                onTriggered: sciteQt.CmdIndentionGuides()
+            }
             Action {
                 id: actionLineNumbers
-                text: qsTr("Line &Numbers")
+                text: processMenuItem(qsTr("Line &Numbers"), actionLineNumbers)
                 checkable: true
                 checked: false
                 onTriggered: sciteQt.CmdLineNumbers()
             }
+            Action {
+                id: actionMargin
+                text: processMenuItem(qsTr("&Margin"), actionMargin)
+                checkable: true
+                checked: false
+                onTriggered: sciteQt.CmdMargin()
+            }
+            Action {
+                id: actionFoldMargin
+                text: processMenuItem(qsTr("&Fold Margin"), actionFoldMargin)
+                checkable: true
+                checked: false
+                onTriggered: sciteQt.CmdFoldMargin()
+            }
+            Action {
+                id: actionToggleOutput
+                text: processMenuItem(qsTr("&Output"), actionToggleOutput)
+                shortcut: "F8"
+                checkable: true
+                checked: false
+                onTriggered: sciteQt.CmdToggleOutput()
+            }
+            Action {
+                id: actionParameters
+                text: processMenuItem(qsTr("&Parameters"), actionParameters)
+                shortcut: "Shift+F8"
+                //checkable: true
+                //checked: false
+                onTriggered: sciteQt.CmdParameters()
+            }
         }
-
 
         Menu {
             id: toolsMenu
@@ -561,20 +627,37 @@ ApplicationWindow {
     function handleMenuChecked(menuId, val) {
         switch(menuId) {
             case 450:  //IDM_MONOFONT
-                console.log("SET MONSPACED check! "+val)
                 actionUseMonospacedFont.checked = val
                 break;
             case 411:  //IDM_VIEWSTATUSBAR
-                console.log("SET STATUSBar check! "+val)
                 actionShowStatusBar.checked = val
                 break;
-            case 407:  //IDM_LINENUMBERMARGIN
-                console.log("LineNumbers check! "+val)
-                actionLineNumbers.checked = val
+            case 410:  //IDM_VIEWTABBAR
+                actionShowTabBar.checked = val
+                break;
+            case 409:  //IDM_TOGGLEOUTPUT
+                actionToggleOutput.checked = val
                 break;
             case 408:  //IDM_VIEWTOOLBAR
-                console.log("SET ToolBar check! "+val)
                 actionShowToolBar.checked = val
+                break;
+            case 407:  //IDM_LINENUMBERMARGIN
+                actionLineNumbers.checked = val
+                break;
+            case 406:  //IDM_FOLDMARGIN
+                actionFoldMargin.checked = val
+                break;
+            case 405:  //IDM_SELMARGIN
+                actionMargin.checked = val
+                break;
+            case 404:  //IDM_VIEWGUIDES
+                actionIndentaionGuides.checked = val
+                break;
+            case 403:  //IDM_VIEWEOL
+                actionShowEndOfLine.checked = val
+                break;
+            case 402:  //IDM_VIEWSPACE
+                actionShowWhitespace.checked = val
                 break;
         }
     }

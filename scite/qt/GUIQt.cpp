@@ -342,6 +342,13 @@ void Window::SetPosition(Rectangle rc)
 
 Rectangle Window::GetClientPosition()
 {
+    QQuickWindow * window = reinterpret_cast<QQuickWindow *>(GetID());
+    if( window != 0 )
+    {
+        QSize size = window->size();
+qDebug() << "GetClientPosition() " << size << endl;
+        return Rectangle(window->x(), window->y(), window->x()+size.width(), window->y()+size.height());
+    }
     return Rectangle();
 }
 
