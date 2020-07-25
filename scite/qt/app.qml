@@ -415,14 +415,35 @@ ApplicationWindow {
 
             Action {
                 id: actionAlwaysOnTop
-                text: processMenuItem(qsTr("&Always On Top"),actionAlwaysOnTop)
+                text: processMenuItem(qsTr("&Always On Top"), actionAlwaysOnTop)
                 checkable: true
                 checked: false
                 onTriggered: sciteQt.CmdAlwaysOnTop()
             }
             Action {
+                id: actionOpenFilesHere
+                text: processMenuItem(qsTr("Open Files &Here"), actionOpenFilesHere)
+                //checkable: true
+                //checked: false
+                onTriggered: sciteQt.CmdOpenFilesHere()
+            }
+            Action {
+                id: actionVerticalSplit
+                text: processMenuItem(qsTr("Vertical &Split"), actionVerticalSplit)
+                checkable: true
+                checked: false
+                onTriggered: sciteQt.CmdVerticalSplit()
+            }
+            Action {
+                id: actionReadOnly
+                text: processMenuItem(qsTr("&Read-Only"), actionReadOnly)
+                checkable: true
+                checked: false
+                onTriggered: sciteQt.CmdReadOnly()
+            }
+            Action {
                 id: actionUseMonospacedFont
-                text: processMenuItem(qsTr("Use &Monospaced Font"),actionUseMonospacedFont)
+                text: processMenuItem(qsTr("Use &Monospaced Font"), actionUseMonospacedFont)
                 checkable: true
                 checked: false
                 onTriggered: sciteQt.CmdUseMonospacedFont()
@@ -733,6 +754,24 @@ ApplicationWindow {
             case 402:  //IDM_VIEWSPACE
                 actionShowWhitespace.checked = val
                 break;
+            case 401:  //IDM_SPLITVERTICAL
+                actionVerticalSplit.checked = val
+                break;
+            case 416:  //IDM_READONLY
+                actionReadOnly.checked = val
+                break;
+            default:
+                console.log("unhandled menu checked "+menuId)
+        }
+    }
+
+    function handleMenuEnable(menuId, val) {
+        switch(menuId) {
+            case 413:  //IDM_OPENFILESHERE
+                actionOpenFilesHere.enabled = val
+                break;
+            default:
+                console.log("unhandled menu enable "+menuId)
         }
     }
 
@@ -772,6 +811,9 @@ ApplicationWindow {
 
         onSetMenuChecked: {
             handleMenuChecked(menuID, val)
+        }
+        onSetMenuEnable: {
+            handleMenuEnable(menuID, val)
         }
 
         onSetInBuffersModel: {

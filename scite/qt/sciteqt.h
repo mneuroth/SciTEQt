@@ -221,6 +221,9 @@ public:
     Q_INVOKABLE void CmdClearOutput();
     Q_INVOKABLE void CmdSwitchPane();
     Q_INVOKABLE void CmdAlwaysOnTop();
+    Q_INVOKABLE void CmdOpenFilesHere();
+    Q_INVOKABLE void CmdVerticalSplit();
+    Q_INVOKABLE void CmdReadOnly();
     Q_INVOKABLE void CmdUseMonospacedFont();
     Q_INVOKABLE void CmdBuffersPrevious();
     Q_INVOKABLE void CmdBuffersNext();
@@ -252,6 +255,7 @@ signals:
     void showStatusBarChanged();
     void statusBarTextChanged();
     void setMenuChecked(int menuID, bool val);
+    void setMenuEnable(int menuID, bool val);
 
     void setInBuffersModel(int index, const QString & txt, bool checked);
     void removeInBuffersModel(int index);

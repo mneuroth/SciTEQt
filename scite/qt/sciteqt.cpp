@@ -514,6 +514,7 @@ void SciTEQt::CheckAMenuItem(int wIDCheckItem, bool val)
 void SciTEQt::EnableAMenuItem(int wIDCheckItem, bool val)
 {
 //    qDebug() << "EnableAMenuItem" << wIDCheckItem << " " << val << endl;
+    emit setMenuEnable(wIDCheckItem, val);
 }
 
 void SciTEQt::AddToPopUp(const char *label, int cmd, bool enabled)
@@ -845,6 +846,22 @@ void SciTEQt::CmdSwitchPane()
 void SciTEQt::CmdAlwaysOnTop()
 {
     MenuCommand(IDM_ONTOP);
+}
+
+void SciTEQt::CmdOpenFilesHere()
+{
+    MenuCommand(IDM_OPENFILESHERE);
+}
+
+void SciTEQt::CmdReadOnly()
+{
+    MenuCommand(IDM_READONLY);
+}
+
+void SciTEQt::CmdVerticalSplit()
+{
+// TODO implement !
+    MenuCommand(IDM_SPLITVERTICAL);
 }
 
 void SciTEQt::CmdUseMonospacedFont()
