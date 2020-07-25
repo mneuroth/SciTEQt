@@ -152,6 +152,15 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
 #endif
 #ifdef Q_OS_ANDROID
     propsPlatform.Set("PLAT_GTK", "1");
+    propsPlatform.Set("PLAT_ANDROID", "1");
+#endif
+#ifdef Q_OS_IOS
+    propsPlatform.Set("PLAT_MACOSX", "1");
+    propsPlatform.Set("PLAT_IOS", "1");
+#endif
+#ifdef Q_OS_WASM
+    propsPlatform.Set("PLAT_GTK", "1");
+    propsPlatform.Set("PLAT_WASM", "1");
 #endif
 
     ReadEnvironment();

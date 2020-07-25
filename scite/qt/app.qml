@@ -226,17 +226,18 @@ ApplicationWindow {
                 id: actionShowToolBar
                 text: processMenuItem(qsTr("&Tool Bar"), actionShowToolBar)
                 checkable: true
-                checked: scitQt.showToolBar
+                checked: false
                 onTriggered: sciteQt.CmdShowToolBar()
             }
             Action {
                 id: actionShowStatusBar
                 text: processMenuItem(qsTr("&Status Bar"), actionShowStatusBar)
                 checkable: true
-                checked: scitQt.showStatusBar //applicationData !== null ? applicationData.showStatusBar : false
+                checked: false
                 onTriggered: sciteQt.CmdShowStatusBar()
             }
             Action {
+                id: actionLineNumbers
                 text: qsTr("Line &Numbers")
                 checkable: true
                 checked: false
@@ -522,17 +523,6 @@ ApplicationWindow {
 */
     }
 
-    ListModel {
-        id: myModel
-
-        ListElement {
-            display: "item 1"
-        }
-        ListElement {
-            display: "item 2"
-        }
-    }
-
     function clearBuffersModel(model) {
         model.clear()
     }
@@ -559,6 +549,10 @@ ApplicationWindow {
             case 411:  //IDM_VIEWSTATUSBAR
                 console.log("SET STATUSBar check! "+val)
                 actionShowStatusBar.checked = val
+                break;
+            case 407:  //IDM_LINENUMBERMARGIN
+                console.log("LineNumbers check! "+val)
+                actionLineNumbers.checked = val
                 break;
             case 408:  //IDM_VIEWTOOLBAR
                 console.log("SET ToolBar check! "+val)

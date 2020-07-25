@@ -97,8 +97,11 @@ class SciTEQt : public QObject, public SciTEBase
 {
     Q_OBJECT
 
+    // control visibility of ui controls
     Q_PROPERTY(bool showToolBar READ isShowToolBar WRITE setShowToolBar NOTIFY showToolBarChanged)
     Q_PROPERTY(bool showStatusBar READ isShowStatusBar WRITE setShowStatusBar NOTIFY showStatusBarChanged)
+
+    // control content of ui controls
     Q_PROPERTY(QString statusBarText READ getStatusBarText WRITE setStatusBarText NOTIFY statusBarTextChanged)
 
 public:
@@ -164,6 +167,7 @@ public:
     void setShowToolBar(bool val);
     bool isShowStatusBar() const;
     void setShowStatusBar(bool val);
+
     QString getStatusBarText() const;
     void setStatusBarText(const QString & txt);
 
