@@ -466,7 +466,7 @@ void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
             emit setInBuffersModel(posForThisItem, ConvertGuiCharToQString(text), false);
         }
     }
-    if(menuNumber == 6)
+    else if(menuNumber == 6)
     {
         if( itemID >= IDM_LANGUAGE && itemID < IDM_LANGUAGE+100 )
         {
@@ -475,8 +475,10 @@ void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
             emit setInLanguagesModel(posForThisItem, ConvertGuiCharToQString(text), false);
         }
     }
-
-//    qDebug() << "Set Menu Item " << menuNumber << " pos=" << position << " " << itemID << " " << QString::fromWCharArray(text) << " " << QString::fromWCharArray(mnemonic) << endl;
+    else
+    {
+        qDebug() << "UN_HANDLED: Set Menu Item " << menuNumber << " pos=" << position << " " << itemID << " " << QString::fromWCharArray(text) << " " << QString::fromWCharArray(mnemonic) << endl;
+    }
 }
 
 void SciTEQt::DestroyMenuItem(int menuNumber, int itemID)
@@ -491,6 +493,10 @@ void SciTEQt::DestroyMenuItem(int menuNumber, int itemID)
     {
         int posForThisItem = itemID - IDM_LANGUAGE;
         emit removeInBuffersModel(posForThisItem);
+    }
+    else
+    {
+        qDebug() << "NOT HANDLED Destroy Menu Item " << menuNumber << " item=" << itemID << endl;
     }
 }
 
@@ -860,7 +866,6 @@ void SciTEQt::CmdReadOnly()
 
 void SciTEQt::CmdCrLf()
 {
-// TODO implement ...
     MenuCommand(IDM_EOL_CRLF);
 }
 
@@ -1003,6 +1008,23 @@ void SciTEQt::CheckMenus()
     // - IDM_ENCODING_DEFAULT Menu Items selektieren
 }
 
+void SciTEQt::Execute()
+{
+    if (buffers.SavingInBackground())
+        // May be saving file that should be used by command so wait until all saved
+        return;
+
+    SciTEBase::Execute();
+
+    if (!jobQueue.HasCommandToRun())
+        // No commands to execute - possibly cancelled in SciTEBase::Execute
+        return;
+
+    // TODO: implement for Qt --> use visiscript executer ?
+
+    // see also: SciTEWin::Execute() and SciTEGTK::Execute()
+}
+
 bool SciTEQt::event(QEvent *e)
 {
     //qDebug() << "EVENT " << e->type() << endl;
@@ -1035,14 +1057,6 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     if(m_pApplicationData!=0)
     {
         m_pEngine = &pApplicationData->GetQmlApplicationEngine();
-
-        if(m_pEngine!=0)
-        {
-// TODO --> diese properties nach main verschieben... damit sie gleich zu beginn der qmlengine da sind
-// ==> ApplicationData -> ApplicationInitData oder scite auch als property am context setzen ?
-            //m_pEngine->rootContext()->setContextProperty("buffersModel", &m_aBuffers);
-            //m_pEngine->rootContext()->setContextProperty("languagesModel", &m_aLanguages);
-        }
 
         QStringList cmdArgs = QGuiApplication::arguments();
         cmdArgs.removeAt(0);

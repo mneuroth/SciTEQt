@@ -162,6 +162,7 @@ public:
     virtual void ReadEmbeddedProperties() override;
 
     virtual void CheckMenus() override;
+    virtual void Execute() override;
 
     virtual bool event(QEvent *e) override;
 

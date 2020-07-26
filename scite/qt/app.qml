@@ -869,13 +869,28 @@ ApplicationWindow {
 
     function handleMenuEnable(menuId, val) {
         switch(menuId) {
+            case 301:  //IDM_COMPILE
+                actionCompile.enabled = val
+                break;
+            case 302:  //IDM_BUILD
+                actionBuild.enabled = val
+                break;
+            case 303:  //IDM_GO
+                actionGo.enabled = val
+                break;
+            case 304:  //IDM_STOPEXECUTE
+                actionStopExecuting.enabled = val
+                break;
+            case 308:  //IDM_CLEAN
+                actionClean.enabled = val
+                break;
             case 413:  //IDM_OPENFILESHERE
                 actionOpenFilesHere.enabled = val
                 break;
             case 465:  //IDM_OPENDIRECTORYPROPERTIES
                 actionOpenDirectoryOptionsFile.enabled = val
                 break;
-// TODO: 304, 313, 311, 312, 301, 302, 308, 303
+// TODO: 313, 311, 312
             default:
                 console.log("unhandled menu enable "+menuId)
         }
