@@ -122,9 +122,15 @@ ApplicationWindow {
                 onTriggered: sciteQt.CmdOpen()
             }
             Action {
+                id: actionOpenSelectedFilename
+                text: processMenuItem(qsTr("Open Selected &Filename"), actionOpenSelectedFilename)
+                shortcut: "Ctrl+Shift+O"
+                onTriggered: sciteQt.CmdOpenSelectedFileName()
+            }
+            Action {
                 id: actionRevert
                 text: processMenuItem(qsTr("&Revert"), actionRevert)
-                shortcut: "Ctrl+W"
+                shortcut: "Ctrl+R"
                 onTriggered: sciteQt.CmdRevert()
             }
             Action {
@@ -148,6 +154,109 @@ ApplicationWindow {
                 id: actionCopyPath
                 text: processMenuItem(qsTr("Copy Pat&h"), actionCopyPath)
                 onTriggered: sciteQt.CmdCopyPath()
+            }
+            Menu {
+                id: menuEncoding
+                title: processMenuItem(qsTr("Encodin&g"), menuEncoding)
+
+                Action {
+                    id: actionCodePageProperty
+                    text: processMenuItem(qsTr("&Code Page Property"), actionCodePageProperty)
+                    checkable: true
+                    checked: false
+                    onTriggered: sciteQt.CmdCodePageProperty()
+                }
+                Action {
+                    id: actionUtf16BigEndian
+                    text: processMenuItem(qsTr("UTF-16 &Big Endian"), actionUtf16BigEndian)
+                    checkable: true
+                    checked: false
+                    onTriggered: sciteQt.CmdUtf16BigEndian()
+                }
+                Action {
+                    id: actionUtf16LittleEndian
+                    text: processMenuItem(qsTr("UTF-16 &Little Endian"), actionUtf16LittleEndian)
+                    checkable: true
+                    checked: false
+                    onTriggered: sciteQt.CmdUtf16LittleEndian()
+                }
+                Action {
+                    id: actionUtf8WithBOM
+                    text: processMenuItem(qsTr("UTF-8 &with BOM"), actionUtf8WithBOM)
+                    checkable: true
+                    checked: false
+                    onTriggered: sciteQt.CmdUtf8WithBOM()
+                }
+                Action {
+                    id: actionUtf8
+                    text: processMenuItem(qsTr("&UTF-8"), actionUtf8)
+                    checkable: true
+                    checked: false
+                    onTriggered: sciteQt.CmdUtf8()
+                }
+            }
+            Menu {
+                id: menuExport
+                title: processMenuItem(qsTr("&Export"), menuExport)
+
+                Action {
+                    id: actionAsHtml
+                    text: processMenuItem(qsTr("As &HTML..."), actionAsHtml)
+                    checkable: true
+                    checked: false
+                    onTriggered: sciteQt.CmdAsHtml()
+                }
+                Action {
+                    id: actionAsRtf
+                    text: processMenuItem(qsTr("As &RTF..."), actionAsRtf)
+                    checkable: true
+                    checked: false
+                    onTriggered: sciteQt.CmdAsRtf()
+                }
+                Action {
+                    id: actionAsPdf
+                    text: processMenuItem(qsTr("As &PDF..."), actionAsPdf)
+                    checkable: true
+                    checked: false
+                    onTriggered: sciteQt.CmdAsPdf()
+                }
+                Action {
+                    id: actionAsLatex
+                    text: processMenuItem(qsTr("As &LaTeX..."), actionAsLatex)
+                    checkable: true
+                    checked: false
+                    onTriggered: sciteQt.CmdAsLatex()
+                }
+                Action {
+                    id: actionAsXml
+                    text: processMenuItem(qsTr("As &XML..."), actionAsXml)
+                    checkable: true
+                    checked: false
+                    onTriggered: sciteQt.CmdAsXml()
+                }
+            }
+            MenuSeparator {}
+            Action {
+                id: actionPageSetup
+                text: processMenuItem(qsTr("Page Set&up..."), actionPageSetup)
+                onTriggered: sciteQt.CmdPageSetup()
+            }
+            Action {
+                id: actionPrint
+                text: processMenuItem(qsTr("&Print..."), actionPrint)
+                shortcut: "Ctrl+P"
+                onTriggered: sciteQt.CmdPrint()
+            }
+            MenuSeparator {}
+            Action {
+                id: actionLoadSession
+                text: processMenuItem(qsTr("&Load Session..."), actionLoadSession)
+                onTriggered: sciteQt.CmdLoadSession()
+            }
+            Action {
+                id: actionSaveSession
+                text: processMenuItem(qsTr("Sa&ve Session..."), actionSaveSession)
+                onTriggered: sciteQt.CmdSaveSession()
             }
             MenuSeparator {}
             Action {
@@ -977,6 +1086,33 @@ ApplicationWindow {
         }
     }
 
+    function handleEncodingMenus(enumEncoding) {
+        actionCodePageProperty.checked = false
+        actionUtf16BigEndian.checked = false
+        actionUtf16LittleEndian.checked = false
+        actionUtf8WithBOM.checked = false
+        actionUtf8.checked = false
+        switch(enumEncoding) {  // see: enum UniMode in Cookie.h
+            // 	uni8Bit = 0, uni16BE = 1, uni16LE = 2, uniUTF8 = 3,
+            // uniCookie = 4
+            case 0:
+                actionCodePageProperty.checked = true
+                break;
+            case 1:
+                actionUtf16BigEndian.checked = true
+                break;
+            case 2:
+                actionUtf16LittleEndian.checked = true
+                break;
+            case 3:
+                actionUtf8.checked = true
+                break;
+            case 4:
+                actionUtf8WithBOM.checked = true
+                break;
+        }
+    }
+
     ListModel {
         id: buffersModel
         /*
@@ -1011,6 +1147,7 @@ ApplicationWindow {
         onSetMenuEnable:              handleMenuEnable(menuID, val)
 
         onUpdateEolMenus:             handeEolMenus(enumEol)
+        onUpdateEncodingMenus:        handleEncodingMenus(enumEncoding)
 
         onSetInBuffersModel:          writeInBuffersModel(buffersModel, index, txt, checked)
         onRemoveInBuffersModel:       removeInBuffersModel(buffersModel, index)

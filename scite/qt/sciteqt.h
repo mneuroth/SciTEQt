@@ -186,11 +186,26 @@ public:
     // menu commands
     Q_INVOKABLE void CmdNew();
     Q_INVOKABLE void CmdOpen();
+    Q_INVOKABLE void CmdOpenSelectedFileName();
     Q_INVOKABLE void CmdRevert();
     Q_INVOKABLE void CmdClose();
     Q_INVOKABLE void CmdSave();
     Q_INVOKABLE void CmdSaveAs();
     Q_INVOKABLE void CmdCopyPath();
+    Q_INVOKABLE void CmdCodePageProperty();
+    Q_INVOKABLE void CmdUtf16BigEndian();
+    Q_INVOKABLE void CmdUtf16LittleEndian();
+    Q_INVOKABLE void CmdUtf8WithBOM();
+    Q_INVOKABLE void CmdUtf8();
+    Q_INVOKABLE void CmdAsHtml();
+    Q_INVOKABLE void CmdAsRtf();
+    Q_INVOKABLE void CmdAsPdf();
+    Q_INVOKABLE void CmdAsLatex();
+    Q_INVOKABLE void CmdAsXml();
+    Q_INVOKABLE void CmdPageSetup();
+    Q_INVOKABLE void CmdPrint();
+    Q_INVOKABLE void CmdLoadSession();
+    Q_INVOKABLE void CmdSaveSession();
     Q_INVOKABLE void CmdExit();
     Q_INVOKABLE void CmdUndo();
     Q_INVOKABLE void CmdRedo();
@@ -295,6 +310,7 @@ signals:
     void showInfoDialog(const QString & sInfoText, int style);
 
     void updateEolMenus(int enumEol);
+    void updateEncodingMenus(int enumEncoding);
 
 private:
     QObject * getCurrentInfoDialog();

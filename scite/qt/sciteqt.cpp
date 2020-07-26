@@ -677,6 +677,85 @@ void SciTEQt::CmdOpen()
     MenuCommand(IDM_OPEN);
 }
 
+void SciTEQt::CmdOpenSelectedFileName()
+{
+    MenuCommand(IDM_OPENSELECTED);
+}
+
+void SciTEQt::CmdCodePageProperty()
+{
+    MenuCommand(IDM_ENCODING_DEFAULT);
+}
+
+void SciTEQt::CmdUtf16BigEndian()
+{
+    MenuCommand(IDM_ENCODING_UCS2BE);
+}
+
+void SciTEQt::CmdUtf16LittleEndian()
+{
+    MenuCommand(IDM_ENCODING_UCS2LE);
+}
+
+void SciTEQt::CmdUtf8WithBOM()
+{
+    MenuCommand(IDM_ENCODING_UTF8);
+}
+
+void SciTEQt::CmdUtf8()
+{
+    MenuCommand(IDM_ENCODING_UCOOKIE);
+}
+
+void SciTEQt::CmdAsHtml()
+{
+    MenuCommand(IDM_SAVEASHTML);
+}
+
+void SciTEQt::CmdAsRtf()
+{
+    MenuCommand(IDM_SAVEASRTF);
+}
+
+void SciTEQt::CmdAsPdf()
+{
+    MenuCommand(IDM_SAVEASPDF);
+}
+
+void SciTEQt::CmdAsLatex()
+{
+    MenuCommand(IDM_SAVEASTEX);
+}
+
+void SciTEQt::CmdAsXml()
+{
+    MenuCommand(IDM_SAVEASXML);
+}
+
+void SciTEQt::CmdPageSetup()
+{
+// TODO implement ...
+    MenuCommand(IDM_PRINTSETUP);
+}
+
+void SciTEQt::CmdPrint()
+{
+// TODO implement ...
+    MenuCommand(IDM_PRINT);
+}
+
+void SciTEQt::CmdLoadSession()
+{
+// TODO implement ...
+    MenuCommand(IDM_LOADSESSION);
+}
+
+void SciTEQt::CmdSaveSession()
+{
+// TODO implement ...
+    MenuCommand(IDM_SAVESESSION);
+}
+
 void SciTEQt::CmdRevert()
 {
     MenuCommand(IDM_REVERT);
@@ -1082,8 +1161,7 @@ void SciTEQt::CheckMenus()
 
     emit updateEolMenus((int)wEditor.EOLMode());
 
-// TODO implement:
-    // - IDM_ENCODING_DEFAULT Menu Items selektieren
+    emit updateEncodingMenus((int)CurrentBuffer()->unicodeMode);
 }
 
 void SciTEQt::Execute()
