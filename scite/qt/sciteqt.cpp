@@ -477,7 +477,7 @@ void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
     }
     else
     {
-        qDebug() << "UN_HANDLED: Set Menu Item " << menuNumber << " pos=" << position << " " << itemID << " " << QString::fromWCharArray(text) << " " << QString::fromWCharArray(mnemonic) << endl;
+        qDebug() << "UN_HANDLED: Set Menu Item " << menuNumber << " pos=" << position << " " << itemID << " " << endl; //QString::fromWCharArray(text) << " " << QString::fromWCharArray(mnemonic) << endl;
     }
 }
 
@@ -585,10 +585,26 @@ bool SciTEQt::doOpen(const QString & sFileName)
         s = QDir::toNativeSeparators(aUrl.toLocalFile());
     }
     GUI::gui_char buf[512];
+#ifdef Q_OS_WIN
     int count = s.toWCharArray((wchar_t *)buf);
     buf[count] = 0;
+#else
+    strcpy(buf,s.toStdString().c_str());
+#endif
     FilePath path(buf); // StdString().c_str()
+#ifdef Q_OS_ANDROID
+// TODO implement for android
+    // temporary workaround for qt fileopen dialog on android if url contains content://
+    // a) read real file via QFile and write local temporary file
+    // b) read local temporary file via Open(path)
+    // or:
+    // a) read dummy file via Open("dummy-path")
+    // b) read real file via QFile
+    // c) set file content at buffer/document
     return Open(path);
+#else
+    return Open(path);
+#endif
 }
 
 void SciTEQt::setScintilla(QObject * obj)
