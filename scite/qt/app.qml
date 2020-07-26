@@ -455,13 +455,6 @@ ApplicationWindow {
                 checked: false
                 onTriggered: sciteQt.CmdReadOnly()
             }
-            Action {
-                id: actionUseMonospacedFont
-                text: processMenuItem(qsTr("Use &Monospaced Font"), actionUseMonospacedFont)
-                checkable: true
-                checked: false
-                onTriggered: sciteQt.CmdUseMonospacedFont()
-            }
             MenuSeparator {}
             Menu {
                 id: menuLineEndCharacters
@@ -489,7 +482,59 @@ ApplicationWindow {
                     onTriggered: sciteQt.CmdLf()
                 }
             }
-
+            Action {
+                id: actionConvertLineEndChar
+                text: processMenuItem(qsTr("&Convert Line End Characters"), actionConvertLineEndChar)
+                //checkable: true
+                //checked: false
+                onTriggered: sciteQt.CmdConvertLineEndChar()
+            }
+            MenuSeparator {}
+            Action {
+                id: actionChangeIndentationSettings
+                text: processMenuItem(qsTr("Change Inden&tation Settings"), actionChangeIndentationSettings)
+                shortcut: "Ctrl+Shift+I"
+                onTriggered: sciteQt.CmdChangeIndentationSettings()
+            }
+            Action {
+                id: actionUseMonospacedFont
+                text: processMenuItem(qsTr("Use &Monospaced Font"), actionUseMonospacedFont)
+                checkable: true
+                checked: false
+                onTriggered: sciteQt.CmdUseMonospacedFont()
+            }
+            MenuSeparator {}
+            Action {
+                id: actionOpenLocalOptionsFile
+                text: processMenuItem(qsTr("Open Local &Options File"), actionOpenLocalOptionsFile)
+                onTriggered: sciteQt.CmdOpenLocalOptionsFile()
+            }
+            Action {
+                id: actionOpenDirectoryOptionsFile
+                text: processMenuItem(qsTr("Open &Directory Options File"), actionOpenDirectoryOptionsFile)
+                onTriggered: sciteQt.CmdOpenDirectoryOptionsFile()
+            }
+            Action {
+                id: actionOpenUserOptionsFile
+                text: processMenuItem(qsTr("Open &User Options File"), actionOpenUserOptionsFile)
+                onTriggered: sciteQt.CmdOpenUserOptionsFile()
+            }
+            Action {
+                id: actionOpenGlobalOptionsFile
+                text: processMenuItem(qsTr("Open &Global Options File"), actionOpenGlobalOptionsFile)
+                onTriggered: sciteQt.CmdOpenGlobalOptionsFile()
+            }
+            Action {
+                id: actionOpenAbbreviationsFile
+                text: processMenuItem(qsTr("Open A&bbreviations File"), actionOpenAbbreviationsFile)
+                onTriggered: sciteQt.CmdOpenAbbreviationsFile()
+            }
+            Action {
+                id: actionOpenLuaStartupScript
+                text: processMenuItem(qsTr("Open Lua Startup Scr&ipt"), actionOpenLuaStartupScript)
+                onTriggered: sciteQt.CmdOpenLuaStartupScript()
+            }
+            MenuSeparator {}
         }
 
         Menu {
@@ -827,8 +872,29 @@ ApplicationWindow {
             case 413:  //IDM_OPENFILESHERE
                 actionOpenFilesHere.enabled = val
                 break;
+            case 465:  //IDM_OPENDIRECTORYPROPERTIES
+                actionOpenDirectoryOptionsFile.enabled = val
+                break;
+// TODO: 304, 313, 311, 312, 301, 302, 308, 303
             default:
                 console.log("unhandled menu enable "+menuId)
+        }
+    }
+
+    function handeEolMenus(enumEol) {
+        actionCrLf.checked = false
+        actionCr.checked = false
+        actionLf.checked = false
+        switch(enumEol) {   // see: enum class EndOfLine in ScintillaTypes.h
+            case 0:
+                actionCrLf.checked = true
+                break;
+            case 1:
+                actionCr.checked = true
+                break;
+            case 2:
+                actionLf.checked = true
+                break;
         }
     }
 
@@ -871,6 +937,10 @@ ApplicationWindow {
         }
         onSetMenuEnable: {
             handleMenuEnable(menuID, val)
+        }
+
+        onUpdateEolMenus: {
+            handeEolMenus(enumEol)
         }
 
         onSetInBuffersModel: {

@@ -231,6 +231,14 @@ public:
     Q_INVOKABLE void CmdCrLf();
     Q_INVOKABLE void CmdCr();
     Q_INVOKABLE void CmdLf();
+    Q_INVOKABLE void CmdConvertLineEndChar();
+    Q_INVOKABLE void CmdChangeIndentationSettings();
+    Q_INVOKABLE void CmdOpenLocalOptionsFile();
+    Q_INVOKABLE void CmdOpenDirectoryOptionsFile();
+    Q_INVOKABLE void CmdOpenUserOptionsFile();
+    Q_INVOKABLE void CmdOpenGlobalOptionsFile();
+    Q_INVOKABLE void CmdOpenAbbreviationsFile();
+    Q_INVOKABLE void CmdOpenLuaStartupScript();
     Q_INVOKABLE void CmdUseMonospacedFont();
     Q_INVOKABLE void CmdBuffersPrevious();
     Q_INVOKABLE void CmdBuffersNext();
@@ -273,6 +281,8 @@ signals:
 
     void startFileDialog(const QString & sDirectory, const QString & sFilter, bool bAsOpenDialog = true);
     void showInfoDialog(const QString & sInfoText, int style);
+
+    void updateEolMenus(int enumEol);
 
 private:
     QObject * getCurrentInfoDialog();

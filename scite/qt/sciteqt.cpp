@@ -874,6 +874,47 @@ void SciTEQt::CmdLf()
     MenuCommand(IDM_EOL_LF);
 }
 
+void SciTEQt::CmdConvertLineEndChar()
+{
+    MenuCommand(IDM_EOL_CONVERT);
+}
+
+void SciTEQt::CmdChangeIndentationSettings()
+{
+// TODO implement ...
+    MenuCommand(IDM_TABSIZE);
+}
+
+void SciTEQt::CmdOpenLocalOptionsFile()
+{
+    MenuCommand(IDM_OPENLOCALPROPERTIES);
+}
+
+void SciTEQt::CmdOpenDirectoryOptionsFile()
+{
+    MenuCommand(IDM_OPENDIRECTORYPROPERTIES);
+}
+
+void SciTEQt::CmdOpenUserOptionsFile()
+{
+    MenuCommand(IDM_OPENUSERPROPERTIES);
+}
+
+void SciTEQt::CmdOpenGlobalOptionsFile()
+{
+    MenuCommand(IDM_OPENGLOBALPROPERTIES);
+}
+
+void SciTEQt::CmdOpenAbbreviationsFile()
+{
+    MenuCommand(IDM_OPENABBREVPROPERTIES);
+}
+
+void SciTEQt::CmdOpenLuaStartupScript()
+{
+    MenuCommand(IDM_OPENLUAEXTERNALFILE);
+}
+
 void SciTEQt::CmdWrap()
 {
     MenuCommand(IDM_WRAP);
@@ -956,8 +997,9 @@ void SciTEQt::CheckMenus()
 {
     SciTEBase::CheckMenus();
 
+    emit updateEolMenus((int)wEditor.EOLMode());
+
 // TODO implement:
-    // - EOL_ Menu Items selektieren --> radio button
     // - IDM_ENCODING_DEFAULT Menu Items selektieren
 }
 
