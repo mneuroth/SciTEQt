@@ -103,7 +103,7 @@ ApplicationWindow {
     menuBar: MenuBar {
         id: menuBar
 
-        Menu {
+        AutoSizingMenu {
             id: fileMenu
             title: processMenuItem(qsTr("&File"),null)
 
@@ -157,7 +157,7 @@ ApplicationWindow {
             }
         }
 
-        Menu {
+        AutoSizingMenu {
             id: editMenu
             title: processMenuItem(qsTr("Edit"),null)
 
@@ -194,7 +194,7 @@ ApplicationWindow {
             }
         }
 
-        Menu {
+        AutoSizingMenu {
             id: searchMenu
             title: processMenuItem(qsTr("Search"),null)
 
@@ -218,7 +218,7 @@ ApplicationWindow {
             }
         }
 
-        Menu {
+        AutoSizingMenu {
             id: viewMenu
             title: processMenuItem(qsTr("&View"),null)
 
@@ -330,7 +330,7 @@ ApplicationWindow {
             }
         }
 
-        Menu {
+        AutoSizingMenu {
             id: toolsMenu
             title: processMenuItem(qsTr("Tools"),null)
 
@@ -409,7 +409,7 @@ ApplicationWindow {
             }
         }
 
-        Menu {
+        AutoSizingMenu {
             id: optionsMenu
             title: processMenuItem(qsTr("Options"),null)
 
@@ -556,7 +556,7 @@ ApplicationWindow {
             }
         }
 
-        Menu {
+        AutoSizingMenu {
             id: buffersMenu
             title: processMenuItem(qsTr("&Buffers"),null)
 
@@ -600,7 +600,7 @@ ApplicationWindow {
             }
         }
 
-        Menu {
+        AutoSizingMenu {
             id: helpMenu
             title: processMenuItem(qsTr("Help"),null)
 
@@ -940,41 +940,20 @@ ApplicationWindow {
     Connections {
         target: sciteQt
 
-        onStartFileDialog: {
-            startFileDialog(sDirectory, sFilter, bAsOpenDialog)
-        }
-        onShowInfoDialog: {
-            showInfoDialog(sInfoText, style)
-        }
+        onStartFileDialog:            startFileDialog(sDirectory, sFilter, bAsOpenDialog)
+        onShowInfoDialog:             showInfoDialog(sInfoText, style)
 
-        onSetMenuChecked: {
-            handleMenuChecked(menuID, val)
-        }
-        onSetMenuEnable: {
-            handleMenuEnable(menuID, val)
-        }
+        onSetMenuChecked:             handleMenuChecked(menuID, val)
+        onSetMenuEnable:              handleMenuEnable(menuID, val)
 
-        onUpdateEolMenus: {
-            handeEolMenus(enumEol)
-        }
+        onUpdateEolMenus:             handeEolMenus(enumEol)
 
-        onSetInBuffersModel: {
-            writeInBuffersModel(buffersModel, index, txt, checked)
-        }
-        onRemoveInBuffersModel: {
-            removeInBuffersModel(buffersModel, index)
-        }
-        onCheckStateInBuffersModel: {
-            setCheckStateInBuffersModel(buffersModel, index, checked)
-        }
-        onSetInLanguagesModel: {
-            writeInBuffersModel(languagesModel, index, txt, checked)
-        }
-        onRemoveInLanguagesModel: {
-            removeInLanguagesModel(languagesModel, index)
-        }
-        onCheckStateInLanguagesModel: {
-            setCheckStateInLanguagesModel(languagesModel, index, checked)
-        }
+        onSetInBuffersModel:          writeInBuffersModel(buffersModel, index, txt, checked)
+        onRemoveInBuffersModel:       removeInBuffersModel(buffersModel, index)
+        onCheckStateInBuffersModel:   setCheckStateInBuffersModel(buffersModel, index, checked)
+
+        onSetInLanguagesModel:        writeInBuffersModel(languagesModel, index, txt, checked)
+        onRemoveInLanguagesModel:     removeInLanguagesModel(languagesModel, index)
+        onCheckStateInLanguagesModel: setCheckStateInLanguagesModel(languagesModel, index, checked)
     }
 }

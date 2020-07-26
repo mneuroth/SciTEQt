@@ -4,5 +4,6 @@
         <file alias="Embedded.properties">../src/Embedded.properties</file>
         <file alias="scite_logo.png">../gtk/Sci48M.png</file>
         <file alias="ScintillaText.qml">../../scintilla/qt/ScintillaEditBase/ScintillaText.qml</file>
+        <file>AutoSizingMenu.qml</file>
     </qresource>
 </RCC>
