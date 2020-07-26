@@ -212,9 +212,73 @@ ApplicationWindow {
             }
             Action {
                 id: actionFindPrevious
-                text: processMenuItem(qsTr("Find &Next"), actionFindPrevious)
+                text: processMenuItem(qsTr("Find Previou&s"), actionFindPrevious)
                 shortcut: "Shift+F3"
                 onTriggered: sciteQt.CmdFindPrevious()
+            }
+            Action {
+                id: actionFindInFiles
+                text: processMenuItem(qsTr("F&ind in Files..."), actionFindInFiles)
+                shortcut: "Ctrl+Shift+F"
+                onTriggered: sciteQt.CmdFindInFiles()
+            }
+            Action {
+                id: actionReplace
+                text: processMenuItem(qsTr("R&eplace..."), actionReplace)
+                shortcut: "Ctrl+H"
+                onTriggered: sciteQt.CmdReplace()
+            }
+            Action {
+                id: actionIncrementalSearch
+                text: processMenuItem(qsTr("Incrementa&l Search..."), actionIncrementalSearch)
+                shortcut: "Ctrl+Alt+I"
+                onTriggered: sciteQt.CmdIncrementalSearch()
+            }
+            Action {
+                id: actionSelectionAddNext
+                text: processMenuItem(qsTr("Selection A&dd Next"), actionSelectionAddNext)
+                shortcut: "Ctrl+Shift+D"
+                onTriggered: sciteQt.CmdSelectionAddNext()
+            }
+            Action {
+                id: actionSelectionAddEach
+                text: processMenuItem(qsTr("Selection &Add Each"), actionSelectionAddEach)
+                onTriggered: sciteQt.CmdSelectionAddEach()
+            }
+            MenuSeparator {}
+            Action {
+                id: actionGoto
+                text: processMenuItem(qsTr("&Go to..."), actionGoto)
+                shortcut: "Ctrl+G"
+                onTriggered: sciteQt.CmdGoto()
+            }
+            Action {
+                id: actionNextBookmark
+                text: processMenuItem(qsTr("&Next Book&mark"), actionNextBookmark)
+                shortcut: "F2"
+                onTriggered: sciteQt.CmdNextBookmark()
+            }
+            Action {
+                id: actionPreviousBookmark
+                text: processMenuItem(qsTr("Pre&vious Bookmark"), actionPreviousBookmark)
+                shortcut: "Shift+F2"
+                onTriggered: sciteQt.CmdPreviousBookmark()
+            }
+            Action {
+                id: actionToggleBookmark
+                text: processMenuItem(qsTr("Toggle Bookmar&k"), actionToggleBookmark)
+                shortcut: "Ctrl+F2"
+                onTriggered: sciteQt.CmdToggleBookmark()
+            }
+            Action {
+                id: actionClearAllBookmarks
+                text: processMenuItem(qsTr("&Clear All Bookmarks"), actionClearAllBookmarks)
+                onTriggered: sciteQt.CmdClearAllBookmarks()
+            }
+            Action {
+                id: actionSelectAllBookmarks
+                text: processMenuItem(qsTr("Select All &Bookmarks"), actionSelectAllBookmarks)
+                onTriggered: sciteQt.CmdSelectAllBookmarks()
             }
         }
 

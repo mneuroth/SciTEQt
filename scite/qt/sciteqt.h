@@ -200,6 +200,17 @@ public:
     Q_INVOKABLE void CmdFind();
     Q_INVOKABLE void CmdFindNext();
     Q_INVOKABLE void CmdFindPrevious();
+    Q_INVOKABLE void CmdFindInFiles();
+    Q_INVOKABLE void CmdReplace();
+    Q_INVOKABLE void CmdIncrementalSearch();
+    Q_INVOKABLE void CmdSelectionAddNext();
+    Q_INVOKABLE void CmdSelectionAddEach();
+    Q_INVOKABLE void CmdGoto();
+    Q_INVOKABLE void CmdNextBookmark();
+    Q_INVOKABLE void CmdPreviousBookmark();
+    Q_INVOKABLE void CmdToggleBookmark();
+    Q_INVOKABLE void CmdClearAllBookmarks();
+    Q_INVOKABLE void CmdSelectAllBookmarks();
     Q_INVOKABLE void CmdToggleCurrentFold();
     Q_INVOKABLE void CmdToggleAllFolds();
     Q_INVOKABLE void CmdFullScreen();

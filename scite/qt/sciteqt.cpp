@@ -734,6 +734,7 @@ void SciTEQt::CmdPaste()
 
 void SciTEQt::CmdFind()
 {
+// TODO implement...
     MenuCommand(IDM_FIND);
 }
 
@@ -745,6 +746,67 @@ void SciTEQt::CmdFindNext()
 void SciTEQt::CmdFindPrevious()
 {
     MenuCommand(IDM_FINDNEXTBACK);
+}
+
+void SciTEQt::CmdFindInFiles()
+{
+// TODO implement...
+    MenuCommand(IDM_FINDINFILES);
+}
+
+void SciTEQt::CmdReplace()
+{
+// TODO implement...
+    MenuCommand(IDM_REPLACE);
+}
+
+void SciTEQt::CmdIncrementalSearch()
+{
+// TODO implement...
+    MenuCommand(IDM_INCSEARCH);
+}
+
+void SciTEQt::CmdSelectionAddNext()
+{
+// TODO implement...    ???
+    MenuCommand(IDM_SELECTIONADDNEXT);
+}
+
+void SciTEQt::CmdSelectionAddEach()
+{
+// TODO implement...    ???
+    MenuCommand(IDM_SELECTIONADDEACH);
+}
+
+void SciTEQt::CmdGoto()
+{
+// TODO implement...
+    MenuCommand(IDM_GOTO);
+}
+
+void SciTEQt::CmdNextBookmark()
+{
+    MenuCommand(IDM_BOOKMARK_NEXT);
+}
+
+void SciTEQt::CmdPreviousBookmark()
+{
+    MenuCommand(IDM_BOOKMARK_PREV);
+}
+
+void SciTEQt::CmdToggleBookmark()
+{
+    MenuCommand(IDM_BOOKMARK_TOGGLE);
+}
+
+void SciTEQt::CmdClearAllBookmarks()
+{
+    MenuCommand(IDM_BOOKMARK_CLEARALL);
+}
+
+void SciTEQt::CmdSelectAllBookmarks()
+{
+    MenuCommand(IDM_BOOKMARK_SELECT_ALL);
 }
 
 void SciTEQt::CmdToggleCurrentFold()
