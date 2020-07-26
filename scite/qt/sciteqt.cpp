@@ -811,6 +811,86 @@ void SciTEQt::CmdPaste()
     MenuCommand(IDM_PASTE);
 }
 
+void SciTEQt::CmdDuplicate()
+{
+    MenuCommand(IDM_DUPLICATE);
+}
+
+void SciTEQt::CmdDelete()
+{
+    MenuCommand(IDM_CLEAR);
+}
+
+void SciTEQt::CmdSelectAll()
+{
+    MenuCommand(IDM_SELECTALL);
+}
+
+void SciTEQt::CmdCopyAsRtf()
+{
+    MenuCommand(IDM_COPYASRTF);
+}
+
+void SciTEQt::CmdMatchBrace()
+{
+    MenuCommand(IDM_MATCHBRACE);
+}
+
+void SciTEQt::CmdSelectToBrace()
+{
+    MenuCommand(IDM_SELECTTOBRACE);
+}
+
+void SciTEQt::CmdShowCalltip()
+{
+    MenuCommand(IDM_SHOWCALLTIP);
+}
+
+void SciTEQt::CmdCompleteSymbol()
+{
+    MenuCommand(IDM_COMPLETE);
+}
+
+void SciTEQt::CmdCompleteWord()
+{
+    MenuCommand(IDM_COMPLETEWORD);
+}
+
+void SciTEQt::CmdExpandAbbreviation()
+{
+    MenuCommand(IDM_ABBREV);
+}
+
+void SciTEQt::CmdInsertAbbreviation()
+{
+    MenuCommand(IDM_INS_ABBREV);
+}
+
+void SciTEQt::CmdBlockComment()
+{
+    MenuCommand(IDM_BLOCK_COMMENT);
+}
+
+void SciTEQt::CmdBoxComment()
+{
+    MenuCommand(IDM_BOX_COMMENT);
+}
+
+void SciTEQt::CmdStreamComment()
+{
+    MenuCommand(IDM_STREAM_COMMENT);
+}
+
+void SciTEQt::CmdMakeSelectionUppercase()
+{
+    MenuCommand(IDM_UPRCASE);
+}
+
+void SciTEQt::CmdMakeSelectionLowercase()
+{
+    MenuCommand(IDM_LWRCASE);
+}
+
 void SciTEQt::CmdFind()
 {
 // TODO implement...

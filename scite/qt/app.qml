@@ -301,6 +301,103 @@ ApplicationWindow {
                 shortcut: "Ctrl+V"
                 onTriggered: sciteQt.CmdPaste()
             }
+            Action {
+                id: actionDuplicate
+                text: processMenuItem(qsTr("Duplicat&e"), actionDuplicate)
+                shortcut: "Ctrl+D"
+                onTriggered: sciteQt.CmdDuplicate()
+            }
+            Action {
+                id: actionDelete
+                text: processMenuItem(qsTr("&Delete"), actionDelete)
+                shortcut: "Del"
+                onTriggered: sciteQt.CmdDelete()
+            }
+            Action {
+                id: actionSelectAll
+                text: processMenuItem(qsTr("Select &All"), actionSelectAll)
+                shortcut: "Ctrl+A"
+                onTriggered: sciteQt.CmdSelectAll()
+            }
+            Action {
+                id: actionCopyAsRtf
+                text: processMenuItem(qsTr("Copy as RT&F"), actionCopyAsRtf)
+                onTriggered: sciteQt.CmdCopyAsRtf()
+            }
+            MenuSeparator {}
+            Action {
+                id: actionMatchBrace
+                text: processMenuItem(qsTr("Match &Brace"), actionMatchBrace)
+                shortcut: "Ctrl+E"
+                onTriggered: sciteQt.CmdMatchBrace()
+            }
+            Action {
+                id: actionSelectToBrace
+                text: processMenuItem(qsTr("Select t&o Brace"), actionSelectToBrace)
+                shortcut: "Ctrl+Shift+E"
+                onTriggered: sciteQt.CmdSelectToBrace()
+            }
+            Action {
+                id: actionShowCalltip
+                text: processMenuItem(qsTr("S&how Calltip"), actionShowCalltip)
+                shortcut: "Ctrl+Shift+Space"
+                onTriggered: sciteQt.CmdShowCalltip()
+            }
+            Action {
+                id: actionCompleteSymbol
+                text: processMenuItem(qsTr("Complete S&ymbol"), actionCompleteSymbol)
+                shortcut: "Ctrl+I"
+                onTriggered: sciteQt.CmdCompleteSymbol()
+            }
+            Action {
+                id: actionCompleteWord
+                text: processMenuItem(qsTr("Complete &Word"), actionCompleteWord)
+                shortcut: "Ctrl+Enter"
+                onTriggered: sciteQt.CmdCompleteWord()
+            }
+            Action {
+                id: actionExpandAbbreviation
+                text: processMenuItem(qsTr("Expand Abbre&viation"), actionExpandAbbreviation)
+                shortcut: "Ctrl+B"
+                onTriggered: sciteQt.CmdExpandAbbreviation()
+            }
+            Action {
+                id: actionInsertAbbreviation
+                text: processMenuItem(qsTr("&Insert Abbreviation"), actionInsertAbbreviation)
+                shortcut: "Ctrl+Shift+R"
+                onTriggered: sciteQt.CmdInsertAbbreviation()
+            }
+            Action {
+                id: actionBlockComment
+                text: processMenuItem(qsTr("Block Co&mment or Uncomment"), actionBlockComment)
+                shortcut: "Ctrl+Q"
+                onTriggered: sciteQt.CmdBlockComment()
+            }
+            Action {
+                id: actionBoxComment
+                text: processMenuItem(qsTr("Bo&x Comment"), actionBoxComment)
+                shortcut: "Ctrl+Shift+B"
+                onTriggered: sciteQt.CmdBoxComment()
+            }
+            Action {
+                id: actionStreamComment
+                text: processMenuItem(qsTr("Stream Comme&nt"), actionStreamComment)
+                shortcut: "Ctrl+Shift+Q"
+                onTriggered: sciteQt.CmdStreamComment()
+            }
+            Action {
+                id: actionMakeSelectionUppercase
+                text: processMenuItem(qsTr("Make &Selection Uppercase"), actionMakeSelectionUppercase)
+                shortcut: "Ctrl+Shift+U"
+                onTriggered: sciteQt.CmdMakeSelectionUppercase()
+            }
+            Action {
+                id: actionMakeSelectionLowercase
+                text: processMenuItem(qsTr("Make Selection &Lowercase"), actionMakeSelectionLowercase)
+                shortcut: "Ctrl+U"
+                onTriggered: sciteQt.CmdMakeSelectionLowercase()
+            }
+
         }
 
         AutoSizingMenu {
@@ -1063,7 +1160,7 @@ ApplicationWindow {
             case 465:  //IDM_OPENDIRECTORYPROPERTIES
                 actionOpenDirectoryOptionsFile.enabled = val
                 break;
-// TODO: 313, 311, 312
+// TODO: 313, 311, 312 (for macros)
             default:
                 console.log("unhandled menu enable "+menuId)
         }
