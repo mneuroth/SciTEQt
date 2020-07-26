@@ -228,6 +228,9 @@ public:
     Q_INVOKABLE void CmdStreamComment();
     Q_INVOKABLE void CmdMakeSelectionUppercase();
     Q_INVOKABLE void CmdMakeSelectionLowercase();
+    Q_INVOKABLE void CmdReverseSelectedLines();
+    Q_INVOKABLE void CmdJoin();
+    Q_INVOKABLE void CmdSplit();
     Q_INVOKABLE void CmdFind();
     Q_INVOKABLE void CmdFindNext();
     Q_INVOKABLE void CmdFindPrevious();

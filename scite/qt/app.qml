@@ -397,7 +397,26 @@ ApplicationWindow {
                 shortcut: "Ctrl+U"
                 onTriggered: sciteQt.CmdMakeSelectionLowercase()
             }
+            Action {
+                id: actionReverseSelectedLines
+                text: processMenuItem(qsTr("Reverse Selected Lines"), actionReverseSelectedLines)
+                onTriggered: sciteQt.CmdReverseSelectedLines()
+            }
+            Menu {
+                id: menuParagraph
+                title: processMenuItem(qsTr("Para&graph"), menuParagraph)
 
+                Action {
+                    id: actionJoin
+                    text: processMenuItem(qsTr("&Join"), actionJoin)
+                    onTriggered: sciteQt.CmdJoin()
+                }
+                Action {
+                    id: actionSplit
+                    text: processMenuItem(qsTr("&Split"), actionSplit)
+                    onTriggered: sciteQt.CmdSplit()
+                }
+            }
         }
 
         AutoSizingMenu {

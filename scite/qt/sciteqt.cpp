@@ -891,6 +891,21 @@ void SciTEQt::CmdMakeSelectionLowercase()
     MenuCommand(IDM_LWRCASE);
 }
 
+void SciTEQt::CmdReverseSelectedLines()
+{
+    MenuCommand(IDM_LINEREVERSE);
+}
+
+void SciTEQt::CmdJoin()
+{
+    MenuCommand(IDM_JOIN);
+}
+
+void SciTEQt::CmdSplit()
+{
+    MenuCommand(IDM_SPLIT);
+}
+
 void SciTEQt::CmdFind()
 {
 // TODO implement...
