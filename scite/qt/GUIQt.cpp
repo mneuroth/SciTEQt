@@ -55,6 +55,7 @@
 #include "ScintillaQt.h"
 
 #include <QtQuick/QQuickView>
+#include <QtQuick/QQuickItem>
 #include <QThread>
 
 extern QString ConvertGuiCharToQString(const GUI::gui_char * s);
@@ -342,12 +343,11 @@ void Window::SetPosition(Rectangle rc)
 
 Rectangle Window::GetClientPosition()
 {
-    QQuickWindow * window = reinterpret_cast<QQuickWindow *>(GetID());
+    QQuickItem * window = reinterpret_cast<QQuickItem *>(GetID());
     if( window != 0 )
     {
-        QSize size = window->size();
-qDebug() << "GetClientPosition() " << size << endl;
-        return Rectangle(window->x(), window->y(), window->x()+size.width(), window->y()+size.height());
+//qDebug() << "GetClientPosition() " << window->width() << " " << window->height() << endl;
+        return Rectangle(window->x(), window->y(), window->x()+window->width(), window->y()+window->height());
     }
     return Rectangle();
 }

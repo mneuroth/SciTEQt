@@ -442,7 +442,9 @@ void SciTEQt::SizeContentWindows()
 
 void SciTEQt::SizeSubWindows()
 {
-    qDebug() << "SizeSubWindows " << heightOutput << " " << endl;
+    qDebug() << "SizeSubWindows " << heightOutput << " " << splitVertical << endl;
+    emit setVerticalSplit(splitVertical);
+    emit setOutputHeight(heightOutput);
 }
 
 void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
@@ -635,6 +637,13 @@ void SciTEQt::setMainWindow(QObject * obj)
     QQuickWindow * window = reinterpret_cast<QQuickWindow *>(obj);
 
     wSciTE.SetID(window);
+}
+
+void SciTEQt::setContent(QObject * obj)
+{
+    QQuickWindow * window = reinterpret_cast<QQuickWindow *>(obj);
+
+    wContent.SetID(window);
 }
 
 // copy file with translations "locale.properties" into directory of the executable

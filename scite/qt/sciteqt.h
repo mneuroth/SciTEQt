@@ -177,6 +177,7 @@ public:
     Q_INVOKABLE bool doOpen(const QString & sFileName);
     Q_INVOKABLE void setScintilla(QObject * obj);
     Q_INVOKABLE void setOutput(QObject * obj);
+    Q_INVOKABLE void setContent(QObject * obj);
     Q_INVOKABLE void setMainWindow(QObject * obj);
 
     Q_INVOKABLE QString getLocalisedText(const QString & textInput);
@@ -327,6 +328,9 @@ signals:
 
     void startFileDialog(const QString & sDirectory, const QString & sFilter, bool bAsOpenDialog = true);
     void showInfoDialog(const QString & sInfoText, int style);
+
+    void setVerticalSplit(bool verticalSplit);
+    void setOutputHeight(int heightOutput);
 
     void updateEolMenus(int enumEol);
     void updateEncodingMenus(int enumEncoding);

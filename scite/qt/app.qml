@@ -3,6 +3,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Dialogs 1.2
 import QtQml.Models 2.14
 import Qt.labs.platform 1.1 as Platform
+import Qt.labs.settings 1.0
 
 import org.scintilla.sciteqt 1.0
 
@@ -23,9 +24,14 @@ ApplicationWindow {
         console.log("ON Completed")
         sciteQt.setScintilla(quickScintillaEditor.scintilla)
         sciteQt.setOutput(quickScintillaOutput.scintilla)
+        sciteQt.setContent(splitView)
         sciteQt.setMainWindow(applicationWindow)
         sciteQt.setApplicationData(applicationData)
         console.log("ON Completed done")
+        //splitView.restoreState(settings.splitView)
+    }
+    Component.onDestruction: {
+        //settings.splitView = splitView.saveState()
     }
 
     function max(v1, v2) {
@@ -89,6 +95,14 @@ ApplicationWindow {
 
         infoDialog.text = infoText
         infoDialog.open()
+    }
+
+    function setVerticalSplit(verticalSplit) {
+        splitView.verticalSplit = verticalSplit
+    }
+
+    function setOutputHeight(heightOutput) {
+        splitView.outputHeight = heightOutput
     }
 
     function processMenuItem(menuText, menuItem) {
@@ -1037,7 +1051,12 @@ ApplicationWindow {
     }
 
     SplitView {
-        id: splitView
+        id: splitView        
+
+        orientation: verticalSplit ? Qt.Horizontal : Qt.Vertical
+
+        property int outputHeight: 0
+        property bool verticalSplit: true
 
         //anchors.fill: parent
         anchors.top: lblFileName.bottom
@@ -1049,10 +1068,20 @@ ApplicationWindow {
         anchors.topMargin: 5
         anchors.bottomMargin: 5
 
+        // see: https://doc.qt.io/qt-5/qtquickcontrols2-customize.html#customizing-splitview
+        handle: Rectangle {
+            implicitWidth: 4
+            implicitHeight: 4
+            color: SplitHandle.pressed ? "#81e889"
+                : (SplitHandle.hovered ? Qt.lighter("#c2f4c6", 1.1) : "#c2f4c6")
+        }
+// TODO: moveSplit --> SciTEBase::MoveSplit() aufrufen !
+
         ScintillaText {
             id: quickScintillaEditor
 
-            SplitView.preferredWidth: 2 * parent.width / 3
+            SplitView.fillWidth: true
+            SplitView.fillHeight: true
 
             //text: "editor area !"
         }
@@ -1060,35 +1089,27 @@ ApplicationWindow {
         ScintillaText {
             id: quickScintillaOutput
 
-            SplitView.preferredWidth: parent.width / 3
+            SplitView.preferredWidth: splitView.outputHeight
+            SplitView.preferredHeight: splitView.outputHeight
 
-            //text: "blub output !"
+            //text: "output area !"
         }
-/*
-        ListView {
-            id: listView
-
-            model: buffersModel
-            delegate: Text {
-                      text: "idx=" + index+ " obj=" + model.display
-                  }
-
-            SplitView.preferredWidth: parent.width / 2
-        }
-*/
     }
 
     function clearBuffersModel(model) {
         model.clear()
     }
+
     function writeInBuffersModel(model,index, name, checked) {
         model.set(index, {"display":name, "checkState":checked})
     }
+
     function removeInBuffersModel(model,index) {
         if(index < model.count) {
             model.remove(index)
         }
     }
+
     function setCheckStateInBuffersModel(model,index, checked) {
         if(index < model.count) {
             model.setProperty(index,"checkState",checked)
@@ -1249,6 +1270,11 @@ ApplicationWindow {
         */
     }
 
+    Settings {
+        id: settings
+        property var splitView
+    }
+
     SciTEQt {
        id: sciteQt
     }
@@ -1258,6 +1284,9 @@ ApplicationWindow {
 
         onStartFileDialog:            startFileDialog(sDirectory, sFilter, bAsOpenDialog)
         onShowInfoDialog:             showInfoDialog(sInfoText, style)
+
+        onSetVerticalSplit:           setVerticalSplit(verticalSplit)
+        onSetOutputHeight:            setOutputHeight(heightOutput)
 
         onSetMenuChecked:             handleMenuChecked(menuID, val)
         onSetMenuEnable:              handleMenuEnable(menuID, val)
