@@ -138,7 +138,8 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
       m_bWaitDoneFlag(false),
       m_iMessageDialogAccepted(MSGBOX_RESULT_CANCEL),
       m_bShowToolBar(false),
-      m_bShowStatusBar(false)
+      m_bShowStatusBar(false),
+      m_bShowTabBar(true)
 {
 #ifdef Q_OS_WINDOWS
     propsPlatform.Set("PLAT_WIN", "1");
@@ -181,17 +182,17 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
 
 void SciTEQt::TabInsert(int index, const GUI::gui_char *title)
 {
-
+    emit insertTab(index, ConvertGuiCharToQString(title));
 }
 
 void SciTEQt::TabSelect(int index)
 {
-
+    emit selectTab(index);
 }
 
 void SciTEQt::RemoveAllTabs()
 {
-
+    emit removeAllTabs();
 }
 
 void SciTEQt::WarnUser(int warnID)
@@ -421,7 +422,7 @@ void SciTEQt::ShowToolBar()
 
 void SciTEQt::ShowTabBar()
 {
-    // TODO: implement tab bar ui
+    setShowTabBar(tabVisible);
 }
 
 void SciTEQt::ShowStatusBar()
@@ -561,6 +562,20 @@ void SciTEQt::setShowToolBar(bool val)
     {
         m_bShowToolBar = val;
         emit showToolBarChanged();
+    }
+}
+
+bool SciTEQt::isShowTabBar() const
+{
+    return m_bShowTabBar;
+}
+
+void SciTEQt::setShowTabBar(bool val)
+{
+    if(val != m_bShowTabBar)
+    {
+        m_bShowTabBar = val;
+        emit showTabBarChanged();
     }
 }
 

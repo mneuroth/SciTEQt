@@ -100,6 +100,7 @@ class SciTEQt : public QObject, public SciTEBase
     // control visibility of ui controls
     Q_PROPERTY(bool showToolBar READ isShowToolBar WRITE setShowToolBar NOTIFY showToolBarChanged)
     Q_PROPERTY(bool showStatusBar READ isShowStatusBar WRITE setShowStatusBar NOTIFY showStatusBarChanged)
+    Q_PROPERTY(bool showTabBar READ isShowTabBar WRITE setShowTabBar NOTIFY showTabBarChanged)
 
     // control content of ui controls
     Q_PROPERTY(QString statusBarText READ getStatusBarText WRITE setStatusBarText NOTIFY statusBarTextChanged)
@@ -170,6 +171,8 @@ public:
     void setShowToolBar(bool val);
     bool isShowStatusBar() const;
     void setShowStatusBar(bool val);
+    bool isShowTabBar() const;
+    void setShowTabBar(bool val);
 
     QString getStatusBarText() const;
     void setStatusBarText(const QString & txt);
@@ -314,6 +317,7 @@ public slots:
 
 signals:
     void showToolBarChanged();
+    void showTabBarChanged();
     void showStatusBarChanged();
     void statusBarTextChanged();
     void setMenuChecked(int menuID, bool val);
@@ -335,6 +339,10 @@ signals:
     void updateEolMenus(int enumEol);
     void updateEncodingMenus(int enumEncoding);
 
+    void insertTab(int index, const QString & title);
+    void selectTab(int index);
+    void removeAllTabs();
+
 private:
     QObject * getCurrentInfoDialog();
 
@@ -346,6 +354,7 @@ private:
 
     bool                    m_bShowToolBar;
     bool                    m_bShowStatusBar;
+    bool                    m_bShowTabBar;
     QString                 m_sStatusBarText;
 };
 

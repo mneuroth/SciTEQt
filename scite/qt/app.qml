@@ -1050,6 +1050,29 @@ ApplicationWindow {
         */
     }
 
+    TabBar {
+        id: tabBar
+        visible: sciteQt.showTabBar
+        height: sciteQt.showTabBar ? implicitHeight : 0
+
+        anchors.top: lblFileName.bottom
+        anchors.right: parent.right
+        anchors.left: parent.left
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+    }
+
+    Component {
+        id: tabButton
+        TabButton {
+            property var fcnClicked: undefined
+            text: "some text"
+            onClicked: fcnClicked()
+        }
+    }
+
     SplitView {
         id: splitView        
 
@@ -1059,7 +1082,7 @@ ApplicationWindow {
         property bool verticalSplit: true
 
         //anchors.fill: parent
-        anchors.top: lblFileName.bottom
+        anchors.top: tabBar.bottom
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -1301,5 +1324,24 @@ ApplicationWindow {
         onSetInLanguagesModel:        writeInBuffersModel(languagesModel, index, txt, checked)
         onRemoveInLanguagesModel:     removeInLanguagesModel(languagesModel, index)
         onCheckStateInLanguagesModel: setCheckStateInLanguagesModel(languagesModel, index, checked)
+
+        onInsertTab:                  insertTab(index, title)
+        onSelectTab:                  selectTab(index)
+        onRemoveAllTabs:              removeAllTabs()
+    }
+
+    function removeAllTabs() {
+        for(var i=tabBar.count-1; i>=0; i--) {
+            tabBar.takeItem(i)
+        }
+    }
+
+    function selectTab(index) {
+        tabBar.setCurrentIndex(index)
+    }
+
+    function insertTab(index, title) {
+        var item = tabButton.createObject(tabBar, {text: title, fcnClicked: function () { sciteQt.CmdSelectBuffer(index) }})
+        tabBar.insertItem(index, item)
     }
 }
