@@ -2,6 +2,8 @@
 
 A port of the [SciTE editor](https://www.scintilla.org/SciTE.html) to the Qt QML/Quick platform, which is optimized for touch devices.
 
+All target platforms of the Qt framework are supported (Android, IOS, Webassembly, Windows, Mac and Linux). The application runs even in a [browser via Webassembly](http://mneuroth.de/sciteqt.html)
+
 <img src="scite/qt/doc/sciteqt_win.png" alt="SciTEQt screenshot" >
 
 Build status: 

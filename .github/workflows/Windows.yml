@@ -48,25 +48,27 @@ jobs:
         gcc -v
         qmake -r sciteqt.pro
         dir
-        #mingw32-make -j 4
-        #dir
-        #dir scite\qt
-        #
-        cd scintilla        
-        cd qt
-        cd ScintillaEditBase
-        mingw32-make
-        cd ..
-        cd ..
-        cd ..
-        cd scite
-        cd qt
         mingw32-make
         dir
-        cd ..
-        cd ..
-        dir scite 
+        dir scite\bin
         dir scite\qt
+        dir scintilla\bin
+        #
+        #cd scintilla        
+        #cd qt
+        #cd ScintillaEditBase
+        #mingw32-make
+        #cd ..
+        #cd ..
+        #cd ..
+        #cd scite
+        #cd qt
+        #mingw32-make
+        #dir
+        #cd ..
+        #cd ..
+        #dir scite 
+        #dir scite\qt
         
   windows_msc_build:
 
@@ -118,6 +120,8 @@ jobs:
         dir scite
         dir scite\qt
         dir scite\qt\release
+        dir scite\bin
+        dir scintilla\bin
         #dir src\dist\packages\org.scintilla.sciteqt\data
         #cd src\dist\packages\org.scintilla.sciteqt\data
         #windeployqt --release --no-system-d3d-compiler sciteqt.exe
