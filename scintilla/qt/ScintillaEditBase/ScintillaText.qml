@@ -43,8 +43,8 @@ ScrollView {
         ScintillaEditBase {
             id: quickScintillaEditor
 
-            width: scrollView.availableWidth //+ 2*quickScintillaEditor.charHeight
-            height: scrollView.availableHeight //+ 2*quickScintillaEditor.charWidth
+            width: scrollView.availableWidth-scrollView.ScrollBar.vertical.width //+ 2*quickScintillaEditor.charHeight
+            height: scrollView.availableHeight-scrollView.ScrollBar.horizontal.height //+ 2*quickScintillaEditor.charWidth
 
             // position of the QuickScintilla controll will be changed in response of signals from the ScrollView
             x : 0
