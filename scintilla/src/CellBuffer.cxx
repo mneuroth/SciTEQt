@@ -196,11 +196,15 @@ public:
 	}
 	void InsertLines(Sci::Line line, const Sci::Position *positions, size_t lines, bool lineStart) override {
 		const POS lineAsPos = static_cast<POS>(line);
-		if constexpr (sizeof(Sci::Position) == sizeof(POS)) {
-			starts.InsertPartitions(lineAsPos, positions, lines);
-		} else {
+#if !defined(__EMSCRIPTEN__)
+        if constexpr (sizeof(Sci::Position) == sizeof(POS)) {
+            starts.InsertPartitions(lineAsPos, positions, lines);
+        } else {
+#endif
 			starts.InsertPartitionsWithCast(lineAsPos, positions, lines);
-		}
+#if !defined(__EMSCRIPTEN__)
+        }
+#endif
 		if (activeIndices) {
 			if (activeIndices & SC_LINECHARACTERINDEX_UTF32) {
 				startsUTF32.InsertLines(line, lines);

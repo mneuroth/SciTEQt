@@ -116,6 +116,10 @@ unix {
 macx {
     LIBS += -ldl
 }
+wasm {
+    # use this command in output directory to run application: emrun --browser=firefox sciteqt.html
+    LIBS += -ldl -s ERROR_ON_UNDEFINED_SYMBOLS=0
+}
 
 RESOURCES += sciteqt.qrc
 
