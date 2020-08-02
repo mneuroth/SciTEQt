@@ -278,4 +278,9 @@ private:
 	int ModifiersOfKeyboard() const;
 };
 
+#ifdef PLAT_QT_QML
+//Q_DECLARE_METATYPE(ScintillaEditBase);
+void RegisterScintillaType();
+#endif
+
 #endif /* SCINTILLAEDITBASE_H */

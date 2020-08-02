@@ -1227,4 +1227,9 @@ void ScintillaEditBase::setStylesFont(const QFont &f, int style)
         setStylesFont(f, STYLE_DEFAULT);
 }
 
+void RegisterScintillaType()
+{
+    qmlRegisterType<ScintillaEditBase>("org.scintilla.scintilla", 1, 0, "ScintillaEditBase");
+}
+
 #endif

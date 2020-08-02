@@ -81,8 +81,10 @@ int main(int argc, char *argv[])
     qRegisterMetaType<SCNotification>("SCNotification");
     qRegisterMetaType<SCNotification>("uptr_t");
     qRegisterMetaType<SCNotification>("sptr_t");
-    qmlRegisterType<ScintillaEditBase>("Scintilla", 1, 0, "ScintillaEditBase");
     qmlRegisterType<SciTEQt>("org.scintilla.sciteqt", 1, 0, "SciTEQt");
+    // need external function to register for mingw, otherwise we get an unresolved external errror when linking
+    //qmlRegisterType<ScintillaEditBase>("org.scintilla.scintilla", 1, 0, "ScintillaEditBase");
+    RegisterScintillaType();
 
     LexillaSetDefaultDirectory(/*GetSciTEPath(FilePath()).AsUTF8()*/".");
     Scintilla_LinkLexers();

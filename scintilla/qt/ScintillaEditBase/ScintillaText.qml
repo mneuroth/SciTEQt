@@ -1,4 +1,4 @@
-import Scintilla 1.0
+import org.scintilla.scintilla 1.0
 import QtQuick 2.9
 import QtQuick.Controls 2.14
 import QtQuick.Dialogs 1.2
