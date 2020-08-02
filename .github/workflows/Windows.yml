@@ -57,7 +57,7 @@ jobs:
         dir scite\qt\release
         dir scintilla\bin
         cd scite\qt\dist\packages\org.scintilla.sciteqt\data
-        windeployqt --release --no-system-d3d-compiler sciteqt.exe
+        windeployqt --release --qmldir ..\..\..\.. sciteqt.exe
         dir
         cd ..\..\..
         dir
@@ -117,7 +117,7 @@ jobs:
         dir scite\bin
         dir scintilla\bin
         cd scite\qt\dist\packages\org.scintilla.sciteqt\data
-        windeployqt --release --no-system-d3d-compiler sciteqt.exe
+        windeployqt --release --qmldir ..\..\..\.. sciteqt.exe
         dir
         cd ..\..\..
         dir
