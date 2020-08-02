@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>SciTEQt</DisplayName>
+    <Description>Install SciTEQt editor application.</Description>
+    <Version>4.4.4-1</Version>
+    <ReleaseDate>2020-08-02</ReleaseDate>
+    <Licenses>
+        <License name="Scintilla License" file="license.txt" />
+    </Licenses>
+    <Default>script</Default>
+    <Script>installscript.qs</Script>
+    <!--
+    <UserInterfaces>
+        <UserInterface>page.ui</UserInterface>
+    </UserInterfaces>
+    -->
+</Package>

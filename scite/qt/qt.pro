@@ -121,6 +121,18 @@ wasm {
     LIBS += -ldl -s ERROR_ON_UNDEFINED_SYMBOLS=0
 }
 
+CONFIG(debug, debug|release) {
+    DEBUG_OR_RELEASE = debug
+}  else {
+    DEBUG_OR_RELEASE = release
+}
+
+win32 {
+    QMAKE_POST_LINK +=$$quote($${QMAKE_COPY} \"$${OUT_PWD}\\$${DEBUG_OR_RELEASE}\\$${TARGET}.exe\" \"$${PWD}\\dist\\packages\\org.scintilla.sciteqt\\data\")
+    QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\..\\win32\\SciBall.ico\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data/sciteqt_256x256.ico\")
+    QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\..\\gtk\\Sci48M.png\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data/sciteqt_512x512.png\")
+}
+
 RESOURCES += sciteqt.qrc
 
 #DESTPATH = $$[QT_INSTALL_EXAMPLES]/qml/tutorials/extending-qml/chapter1-basics

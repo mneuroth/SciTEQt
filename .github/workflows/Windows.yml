@@ -52,23 +52,15 @@ jobs:
         dir
         dir scite\bin
         dir scite\qt
+        dir scite\qt\release
         dir scintilla\bin
-        #
-        #cd scintilla        
-        #cd qt
-        #cd ScintillaEditBase
-        #mingw32-make
-        #cd ..
-        #cd ..
-        #cd ..
-        #cd scite
-        #cd qt
-        #mingw32-make
-        #dir
-        #cd ..
-        #cd ..
-        #dir scite 
-        #dir scite\qt
+        cd scite\qt\dist\packages\org.scintilla.sciteqt\data
+        windeployqt --release --no-system-d3d-compiler sciteqt.exe
+        dir
+        cd ..\..\..
+        dir
+        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\3.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw.exe
+        dir 
         
   windows_msc_build:
 
@@ -122,15 +114,12 @@ jobs:
         dir scite\qt\release
         dir scite\bin
         dir scintilla\bin
-        #dir src\dist\packages\org.scintilla.sciteqt\data
-        #cd src\dist\packages\org.scintilla.sciteqt\data
-        #windeployqt --release --no-system-d3d-compiler sciteqt.exe
-        #dir
-        #cd ..\..\..
-        #dir
-        #d:\a\SciteQt\Qt\Tools\QtInstallerFramework\3.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciteQtInstaller.exe
-        #dir 
-        #echo %path%
-        #where binarycreator
-        #binarycreator
+        cd scite\qt\dist\packages\org.scintilla.sciteqt\data
+        windeployqt --release --no-system-d3d-compiler sciteqt.exe
+        dir
+        cd ..\..\..
+        dir
+        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\3.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstaller.exe
+        dir 
+        
         

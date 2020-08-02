@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>SciTEQt</Name>
+    <Version>4.4.4</Version>
+    <Title>Qt port of SciTE Editor</Title>
+    <Publisher>Michael Neuroth</Publisher>
+    <StartMenuDir>SciteQt</StartMenuDir>
+    <TargetDir>@HomeDir@/SciteQt</TargetDir>
+    <InstallerWindowIcon>sciteqt_256x256</InstallerWindowIcon>
+    <InstallerApplicationIcon>sciteqt_512x512</InstallerApplicationIcon>
+    <Logo>sciteqt_512x512.png</Logo>
+</Installer>
