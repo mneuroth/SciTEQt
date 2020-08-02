@@ -1,0 +1,70 @@
+name: Scite Original CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+    
+  linux_scite_org:
+
+    runs-on: ubuntu-latest
+      
+    steps:
+    - uses: actions/checkout@v2
+    - name: Compile SciTE
+      run: |
+        #sudo apt-get install libgtk-3-dev
+        sudo apt-get install libgtk2.0-dev
+        sudo apt-get install libglib2.0-dev
+        uname -a  # ubuntu 18.04
+        gcc -v    # gcc 7.5.0
+        pwd 
+        ls -lrt
+        cd scintilla/gtk
+        make -j 4
+        ls -lrt
+        cd ..
+        cd ..
+        cd scite/gtk
+        ls -lrt
+        make -j 4
+        ls -lrt
+        cd ..
+        ls -lrt bin
+
+  windows_msc_scite_org:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: ilammy/msvc-dev-cmd@v1.0.0
+    - name: Compile SciTE
+      run: |
+        cl  #  19.26.28806 for x64
+        cd scintilla
+        cd win32
+        nmake -f scintilla.mak
+        dir
+        cd ..
+        dir bin
+        cd lexilla
+        cd src
+        nmake -f lexilla.mak
+        dir
+        cd ..
+        cd ..
+        dir bin
+        cd ..
+        cd scite
+        cd win32        
+        dir 
+        nmake -f scite.mak
+        dir
+        cd ..
+        dir 
+        dir bin
+        
