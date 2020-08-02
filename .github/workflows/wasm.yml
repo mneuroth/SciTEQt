@@ -1,13 +1,13 @@
-name: C/C++ CI
-
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
-jobs:
-    
+#name: WASM CI
+#
+#on:
+#  push:
+#    branches: [ master ]
+#  pull_request:
+#    branches: [ master ]
+#
+#jobs:
+#    
 #  linux_wasm_5_14_2:
 #  
 #    runs-on: ubuntu-latest
