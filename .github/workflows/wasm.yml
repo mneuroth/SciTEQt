@@ -53,9 +53,13 @@ jobs:
         ls -lrt ../Qt/Tools
         python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
         ls -lrt ../Qt/Tools
+        which qmake
         qmake -v
+        ls -lrt /home/runner/work/SciTEQt/Qt/5.14.2
+        ls -lrt /home/runner/work/SciTEQt/Qt/5.14.2/wasm_32
+        ls -lrt /home/runner/work/SciTEQt/Qt/5.14.2/wasm_32/bin
         g++ -v
-        qmake -r sciteqt.pro
+        /home/runner/work/SciTEQt/Qt/5.14.2/wasm_32/bin/qmake -r sciteqt.pro
         ls -lrt
         make
         ls -lrt
