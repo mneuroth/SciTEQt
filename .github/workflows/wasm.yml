@@ -106,13 +106,15 @@ jobs:
         emcc --version
         where.exe emsdk
         emsdk list
-        emsdk list --old
-        emsdk install sdk-fastcomp-1.38.30-64bit
-        emsdk activate sdk-fastcomp-1.38.30-64bit --global
-        emsdk list
+        #emsdk list --old
+        emsdk install sdk-fastcomp-1.38.27-64bit
+        emsdk activate sdk-fastcomp-1.38.27-64bit --global
+        #emsdk list
         em++ --version
         emcc --version
         #emsdk uninstall sdk-1.40.1-64bit
+        emsdk uninstall sdk-incoming-64bit
+        emsdk uninstall latest
         emsdk list
         em++ --version
         emcc --version
