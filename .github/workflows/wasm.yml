@@ -104,6 +104,10 @@ jobs:
       run: |
         #sudo apt-get install libgtk-3-dev
         emcc --version
+        which emsdk
+        emsdk install sdk-fastcomp-1.38.27-64bit
+        emsdk activate sdk-fastcomp-1.38.27-64bit
+        em++ --version
         #g++ -v
         cd
         d:
