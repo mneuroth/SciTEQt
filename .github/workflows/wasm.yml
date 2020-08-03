@@ -113,6 +113,8 @@ jobs:
         echo "======================================"
         emsdk.ps1 activate sdk-fastcomp-1.38.27-64bit
         echo "======================================"
+        $Env:EMSDK
+        $Env:EMSDK\emscripten\1.38.27\em++.bat --version
         #emsdk list
         em++ --version
         emcc --version
@@ -132,7 +134,8 @@ jobs:
         d:
         dir
         dir d:\a\SciTEQt\Qt
-        dir
+        dir ..\..
+        dir ..\..\_temp
         dir ..
         dir ..\Qt
         dir ..\Qt\5.14.2
