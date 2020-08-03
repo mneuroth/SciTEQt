@@ -112,7 +112,8 @@ jobs:
         dir
         dir ..
         dir ..\Qt
-        dir ..\Qt\Tools
+        dir ..\Qt\5.14.2
+        #dir ..\Qt\Tools
         #python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
         #ls -lrt ../Qt/Tools
         where qmake
