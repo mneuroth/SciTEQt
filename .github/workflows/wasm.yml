@@ -59,7 +59,8 @@ jobs:
         ls -lrt ../Qt
         which qmake
         qmake -v
-        qmake -r sciteqt.pro
+        ../Qt/5.14.2/wasm_32/bin/qmake -v
+        ../Qt/5.14.2/wasm_32/bin/qmake -r sciteqt.pro
         ls -lrt
         make
         ls -lrt
