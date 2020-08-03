@@ -101,6 +101,7 @@ jobs:
         # Any extra arguments to append to the back
         extra: # optional
     - name: Install Qt and compile
+      shell: cmd
       run: |
         #sudo apt-get install libgtk-3-dev
         emcc --version
@@ -108,7 +109,7 @@ jobs:
         emsdk list
         #emsdk list --old
         emsdk install sdk-fastcomp-1.38.27-64bit
-        emsdk activate sdk-fastcomp-1.38.27-64bit --global
+        emsdk activate --global sdk-fastcomp-1.38.27-64bit
         #emsdk list
         em++ --version
         emcc --version
@@ -121,7 +122,8 @@ jobs:
         where.exe em++
         where.exe emcc
         echo "hello"
-        $Env:Path
+        #$Env:Path
+        echo %path%
         #g++ -v
         cd
         d:
