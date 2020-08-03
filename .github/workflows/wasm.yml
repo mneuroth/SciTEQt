@@ -108,8 +108,11 @@ jobs:
         where.exe emsdk.ps1
         emsdk.ps1 list
         #emsdk list --old
+        echo "======================================"
         emsdk.ps1 install sdk-fastcomp-1.38.27-64bit
-        emsdk.ps1 activate --global sdk-fastcomp-1.38.27-64bit
+        echo "======================================"
+        emsdk.ps1 activate sdk-fastcomp-1.38.27-64bit
+        echo "======================================"
         #emsdk list
         em++ --version
         emcc --version
