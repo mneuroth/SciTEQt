@@ -51,7 +51,8 @@ jobs:
         ls -lrt ..
         ls -lrt ../Qt
         ls -lrt ../Qt/Tools
-        python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
+        #python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
+        python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 wasm_32
         ls -lrt ../Qt/Tools
         which qmake
         qmake -v
