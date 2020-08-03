@@ -104,14 +104,18 @@ jobs:
       run: |
         #sudo apt-get install libgtk-3-dev
         emcc --version
-        where emsdk
+        #where emsdk
+        emsdk list
         emsdk install sdk-fastcomp-1.38.27-64bit
         emsdk activate sdk-fastcomp-1.38.27-64bit
         em++ --version
         emcc --version
-        where em++
-        where emcc
-        echo %PATH%
+        emsdk uninstall 1.40.1
+        em++ --version
+        emcc --version
+        #where em++
+        #where emcc
+        #echo %PATH%
         #g++ -v
         cd
         d:
@@ -124,12 +128,13 @@ jobs:
         #dir ..\Qt\Tools
         #python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
         #ls -lrt ../Qt/Tools
-        where qmake
-        ..\Qt\5.14.2\wasm_32\bin\qmake -v
+        #where qmake
+        #..\Qt\5.14.2\wasm_32\bin\qmake -v
         dir ..\Qt\5.14.2
         dir ..\Qt\5.14.2\wasm_32
         dir ..\Qt\5.14.2\wasm_32\bin
-        ..\Qt\5.14.2\wasm_32\bin\qmake -r sciteqt.pro
+        #..\Qt\5.14.2\wasm_32\bin\qmake -r sciteqt.pro
+        qmake -r sciteqt.pro
         dir
         mingw32-make
         dir
