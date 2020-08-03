@@ -114,7 +114,8 @@ jobs:
         emsdk.ps1 activate sdk-fastcomp-1.38.27-64bit
         echo "======================================"
         $Env:EMSDK
-        invoke-expression $Env:EMSDK\emscripten\1.38.27\em++.bat
+        $Env:EMSDKTEST=$Env:EMSDK+"\emscripten\1.38.27\em++.bat --version"
+        invoke-expression $Env:EMSDKTEST
         #emsdk list
         em++ --version
         emcc --version
@@ -126,7 +127,6 @@ jobs:
         #emcc --version
         where.exe em++
         where.exe emcc
-        em++
         echo "hello"
         $Env:Path
         #echo %path%
