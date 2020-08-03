@@ -105,6 +105,7 @@ jobs:
       run: |
         #sudo apt-get install libgtk-3-dev
         emcc --version
+        $Env:Path
         where.exe emsdk.ps1
         emsdk.ps1 list
         #emsdk list --old
@@ -115,10 +116,18 @@ jobs:
         echo "======================================"
         $Env:EMSDK
         $Env:EMSDKTEST=$Env:EMSDK+"\emscripten\1.38.27\em++.bat --version"
+        $Env:EMSDKTEST
         invoke-expression $Env:EMSDKTEST
+        echo "======================================"
+        $Env:EMSDKTEST2=$Env:EMSDK+"\emscripten\upstream\emscripten\em++.bat --version"
+        $Env:EMSDKTEST2
+        invoke-expression $Env:EMSDKTEST2
+        echo "======================================"
         #emsdk list
         em++ --version
+        echo "======================================"
         emcc --version
+        echo "======================================"
         #emsdk uninstall sdk-1.40.1-64bit
         #emsdk uninstall sdk-incoming-64bit
         #emsdk uninstall latest
