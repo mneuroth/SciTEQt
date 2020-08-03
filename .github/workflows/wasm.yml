@@ -108,14 +108,18 @@ jobs:
         emsdk list
         emsdk install sdk-fastcomp-1.38.27-64bit
         emsdk activate sdk-fastcomp-1.38.27-64bit
+        emsdk list
         em++ --version
         emcc --version
-        emsdk uninstall 1.40.1
+        emsdk uninstall sdk-1.40.1
+        emsdk list
         em++ --version
         emcc --version
         #where em++
         #where emcc
         #echo %PATH%
+        echo "hello"
+        path
         #g++ -v
         cd
         d:
@@ -133,8 +137,7 @@ jobs:
         dir ..\Qt\5.14.2
         dir ..\Qt\5.14.2\wasm_32
         dir ..\Qt\5.14.2\wasm_32\bin
-        #..\Qt\5.14.2\wasm_32\bin\qmake -r sciteqt.pro
-        qmake -r sciteqt.pro
+        ..\Qt\5.14.2\wasm_32\bin\qmake -r sciteqt.pro
         dir
         mingw32-make
         dir
