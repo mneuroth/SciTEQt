@@ -45,9 +45,14 @@ jobs:
       run: |
         #sudo apt-get install libgtk-3-dev
         emcc --version
+        em++ --version
         g++ -v
         pwd 
         python3 -m aqt install -O /home/runner/work/SciTEQt/Qt 5.14.2 linux desktop wasm_32 -m qtscript qtscripttools
+        emsdk install sdk-fastcomp-1.38.27-64bit
+        emsdk activate sdk-fastcomp-1.38.27-64bit
+        emcc --version
+        em++ --version
         ls -lrt
         ls -lrt ..
         ls -lrt ../Qt
@@ -59,6 +64,7 @@ jobs:
         ls -lrt ../Qt/5.14.2
         ls -lrt ../Qt/5.14.2/wasm_32
         ls -lrt ../Qt/5.14.2/wasm_32/bin
+        em++ -v
         g++ -v
         ../Qt/5.14.2/wasm_32/bin/qmake -r sciteqt.pro
         ls -lrt
@@ -68,106 +74,106 @@ jobs:
         ls -lrt scite/bin
         ls -lrt scintilla/bin
 
-  windows_wasm_5_14_2:
-  
-    runs-on: windows-latest
-      
-    steps:
-    - uses: actions/checkout@v2
-    - uses: mymindstorm/setup-emsdk@v6
-    - uses: jurplel/install-qt-action@v2
-      with:
-        # Directory to install Qt
-        dir: # optional
-        # Version of Qt to install
-        version: '5.14.2'
-        # Host platform
-        host: # optional
-        # Target platform for build
-        target: 'desktop'
-        # Architecture for Windows/Android
-        arch: 'wasm_32' # optional
-        # Whether or not to install Qt dependencies on Linux
-        install-deps: 'true'
-        # Additional Qt modules to install
-        modules: 'qtscript qtscripttools' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
-        # Force a Qt mirror in case the default is not working
-        mirror: # optional
-        # Whether or not to actually download Qt
-        cached: # optional, default is false
-        # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
-        # Version of py7zr to use in case of issues
-        py7zrversion: # optional, default is ==0.6
-        # Any extra arguments to append to the back
-        extra: # optional
-    - name: Install Qt and compile
-      #shell: cmd
-      run: |
-        #sudo apt-get install libgtk-3-dev
-        emcc --version
-        where.exe emcc
-        $Env:Path
-        $Env:EMSDK
-        where.exe emsdk.ps1
-        emsdk.ps1 list
-        #emsdk list --old
-        echo "======================================"
-        emsdk.ps1 install sdk-fastcomp-1.38.27-64bit
-        echo "======================================"
-        emsdk.ps1 activate sdk-fastcomp-1.38.27-64bit
-        echo "======================================"
-        $Env:EMSDK
-        $Env:EMSDKTEST=$Env:EMSDK+"\emscripten\1.38.27\em++.bat --version"
-        $Env:EMSDKTEST
-        invoke-expression $Env:EMSDKTEST
-        echo "======================================"
-        $Env:EMSDKTEST2=$Env:EMSDK+"\emscripten\upstream\emscripten\em++.bat --version"
-        $Env:EMSDKTEST2
-        invoke-expression $Env:EMSDKTEST2
-        echo "======================================"
-        #emsdk list
-        em++ --version
-        echo "======================================"
-        emcc --version
-        echo "======================================"
-        #emsdk uninstall sdk-1.40.1-64bit
-        #emsdk uninstall sdk-incoming-64bit
-        #emsdk uninstall latest
-        #emsdk list
-        #em++ --version
-        #emcc --version
-        where.exe em++
-        where.exe emcc
-        echo "hello"
-        $Env:Path
-        #echo %path%
-        #g++ -v
-        cd
-        d:
-        dir
-        dir d:\a\SciTEQt\Qt
-        dir ..\..
-        dir ..\..\_temp
-        dir ..
-        dir ..\Qt
-        dir ..\Qt\5.14.2
-        #dir ..\Qt\Tools
-        #python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
-        #ls -lrt ../Qt/Tools
-        #where qmake
-        #..\Qt\5.14.2\wasm_32\bin\qmake -v
-        dir ..\Qt\5.14.2
-        dir ..\Qt\5.14.2\wasm_32
-        dir ..\Qt\5.14.2\wasm_32\bin
-        ..\Qt\5.14.2\wasm_32\bin\qmake -r sciteqt.pro
-        dir
-        em++ --version
-        mingw32-make
-        dir
-        dir scite\qt
-        dir scite\bin
-        dir scintilla\bin
+#  windows_wasm_5_14_2:
+#  
+#    runs-on: windows-latest
+#      
+#    steps:
+#    - uses: actions/checkout@v2
+#    - uses: mymindstorm/setup-emsdk@v6
+#    - uses: jurplel/install-qt-action@v2
+#      with:
+#        # Directory to install Qt
+#        dir: # optional
+#        # Version of Qt to install
+#        version: '5.14.2'
+#        # Host platform
+#        host: # optional
+#        # Target platform for build
+#        target: 'desktop'
+#        # Architecture for Windows/Android
+#        arch: 'wasm_32' # optional
+#        # Whether or not to install Qt dependencies on Linux
+#        install-deps: 'true'
+#        # Additional Qt modules to install
+#        modules: 'qtscript qtscripttools' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
+#        # Force a Qt mirror in case the default is not working
+#        mirror: # optional
+#        # Whether or not to actually download Qt
+#        cached: # optional, default is false
+#        # Version of aqtinstall to use in case of issues
+#        aqtversion: # optional, default is ==0.8
+#        # Version of py7zr to use in case of issues
+#        py7zrversion: # optional, default is ==0.6
+#        # Any extra arguments to append to the back
+#        extra: # optional
+#    - name: Install Qt and compile
+#      #shell: cmd
+#      run: |
+#        #sudo apt-get install libgtk-3-dev
+#        emcc --version
+#        where.exe emcc
+#        $Env:Path
+#        $Env:EMSDK
+#        where.exe emsdk.ps1
+#        emsdk.ps1 list
+#        #emsdk list --old
+#        echo "======================================"
+#        emsdk.ps1 install sdk-fastcomp-1.38.27-64bit
+#        echo "======================================"
+#        emsdk.ps1 activate sdk-fastcomp-1.38.27-64bit
+#        echo "======================================"
+#        $Env:EMSDK
+#        $Env:EMSDKTEST=$Env:EMSDK+"\emscripten\1.38.27\em++.bat --version"
+#        $Env:EMSDKTEST
+#        invoke-expression $Env:EMSDKTEST
+#        echo "======================================"
+#        $Env:EMSDKTEST2=$Env:EMSDK+"\emscripten\upstream\emscripten\em++.bat --version"
+#        $Env:EMSDKTEST2
+#        invoke-expression $Env:EMSDKTEST2
+#        echo "======================================"
+#        #emsdk list
+#        em++ --version
+#        echo "======================================"
+#        emcc --version
+#        echo "======================================"
+#        #emsdk uninstall sdk-1.40.1-64bit
+#        #emsdk uninstall sdk-incoming-64bit
+#        #emsdk uninstall latest
+#        #emsdk list
+#        #em++ --version
+#        #emcc --version
+#        where.exe em++
+#        where.exe emcc
+#        echo "hello"
+#        $Env:Path
+#        #echo %path%
+#        #g++ -v
+#        cd
+#        d:
+#        dir
+#        dir d:\a\SciTEQt\Qt
+#        dir ..\..
+#        dir ..\..\_temp
+#        dir ..
+#        dir ..\Qt
+#        dir ..\Qt\5.14.2
+#        #dir ..\Qt\Tools
+#        #python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
+#        #ls -lrt ../Qt/Tools
+#        #where qmake
+#        #..\Qt\5.14.2\wasm_32\bin\qmake -v
+#        dir ..\Qt\5.14.2
+#        dir ..\Qt\5.14.2\wasm_32
+#        dir ..\Qt\5.14.2\wasm_32\bin
+#        ..\Qt\5.14.2\wasm_32\bin\qmake -r sciteqt.pro
+#        dir
+#        em++ --version
+#        mingw32-make
+#        dir
+#        dir scite\qt
+#        dir scite\bin
+#        dir scintilla\bin
 
   windows_wasm_5_15_0:
   
