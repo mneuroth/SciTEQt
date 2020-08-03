@@ -111,15 +111,14 @@ jobs:
         emsdk list
         em++ --version
         emcc --version
-        emsdk uninstall sdk-1.40.1
+        emsdk uninstall sdk-1.40.1-64bit
         emsdk list
         em++ --version
         emcc --version
         #where em++
         #where emcc
-        #echo %PATH%
         echo "hello"
-        path
+        echo %PATH%
         #g++ -v
         cd
         d:
