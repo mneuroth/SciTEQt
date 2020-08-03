@@ -55,11 +55,11 @@ jobs:
         ls -lrt ../Qt/Tools
         which qmake
         qmake -v
-        ls -lrt /home/runner/work/SciTEQt/Qt/5.14.2
-        ls -lrt /home/runner/work/SciTEQt/Qt/5.14.2/wasm_32
-        ls -lrt /home/runner/work/SciTEQt/Qt/5.14.2/wasm_32/bin
+        ls -lrt ../Qt/5.14.2
+        ls -lrt ../Qt/5.14.2/wasm_32
+        ls -lrt ../Qt/5.14.2/wasm_32/bin
         g++ -v
-        /home/runner/work/SciTEQt/Qt/5.14.2/wasm_32/bin/qmake -r sciteqt.pro
+        ../Qt/5.14.2/wasm_32/bin/qmake -r sciteqt.pro
         ls -lrt
         make
         ls -lrt
