@@ -45,6 +45,7 @@ jobs:
       run: |
         #sudo apt-get install libgtk-3-dev
         emcc --version
+        g++ -v
         pwd 
         ls -lrt
         ls -lrt ..
@@ -52,11 +53,12 @@ jobs:
         ls -lrt ../Qt/Tools
         python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
         ls -lrt ../Qt/Tools
+        qmake -v
+        g++ -v
         qmake -r sciteqt.pro
         ls -lrt
         make
         ls -lrt
         ls -lrt scite/qt
-        ls -lrt scite/qt/release
-        ls -lrt  scite/bin
-        ls -lrt  scintilla/bin
+        ls -lrt scite/bin
+        ls -lrt scintilla/bin
