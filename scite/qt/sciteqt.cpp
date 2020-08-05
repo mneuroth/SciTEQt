@@ -1280,6 +1280,11 @@ void SciTEQt::CmdAboutScite()
     MenuCommand(IDM_ABOUT);
 }
 
+void SciTEQt::CmdMarkAll()
+{
+    MarkAll(markWithBookMarks);
+}
+
 void SciTEQt::ReadEmbeddedProperties()
 {
     propsEmbed.Clear();
@@ -1340,6 +1345,7 @@ void SciTEQt::onStatusbarClicked()
 
 void SciTEQt::setFindText(const QString & text)
 {
+    MenuCommand(IDM_WHOLEWORD);
     SetFind(text.toStdString().c_str());
     FindNext(reverseFind);
 }

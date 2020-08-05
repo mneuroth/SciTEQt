@@ -300,6 +300,8 @@ public:
     Q_INVOKABLE void CmdSciteHelp();
     Q_INVOKABLE void CmdAboutScite();
 
+    Q_INVOKABLE void CmdMarkAll();
+
     Q_INVOKABLE void setFindText(const QString & text);
 
     Q_INVOKABLE void onStatusbarClicked();
