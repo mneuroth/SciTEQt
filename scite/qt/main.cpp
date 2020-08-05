@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQuickStyle>
 
 #include "applicationdata.h"
 #include "sciteqt.h"
@@ -77,6 +78,12 @@ void PrivateMessageHandler(QtMsgType type, const QMessageLogContext & context, c
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
+#if defined(Q_OS_WIN) || defined(Q_OS_MACOS) || defined(Q_OS_LINUX)
+    QQuickStyle::setStyle("Fusion");
+#elif defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
+    QQuickStyle::setStyle("Default");
+#endif
 
     qRegisterMetaType<SCNotification>("SCNotification");
     qRegisterMetaType<SCNotification>("uptr_t");
