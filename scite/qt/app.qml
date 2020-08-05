@@ -974,6 +974,7 @@ ApplicationWindow {
 
         ToolButton {
             id: readonlyIcon
+            //icon.name: "document-open"
             //icon.source: "edit.svg"
             text: "Open"
             visible: sciteQt.showToolBar
@@ -1184,12 +1185,15 @@ ApplicationWindow {
         }
     }
 
+    // Find Dialog above status bar:
+    //==============================
     Label {
         id: findLabel
 
         visible: findInput.visible
-        height: visible ? implicitHeight : 0
+        height: findInput.height //visible ? implicitHeight : 0
 
+        anchors.verticalCenter: findNextButton.verticalCenter
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.rightMargin: 5
@@ -1200,14 +1204,22 @@ ApplicationWindow {
         text: sciteQt.getLocalisedText(qsTr("Find:"))
     }
 
-    TextInput/*ComboBox*/ {
+    TextField /*ComboBox*/ {
         id: findInput
+
+        background: Rectangle {
+                    radius: 2
+                    //implicitWidth: 100
+                    //implicitHeight: 24
+                    border.color: "grey"
+                    border.width: 1
+                }
 
         //editable: true
         visible: false
         height: visible ? implicitHeight : 0
 
-        anchors.right: findCloseButton.left
+        anchors.right: findNextButton.left
         anchors.bottom: parent.bottom
         anchors.left: findLabel.right
         anchors.rightMargin: 5
@@ -1222,9 +1234,187 @@ ApplicationWindow {
     }
 
     Button {
+        id: findNextButton
+
+        visible: findInput.visible
+        //focusPolicy: Qt.NoFocus
+
+        anchors.bottom: parent.bottom
+        anchors.right: findMarkAllButton.left
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+
+        text: sciteQt.getLocalisedText(qsTr("Find Next"))
+        onClicked: {
+            sciteQt.CmdFindNext()
+            hideFindRow()
+        }
+    }
+
+    Button {
+        id: findMarkAllButton
+
+        visible: findInput.visible
+        //focusPolicy: Qt.NoFocus
+
+        anchors.bottom: parent.bottom
+        anchors.right: findWordOnlyButton.left
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+
+        text: sciteQt.getLocalisedText(qsTr("Mark All"))
+        onClicked: {
+            sciteQt.CmdMarkAll()
+            hideFindRow()
+        }
+    }
+
+    Button {
+        id: findWordOnlyButton
+
+        visible: findInput.visible
+        checkable: true
+        flat: true
+        width: findNextButton.width / 2
+        //focusPolicy: Qt.NoFocus
+
+        anchors.bottom: parent.bottom
+        anchors.right: findCaseSensitiveButton.left
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+
+        text: sciteQt.getLocalisedText(qsTr("word"))
+        onClicked: {
+            //sciteQt.CmdMarkAll()
+        }
+    }
+
+    Button {
+        id: findCaseSensitiveButton
+
+        visible: findInput.visible
+        checkable: true
+        flat: true
+        width: findNextButton.width / 2
+        //focusPolicy: Qt.NoFocus
+
+        anchors.bottom: parent.bottom
+        anchors.right: findRegExprButton.left
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+
+        text: sciteQt.getLocalisedText(qsTr("Cc"))
+        onClicked: {
+            //sciteQt.CmdMarkAll()
+        }
+    }
+
+    Button {
+        id: findRegExprButton
+
+        visible: findInput.visible
+        checkable: true
+        flat: true
+        width: findNextButton.width / 2
+        //focusPolicy: Qt.NoFocus
+
+        anchors.bottom: parent.bottom
+        anchors.right: findTransformBackslashButton.left
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+
+        text: sciteQt.getLocalisedText(qsTr("^.*"))
+        onClicked: {
+            //sciteQt.CmdMarkAll()
+        }
+    }
+
+    Button {
+        id: findTransformBackslashButton
+
+        visible: findInput.visible
+        checkable: true
+        flat: true
+        width: findNextButton.width / 2
+        //focusPolicy: Qt.NoFocus
+
+        anchors.bottom: parent.bottom
+        anchors.right: findWrapAroundButton.left
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+
+        text: sciteQt.getLocalisedText(qsTr("\r\t"))
+        onClicked: {
+            //sciteQt.CmdMarkAll()
+        }
+    }
+
+    Button {
+        id: findWrapAroundButton
+
+        visible: findInput.visible
+        checkable: true
+        checked: true
+        flat: true
+        width: findNextButton.width / 2
+        //focusPolicy: Qt.NoFocus
+
+        anchors.bottom: parent.bottom
+        anchors.right: findUpButton.left
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+
+        text: sciteQt.getLocalisedText(qsTr("wrap"))
+        onClicked: {
+            //sciteQt.CmdMarkAll()
+        }
+    }
+
+    Button {
+        id: findUpButton
+
+        visible: findInput.visible
+        checkable: true
+        flat: true
+        width: findNextButton.width / 2
+        //focusPolicy: Qt.NoFocus
+
+        anchors.bottom: parent.bottom
+        anchors.right: findCloseButton.left
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+
+        text: sciteQt.getLocalisedText(qsTr("Up"))
+        onClicked: {
+            //sciteQt.CmdMarkAll()
+        }
+    }
+
+    Button {
         id: findCloseButton
 
         visible: findInput.visible
+        background: Rectangle {
+            color: "red"
+        }
+
+        width: 30
         //focusPolicy: Qt.NoFocus
 
         anchors.bottom: parent.bottom
@@ -1234,10 +1424,9 @@ ApplicationWindow {
         anchors.topMargin: 5
         anchors.bottomMargin: 5
 
-        text: "Close"
+        text: sciteQt.getLocalisedText(qsTr("X"))   // close
 
         onClicked: {
-            findCloseButton.focus = false
             hideFindRow()
         }
     }
