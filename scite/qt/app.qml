@@ -97,6 +97,12 @@ ApplicationWindow {
         infoDialog.open()
     }
 
+    function showFind(text) {
+        findInput.text = text
+        findInput.visible = true
+        findInput.focus = true
+    }
+
     function setVerticalSplit(verticalSplit) {
         splitView.verticalSplit = verticalSplit
     }
@@ -109,9 +115,14 @@ ApplicationWindow {
         var s = sciteQt.getLocalisedText(menuText)
         if( menuItem !== null && menuItem.shortcut !== undefined)
         {
-            s += "\t" + menuItem.shortcut
+            s += " \t" + menuItem.shortcut
         }
         return s
+    }
+
+    function hideFindRow() {
+        quickScintillaEditor.focus = true
+        findInput.visible = false
     }
 
     menuBar: MenuBar {
@@ -966,6 +977,7 @@ ApplicationWindow {
             //icon.source: "edit.svg"
             text: "Open"
             visible: sciteQt.showToolBar
+            //focusPolicy: Qt.NoFocus
             //anchors.right: readonlySwitch.left
             //anchors.rightMargin: 1
             onClicked: {
@@ -989,6 +1001,8 @@ ApplicationWindow {
 
     Text {
         id: lblFileName
+        visible: false
+        height: visible ? implicitHeight : 0
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
@@ -1052,8 +1066,10 @@ ApplicationWindow {
 
     TabBar {
         id: tabBar
+
         visible: sciteQt.showTabBar
         height: sciteQt.showTabBar ? implicitHeight : 0
+        //focusPolicy: Qt.NoFocus
 
         anchors.top: lblFileName.bottom
         anchors.right: parent.right
@@ -1068,6 +1084,7 @@ ApplicationWindow {
         id: tabButton
         TabButton {
             property var fcnClicked: undefined
+            //focusPolicy: Qt.NoFocus
             text: "some text"
             onClicked: fcnClicked()
         }
@@ -1084,19 +1101,67 @@ ApplicationWindow {
         //anchors.fill: parent
         anchors.top: tabBar.bottom
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
+        anchors.bottom: findInput.top
         anchors.left: parent.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
         anchors.topMargin: 5
         anchors.bottomMargin: 5
 
+/*
+        onHandleChanged: {
+            if( verticalSplit )
+            {
+                console.log("####>> width "+width+" "+verticalSplit+ " "+orientation+" "+startDrag)
+                sciteQt.setSpliterPos(width,height,startDrag)
+            }
+            else
+            {
+                console.log("####>> height "+height+" "+verticalSplit+ " "+orientation+" "+startDrag)
+                sciteQt.setSpliterPos(width,height,startDrag)
+            }
+        }
+*/
         // see: https://doc.qt.io/qt-5/qtquickcontrols2-customize.html#customizing-splitview
         handle: Rectangle {
-            implicitWidth: 4
-            implicitHeight: 4
+            implicitWidth: 5
+            implicitHeight: 5
+
+            property bool startDrag: false
+
             color: SplitHandle.pressed ? "#81e889"
                 : (SplitHandle.hovered ? Qt.lighter("#c2f4c6", 1.1) : "#c2f4c6")
+
+            onXChanged: {
+                if(SplitHandle.pressed) {
+                    console.log("drag x... "+(splitView.width-x)+" "+!startDrag)
+                    //sciteQt.startDragSpliterPos(splitView.width-x,0)
+                    if( !startDrag )
+                        startDrag = true
+                } else {
+                    console.log("finished drag x... "+(splitView.width-x))
+                    startDrag = false
+                    //sciteQt.setSpliterPos(splitView.width-x,0)
+                    //splitView.handleChanged(splitView.width-x,0)
+                }
+            }
+            onYChanged: {
+                if(SplitHandle.pressed)  {
+                    console.log("drag y... "+(splitView.height-y)+" "+!startDrag)
+                    //sciteQt.startDragSpliterPos(0,splitView.height-y)
+                    if( !startDrag )
+                        startDrag = true
+                } else {
+                    console.log("finished drag y... "+(splitView.height-y))
+                    startDrag = false
+                    //sciteQt.setSpliterPos(0,splitView.height-y)
+                    //splitView.handleChanged(0,splitView.height-y,!startDrag)
+                }
+            }
+
+            MouseArea {
+                onClicked: console.log("CLICK Splitter")
+            }
         }
 // TODO: moveSplit --> SciTEBase::MoveSplit() aufrufen !
 
@@ -1116,6 +1181,64 @@ ApplicationWindow {
             SplitView.preferredHeight: splitView.outputHeight
 
             //text: "output area !"
+        }
+    }
+
+    Label {
+        id: findLabel
+
+        visible: findInput.visible
+        height: visible ? implicitHeight : 0
+
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+
+        text: sciteQt.getLocalisedText(qsTr("Find:"))
+    }
+
+    TextInput/*ComboBox*/ {
+        id: findInput
+
+        //editable: true
+        visible: false
+        height: visible ? implicitHeight : 0
+
+        anchors.right: findCloseButton.left
+        anchors.bottom: parent.bottom
+        anchors.left: findLabel.right
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+
+        onAccepted: {
+            sciteQt.setFindText(findInput.text)
+            hideFindRow()
+        }
+    }
+
+    Button {
+        id: findCloseButton
+
+        visible: findInput.visible
+        //focusPolicy: Qt.NoFocus
+
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+
+        text: "Close"
+
+        onClicked: {
+            findCloseButton.focus = false
+            hideFindRow()
         }
     }
 
@@ -1196,7 +1319,7 @@ ApplicationWindow {
                 actionLf.checked = val
                 break;
             default:
-                console.log("unhandled menu checked "+menuId)
+//                console.log("unhandled menu checked "+menuId)
         }
     }
 
@@ -1225,7 +1348,7 @@ ApplicationWindow {
                 break;
 // TODO: 313, 311, 312 (for macros)
             default:
-                console.log("unhandled menu enable "+menuId)
+//                console.log("unhandled menu enable "+menuId)
         }
     }
 
@@ -1307,6 +1430,8 @@ ApplicationWindow {
 
         onStartFileDialog:            startFileDialog(sDirectory, sFilter, bAsOpenDialog)
         onShowInfoDialog:             showInfoDialog(sInfoText, style)
+
+        onShowFind:                   showFind(text)
 
         onSetVerticalSplit:           setVerticalSplit(verticalSplit)
         onSetOutputHeight:            setOutputHeight(heightOutput)

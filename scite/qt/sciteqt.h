@@ -300,9 +300,14 @@ public:
     Q_INVOKABLE void CmdSciteHelp();
     Q_INVOKABLE void CmdAboutScite();
 
+    Q_INVOKABLE void setFindText(const QString & text);
+
     Q_INVOKABLE void onStatusbarClicked();
 
     Q_INVOKABLE void setApplicationData(ApplicationData * pApplicationData);
+
+    Q_INVOKABLE void setSpliterPos(int currentPosX, int currentPosY);
+    Q_INVOKABLE void startDragSpliterPos(int currentPosX, int currentPosY);
 
     void UpdateStatusbarView();
 
@@ -332,6 +337,8 @@ signals:
 
     void startFileDialog(const QString & sDirectory, const QString & sFilter, bool bAsOpenDialog = true);
     void showInfoDialog(const QString & sInfoText, int style);
+
+    void showFind(const QString & text);
 
     void setVerticalSplit(bool verticalSplit);
     void setOutputHeight(int heightOutput);

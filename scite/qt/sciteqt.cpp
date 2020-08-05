@@ -264,7 +264,24 @@ FilePath SciTEQt::GetSciteUserHome()
 
 void SciTEQt::Find()
 {
+    qDebug() << "FIND..." << endl;
 
+    // TODO: SelectionIntoFind();
+    // see: SciTEWin::Find()
+
+    // --> SetFind("text");
+
+    SelectionIntoFind();    // findWhat
+    if (props.GetInt("find.use.strip")) {
+//        replaceStrip.Close();
+//        findStrip.SetIncrementalBehaviour(props.GetInt("find.strip.incremental"));
+//        findStrip.Show(props.GetInt("strip.button.height", -1));
+        emit showFind(QString::fromStdString(findWhat));
+    } else {
+//        if (findStrip.visible || replaceStrip.visible)
+//            return;
+        FindReplace(false);
+    }
 }
 
 SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::gui_string &msg, MessageBoxStyle style)
@@ -437,15 +454,17 @@ void SciTEQt::ActivateWindow(const char *timestamp)
 
 void SciTEQt::SizeContentWindows()
 {
-    qDebug() << "SizeContentWindows " << heightOutput << " " << endl;
+    qDebug() << "SizeContentWindows " << heightOutput << " " << splitVertical << endl;
 
+    emit setVerticalSplit(splitVertical);
+    emit setOutputHeight(heightOutput);
 }
 
 void SciTEQt::SizeSubWindows()
 {
     qDebug() << "SizeSubWindows " << heightOutput << " " << splitVertical << endl;
-    emit setVerticalSplit(splitVertical);
-    emit setOutputHeight(heightOutput);
+
+    SizeContentWindows();
 }
 
 void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
@@ -499,7 +518,7 @@ void SciTEQt::DestroyMenuItem(int menuNumber, int itemID)
     }
     else
     {
-        qDebug() << "NOT HANDLED Destroy Menu Item " << menuNumber << " item=" << itemID << endl;
+//        qDebug() << "NOT HANDLED Destroy Menu Item " << menuNumber << " item=" << itemID << endl;
     }
 }
 
@@ -1208,7 +1227,6 @@ void SciTEQt::CmdWrapOutput()
 
 void SciTEQt::CmdVerticalSplit()
 {
-// TODO implement !
     MenuCommand(IDM_SPLITVERTICAL);
 }
 
@@ -1318,6 +1336,12 @@ bool SciTEQt::event(QEvent *e)
 void SciTEQt::onStatusbarClicked()
 {
     UpdateStatusbarView();
+}
+
+void SciTEQt::setFindText(const QString & text)
+{
+    SetFind(text.toStdString().c_str());
+    FindNext(reverseFind);
 }
 
 QObject * SciTEQt::getCurrentInfoDialog()
@@ -1437,6 +1461,20 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     // open the untitled (empty) document at startup
     Open(FilePath());
 // TODO --> update ui components wie statusbar etc.
+}
+
+void SciTEQt::setSpliterPos(int currentPosX, int currentPosY)
+{
+    GUI::Point pt(currentPosX, currentPosY);
+qDebug() << "setSplitterPos " << currentPosX << " "<< currentPosY << " " << endl;
+    MoveSplit(pt);
+}
+
+void SciTEQt::startDragSpliterPos(int currentPosX, int currentPosY)
+{
+    GUI::Point pt(currentPosX, currentPosY);
+qDebug() << "startDragSplitterPos " << currentPosX << " "<< currentPosY << " " << endl;
+    ptStartDrag = pt;
 }
 
 void SciTEQt::UpdateStatusbarView()
