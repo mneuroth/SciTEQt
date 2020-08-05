@@ -489,6 +489,7 @@ qDebug() << "mouse press event " << event << endl;       // irgendwann gehen mou
 
 #ifdef PLAT_QT_QML
 //    setFocus(true);
+      forceActiveFocus();
 #endif
 }
 
