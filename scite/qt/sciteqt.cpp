@@ -264,19 +264,15 @@ FilePath SciTEQt::GetSciteUserHome()
 
 void SciTEQt::Find()
 {
-    qDebug() << "FIND..." << endl;
-
     // TODO: SelectionIntoFind();
     // see: SciTEWin::Find()
-
-    // --> SetFind("text");
 
     SelectionIntoFind();    // findWhat
     if (props.GetInt("find.use.strip")) {
 //        replaceStrip.Close();
 //        findStrip.SetIncrementalBehaviour(props.GetInt("find.strip.incremental"));
 //        findStrip.Show(props.GetInt("strip.button.height", -1));
-        emit showFind(QString::fromStdString(findWhat));
+        emit showFind(QString::fromStdString(findWhat), false);
     } else {
 //        if (findStrip.visible || replaceStrip.visible)
 //            return;
@@ -344,7 +340,7 @@ void SciTEQt::FindMessageBox(const std::string &msg, const std::string *findItem
 
 void SciTEQt::FindIncrement()
 {
-
+    emit showFind("", true);
 }
 
 void SciTEQt::FindInFiles()
@@ -1436,11 +1432,21 @@ void SciTEQt::onStatusbarClicked()
     UpdateStatusbarView();
 }
 
-void SciTEQt::setFindText(const QString & text)
+void SciTEQt::setFindText(const QString & text, bool incremental)
 {
-    MenuCommand(IDM_WHOLEWORD);
-    SetFind(text.toStdString().c_str());
-    FindNext(reverseFind);
+    if( incremental )
+    {
+        // see: SearchStrip::Next(bool select)
+        MoveBack();
+        SetFind(text.toStdString().c_str());
+        FindNext(reverseFind);
+        SetCaretAsStart();
+    }
+    else
+    {
+        SetFind(text.toStdString().c_str());
+        FindNext(reverseFind);
+    }
 }
 
 QObject * SciTEQt::getCurrentInfoDialog()

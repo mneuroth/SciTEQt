@@ -322,7 +322,7 @@ public:
 
     Q_INVOKABLE void CmdMarkAll();    
 
-    Q_INVOKABLE void setFindText(const QString & text);
+    Q_INVOKABLE void setFindText(const QString & text, bool incremental);
 
     Q_INVOKABLE void onStatusbarClicked();
 
@@ -367,7 +367,7 @@ signals:
     void startFileDialog(const QString & sDirectory, const QString & sFilter, bool bAsOpenDialog = true);
     void showInfoDialog(const QString & sInfoText, int style);
 
-    void showFind(const QString & text);
+    void showFind(const QString & text, bool incremental);
 
     void setVerticalSplit(bool verticalSplit);
     void setOutputHeight(int heightOutput);

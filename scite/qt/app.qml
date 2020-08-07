@@ -97,10 +97,11 @@ ApplicationWindow {
         infoDialog.open()
     }
 
-    function showFind(text) {
+    function showFind(text, incremental) {
         findInput.text = text
         findInput.visible = true
         findInput.focus = true
+        isIncrementalSearch = incremental
     }
 
     function setVerticalSplit(verticalSplit) {
@@ -1183,10 +1184,13 @@ ApplicationWindow {
 
             //text: "output area !"
         }
-    }
+    }       
 
     // Find Dialog above status bar:
     //==============================
+
+    property bool isIncrementalSearch: false
+
     Label {
         id: findLabel
 
@@ -1228,8 +1232,13 @@ ApplicationWindow {
         anchors.bottomMargin: 5
 
         onAccepted: {
-            sciteQt.setFindText(findInput.text)
+            sciteQt.setFindText(findInput.text, isIncrementalSearch)
             hideFindRow()
+        }
+        onTextEdited: {
+            if( isIncrementalSearch ) {
+                sciteQt.setFindText(findInput.text, isIncrementalSearch)
+            }
         }
     }
 
@@ -1257,7 +1266,8 @@ ApplicationWindow {
     Button {
         id: findMarkAllButton
 
-        visible: findInput.visible
+        visible: findInput.visible && !isIncrementalSearch
+        width: isIncrementalSearch ? 0 : implicitWidth
         //focusPolicy: Qt.NoFocus
 
         anchors.bottom: parent.bottom
@@ -1278,10 +1288,10 @@ ApplicationWindow {
     Button {
         id: findWordOnlyButton
 
-        visible: findInput.visible
+        visible: findInput.visible && !isIncrementalSearch
         checkable: true
         flat: true
-        width: findNextButton.width / 2
+        width: isIncrementalSearch ? 0 : findNextButton.width / 2
         //focusPolicy: Qt.NoFocus
 
         anchors.bottom: parent.bottom
@@ -1299,10 +1309,10 @@ ApplicationWindow {
     Button {
         id: findCaseSensitiveButton
 
-        visible: findInput.visible
+        visible: findInput.visible && !isIncrementalSearch
         checkable: true
         flat: true
-        width: findNextButton.width / 2
+        width: isIncrementalSearch ? 0 : findNextButton.width / 2
         //focusPolicy: Qt.NoFocus
 
         anchors.bottom: parent.bottom
@@ -1320,10 +1330,10 @@ ApplicationWindow {
     Button {
         id: findRegExprButton
 
-        visible: findInput.visible
+        visible: findInput.visible && !isIncrementalSearch
         checkable: true
         flat: true
-        width: findNextButton.width / 2
+        width: isIncrementalSearch ? 0 : findNextButton.width / 2
         //focusPolicy: Qt.NoFocus
 
         anchors.bottom: parent.bottom
@@ -1341,10 +1351,10 @@ ApplicationWindow {
     Button {
         id: findTransformBackslashButton
 
-        visible: findInput.visible
+        visible: findInput.visible && !isIncrementalSearch
         checkable: true
         flat: true
-        width: findNextButton.width / 2
+        width: isIncrementalSearch ? 0 : findNextButton.width / 2
         //focusPolicy: Qt.NoFocus
 
         anchors.bottom: parent.bottom
@@ -1362,10 +1372,10 @@ ApplicationWindow {
     Button {
         id: findWrapAroundButton
 
-        visible: findInput.visible
+        visible: findInput.visible && !isIncrementalSearch
         checkable: true
         flat: true
-        width: findNextButton.width / 2
+        width: isIncrementalSearch ? 0 : findNextButton.width / 2
         //focusPolicy: Qt.NoFocus
 
         anchors.bottom: parent.bottom
@@ -1383,10 +1393,10 @@ ApplicationWindow {
     Button {
         id: findUpButton
 
-        visible: findInput.visible
+        visible: findInput.visible && !isIncrementalSearch
         checkable: true
         flat: true
-        width: findNextButton.width / 2
+        width: isIncrementalSearch ? 0 : findNextButton.width / 2
         //focusPolicy: Qt.NoFocus
 
         anchors.bottom: parent.bottom
@@ -1613,7 +1623,7 @@ ApplicationWindow {
         onStartFileDialog:            startFileDialog(sDirectory, sFilter, bAsOpenDialog)
         onShowInfoDialog:             showInfoDialog(sInfoText, style)
 
-        onShowFind:                   showFind(text)
+        onShowFind:                   showFind(text, incremental)
 
         onSetVerticalSplit:           setVerticalSplit(verticalSplit)
         onSetOutputHeight:            setOutputHeight(heightOutput)
