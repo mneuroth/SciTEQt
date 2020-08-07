@@ -197,12 +197,12 @@ void SciTEQt::RemoveAllTabs()
 
 void SciTEQt::WarnUser(int warnID)
 {
-
+    // TODO implement !
 }
 
 void SciTEQt::GetWindowPosition(int *left, int *top, int *width, int *height, int *maximize)
 {
-
+    // TODO implement !
 }
 
 bool SciTEQt::OpenDialog(const FilePath &directory, const GUI::gui_char *filesFilter)
@@ -219,46 +219,49 @@ bool SciTEQt::SaveAsDialog()
 
 void SciTEQt::SaveACopy()
 {
-
+    // TODO implement !
 }
 
 void SciTEQt::SaveAsRTF()
 {
-
+    // TODO implement !
 }
 
 void SciTEQt::SaveAsPDF()
 {
-
+    // TODO implement !
 }
 
 void SciTEQt::SaveAsTEX()
 {
-
+    // TODO implement !
 }
 
 void SciTEQt::SaveAsXML()
 {
-
+    // TODO implement !
 }
 
 void SciTEQt::SaveAsHTML()
 {
-
+    // TODO implement !
 }
 
 FilePath SciTEQt::GetDefaultDirectory()
 {
+    // TODO implement !
     return FilePath();
 }
 
 FilePath SciTEQt::GetSciteDefaultHome()
 {
+    // TODO implement !
     return FilePath();
 }
 
 FilePath SciTEQt::GetSciteUserHome()
 {
+    // TODO implement !
     return FilePath();
 }
 
@@ -345,62 +348,65 @@ void SciTEQt::FindIncrement()
 
 void SciTEQt::FindInFiles()
 {
-
+    // TODO implement !
 }
 
 void SciTEQt::Replace()
 {
-
+    // TODO implement !
 }
 
 void SciTEQt::DestroyFindReplace()
 {
-
+    // TODO implement !
 }
 
 void SciTEQt::GoLineDialog()
 {
-
+    // TODO implement !
 }
 
 bool SciTEQt::AbbrevDialog()
 {
+    // TODO implement !
     return false;
 }
 
 void SciTEQt::TabSizeDialog()
 {
-
+    // TODO implement !
 }
 
 bool SciTEQt::ParametersOpen()
 {
+    // TODO implement !
     return false;
 }
 
 void SciTEQt::ParamGrab()
 {
-
+    // TODO implement !
 }
 
 bool SciTEQt::ParametersDialog(bool modal)
 {
+    // TODO implement !
     return false;
 }
 
 void SciTEQt::FindReplace(bool replace)
 {
-
+    // TODO implement !
 }
 
 void SciTEQt::StopExecute()
 {
-
+    // TODO implement !
 }
 
 void SciTEQt::SetFileProperties(PropSetFile &ps)
 {
-
+    // TODO implement !
 }
 
 void SciTEQt::AboutDialog()
@@ -454,7 +460,7 @@ void SciTEQt::ShowStatusBar()
 
 void SciTEQt::ActivateWindow(const char *timestamp)
 {
-
+    // TODO implement !
 }
 
 void SciTEQt::SizeContentWindows()
@@ -552,6 +558,7 @@ void SciTEQt::EnableAMenuItem(int wIDCheckItem, bool val)
 
 void SciTEQt::AddToPopUp(const char *label, int cmd, bool enabled)
 {
+    // TODO implement !
     qDebug() << "AddToPopup " << label << " " << cmd << " " << enabled << endl;
 }
 
@@ -1056,19 +1063,16 @@ void SciTEQt::CmdFindPrevious()
 
 void SciTEQt::CmdFindInFiles()
 {
-// TODO implement...
     MenuCommand(IDM_FINDINFILES);
 }
 
 void SciTEQt::CmdReplace()
 {
-// TODO implement...
     MenuCommand(IDM_REPLACE);
 }
 
 void SciTEQt::CmdIncrementalSearch()
 {
-// TODO implement...
     MenuCommand(IDM_INCSEARCH);
 }
 
@@ -1086,7 +1090,6 @@ void SciTEQt::CmdSelectionAddEach()
 
 void SciTEQt::CmdGoto()
 {
-// TODO implement...
     MenuCommand(IDM_GOTO);
 }
 
@@ -1177,13 +1180,11 @@ void SciTEQt::CmdFoldMargin()
 
 void SciTEQt::CmdToggleOutput()
 {
-// TODO implement !
     MenuCommand(IDM_TOGGLEOUTPUT);
 }
 
 void SciTEQt::CmdParameters()
 {
-// TODO implement !
     MenuCommand(IDM_TOGGLEPARAMETERS);
 }
 
@@ -1204,7 +1205,6 @@ void SciTEQt::CmdClean()
 
 void SciTEQt::CmdGo()
 {
-// TODO implement !
     MenuCommand(IDM_GO);
 }
 
@@ -1270,7 +1270,6 @@ void SciTEQt::CmdConvertLineEndChar()
 
 void SciTEQt::CmdChangeIndentationSettings()
 {
-// TODO implement ...
     MenuCommand(IDM_TABSIZE);
 }
 
@@ -1460,6 +1459,7 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     m_pApplicationData = pApplicationData;
     if(m_pApplicationData!=0)
     {
+// TODO implement ! improve !!!
         m_pEngine = &pApplicationData->GetQmlApplicationEngine();
 
         QStringList cmdArgs = QGuiApplication::arguments();

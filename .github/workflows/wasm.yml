@@ -46,7 +46,7 @@ jobs:
         em++ --version
         which em++
         echo $PATH
-        python3 -m aqt install -O /home/runner/work/SciTEQt/Qt 5.14.2 linux desktop wasm_32 -m qtscript qtscripttools
+        #python3 -m aqt install -O /home/runner/work/SciTEQt/Qt 5.14.2 linux desktop wasm_32 -m qtscript qtscripttools
         emsdk install sdk-fastcomp-1.38.27-64bit
         emsdk activate sdk-fastcomp-1.38.27-64bit
         echo $PATH
