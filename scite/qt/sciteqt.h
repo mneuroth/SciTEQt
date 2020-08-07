@@ -102,6 +102,13 @@ class SciTEQt : public QObject, public SciTEBase
     Q_PROPERTY(bool showStatusBar READ isShowStatusBar WRITE setShowStatusBar NOTIFY showStatusBarChanged)
     Q_PROPERTY(bool showTabBar READ isShowTabBar WRITE setShowTabBar NOTIFY showTabBarChanged)
 
+    Q_PROPERTY(bool wholeWord READ isWholeWord WRITE setWholeWord NOTIFY wholeWordChanged)
+    Q_PROPERTY(bool caseSensitive READ isCaseSensitive WRITE setCaseSensitive NOTIFY caseSensitiveChanged)
+    Q_PROPERTY(bool regularExpression READ isRegularExpression WRITE setRegularExpression NOTIFY regularExpressionChanged)
+    Q_PROPERTY(bool transformBackslash READ isTransformBackslash WRITE setTransformBackslash NOTIFY transformBackslashChanged)
+    Q_PROPERTY(bool wrapAround READ isWrapAround WRITE setWrapAround NOTIFY wrapAroundChanged)
+    Q_PROPERTY(bool searchUp READ isSearchUp WRITE setSearchUp NOTIFY searchUpChanged)
+
     // control content of ui controls
     Q_PROPERTY(QString statusBarText READ getStatusBarText WRITE setStatusBarText NOTIFY statusBarTextChanged)
 
@@ -173,6 +180,19 @@ public:
     void setShowStatusBar(bool val);
     bool isShowTabBar() const;
     void setShowTabBar(bool val);
+
+    bool isWholeWord() const;
+    void setWholeWord(bool val);
+    bool isCaseSensitive() const;
+    void setCaseSensitive(bool val);
+    bool isRegularExpression() const;
+    void setRegularExpression(bool val);
+    bool isTransformBackslash() const;
+    void setTransformBackslash(bool val);
+    bool isWrapAround() const;
+    void setWrapAround(bool val);
+    bool isSearchUp() const;
+    void setSearchUp(bool val);
 
     QString getStatusBarText() const;
     void setStatusBarText(const QString & txt);
@@ -300,7 +320,7 @@ public:
     Q_INVOKABLE void CmdSciteHelp();
     Q_INVOKABLE void CmdAboutScite();
 
-    Q_INVOKABLE void CmdMarkAll();
+    Q_INVOKABLE void CmdMarkAll();    
 
     Q_INVOKABLE void setFindText(const QString & text);
 
@@ -329,6 +349,13 @@ signals:
     void statusBarTextChanged();
     void setMenuChecked(int menuID, bool val);
     void setMenuEnable(int menuID, bool val);
+
+    void wholeWordChanged();
+    void caseSensitiveChanged();
+    void regularExpressionChanged();
+    void transformBackslashChanged();
+    void wrapAroundChanged();
+    void searchUpChanged();
 
     void setInBuffersModel(int index, const QString & txt, bool checked);
     void removeInBuffersModel(int index);

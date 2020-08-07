@@ -330,7 +330,16 @@ SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::g
 
 void SciTEQt::FindMessageBox(const std::string &msg, const std::string *findItem)
 {
+    GUI::gui_string msgBuf;
 
+    if (!findItem) {
+        msgBuf = LocaliseMessage(msg.c_str());
+    } else {
+        GUI::gui_string findThing = GUI::StringFromUTF8(*findItem);
+        msgBuf = LocaliseMessage(msg.c_str(), findThing.c_str());
+    }
+
+    emit showInfoDialog(QString::fromWCharArray(msgBuf.c_str()), 0);
 }
 
 void SciTEQt::FindIncrement()
@@ -595,6 +604,90 @@ void SciTEQt::setShowTabBar(bool val)
     {
         m_bShowTabBar = val;
         emit showTabBarChanged();
+    }
+}
+
+bool SciTEQt::isWholeWord() const
+{
+    return wholeWord;
+}
+
+void SciTEQt::setWholeWord(bool val)
+{
+    if(val != wholeWord)
+    {
+        wholeWord = val;
+        emit wholeWordChanged();
+    }
+}
+
+bool SciTEQt::isCaseSensitive() const
+{
+    return matchCase;
+}
+
+void SciTEQt::setCaseSensitive(bool val)
+{
+    if(val != matchCase)
+    {
+        matchCase = val;
+        emit caseSensitiveChanged();
+    }
+}
+
+bool SciTEQt::isRegularExpression() const
+{
+    return regExp;
+}
+
+void SciTEQt::setRegularExpression(bool val)
+{
+    if(val != regExp)
+    {
+        regExp = val;
+        emit regularExpressionChanged();
+    }
+}
+
+bool SciTEQt::isTransformBackslash() const
+{
+    return unSlash;
+}
+
+void SciTEQt::setTransformBackslash(bool val)
+{
+    if(val != unSlash)
+    {
+        unSlash = val;
+        emit transformBackslashChanged();
+    }
+}
+
+bool SciTEQt::isWrapAround() const
+{
+    return wrapFind;
+}
+
+void SciTEQt::setWrapAround(bool val)
+{
+    if(val != wrapFind)
+    {
+        wrapFind = val;
+        emit wrapAroundChanged();
+    }
+}
+
+bool SciTEQt::isSearchUp() const
+{
+    return reverseFind;
+}
+
+void SciTEQt::setSearchUp(bool val)
+{
+    if(val != reverseFind)
+    {
+        reverseFind = val;
+        emit searchUpChanged();
     }
 }
 

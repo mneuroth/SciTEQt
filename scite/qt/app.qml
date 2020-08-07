@@ -1248,6 +1248,7 @@ ApplicationWindow {
 
         text: sciteQt.getLocalisedText(qsTr("Find Next"))
         onClicked: {
+            sciteQt.setFindText(findInput.text)
             sciteQt.CmdFindNext()
             hideFindRow()
         }
@@ -1268,6 +1269,7 @@ ApplicationWindow {
 
         text: sciteQt.getLocalisedText(qsTr("Mark All"))
         onClicked: {
+            sciteQt.setFindText(findInput.text)
             sciteQt.CmdMarkAll()
             hideFindRow()
         }
@@ -1290,9 +1292,8 @@ ApplicationWindow {
         anchors.bottomMargin: 5
 
         text: sciteQt.getLocalisedText(qsTr("word"))
-        onClicked: {
-            //sciteQt.CmdMarkAll()
-        }
+        checked: sciteQt.wholeWord
+        onClicked: sciteQt.wholeWord = !sciteQt.wholeWord
     }
 
     Button {
@@ -1312,9 +1313,8 @@ ApplicationWindow {
         anchors.bottomMargin: 5
 
         text: sciteQt.getLocalisedText(qsTr("Cc"))
-        onClicked: {
-            //sciteQt.CmdMarkAll()
-        }
+        checked: sciteQt.caseSensitive
+        onClicked: sciteQt.caseSensitive = !sciteQt.caseSensitive
     }
 
     Button {
@@ -1334,9 +1334,8 @@ ApplicationWindow {
         anchors.bottomMargin: 5
 
         text: sciteQt.getLocalisedText(qsTr("^.*"))
-        onClicked: {
-            //sciteQt.CmdMarkAll()
-        }
+        checked: sciteQt.regularExpression
+        onClicked: sciteQt.regularExpression = !sciteQt.regularExpression
     }
 
     Button {
@@ -1355,10 +1354,9 @@ ApplicationWindow {
         anchors.topMargin: 5
         anchors.bottomMargin: 5
 
-        text: sciteQt.getLocalisedText(qsTr("\r\t"))
-        onClicked: {
-            //sciteQt.CmdMarkAll()
-        }
+        text: sciteQt.getLocalisedText(qsTr("\\r\\t"))
+        checked: sciteQt.transformBackslash
+        onClicked: sciteQt.transformBackslash = !sciteQt.transformBackslash
     }
 
     Button {
@@ -1366,7 +1364,6 @@ ApplicationWindow {
 
         visible: findInput.visible
         checkable: true
-        checked: true
         flat: true
         width: findNextButton.width / 2
         //focusPolicy: Qt.NoFocus
@@ -1379,9 +1376,8 @@ ApplicationWindow {
         anchors.bottomMargin: 5
 
         text: sciteQt.getLocalisedText(qsTr("wrap"))
-        onClicked: {
-            //sciteQt.CmdMarkAll()
-        }
+        checked: sciteQt.wrapAround
+        onClicked: sciteQt.wrapAround = !sciteQt.wrapAround
     }
 
     Button {
@@ -1401,9 +1397,8 @@ ApplicationWindow {
         anchors.bottomMargin: 5
 
         text: sciteQt.getLocalisedText(qsTr("Up"))
-        onClicked: {
-            //sciteQt.CmdMarkAll()
-        }
+        checked: sciteQt.searchUp
+        onClicked: sciteQt.searchUp = !sciteQt.searchUp
     }
 
     Button {
@@ -1426,9 +1421,7 @@ ApplicationWindow {
 
         text: sciteQt.getLocalisedText(qsTr("X"))   // close
 
-        onClicked: {
-            hideFindRow()
-        }
+        onClicked: hideFindRow()
     }
 
     function clearBuffersModel(model) {
