@@ -339,7 +339,7 @@ void SciTEQt::FindMessageBox(const std::string &msg, const std::string *findItem
         msgBuf = LocaliseMessage(msg.c_str(), findThing.c_str());
     }
 
-    emit showInfoDialog(QString::fromWCharArray(msgBuf.c_str()), 0);
+    emit showInfoDialog(ConvertGuiStringToQString(msgBuf), 0);
 }
 
 void SciTEQt::FindIncrement()
