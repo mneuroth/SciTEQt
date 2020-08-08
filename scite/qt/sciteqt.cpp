@@ -348,7 +348,9 @@ void SciTEQt::FindIncrement()
 
 void SciTEQt::FindInFiles()
 {
-    // TODO implement !
+    SelectionIntoFind();    // findWhat
+
+    emit showFindInFilesDialog(QString::fromStdString(findWhat));
 }
 
 void SciTEQt::Replace()
@@ -360,7 +362,7 @@ void SciTEQt::Replace()
 
 void SciTEQt::DestroyFindReplace()
 {
-    // TODO implement !
+    // TODO implement ! --> for FindReplace (advanced) --> not used ?
 }
 
 void SciTEQt::GoLineDialog()
@@ -398,7 +400,7 @@ bool SciTEQt::ParametersDialog(bool modal)
 
 void SciTEQt::FindReplace(bool replace)
 {
-    // TODO implement !
+    // TODO implement ! --> find replace (advanced) --> not used ?
 }
 
 void SciTEQt::StopExecute()

@@ -368,6 +368,7 @@ signals:
     void startFileDialog(const QString & sDirectory, const QString & sFilter, bool bAsOpenDialog = true);
     void showInfoDialog(const QString & sInfoText, int style);
 
+    void showFindInFilesDialog(const QString & text);
     void showFind(const QString & text, bool incremental, bool withReplace);
 
     void setVerticalSplit(bool verticalSplit);

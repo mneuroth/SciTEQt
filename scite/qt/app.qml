@@ -97,6 +97,10 @@ ApplicationWindow {
         infoDialog.open()
     }
 
+    function showFindInFilesDialog(text) {
+        findInFilesDialog.open()
+    }
+
     function showFind(text, incremental, withReplace) {
         findInput.text = text
         findInput.visible = true
@@ -1073,6 +1077,38 @@ ApplicationWindow {
         */
     }
 
+    Dialog {
+        id: findInFilesDialog
+        objectName: "findInFilesDialog"
+        modality: Qt.NonModal
+        visible: false
+        title: sciteQt.getLocalisedText(qsTr("Find in Files"))
+        width: 450
+        height: 200
+        //width: dialog.implicitWidth
+        //height: dialog.implicitHeight
+
+        contentItem: FindInFilesDialog {
+                        id: dialog
+
+                        cancelButton {
+                            onClicked: findInFilesDialog.close()
+                        }
+                        findButton {
+                            onClicked: {
+                                //GrabFields()
+                                //SetFindInFilesOptions()
+                                //SelectionIntoProperties()
+                                // --> grep command bauen und ausfuehren....
+                                // PerformGrep()    // windows
+                                // FindInFilesCmd() // gtk
+
+                                // TODO: implement Qt version of find in files (visiscript?)
+                            }
+                        }
+                     }
+    }
+
     TabBar {
         id: tabBar
 
@@ -1736,6 +1772,7 @@ ApplicationWindow {
         onStartFileDialog:            startFileDialog(sDirectory, sFilter, bAsOpenDialog)
         onShowInfoDialog:             showInfoDialog(sInfoText, style)
 
+        onShowFindInFilesDialog:      showFindInFilesDialog(text)
         onShowFind:                   showFind(text, incremental, withReplace)
 
         onSetVerticalSplit:           setVerticalSplit(verticalSplit)

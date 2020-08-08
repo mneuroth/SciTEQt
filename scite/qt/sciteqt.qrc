@@ -5,5 +5,7 @@
         <file alias="scite_logo.png">../gtk/Sci48M.png</file>
         <file alias="ScintillaText.qml">../../scintilla/qt/ScintillaEditBase/ScintillaText.qml</file>
         <file>AutoSizingMenu.qml</file>
+        <file>FindInFilesDialog.qml</file>
+        <file>FindInFilesDialogForm.ui.qml</file>
     </qresource>
 </RCC>
