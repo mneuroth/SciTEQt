@@ -367,7 +367,17 @@ void SciTEQt::DestroyFindReplace()
 
 void SciTEQt::GoLineDialog()
 {
-    // TODO implement !
+    // see: BOOL SciTEWin::GoLineMessage(HWND hDlg, UINT message, WPARAM wParam)
+    SA::Position position = wEditor.CurrentPos();
+    const SA::Line lineNumber = wEditor.LineFromPosition(position) + 1;
+    const SA::Position lineStart = wEditor.LineStart(lineNumber - 1);
+    int characterOnLine = 1;
+    while (position > lineStart) {
+        position = wEditor.PositionBefore(position);
+        characterOnLine++;
+    }
+
+    emit showGoToDialog(lineNumber, characterOnLine, wEditor.LineCount());
 }
 
 bool SciTEQt::AbbrevDialog()
@@ -1388,6 +1398,26 @@ void SciTEQt::CmdTriggerReplace(const QString & find, const QString & replace, b
     else
     {
         ReplaceOnce(true);
+    }
+}
+
+void SciTEQt::CmdGotoLine(int lineNo, int colPos)
+{
+    GotoLineEnsureVisible(lineNo);
+
+    // see WM_COMMAND in SciTEWinDlg.cxx line 1416
+    if (/*colPos && colPos.value() > 1 &&*/ lineNo <= wEditor.LineCount())
+    {
+        // Constrain to the requested line
+        const SA::Position lineStart = wEditor.LineStart(lineNo - 1);
+        const SA::Position lineEnd = wEditor.LineEnd(lineNo - 1);
+
+        SA::Position characterOnLine = colPos;
+        SA::Position position = lineStart;
+        while (--characterOnLine && position < lineEnd)
+            position = wEditor.PositionAfter(position);
+
+        wEditor.GotoPos(position);
     }
 }
 

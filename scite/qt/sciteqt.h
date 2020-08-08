@@ -322,6 +322,7 @@ public:
 
     Q_INVOKABLE void CmdMarkAll();
     Q_INVOKABLE void CmdTriggerReplace(const QString & find, const QString & replace, bool inSection);
+    Q_INVOKABLE void CmdGotoLine(int lineNo, int colPos);
 
     Q_INVOKABLE void setFindText(const QString & text, bool incremental);
 
@@ -370,6 +371,7 @@ signals:
 
     void showFindInFilesDialog(const QString & text);
     void showFind(const QString & text, bool incremental, bool withReplace);
+    void showGoToDialog(int currentLine, int currentColumn, int maxLine);
 
     void setVerticalSplit(bool verticalSplit);
     void setOutputHeight(int heightOutput);

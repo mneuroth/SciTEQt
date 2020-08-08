@@ -1,13 +1,21 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.13
 import QtQuick.Layouts 1.13
-import QtQuick.Dialogs 1.2
+//import QtQuick.Dialogs 1.3
+import QtQuick.Window 2.13
 
-Dialog {
+Window {
 
-    //width: 400
-    //height: 400
-    //anchors.fill: parent
+    width: 500
+    height: 130
+
+    //flags: Qt.MSWindowsFixedSizeDialogHint
+
+    maximumHeight: height
+    //maximumWidth: width
+
+    minimumHeight: height
+    //minimumWidth: width
 
     property alias cancelButton: cancelButton
     property alias findButton: findButton
@@ -17,8 +25,19 @@ Dialog {
     property alias filesExtensionsInput: filesExtensionsInput
     property alias directoryInput: directoryInput
 
+    property var fcnLocalisation: undefined
+
+    function localiseText(text) {
+        if(fcnLocalisation !== undefined) {
+            return fcnLocalisation(text)
+        }
+        return text
+    }
+
     // remove standard Ok button from dialog (see: https://stackoverflow.com/questions/50858605/qml-dialog-removing-ok-button)
-    contentItem: Item {
+    /*contentItem:*/ Item {
+
+        anchors.fill: parent
 
         GridLayout {
             id: grid
@@ -34,61 +53,68 @@ Dialog {
 
             Label {
                 id: findLabel
-                text: qsTr("Find what:")
+                text: localiseText(qsTr("Find what:"))
             }
 
             TextField {
                 id: findWhatInput
-                text: qsTr("Text Input")
+                text: qsTr("")
                 font.pixelSize: 12
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
+                Keys.onEscapePressed: cancelButton.clicked()
             }
 
             Button {
                 id: findButton
                 text: qsTr("Find")
+                Keys.onEscapePressed: cancelButton.clicked()
             }
 
             Label {
                 id: filesLabel
-                text: qsTr("Files:")
+                text: localiseText(qsTr("Files:"))
             }
 
             TextField {
                 id: filesExtensionsInput
-                text: qsTr("*.c")
+                text: qsTr("")
                 font.pixelSize: 12
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
+                Keys.onEscapePressed: cancelButton.clicked()
             }
 
             Button {
                 id: cancelButton
-                text: qsTr("Cancel")
+                text: localiseText(qsTr("Cancel"))
+                Keys.onEscapePressed: cancelButton.clicked()
             }
 
             Label {
                 id: directoryLabel
-                text: qsTr("Directory:")
+                text: localiseText(qsTr("Directory:"))
             }
 
             TextField {
                 id: directoryInput
-                text: qsTr("c:\\temp")
+                text: qsTr("")
                 font.pixelSize: 12
                 Layout.fillWidth: true
+                Keys.onEscapePressed: cancelButton.clicked()
             }
 
             Button {
                 id: upButton
                 width: browseButton.width / 2
-                text: qsTr("..")
+                text: localiseText(qsTr(".."))
+                Keys.onEscapePressed: cancelButton.clicked()
             }
 
             Button {
                 id: browseButton
-                text: qsTr("Browse...")
+                text: localiseText(qsTr("Browse..."))
+                Keys.onEscapePressed: cancelButton.clicked()
             }
 
             Row {
@@ -96,20 +122,23 @@ Dialog {
 
                 CheckBox {
                     id: wholeWordButton
-                    text: qsTr("Match whole word only")
+                    text: localiseText(qsTr("Match whole word only"))
+                    Keys.onEscapePressed: cancelButton.clicked()
                 }
 
                 CheckBox {
                     id: caseSensitiveButton
-                    text: qsTr("Case sensitive")
+                    text: localiseText(qsTr("Case sensitive"))
+                    Keys.onEscapePressed: cancelButton.clicked()
                 }
             }
-
+/*
             Label {
                 id: fillLabel
                 text: qsTr("")
                 Layout.fillHeight: true
             }
+*/
         }
     }
 }

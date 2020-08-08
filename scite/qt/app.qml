@@ -99,7 +99,8 @@ ApplicationWindow {
 
     function showFindInFilesDialog(text) {
         findInFilesDialog.findWhatInput.text = text
-        findInFilesDialog.open()
+        findInFilesDialog.show() //.open()
+        findInFilesDialog.findWhatInput.focus = true
     }
 
     function showFind(text, incremental, withReplace) {
@@ -113,6 +114,16 @@ ApplicationWindow {
         }
 
         isIncrementalSearch = incremental
+    }
+
+    function showGoToDialog(currentLine, currentColumn, maxLine) {
+        gotoDialog.destinationLineInput.text = ""
+        gotoDialog.columnInput.text = ""
+        gotoDialog.currentLineOutput.text = currentLine
+        gotoDialog.currentColumnOutput.text = currentColumn
+        gotoDialog.lastLineOutput.text = maxLine
+        gotoDialog.show() //open()
+        gotoDialog.destinationLineInput.focus = true
     }
 
     function setVerticalSplit(verticalSplit) {
@@ -1083,8 +1094,10 @@ ApplicationWindow {
         objectName: "findInFilesDialog"
         modality: Qt.NonModal
         title: sciteQt.getLocalisedText(qsTr("Find in Files"))
-        width: 450
-        height: 200
+        //width: 450
+        //height: 200
+
+        fcnLocalisation: sciteQt.getLocalisedText
 
         visible: false
 
@@ -1102,6 +1115,29 @@ ApplicationWindow {
                 // FindInFilesCmd() // gtk
 
                 // TODO: implement Qt version of find in files (visiscript?)
+            }
+        }
+    }
+
+    GoToDialog {
+        id: gotoDialog
+        objectName: "gotoDialog"
+        modality: Qt.ApplicationModal
+        title: sciteQt.getLocalisedText(qsTr("Go To"))
+        //width: 600
+        //height: 100
+
+        fcnLocalisation: sciteQt.getLocalisedText
+
+        visible: false
+
+        cancelButton {
+            onClicked: gotoDialog.close()
+        }
+        gotoButton {
+            onClicked: {
+                sciteQt.CmdGotoLine(parseInt(gotoDialog.destinationLineInput.text), parseInt(gotoDialog.columnInput.text))
+                cancelButton.clicked()
             }
         }
     }
@@ -1281,6 +1317,7 @@ ApplicationWindow {
                 sciteQt.setFindText(findInput.text, isIncrementalSearch)
             }
         }
+        Keys.onEscapePressed: hideFindRow()
     }
 
     Button {
@@ -1302,6 +1339,7 @@ ApplicationWindow {
             sciteQt.CmdFindNext()
             hideFindRow()
         }
+        Keys.onEscapePressed: hideFindRow()
     }
 
     Button {
@@ -1324,6 +1362,7 @@ ApplicationWindow {
             sciteQt.CmdMarkAll()
             hideFindRow()
         }
+        Keys.onEscapePressed: hideFindRow()
     }
 
     Button {
@@ -1345,6 +1384,7 @@ ApplicationWindow {
         text: sciteQt.getLocalisedText(qsTr("word"))
         checked: sciteQt.wholeWord
         onClicked: sciteQt.wholeWord = !sciteQt.wholeWord
+        Keys.onEscapePressed: hideFindRow()
     }
 
     Button {
@@ -1366,6 +1406,7 @@ ApplicationWindow {
         text: sciteQt.getLocalisedText(qsTr("Cc"))
         checked: sciteQt.caseSensitive
         onClicked: sciteQt.caseSensitive = !sciteQt.caseSensitive
+        Keys.onEscapePressed: hideFindRow()
     }
 
     Button {
@@ -1387,6 +1428,7 @@ ApplicationWindow {
         text: sciteQt.getLocalisedText(qsTr("^.*"))
         checked: sciteQt.regularExpression
         onClicked: sciteQt.regularExpression = !sciteQt.regularExpression
+        Keys.onEscapePressed: hideFindRow()
     }
 
     Button {
@@ -1408,6 +1450,7 @@ ApplicationWindow {
         text: sciteQt.getLocalisedText(qsTr("\\r\\t"))
         checked: sciteQt.transformBackslash
         onClicked: sciteQt.transformBackslash = !sciteQt.transformBackslash
+        Keys.onEscapePressed: hideFindRow()
     }
 
     Button {
@@ -1429,6 +1472,7 @@ ApplicationWindow {
         text: sciteQt.getLocalisedText(qsTr("wrap"))
         checked: sciteQt.wrapAround
         onClicked: sciteQt.wrapAround = !sciteQt.wrapAround
+        Keys.onEscapePressed: hideFindRow()
     }
 
     Button {
@@ -1450,6 +1494,7 @@ ApplicationWindow {
         text: sciteQt.getLocalisedText(qsTr("Up"))
         checked: sciteQt.searchUp
         onClicked: sciteQt.searchUp = !sciteQt.searchUp
+        Keys.onEscapePressed: hideFindRow()
     }
 
     Button {
@@ -1473,6 +1518,7 @@ ApplicationWindow {
         text: sciteQt.getLocalisedText(qsTr("X"))   // close
 
         onClicked: hideFindRow()
+        Keys.onEscapePressed: hideFindRow()
     }
 
     // Find/replace Dialog above status bar:
@@ -1529,6 +1575,7 @@ ApplicationWindow {
                 sciteQt.setFindText(findInput.text, isIncrementalSearch)
             }
         }
+        Keys.onEscapePressed: hideFindRow()
     }
 
     Button {
@@ -1546,6 +1593,7 @@ ApplicationWindow {
 
         text: sciteQt.getLocalisedText(qsTr("&Replace"))
         onClicked: sciteQt.CmdTriggerReplace(findInput.text, replaceInput.text, false)
+        Keys.onEscapePressed: hideFindRow()
     }
 
     Button {
@@ -1563,6 +1611,7 @@ ApplicationWindow {
 
         text: sciteQt.getLocalisedText(qsTr("In &Section"))
         onClicked: sciteQt.CmdTriggerReplace(findInput.text, replaceInput.text, true)
+        Keys.onEscapePressed: hideFindRow()
     }
 
     Label {
@@ -1771,6 +1820,7 @@ ApplicationWindow {
 
         onShowFindInFilesDialog:      showFindInFilesDialog(text)
         onShowFind:                   showFind(text, incremental, withReplace)
+        onShowGoToDialog:             showGoToDialog(currentLine, currentColumn, maxLine)
 
         onSetVerticalSplit:           setVerticalSplit(verticalSplit)
         onSetOutputHeight:            setOutputHeight(heightOutput)

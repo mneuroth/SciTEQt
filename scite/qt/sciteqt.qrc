@@ -7,5 +7,7 @@
         <file>AutoSizingMenu.qml</file>
         <file>FindInFilesDialog.qml</file>
         <file>FindInFilesDialogForm.ui.qml</file>
+        <file>GoToDialog.qml</file>
+        <file>GoToDialogForm.ui.qml</file>
     </qresource>
 </RCC>
