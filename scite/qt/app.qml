@@ -97,10 +97,16 @@ ApplicationWindow {
         infoDialog.open()
     }
 
-    function showFind(text, incremental) {
+    function showFind(text, incremental, withReplace) {
         findInput.text = text
         findInput.visible = true
-        findInput.focus = true
+        replaceInput.visible = withReplace
+        if( withReplace ) {
+            replaceInput.focus = true
+        } else {
+            findInput.focus = true
+        }
+
         isIncrementalSearch = incremental
     }
 
@@ -124,6 +130,7 @@ ApplicationWindow {
     function hideFindRow() {
         quickScintillaEditor.focus = true
         findInput.visible = false
+        replaceInput.visible = false
     }
 
     menuBar: MenuBar {
@@ -505,7 +512,7 @@ ApplicationWindow {
             }
             Action {
                 id: actionNextBookmark
-                text: processMenuItem(qsTr("&Next Book&mark"), actionNextBookmark)
+                text: processMenuItem(qsTr("Next Book&mark"), actionNextBookmark)
                 shortcut: "F2"
                 onTriggered: sciteQt.CmdNextBookmark()
             }
@@ -1196,9 +1203,10 @@ ApplicationWindow {
 
         visible: findInput.visible
         height: findInput.height //visible ? implicitHeight : 0
+        width: max(replaceLabel.implicitWidth, findLabel.implicitWidth)
 
         anchors.verticalCenter: findNextButton.verticalCenter
-        anchors.bottom: parent.bottom
+        anchors.bottom: replaceInput.top
         anchors.left: parent.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
@@ -1224,7 +1232,7 @@ ApplicationWindow {
         height: visible ? implicitHeight : 0
 
         anchors.right: findNextButton.left
-        anchors.bottom: parent.bottom
+        anchors.bottom: replaceInput.top
         anchors.left: findLabel.right
         anchors.rightMargin: 5
         anchors.leftMargin: 5
@@ -1248,14 +1256,14 @@ ApplicationWindow {
         visible: findInput.visible
         //focusPolicy: Qt.NoFocus
 
-        anchors.bottom: parent.bottom
+        anchors.bottom: replaceInput.top
         anchors.right: findMarkAllButton.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
         anchors.topMargin: 5
         anchors.bottomMargin: 5
 
-        text: sciteQt.getLocalisedText(qsTr("Find Next"))
+        text: sciteQt.getLocalisedText(qsTr("&Find Next"))
         onClicked: {
             sciteQt.setFindText(findInput.text)
             sciteQt.CmdFindNext()
@@ -1270,14 +1278,14 @@ ApplicationWindow {
         width: isIncrementalSearch ? 0 : implicitWidth
         //focusPolicy: Qt.NoFocus
 
-        anchors.bottom: parent.bottom
+        anchors.bottom: replaceInput.top
         anchors.right: findWordOnlyButton.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
         anchors.topMargin: 5
         anchors.bottomMargin: 5
 
-        text: sciteQt.getLocalisedText(qsTr("Mark All"))
+        text: sciteQt.getLocalisedText(qsTr("Mark &All"))
         onClicked: {
             sciteQt.setFindText(findInput.text)
             sciteQt.CmdMarkAll()
@@ -1294,7 +1302,7 @@ ApplicationWindow {
         width: isIncrementalSearch ? 0 : findNextButton.width / 2
         //focusPolicy: Qt.NoFocus
 
-        anchors.bottom: parent.bottom
+        anchors.bottom: replaceInput.top
         anchors.right: findCaseSensitiveButton.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
@@ -1315,7 +1323,7 @@ ApplicationWindow {
         width: isIncrementalSearch ? 0 : findNextButton.width / 2
         //focusPolicy: Qt.NoFocus
 
-        anchors.bottom: parent.bottom
+        anchors.bottom: replaceInput.top
         anchors.right: findRegExprButton.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
@@ -1336,7 +1344,7 @@ ApplicationWindow {
         width: isIncrementalSearch ? 0 : findNextButton.width / 2
         //focusPolicy: Qt.NoFocus
 
-        anchors.bottom: parent.bottom
+        anchors.bottom: replaceInput.top
         anchors.right: findTransformBackslashButton.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
@@ -1357,7 +1365,7 @@ ApplicationWindow {
         width: isIncrementalSearch ? 0 : findNextButton.width / 2
         //focusPolicy: Qt.NoFocus
 
-        anchors.bottom: parent.bottom
+        anchors.bottom: replaceInput.top
         anchors.right: findWrapAroundButton.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
@@ -1378,7 +1386,7 @@ ApplicationWindow {
         width: isIncrementalSearch ? 0 : findNextButton.width / 2
         //focusPolicy: Qt.NoFocus
 
-        anchors.bottom: parent.bottom
+        anchors.bottom: replaceInput.top
         anchors.right: findUpButton.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
@@ -1399,7 +1407,7 @@ ApplicationWindow {
         width: isIncrementalSearch ? 0 : findNextButton.width / 2
         //focusPolicy: Qt.NoFocus
 
-        anchors.bottom: parent.bottom
+        anchors.bottom: replaceInput.top
         anchors.right: findCloseButton.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
@@ -1422,7 +1430,7 @@ ApplicationWindow {
         width: 30
         //focusPolicy: Qt.NoFocus
 
-        anchors.bottom: parent.bottom
+        anchors.bottom: replaceInput.top
         anchors.right: parent.right
         anchors.rightMargin: 5
         anchors.leftMargin: 5
@@ -1432,6 +1440,111 @@ ApplicationWindow {
         text: sciteQt.getLocalisedText(qsTr("X"))   // close
 
         onClicked: hideFindRow()
+    }
+
+    // Find/replace Dialog above status bar:
+    //==============================
+
+    Label {
+        id: replaceLabel
+
+        visible: replaceInput.visible
+        height: replaceInput.height //visible ? implicitHeight : 0
+        width: max(replaceLabel.implicitWidth, findLabel.implicitWidth)
+
+        anchors.verticalCenter: replaceButton.verticalCenter
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+
+        text: sciteQt.getLocalisedText(qsTr("Replace:"))
+    }
+
+    TextField /*ComboBox*/ {
+        id: replaceInput
+
+        background: Rectangle {
+                    radius: 2
+                    //implicitWidth: 100
+                    //implicitHeight: 24
+                    border.color: "grey"
+                    border.width: 1
+                }
+
+        //editable: true
+        visible: false
+        height: visible ? implicitHeight : 0
+        width: findInput.width
+
+        //anchors.right: replaceButton.left
+        anchors.bottom: parent.bottom
+        anchors.left: replaceLabel.right
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+
+        onAccepted: {
+            sciteQt.setFindText(findInput.text, isIncrementalSearch)
+            hideFindRow()
+        }
+        onTextEdited: {
+            if( isIncrementalSearch ) {
+                sciteQt.setFindText(findInput.text, isIncrementalSearch)
+            }
+        }
+    }
+
+    Button {
+        id: replaceButton
+
+        visible: replaceInput.visible
+        //focusPolicy: Qt.NoFocus
+
+        anchors.bottom: parent.bottom
+        anchors.left: replaceInput.right
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+
+        text: sciteQt.getLocalisedText(qsTr("&Replace"))
+        onClicked: sciteQt.CmdTriggerReplace(findInput.text, replaceInput.text, false)
+    }
+
+    Button {
+        id: inSectionButton
+
+        visible: replaceInput.visible
+        //focusPolicy: Qt.NoFocus
+
+        anchors.bottom: parent.bottom
+        anchors.left: replaceButton.right
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+
+        text: sciteQt.getLocalisedText(qsTr("In &Section"))
+        onClicked: sciteQt.CmdTriggerReplace(findInput.text, replaceInput.text, true)
+    }
+
+    Label {
+        id: replaceFillLabel
+
+        visible: replaceInput.visible
+
+        //text: ""
+
+        anchors.bottom: parent.bottom
+        anchors.left: inSectionButton.right
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
     }
 
     function clearBuffersModel(model) {
@@ -1623,7 +1736,7 @@ ApplicationWindow {
         onStartFileDialog:            startFileDialog(sDirectory, sFilter, bAsOpenDialog)
         onShowInfoDialog:             showInfoDialog(sInfoText, style)
 
-        onShowFind:                   showFind(text, incremental)
+        onShowFind:                   showFind(text, incremental, withReplace)
 
         onSetVerticalSplit:           setVerticalSplit(verticalSplit)
         onSetOutputHeight:            setOutputHeight(heightOutput)

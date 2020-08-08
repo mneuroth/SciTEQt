@@ -320,7 +320,8 @@ public:
     Q_INVOKABLE void CmdSciteHelp();
     Q_INVOKABLE void CmdAboutScite();
 
-    Q_INVOKABLE void CmdMarkAll();    
+    Q_INVOKABLE void CmdMarkAll();
+    Q_INVOKABLE void CmdTriggerReplace(const QString & find, const QString & replace, bool inSection);
 
     Q_INVOKABLE void setFindText(const QString & text, bool incremental);
 
@@ -367,7 +368,7 @@ signals:
     void startFileDialog(const QString & sDirectory, const QString & sFilter, bool bAsOpenDialog = true);
     void showInfoDialog(const QString & sInfoText, int style);
 
-    void showFind(const QString & text, bool incremental);
+    void showFind(const QString & text, bool incremental, bool withReplace);
 
     void setVerticalSplit(bool verticalSplit);
     void setOutputHeight(int heightOutput);

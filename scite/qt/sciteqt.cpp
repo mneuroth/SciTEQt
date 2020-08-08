@@ -275,7 +275,7 @@ void SciTEQt::Find()
 //        replaceStrip.Close();
 //        findStrip.SetIncrementalBehaviour(props.GetInt("find.strip.incremental"));
 //        findStrip.Show(props.GetInt("strip.button.height", -1));
-        emit showFind(QString::fromStdString(findWhat), false);
+        emit showFind(QString::fromStdString(findWhat), false, false);
     } else {
 //        if (findStrip.visible || replaceStrip.visible)
 //            return;
@@ -343,7 +343,7 @@ void SciTEQt::FindMessageBox(const std::string &msg, const std::string *findItem
 
 void SciTEQt::FindIncrement()
 {
-    emit showFind("", true);
+    emit showFind("", true, false);
 }
 
 void SciTEQt::FindInFiles()
@@ -353,7 +353,9 @@ void SciTEQt::FindInFiles()
 
 void SciTEQt::Replace()
 {
-    // TODO implement !
+    SelectionIntoFind();    // findWhat
+
+    emit showFind(QString::fromStdString(findWhat), false, true);
 }
 
 void SciTEQt::DestroyFindReplace()
@@ -1047,7 +1049,6 @@ void SciTEQt::CmdSplit()
 
 void SciTEQt::CmdFind()
 {
-// TODO implement...
     MenuCommand(IDM_FIND);
 }
 
@@ -1371,6 +1372,21 @@ void SciTEQt::CmdAboutScite()
 void SciTEQt::CmdMarkAll()
 {
     MarkAll(markWithBookMarks);
+}
+
+void SciTEQt::CmdTriggerReplace(const QString & find, const QString & replace, bool inSection)
+{
+    // see: ReplaceStrip::HandleReplaceCommand(...)
+    SetFind(find.toStdString().c_str());
+    SetReplace(replace.toStdString().c_str());
+    if( inSection )
+    {
+        ReplaceAll(inSection);
+    }
+    else
+    {
+        ReplaceOnce(true);
+    }
 }
 
 void SciTEQt::ReadEmbeddedProperties()
