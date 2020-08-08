@@ -98,6 +98,7 @@ ApplicationWindow {
     }
 
     function showFindInFilesDialog(text) {
+        findInFilesDialog.findWhatInput.text = text
         findInFilesDialog.open()
     }
 
@@ -1077,36 +1078,32 @@ ApplicationWindow {
         */
     }
 
-    Dialog {
+    FindInFilesDialog {
         id: findInFilesDialog
         objectName: "findInFilesDialog"
         modality: Qt.NonModal
-        visible: false
         title: sciteQt.getLocalisedText(qsTr("Find in Files"))
         width: 450
         height: 200
-        //width: dialog.implicitWidth
-        //height: dialog.implicitHeight
 
-        contentItem: FindInFilesDialog {
-                        id: dialog
+        visible: false
 
-                        cancelButton {
-                            onClicked: findInFilesDialog.close()
-                        }
-                        findButton {
-                            onClicked: {
-                                //GrabFields()
-                                //SetFindInFilesOptions()
-                                //SelectionIntoProperties()
-                                // --> grep command bauen und ausfuehren....
-                                // PerformGrep()    // windows
-                                // FindInFilesCmd() // gtk
+        cancelButton {
+            onClicked: findInFilesDialog.close()
+        }
+        findButton {
+            onClicked: {
+                console.log("find: "+findWhatInput.text)
+                //GrabFields()
+                //SetFindInFilesOptions()
+                //SelectionIntoProperties()
+                // --> grep command bauen und ausfuehren....
+                // PerformGrep()    // windows
+                // FindInFilesCmd() // gtk
 
-                                // TODO: implement Qt version of find in files (visiscript?)
-                            }
-                        }
-                     }
+                // TODO: implement Qt version of find in files (visiscript?)
+            }
+        }
     }
 
     TabBar {

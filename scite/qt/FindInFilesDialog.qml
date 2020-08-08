@@ -4,5 +4,4 @@ import QtQuick.Layouts 1.13
 import QtQuick.Dialogs 1.2
 
 FindInFilesDialogForm {
-
 }
