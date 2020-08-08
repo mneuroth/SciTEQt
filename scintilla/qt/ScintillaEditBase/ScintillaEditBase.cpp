@@ -442,7 +442,7 @@ static int modifierTranslated(int sciModifier)
 
 void ScintillaEditBase::mousePressEvent(QMouseEvent *event)
 {
-qDebug() << "mouse press event " << event << endl;       // irgendwann gehen mouse move events verloren ? warum
+//qDebug() << "mouse press event " << event << endl;       // irgendwann gehen mouse move events verloren ? warum
     Point pos = PointFromQPoint(event->pos());
 
 	emit buttonPressed(event);
@@ -495,7 +495,7 @@ qDebug() << "mouse press event " << event << endl;       // irgendwann gehen mou
 
 void ScintillaEditBase::mouseReleaseEvent(QMouseEvent *event)
 {
-qDebug() << "mouse release event " << event << endl;       // irgendwann gehen mouse move events verloren ? warum
+//qDebug() << "mouse release event " << event << endl;       // irgendwann gehen mouse move events verloren ? warum
     Point point = PointFromQPoint(event->pos());
 	if (event->button() == Qt::LeftButton)
 		sqt->ButtonUpWithModifiers(point, time.elapsed(), ModifiersOfKeyboard());
@@ -516,7 +516,7 @@ void ScintillaEditBase::mouseDoubleClickEvent(QMouseEvent *event)
 
 void ScintillaEditBase::mouseMoveEvent(QMouseEvent *event)
 {
-qDebug() << "mouse move event " << event << endl;       // irgendwann gehen mouse move events verloren ? warum --> Scroll Area ?
+//qDebug() << "mouse move event " << event << endl;       // TODO: BUG: irgendwann gehen mouse move events verloren ? warum --> Scroll Area ?
     Point pos = PointFromQPoint(event->pos());
 
 	bool shift = QApplication::keyboardModifiers() & Qt::ShiftModifier;

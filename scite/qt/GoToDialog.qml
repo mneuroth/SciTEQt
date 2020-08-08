@@ -6,11 +6,15 @@ import QtQuick.Dialogs 1.2
 GoToDialogForm {
 
     destinationLineInput {
-        validator: IntValidator { bottom: 1; top: lastLineNumber }
+        validator: IntValidator { bottom: 1; top: 999999 /*lastLineNumber*/ }
+
+        onAccepted: gotoButton.clicked()
     }
 
     columnInput {
         validator: IntValidator { bottom: 1; top: 9999 }
+
+        onAccepted: gotoButton.clicked()
     }
 
     lastLineOutput {

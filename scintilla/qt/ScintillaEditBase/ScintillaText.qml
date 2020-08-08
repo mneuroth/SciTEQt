@@ -183,15 +183,15 @@ ScrollView {
         }
 
         onDoubleClick: {
-            console.log("double click !")
+            //console.log("double click !")
         }
 
         onMarginClicked: {
-            console.log("MARGING CLICK !")
+            //console.log("MARGING CLICK !")
         }
 
         onTextAreaClicked: {
-            console.log("TextArea CLICK !")
+            //console.log("TextArea CLICK !")
         }
 
         // this signal is emited if the scintilla editor contol scrolls, because of a keyboard interaction

@@ -820,573 +820,573 @@ bool SciTEQt::saveCurrentAs(const QString & sFileName)
     return ret;
 }
 
-void SciTEQt::CmdNew()
+void SciTEQt::cmdNew()
 {
     MenuCommand(IDM_NEW);
 }
 
-void SciTEQt::CmdOpen()
+void SciTEQt::cmdOpen()
 {
     MenuCommand(IDM_OPEN);
 }
 
-void SciTEQt::CmdOpenSelectedFileName()
+void SciTEQt::cmdOpenSelectedFileName()
 {
     MenuCommand(IDM_OPENSELECTED);
 }
 
-void SciTEQt::CmdCodePageProperty()
+void SciTEQt::cmdCodePageProperty()
 {
     MenuCommand(IDM_ENCODING_DEFAULT);
 }
 
-void SciTEQt::CmdUtf16BigEndian()
+void SciTEQt::cmdUtf16BigEndian()
 {
     MenuCommand(IDM_ENCODING_UCS2BE);
 }
 
-void SciTEQt::CmdUtf16LittleEndian()
+void SciTEQt::cmdUtf16LittleEndian()
 {
     MenuCommand(IDM_ENCODING_UCS2LE);
 }
 
-void SciTEQt::CmdUtf8WithBOM()
+void SciTEQt::cmdUtf8WithBOM()
 {
     MenuCommand(IDM_ENCODING_UTF8);
 }
 
-void SciTEQt::CmdUtf8()
+void SciTEQt::cmdUtf8()
 {
     MenuCommand(IDM_ENCODING_UCOOKIE);
 }
 
-void SciTEQt::CmdAsHtml()
+void SciTEQt::cmdAsHtml()
 {
     MenuCommand(IDM_SAVEASHTML);
 }
 
-void SciTEQt::CmdAsRtf()
+void SciTEQt::cmdAsRtf()
 {
     MenuCommand(IDM_SAVEASRTF);
 }
 
-void SciTEQt::CmdAsPdf()
+void SciTEQt::cmdAsPdf()
 {
     MenuCommand(IDM_SAVEASPDF);
 }
 
-void SciTEQt::CmdAsLatex()
+void SciTEQt::cmdAsLatex()
 {
     MenuCommand(IDM_SAVEASTEX);
 }
 
-void SciTEQt::CmdAsXml()
+void SciTEQt::cmdAsXml()
 {
     MenuCommand(IDM_SAVEASXML);
 }
 
-void SciTEQt::CmdPageSetup()
+void SciTEQt::cmdPageSetup()
 {
 // TODO implement ...
     MenuCommand(IDM_PRINTSETUP);
 }
 
-void SciTEQt::CmdPrint()
+void SciTEQt::cmdPrint()
 {
 // TODO implement ...
     MenuCommand(IDM_PRINT);
 }
 
-void SciTEQt::CmdLoadSession()
+void SciTEQt::cmdLoadSession()
 {
 // TODO implement ...
     MenuCommand(IDM_LOADSESSION);
 }
 
-void SciTEQt::CmdSaveSession()
+void SciTEQt::cmdSaveSession()
 {
 // TODO implement ...
     MenuCommand(IDM_SAVESESSION);
 }
 
-void SciTEQt::CmdRevert()
+void SciTEQt::cmdRevert()
 {
     MenuCommand(IDM_REVERT);
 }
 
-void SciTEQt::CmdClose()
+void SciTEQt::cmdClose()
 {
     MenuCommand(IDM_CLOSE);
 }
 
-void SciTEQt::CmdSave()
+void SciTEQt::cmdSave()
 {
     MenuCommand(IDM_SAVE);
 }
 
-void SciTEQt::CmdSaveAs()
+void SciTEQt::cmdSaveAs()
 {
     MenuCommand(IDM_SAVEAS);
 }
 
-void SciTEQt::CmdCopyPath()
+void SciTEQt::cmdCopyPath()
 {
     MenuCommand(IDM_COPYPATH);
 }
 
-void SciTEQt::CmdExit()
+void SciTEQt::cmdExit()
 {
     MenuCommand(IDM_QUIT);
 }
 
-void SciTEQt::CmdUndo()
+void SciTEQt::cmdUndo()
 {
     MenuCommand(IDM_UNDO);
 }
 
-void SciTEQt::CmdRedo()
+void SciTEQt::cmdRedo()
 {
     MenuCommand(IDM_REDO);
 }
 
-void SciTEQt::CmdCut()
+void SciTEQt::cmdCut()
 {
     MenuCommand(IDM_CUT);
 }
 
-void SciTEQt::CmdCopy()
+void SciTEQt::cmdCopy()
 {
     MenuCommand(IDM_COPY);
 }
 
-void SciTEQt::CmdPaste()
+void SciTEQt::cmdPaste()
 {
     MenuCommand(IDM_PASTE);
 }
 
-void SciTEQt::CmdDuplicate()
+void SciTEQt::cmdDuplicate()
 {
     MenuCommand(IDM_DUPLICATE);
 }
 
-void SciTEQt::CmdDelete()
+void SciTEQt::cmdDelete()
 {
     MenuCommand(IDM_CLEAR);
 }
 
-void SciTEQt::CmdSelectAll()
+void SciTEQt::cmdSelectAll()
 {
     MenuCommand(IDM_SELECTALL);
 }
 
-void SciTEQt::CmdCopyAsRtf()
+void SciTEQt::cmdCopyAsRtf()
 {
     MenuCommand(IDM_COPYASRTF);
 }
 
-void SciTEQt::CmdMatchBrace()
+void SciTEQt::cmdMatchBrace()
 {
     MenuCommand(IDM_MATCHBRACE);
 }
 
-void SciTEQt::CmdSelectToBrace()
+void SciTEQt::cmdSelectToBrace()
 {
     MenuCommand(IDM_SELECTTOBRACE);
 }
 
-void SciTEQt::CmdShowCalltip()
+void SciTEQt::cmdShowCalltip()
 {
     MenuCommand(IDM_SHOWCALLTIP);
 }
 
-void SciTEQt::CmdCompleteSymbol()
+void SciTEQt::cmdCompleteSymbol()
 {
     MenuCommand(IDM_COMPLETE);
 }
 
-void SciTEQt::CmdCompleteWord()
+void SciTEQt::cmdCompleteWord()
 {
     MenuCommand(IDM_COMPLETEWORD);
 }
 
-void SciTEQt::CmdExpandAbbreviation()
+void SciTEQt::cmdExpandAbbreviation()
 {
     MenuCommand(IDM_ABBREV);
 }
 
-void SciTEQt::CmdInsertAbbreviation()
+void SciTEQt::cmdInsertAbbreviation()
 {
     MenuCommand(IDM_INS_ABBREV);
 }
 
-void SciTEQt::CmdBlockComment()
+void SciTEQt::cmdBlockComment()
 {
     MenuCommand(IDM_BLOCK_COMMENT);
 }
 
-void SciTEQt::CmdBoxComment()
+void SciTEQt::cmdBoxComment()
 {
     MenuCommand(IDM_BOX_COMMENT);
 }
 
-void SciTEQt::CmdStreamComment()
+void SciTEQt::cmdStreamComment()
 {
     MenuCommand(IDM_STREAM_COMMENT);
 }
 
-void SciTEQt::CmdMakeSelectionUppercase()
+void SciTEQt::cmdMakeSelectionUppercase()
 {
     MenuCommand(IDM_UPRCASE);
 }
 
-void SciTEQt::CmdMakeSelectionLowercase()
+void SciTEQt::cmdMakeSelectionLowercase()
 {
     MenuCommand(IDM_LWRCASE);
 }
 
-void SciTEQt::CmdReverseSelectedLines()
+void SciTEQt::cmdReverseSelectedLines()
 {
     MenuCommand(IDM_LINEREVERSE);
 }
 
-void SciTEQt::CmdJoin()
+void SciTEQt::cmdJoin()
 {
     MenuCommand(IDM_JOIN);
 }
 
-void SciTEQt::CmdSplit()
+void SciTEQt::cmdSplit()
 {
     MenuCommand(IDM_SPLIT);
 }
 
-void SciTEQt::CmdFind()
+void SciTEQt::cmdFind()
 {
     MenuCommand(IDM_FIND);
 }
 
-void SciTEQt::CmdFindNext()
+void SciTEQt::cmdFindNext()
 {
     MenuCommand(IDM_FINDNEXT);
 }
 
-void SciTEQt::CmdFindPrevious()
+void SciTEQt::cmdFindPrevious()
 {
     MenuCommand(IDM_FINDNEXTBACK);
 }
 
-void SciTEQt::CmdFindInFiles()
+void SciTEQt::cmdFindInFiles()
 {
     MenuCommand(IDM_FINDINFILES);
 }
 
-void SciTEQt::CmdReplace()
+void SciTEQt::cmdReplace()
 {
     MenuCommand(IDM_REPLACE);
 }
 
-void SciTEQt::CmdIncrementalSearch()
+void SciTEQt::cmdIncrementalSearch()
 {
     MenuCommand(IDM_INCSEARCH);
 }
 
-void SciTEQt::CmdSelectionAddNext()
+void SciTEQt::cmdSelectionAddNext()
 {
 // TODO implement...    ???
     MenuCommand(IDM_SELECTIONADDNEXT);
 }
 
-void SciTEQt::CmdSelectionAddEach()
+void SciTEQt::cmdSelectionAddEach()
 {
 // TODO implement...    ???
     MenuCommand(IDM_SELECTIONADDEACH);
 }
 
-void SciTEQt::CmdGoto()
+void SciTEQt::cmdGoto()
 {
     MenuCommand(IDM_GOTO);
 }
 
-void SciTEQt::CmdNextBookmark()
+void SciTEQt::cmdNextBookmark()
 {
     MenuCommand(IDM_BOOKMARK_NEXT);
 }
 
-void SciTEQt::CmdPreviousBookmark()
+void SciTEQt::cmdPreviousBookmark()
 {
     MenuCommand(IDM_BOOKMARK_PREV);
 }
 
-void SciTEQt::CmdToggleBookmark()
+void SciTEQt::cmdToggleBookmark()
 {
     MenuCommand(IDM_BOOKMARK_TOGGLE);
 }
 
-void SciTEQt::CmdClearAllBookmarks()
+void SciTEQt::cmdClearAllBookmarks()
 {
     MenuCommand(IDM_BOOKMARK_CLEARALL);
 }
 
-void SciTEQt::CmdSelectAllBookmarks()
+void SciTEQt::cmdSelectAllBookmarks()
 {
     MenuCommand(IDM_BOOKMARK_SELECT_ALL);
 }
 
-void SciTEQt::CmdToggleCurrentFold()
+void SciTEQt::cmdToggleCurrentFold()
 {
     MenuCommand(IDM_EXPAND);
 }
 
-void SciTEQt::CmdToggleAllFolds()
+void SciTEQt::cmdToggleAllFolds()
 {
     MenuCommand(IDM_TOGGLE_FOLDALL);
 }
 
-void SciTEQt::CmdFullScreen()
+void SciTEQt::cmdFullScreen()
 {
     MenuCommand(IDM_FULLSCREEN);
 }
 
-void SciTEQt::CmdShowToolBar()
+void SciTEQt::cmdShowToolBar()
 {
     MenuCommand(IDM_VIEWTOOLBAR);
 }
 
-void SciTEQt::CmdShowTabBar()
+void SciTEQt::cmdShowTabBar()
 {
     MenuCommand(IDM_VIEWTABBAR);
 }
 
-void SciTEQt::CmdShowStatusBar()
+void SciTEQt::cmdShowStatusBar()
 {
     MenuCommand(IDM_VIEWSTATUSBAR);
 }
 
-void SciTEQt::CmdShowWhitespace()
+void SciTEQt::cmdShowWhitespace()
 {
     MenuCommand(IDM_VIEWSPACE);
 }
 
-void SciTEQt::CmdShowEndOfLine()
+void SciTEQt::cmdShowEndOfLine()
 {
     MenuCommand(IDM_VIEWEOL);
 }
 
-void SciTEQt::CmdIndentionGuides()
+void SciTEQt::cmdIndentionGuides()
 {
     MenuCommand(IDM_VIEWGUIDES);
 }
 
-void SciTEQt::CmdLineNumbers()
+void SciTEQt::cmdLineNumbers()
 {
     MenuCommand(IDM_LINENUMBERMARGIN);
 }
 
-void SciTEQt::CmdMargin()
+void SciTEQt::cmdMargin()
 {
     MenuCommand(IDM_SELMARGIN);
 }
 
-void SciTEQt::CmdFoldMargin()
+void SciTEQt::cmdFoldMargin()
 {
     MenuCommand(IDM_FOLDMARGIN);
 }
 
-void SciTEQt::CmdToggleOutput()
+void SciTEQt::cmdToggleOutput()
 {
     MenuCommand(IDM_TOGGLEOUTPUT);
 }
 
-void SciTEQt::CmdParameters()
+void SciTEQt::cmdParameters()
 {
     MenuCommand(IDM_TOGGLEPARAMETERS);
 }
 
-void SciTEQt::CmdCompile()
+void SciTEQt::cmdCompile()
 {
     MenuCommand(IDM_COMPILE);
 }
 
-void SciTEQt::CmdBuild()
+void SciTEQt::cmdBuild()
 {
     MenuCommand(IDM_BUILD);
 }
 
-void SciTEQt::CmdClean()
+void SciTEQt::cmdClean()
 {
     MenuCommand(IDM_CLEAN);
 }
 
-void SciTEQt::CmdGo()
+void SciTEQt::cmdGo()
 {
     MenuCommand(IDM_GO);
 }
 
-void SciTEQt::CmdStopExecuting()
+void SciTEQt::cmdStopExecuting()
 {
     MenuCommand(IDM_STOPEXECUTE);
 }
 
-void SciTEQt::CmdNextMessage()
+void SciTEQt::cmdNextMessage()
 {
     MenuCommand(IDM_NEXTMSG);
 }
 
-void SciTEQt::CmdPreviousMessage()
+void SciTEQt::cmdPreviousMessage()
 {
     MenuCommand(IDM_PREVMSG);
 }
 
-void SciTEQt::CmdClearOutput()
+void SciTEQt::cmdClearOutput()
 {
     MenuCommand(IDM_CLEAROUTPUT);
 }
 
-void SciTEQt::CmdSwitchPane()
+void SciTEQt::cmdSwitchPane()
 {
     MenuCommand(IDM_SWITCHPANE);
 }
 
-void SciTEQt::CmdAlwaysOnTop()
+void SciTEQt::cmdAlwaysOnTop()
 {
     MenuCommand(IDM_ONTOP);
 }
 
-void SciTEQt::CmdOpenFilesHere()
+void SciTEQt::cmdOpenFilesHere()
 {
     MenuCommand(IDM_OPENFILESHERE);
 }
 
-void SciTEQt::CmdReadOnly()
+void SciTEQt::cmdReadOnly()
 {
     MenuCommand(IDM_READONLY);
 }
 
-void SciTEQt::CmdCrLf()
+void SciTEQt::cmdCrLf()
 {
     MenuCommand(IDM_EOL_CRLF);
 }
 
-void SciTEQt::CmdCr()
+void SciTEQt::cmdCr()
 {
     MenuCommand(IDM_EOL_CR);
 }
 
-void SciTEQt::CmdLf()
+void SciTEQt::cmdLf()
 {
     MenuCommand(IDM_EOL_LF);
 }
 
-void SciTEQt::CmdConvertLineEndChar()
+void SciTEQt::cmdConvertLineEndChar()
 {
     MenuCommand(IDM_EOL_CONVERT);
 }
 
-void SciTEQt::CmdChangeIndentationSettings()
+void SciTEQt::cmdChangeIndentationSettings()
 {
     MenuCommand(IDM_TABSIZE);
 }
 
-void SciTEQt::CmdOpenLocalOptionsFile()
+void SciTEQt::cmdOpenLocalOptionsFile()
 {
     MenuCommand(IDM_OPENLOCALPROPERTIES);
 }
 
-void SciTEQt::CmdOpenDirectoryOptionsFile()
+void SciTEQt::cmdOpenDirectoryOptionsFile()
 {
     MenuCommand(IDM_OPENDIRECTORYPROPERTIES);
 }
 
-void SciTEQt::CmdOpenUserOptionsFile()
+void SciTEQt::cmdOpenUserOptionsFile()
 {
     MenuCommand(IDM_OPENUSERPROPERTIES);
 }
 
-void SciTEQt::CmdOpenGlobalOptionsFile()
+void SciTEQt::cmdOpenGlobalOptionsFile()
 {
     MenuCommand(IDM_OPENGLOBALPROPERTIES);
 }
 
-void SciTEQt::CmdOpenAbbreviationsFile()
+void SciTEQt::cmdOpenAbbreviationsFile()
 {
     MenuCommand(IDM_OPENABBREVPROPERTIES);
 }
 
-void SciTEQt::CmdOpenLuaStartupScript()
+void SciTEQt::cmdOpenLuaStartupScript()
 {
     MenuCommand(IDM_OPENLUAEXTERNALFILE);
 }
 
-void SciTEQt::CmdWrap()
+void SciTEQt::cmdWrap()
 {
     MenuCommand(IDM_WRAP);
 }
 
-void SciTEQt::CmdWrapOutput()
+void SciTEQt::cmdWrapOutput()
 {
     MenuCommand(IDM_WRAPOUTPUT);
 }
 
-void SciTEQt::CmdVerticalSplit()
+void SciTEQt::cmdVerticalSplit()
 {
     MenuCommand(IDM_SPLITVERTICAL);
 }
 
-void SciTEQt::CmdUseMonospacedFont()
+void SciTEQt::cmdUseMonospacedFont()
 {
     MenuCommand(IDM_MONOFONT);
 }
 
-void SciTEQt::CmdBuffersPrevious()
+void SciTEQt::cmdBuffersPrevious()
 {
     MenuCommand(IDM_PREVFILE);
 }
 
-void SciTEQt::CmdBuffersNext()
+void SciTEQt::cmdBuffersNext()
 {
     MenuCommand(IDM_NEXTFILE);
 }
 
-void SciTEQt::CmdBuffersCloseAll()
+void SciTEQt::cmdBuffersCloseAll()
 {
     MenuCommand(IDM_CLOSEALL);
 }
 
-void SciTEQt::CmdBuffersSaveAll()
+void SciTEQt::cmdBuffersSaveAll()
 {
     MenuCommand(IDM_SAVEALL);
 }
 
-void SciTEQt::CmdSelectBuffer(int index)
+void SciTEQt::cmdSelectBuffer(int index)
 {
     MenuCommand(IDM_BUFFER+index);
 }
 
-void SciTEQt::CmdSelectLanguage(int index)
+void SciTEQt::cmdSelectLanguage(int index)
 {
     MenuCommand(IDM_LANGUAGE+index);
 }
 
-void SciTEQt::CmdHelp()
+void SciTEQt::cmdHelp()
 {
     MenuCommand(IDM_HELP);
 }
 
-void SciTEQt::CmdSciteHelp()
+void SciTEQt::cmdSciteHelp()
 {
     MenuCommand(IDM_HELP_SCITE);
 }
 
-void SciTEQt::CmdAboutScite()
+void SciTEQt::cmdAboutScite()
 {
     MenuCommand(IDM_ABOUT);
 }
 
-void SciTEQt::CmdMarkAll()
+void SciTEQt::cmdMarkAll()
 {
     MarkAll(markWithBookMarks);
 }
 
-void SciTEQt::CmdTriggerReplace(const QString & find, const QString & replace, bool inSection)
+void SciTEQt::cmdTriggerReplace(const QString & find, const QString & replace, bool inSection)
 {
     // see: ReplaceStrip::HandleReplaceCommand(...)
     SetFind(find.toStdString().c_str());
@@ -1401,7 +1401,7 @@ void SciTEQt::CmdTriggerReplace(const QString & find, const QString & replace, b
     }
 }
 
-void SciTEQt::CmdGotoLine(int lineNo, int colPos)
+void SciTEQt::cmdGotoLine(int lineNo, int colPos)
 {
     GotoLineEnsureVisible(lineNo);
 
@@ -1477,6 +1477,13 @@ bool SciTEQt::event(QEvent *e)
 void SciTEQt::onStatusbarClicked()
 {
     UpdateStatusbarView();
+}
+
+QVariant SciTEQt::fillToLength(const QString & text, const QString & shortcut)
+{
+    QString fill(" ");
+    fill = fill.leftJustified((42-text.length()-shortcut.length()) / 8,'\t');
+    return QVariant(text + fill + shortcut);
 }
 
 void SciTEQt::setFindText(const QString & text, bool incremental)
