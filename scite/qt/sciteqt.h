@@ -325,6 +325,7 @@ public:
     Q_INVOKABLE void cmdGotoLine(int lineNo, int colPos);
 
     Q_INVOKABLE QVariant fillToLength(const QString & text, const QString & shortcut);
+    Q_INVOKABLE QVariant fillToLengthWithFont(const QString & text, const QString & shortcut, const QFont & font);
 
     Q_INVOKABLE void setFindText(const QString & text, bool incremental);
 
@@ -334,6 +335,8 @@ public:
 
     Q_INVOKABLE void setSpliterPos(int currentPosX, int currentPosY);
     Q_INVOKABLE void startDragSpliterPos(int currentPosX, int currentPosY);
+
+    Q_INVOKABLE bool isMobilePlatform() const;
 
     void UpdateStatusbarView();
 

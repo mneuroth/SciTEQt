@@ -135,11 +135,25 @@ ApplicationWindow {
     }
 
     function processMenuItem(menuText, menuItem) {
+// TODO: via font die breite fuer den text bestimmen und passende anzahl leerzeichen dafuer...
+        //console.log("FONT: "+menuText+" "+ (menuItem!==undefined ? menuItem.font : "?"))
         var s = sciteQt.getLocalisedText(menuText)
         if( menuItem !== null && menuItem.shortcut !== undefined)
         {
             //s += " \t" + menuItem.shortcut
             return sciteQt.fillToLength(s, ""+menuItem.shortcut)
+        }
+        return s
+    }
+
+    function processMenuItem2(menuText, menuItem) {
+// TODO: via font die breite fuer den text bestimmen und passende anzahl leerzeichen dafuer...
+        console.log("FONT: "+menuText+" "+ (menuItem!==undefined ? menuItem.font : "?")+" action="+menuItem.action) //+" shortcut="+menuItem.action.shortcut+ " "+menuItem.parent)
+        var s = sciteQt.getLocalisedText(menuText)
+        if( !sciteQt.isMobilePlatform() && menuItem !== null && menuItem.action !== null && menuItem.action.shortcut !== undefined)
+        {
+            //s += " \t" + menuItem.shortcut
+            return sciteQt.fillToLengthWithFont(s, ""+menuItem.action.shortcut, menuItem.font)
         }
         return s
     }
@@ -150,6 +164,10 @@ ApplicationWindow {
         replaceInput.visible = false
     }
 
+    SciteMenuActions {
+        id: sciteActions
+    }
+
     menuBar: MenuBar {
         id: menuBar
 
@@ -157,162 +175,133 @@ ApplicationWindow {
             id: fileMenu
             title: processMenuItem(qsTr("&File"),null)
 // see: https://forum.qt.io/topic/104010/menubar-display-shortcut-in-quickcontrols2/4
-            Action {
+            MenuItem {
                 id: actionNew
-                text: processMenuItem(qsTr("&New"), actionNew)
-                //icon.source: "share.svg"
-                shortcut: "Ctrl+N"
-                onTriggered: sciteQt.cmdNew()
+                text: processMenuItem2(sciteActions.actionNew.text, actionNew)
+                action: sciteActions.actionNew
             }
-            Action {
+            MenuItem {
                 id: actionOpen
-                text: processMenuItem(qsTr("&Open..."), actionOpen)
-                //icon.source: "share.svg"
-                shortcut: "Ctrl+O"
-                onTriggered: sciteQt.cmdOpen()
+                text: processMenuItem2(sciteActions.actionOpen.text, actionOpen)
+                action: sciteActions.actionOpen
             }
-            Action {
+            MenuItem {
                 id: actionOpenSelectedFilename
-                text: processMenuItem(qsTr("Open Selected &Filename"), actionOpenSelectedFilename)
-                shortcut: "Ctrl+Shift+O"
-                onTriggered: sciteQt.cmdOpenSelectedFileName()
+                text: processMenuItem2(sciteActions.actionOpenSelectedFilename.text, actionOpenSelectedFilename)
+                action: sciteActions.actionOpenSelectedFilename
             }
-            Action {
+            MenuItem {
                 id: actionRevert
-                text: processMenuItem(qsTr("&Revert"), actionRevert)
-                shortcut: "Ctrl+R"
-                onTriggered: sciteQt.cmdRevert()
+                text: processMenuItem2(sciteActions.actionRevert.text, actionRevert)
+                action: sciteActions.actionRevert
             }
-            Action {
+            MenuItem {
                 id: actionClose
-                text: processMenuItem(qsTr("&Close"), actionClose)
-                shortcut: "Ctrl+W"
-                onTriggered: sciteQt.cmdClose()
+                text: processMenuItem2(sciteActions.actionClose.text, actionClose)
+                action: sciteActions.actionClose
             }
-            Action {
+            MenuItem {
                 id: actionSave
-                text: processMenuItem(qsTr("&Save"), actionSave)
-                shortcut: "Ctrl+S"
-                onTriggered: sciteQt.cmdSave()
+                text: processMenuItem2(sciteActions.actionSave.text, actionSave)
+                action: sciteActions.actionSave
             }
-            Action {
+            MenuItem {
                 id: actionSaveAs
-                text: processMenuItem(qsTr("Save &As..."), actionSaveAs)
-                onTriggered: sciteQt.cmdSaveAs()
+                text: processMenuItem2(sciteActions.actionSaveAs.text, actionSaveAs)
+                action: sciteActions.actionSaveAs
             }
-            Action {
+            MenuItem {
                 id: actionCopyPath
-                text: processMenuItem(qsTr("Copy Pat&h"), actionCopyPath)
-                onTriggered: sciteQt.cmdCopyPath()
+                text: processMenuItem2(sciteActions.actionCopyPath.text, actionCopyPath)
+                action: sciteActions.actionCopyPath
             }
             Menu {
-                id: menuEncoding
-                title: processMenuItem(qsTr("Encodin&g"), menuEncoding)
+                id: actionEncoding
+                title: processMenuItem(qsTr("Encodin&g"), actionEncoding)
 
-                Action {
+                MenuItem {
                     id: actionCodePageProperty
-                    text: processMenuItem(qsTr("&Code Page Property"), actionCodePageProperty)
-                    checkable: true
-                    checked: false
-                    onTriggered: sciteQt.cmdCodePageProperty()
+                    text: processMenuItem2(sciteActions.actionCodePageProperty.text, actionCodePageProperty)
+                    action: sciteActions.actionCodePageProperty
                 }
-                Action {
+                MenuItem {
                     id: actionUtf16BigEndian
-                    text: processMenuItem(qsTr("UTF-16 &Big Endian"), actionUtf16BigEndian)
-                    checkable: true
-                    checked: false
-                    onTriggered: sciteQt.cmdUtf16BigEndian()
+                    text: processMenuItem2(sciteActions.actionUtf16BigEndian.text, actionUtf16BigEndian)
+                    action: sciteActions.actionUtf16BigEndian
                 }
-                Action {
+                MenuItem {
                     id: actionUtf16LittleEndian
-                    text: processMenuItem(qsTr("UTF-16 &Little Endian"), actionUtf16LittleEndian)
-                    checkable: true
-                    checked: false
-                    onTriggered: sciteQt.cmdUtf16LittleEndian()
+                    text: processMenuItem2(sciteActions.actionUtf16LittleEndian.text, actionUtf16LittleEndian)
+                    action: sciteActions.actionUtf16LittleEndian
                 }
-                Action {
+                MenuItem {
                     id: actionUtf8WithBOM
-                    text: processMenuItem(qsTr("UTF-8 &with BOM"), actionUtf8WithBOM)
-                    checkable: true
-                    checked: false
-                    onTriggered: sciteQt.cmdUtf8WithBOM()
+                    text: processMenuItem2(sciteActions.actionUtf8WithBOM.text, actionUtf8WithBOM)
+                    action: sciteActions.actionUtf8WithBOM
                 }
-                Action {
+                MenuItem {
                     id: actionUtf8
-                    text: processMenuItem(qsTr("&UTF-8"), actionUtf8)
-                    checkable: true
-                    checked: false
-                    onTriggered: sciteQt.cmdUtf8()
+                    text: processMenuItem2(sciteActions.actionUtf8.text, actionUtf8)
+                    action: sciteActions.actionUtf8
                 }
             }
             Menu {
-                id: menuExport
-                title: processMenuItem(qsTr("&Export"), menuExport)
+                id: actionExport
+                title: processMenuItem(qsTr("&Export"), actionExport)
 
-                Action {
+                MenuItem {
                     id: actionAsHtml
-                    text: processMenuItem(qsTr("As &HTML..."), actionAsHtml)
-                    checkable: true
-                    checked: false
-                    onTriggered: sciteQt.cmdAsHtml()
+                    text: processMenuItem2(sciteActions.actionAsHtml.text, actionAsHtml)
+                    action: sciteActions.actionAsHtml
                 }
-                Action {
+                MenuItem {
                     id: actionAsRtf
-                    text: processMenuItem(qsTr("As &RTF..."), actionAsRtf)
-                    checkable: true
-                    checked: false
-                    onTriggered: sciteQt.cmdAsRtf()
+                    text: processMenuItem2(sciteActions.actionAsRtf.text, actionAsRtf)
+                    action: sciteActions.actionAsRtf
                 }
-                Action {
+                MenuItem {
                     id: actionAsPdf
-                    text: processMenuItem(qsTr("As &PDF..."), actionAsPdf)
-                    checkable: true
-                    checked: false
-                    onTriggered: sciteQt.cmdAsPdf()
+                    text: processMenuItem2(sciteActions.actionAsPdf.text, actionAsPdf)
+                    action: sciteActions.actionAsPdf
                 }
-                Action {
+                MenuItem {
                     id: actionAsLatex
-                    text: processMenuItem(qsTr("As &LaTeX..."), actionAsLatex)
-                    checkable: true
-                    checked: false
-                    onTriggered: sciteQt.cmdAsLatex()
+                    text: processMenuItem2(sciteActions.actionAsLatex.text, actionAsLatex)
+                    action: sciteActions.actionAsLatex
                 }
-                Action {
+                MenuItem {
                     id: actionAsXml
-                    text: processMenuItem(qsTr("As &XML..."), actionAsXml)
-                    checkable: true
-                    checked: false
-                    onTriggered: sciteQt.cmdAsXml()
+                    text: processMenuItem2(sciteActions.actionAsXml.text, actionAsXml)
+                    action: sciteActions.actionAsXml
                 }
             }
             MenuSeparator {}
-            Action {
+            MenuItem {
                 id: actionPageSetup
-                text: processMenuItem(qsTr("Page Set&up..."), actionPageSetup)
-                onTriggered: sciteQt.cmdPageSetup()
+                text: processMenuItem2(sciteActions.actionPageSetup.text, actionPageSetup)
+                action: sciteActions.actionPageSetup
             }
-            Action {
+            MenuItem {
                 id: actionPrint
-                text: processMenuItem(qsTr("&Print..."), actionPrint)
-                shortcut: "Ctrl+P"
-                onTriggered: sciteQt.cmdPrint()
+                text: processMenuItem2(sciteActions.actionPrint.text, actionPrint)
+                action: sciteActions.actionPrint
             }
             MenuSeparator {}
-            Action {
+            MenuItem {
                 id: actionLoadSession
-                text: processMenuItem(qsTr("&Load Session..."), actionLoadSession)
-                onTriggered: sciteQt.cmdLoadSession()
+                text: processMenuItem2(sciteActions.actionLoadSession.text, actionLoadSession)
+                action: sciteActions.actionLoadSession
             }
-            Action {
+            MenuItem {
                 id: actionSaveSession
-                text: processMenuItem(qsTr("Sa&ve Session..."), actionSaveSession)
-                onTriggered: sciteQt.cmdSaveSession()
+                text: processMenuItem2(sciteActions.actionSaveSession.text, actionSaveSession)
+                action: sciteActions.actionSaveSession
             }
             MenuSeparator {}
-            Action {
+            MenuItem {
                 id: actionExit
-                text: processMenuItem(qsTr("E&xit"), actionExit)
-                onTriggered: sciteQt.cmdExit()
+                text: processMenuItem2(sciteActions.actionExit.text, actionExit)
+                action: sciteActions.actionExit
             }
         }
 
@@ -320,151 +309,131 @@ ApplicationWindow {
             id: editMenu
             title: processMenuItem(qsTr("Edit"),null)
 
-            Action {
+            MenuItem {
                 id: actionUndo
-                text: processMenuItem(qsTr("&Undo"), actionUndo)
-                shortcut: "Ctrl+Z"
-                onTriggered: sciteQt.cmdUndo()
+                text: processMenuItem2(sciteActions.actionUndo.text, actionUndo)
+                action: sciteActions.actionUndo
             }
-            Action {
+            MenuItem {
                 id: actionRedo
-                text: processMenuItem(qsTr("&Redo"), actionRedo)
-                shortcut: "Ctrl+Y"
-                onTriggered: sciteQt.cmdRedo()
+                text: processMenuItem2(sciteActions.actionRedo.text, actionRedo)
+                action: sciteActions.actionRedo
             }
             MenuSeparator {}
-            Action {
+            MenuItem {
                 id: actionCut
-                text: processMenuItem(qsTr("Cu&t"), actionCut)
-                shortcut: "Ctrl+X"
-                onTriggered: sciteQt.cmdCut()
+                text: processMenuItem2(sciteActions.actionCut.text, actionCut)
+                action: sciteActions.actionCut
             }
-            Action {
+            MenuItem {
                 id: actionCopy
-                text: processMenuItem(qsTr("&Copy"), actionCopy)
-                shortcut: "Ctrl+C"
-                onTriggered: sciteQt.cmdCopy()
+                text: processMenuItem2(sciteActions.actionCopy.text, actionCopy)
+                action: sciteActions.actionCopy
             }
-            Action {
+            MenuItem {
                 id: actionPaste
-                text: processMenuItem(qsTr("&Paste"), actionPaste)
-                shortcut: "Ctrl+V"
-                onTriggered: sciteQt.cmdPaste()
+                text: processMenuItem2(sciteActions.actionPaste.text, actionPaste)
+                action: sciteActions.actionPaste
             }
-            Action {
+            MenuItem {
                 id: actionDuplicate
-                text: processMenuItem(qsTr("Duplicat&e"), actionDuplicate)
-                shortcut: "Ctrl+D"
-                onTriggered: sciteQt.cmdDuplicate()
+                text: processMenuItem2(sciteActions.actionDuplicate.text, actionDuplicate)
+                action: sciteActions.actionDuplicate
             }
-            Action {
+            MenuItem {
                 id: actionDelete
-                text: processMenuItem(qsTr("&Delete"), actionDelete)
-                shortcut: "Del"
-                onTriggered: sciteQt.cmdDelete()
+                text: processMenuItem2(sciteActions.actionDelete.text, actionDelete)
+                action: sciteActions.actionDelete
             }
-            Action {
+            MenuItem {
                 id: actionSelectAll
-                text: processMenuItem(qsTr("Select &All"), actionSelectAll)
-                shortcut: "Ctrl+A"
-                onTriggered: sciteQt.cmdSelectAll()
+                text: processMenuItem2(sciteActions.actionSelectAll.text, actionSelectAll)
+                action: sciteActions.actionSelectAll
             }
-            Action {
+            MenuItem {
                 id: actionCopyAsRtf
-                text: processMenuItem(qsTr("Copy as RT&F"), actionCopyAsRtf)
-                onTriggered: sciteQt.cmdCopyAsRtf()
+                text: processMenuItem2(sciteActions.actionCopyAsRtf.text, actionCopyAsRtf)
+                action: sciteActions.actionCopyAsRtf
             }
             MenuSeparator {}
-            Action {
+            MenuItem {
                 id: actionMatchBrace
-                text: processMenuItem(qsTr("Match &Brace"), actionMatchBrace)
-                shortcut: "Ctrl+E"
-                onTriggered: sciteQt.cmdMatchBrace()
+                text: processMenuItem2(sciteActions.actionMatchBrace.text, actionMatchBrace)
+                action: sciteActions.actionMatchBrace
             }
-            Action {
+            MenuItem {
                 id: actionSelectToBrace
-                text: processMenuItem(qsTr("Select t&o Brace"), actionSelectToBrace)
-                shortcut: "Ctrl+Shift+E"
-                onTriggered: sciteQt.cmdSelectToBrace()
+                text: processMenuItem2(sciteActions.actionSelectToBrace.text, actionSelectToBrace)
+                action: sciteActions.actionSelectToBrace
             }
-            Action {
+            MenuItem {
                 id: actionShowCalltip
-                text: processMenuItem(qsTr("S&how Calltip"), actionShowCalltip)
-                shortcut: "Ctrl+Shift+Space"
-                onTriggered: sciteQt.cmdShowCalltip()
+                text: processMenuItem2(sciteActions.actionShowCalltip.text, actionShowCalltip)
+                action: sciteActions.actionShowCalltip
             }
-            Action {
+            MenuItem {
                 id: actionCompleteSymbol
-                text: processMenuItem(qsTr("Complete S&ymbol"), actionCompleteSymbol)
-                shortcut: "Ctrl+I"
-                onTriggered: sciteQt.cmdCompleteSymbol()
+                text: processMenuItem2(sciteActions.actionCompleteSymbol.text, actionCompleteSymbol)
+                action: sciteActions.actionCompleteSymbol
             }
-            Action {
+            MenuItem {
                 id: actionCompleteWord
-                text: processMenuItem(qsTr("Complete &Word"), actionCompleteWord)
-                shortcut: "Ctrl+Enter"
-                onTriggered: sciteQt.cmdCompleteWord()
+                text: processMenuItem2(sciteActions.actionCompleteWord.text, actionCompleteWord)
+                action: sciteActions.actionCompleteWord
             }
-            Action {
+            MenuItem {
                 id: actionExpandAbbreviation
-                text: processMenuItem(qsTr("Expand Abbre&viation"), actionExpandAbbreviation)
-                shortcut: "Ctrl+B"
-                onTriggered: sciteQt.cmdExpandAbbreviation()
+                text: processMenuItem2(sciteActions.actionExpandAbbreviation.text, actionExpandAbbreviation)
+                action: sciteActions.actionExpandAbbreviation
             }
-            Action {
+            MenuItem {
                 id: actionInsertAbbreviation
-                text: processMenuItem(qsTr("&Insert Abbreviation"), actionInsertAbbreviation)
-                shortcut: "Ctrl+Shift+R"
-                onTriggered: sciteQt.cmdInsertAbbreviation()
-            }
-            Action {
+                text: processMenuItem(sciteActions.actionInsertAbbreviation.text, actionInsertAbbreviation)
+                action: sciteActions.actionInsertAbbreviation
+           }
+            MenuItem {
                 id: actionBlockComment
-                text: processMenuItem(qsTr("Block Co&mment or Uncomment"), actionBlockComment)
-                shortcut: "Ctrl+Q"
-                onTriggered: sciteQt.cmdBlockComment()
+                text: processMenuItem(sciteActions.actionBlockComment.text, actionBlockComment)
+                action: sciteActions.actionBlockComment
             }
-            Action {
+            MenuItem {
                 id: actionBoxComment
-                text: processMenuItem(qsTr("Bo&x Comment"), actionBoxComment)
-                shortcut: "Ctrl+Shift+B"
-                onTriggered: sciteQt.cmdBoxComment()
+                text: processMenuItem(sciteActions.actionBoxComment.text, actionBoxComment)
+                action: sciteActions.actionBoxComment
             }
-            Action {
+            MenuItem {
                 id: actionStreamComment
-                text: processMenuItem(qsTr("Stream Comme&nt"), actionStreamComment)
-                shortcut: "Ctrl+Shift+Q"
-                onTriggered: sciteQt.cmdStreamComment()
+                text: processMenuItem(sciteActions.actionStreamComment.text, actionStreamComment)
+                action: sciteActions.actionStreamComment
             }
-            Action {
+            MenuItem {
                 id: actionMakeSelectionUppercase
-                text: processMenuItem(qsTr("Make &Selection Uppercase"), actionMakeSelectionUppercase)
-                shortcut: "Ctrl+Shift+U"
-                onTriggered: sciteQt.cmdMakeSelectionUppercase()
+                text: processMenuItem(sciteActions.actionMakeSelectionUppercase.text, actionMakeSelectionUppercase)
+                action: sciteActions.actionMakeSelectionUppercase
             }
-            Action {
+            MenuItem {
                 id: actionMakeSelectionLowercase
-                text: processMenuItem(qsTr("Make Selection &Lowercase"), actionMakeSelectionLowercase)
-                shortcut: "Ctrl+U"
-                onTriggered: sciteQt.cmdMakeSelectionLowercase()
+                text: processMenuItem(sciteActions.actionMakeSelectionLowercase.text, actionMakeSelectionLowercase)
+                action: sciteActions.actionMakeSelectionLowercase
             }
-            Action {
+            MenuItem {
                 id: actionReverseSelectedLines
-                text: processMenuItem(qsTr("Reverse Selected Lines"), actionReverseSelectedLines)
-                onTriggered: sciteQt.cmdReverseSelectedLines()
+                text: processMenuItem(sciteActions.actionReverseSelectedLines.text, actionReverseSelectedLines)
+                action: sciteActions.actionReverseSelectedLines
             }
             Menu {
                 id: menuParagraph
                 title: processMenuItem(qsTr("Para&graph"), menuParagraph)
 
-                Action {
+                MenuItem {
                     id: actionJoin
-                    text: processMenuItem(qsTr("&Join"), actionJoin)
-                    onTriggered: sciteQt.cmdJoin()
+                    text: processMenuItem2(sciteActions.actionJoin.text, actionJoin)
+                    action: sciteActions.actionJoin
                 }
-                Action {
+                MenuItem {
                     id: actionSplit
-                    text: processMenuItem(qsTr("&Split"), actionSplit)
-                    onTriggered: sciteQt.cmdSplit()
+                    text: processMenuItem2(sciteActions.actionSplit.text, actionSplit)
+                    action: sciteActions.actionSplit
                 }
             }
         }
@@ -473,87 +442,76 @@ ApplicationWindow {
             id: searchMenu
             title: processMenuItem(qsTr("Search"),null)
 
-            Action {
+            MenuItem {
                 id: actionFind
-                text: processMenuItem(qsTr("&Find..."), actionFind)
-                shortcut: "Ctrl+F"
-                onTriggered: sciteQt.cmdFind()
+                text: processMenuItem2(sciteActions.actionFind.text, actionFind)
+                action: sciteActions.actionFind
             }
-            Action {
+            MenuItem {
                 id: actionFindNext
-                text: processMenuItem(qsTr("Find &Next"), actionFindNext)
-                shortcut: "F3"
-                onTriggered: sciteQt.cmdFindNext()
+                text: processMenuItem2(sciteActions.actionFindNext.text, actionFindNext)
+                action: sciteActions.actionFindNext
             }
-            Action {
+            MenuItem {
                 id: actionFindPrevious
-                text: processMenuItem(qsTr("Find Previou&s"), actionFindPrevious)
-                shortcut: "Shift+F3"
-                onTriggered: sciteQt.cmdFindPrevious()
+                text: processMenuItem2(sciteActions.actionFindPrevious.text, actionFindPrevious)
+                action: sciteActions.actionFindPrevious
             }
-            Action {
+            MenuItem {
                 id: actionFindInFiles
-                text: processMenuItem(qsTr("F&ind in Files..."), actionFindInFiles)
-                shortcut: "Ctrl+Shift+F"
-                onTriggered: sciteQt.cmdFindInFiles()
+                text: processMenuItem2(sciteActions.actionFindInFiles.text, actionFindInFiles)
+                action: sciteActions.actionFindInFiles
             }
-            Action {
+            MenuItem {
                 id: actionReplace
-                text: processMenuItem(qsTr("R&eplace..."), actionReplace)
-                shortcut: "Ctrl+H"
-                onTriggered: sciteQt.cmdReplace()
+                text: processMenuItem2(sciteActions.actionReplace.text, actionReplace)
+                action: sciteActions.actionReplace
             }
-            Action {
+            MenuItem {
                 id: actionIncrementalSearch
-                text: processMenuItem(qsTr("Incrementa&l Search..."), actionIncrementalSearch)
-                shortcut: "Ctrl+Alt+I"
-                onTriggered: sciteQt.cmdIncrementalSearch()
+                text: processMenuItem2(sciteActions.actionIncrementalSearch.text, actionIncrementalSearch)
+                action: sciteActions.actionIncrementalSearch
             }
-            Action {
+            MenuItem {
                 id: actionSelectionAddNext
-                text: processMenuItem(qsTr("Selection A&dd Next"), actionSelectionAddNext)
-                shortcut: "Ctrl+Shift+D"
-                onTriggered: sciteQt.cmdSelectionAddNext()
+                text: processMenuItem2(sciteActions.actionSelectionAddNext.text, actionSelectionAddNext)
+                action: sciteActions.actionSelectionAddNext
             }
-            Action {
+            MenuItem {
                 id: actionSelectionAddEach
-                text: processMenuItem(qsTr("Selection &Add Each"), actionSelectionAddEach)
-                onTriggered: sciteQt.cmdSelectionAddEach()
+                text: processMenuItem2(sciteActions.actionSelectionAddEach.text, actionSelectionAddEach)
+                action: sciteActions.actionSelectionAddEach
             }
             MenuSeparator {}
-            Action {
+            MenuItem {
                 id: actionGoto
-                text: processMenuItem(qsTr("&Go to..."), actionGoto)
-                shortcut: "Ctrl+G"
-                onTriggered: sciteQt.cmdGoto()
+                text: processMenuItem2(sciteActions.actionGoto.text, actionGoto)
+                action: sciteActions.actionGoto
             }
-            Action {
+            MenuItem {
                 id: actionNextBookmark
-                text: processMenuItem(qsTr("Next Book&mark"), actionNextBookmark)
-                shortcut: "F2"
-                onTriggered: sciteQt.cmdNextBookmark()
+                text: processMenuItem2(sciteActions.actionNextBookmark.text, actionNextBookmark)
+                action: sciteActions.actionNextBookmark
             }
-            Action {
+            MenuItem {
                 id: actionPreviousBookmark
-                text: processMenuItem(qsTr("Pre&vious Bookmark"), actionPreviousBookmark)
-                shortcut: "Shift+F2"
-                onTriggered: sciteQt.cmdPreviousBookmark()
+                text: processMenuItem2(sciteActions.actionPreviousBookmark.text, actionPreviousBookmark)
+                action: sciteActions.actionPreviousBookmark
             }
-            Action {
+            MenuItem {
                 id: actionToggleBookmark
-                text: processMenuItem(qsTr("Toggle Bookmar&k"), actionToggleBookmark)
-                shortcut: "Ctrl+F2"
-                onTriggered: sciteQt.cmdToggleBookmark()
+                text: processMenuItem2(sciteActions.actionToggleBookmark.text, actionToggleBookmark)
+                action: sciteActions.actionToggleBookmark
             }
-            Action {
+            MenuItem {
                 id: actionClearAllBookmarks
-                text: processMenuItem(qsTr("&Clear All Bookmarks"), actionClearAllBookmarks)
-                onTriggered: sciteQt.cmdClearAllBookmarks()
+                text: processMenuItem2(sciteActions.actionClearAllBookmarks.text, actionClearAllBookmarks)
+                action: sciteActions.actionClearAllBookmarks
             }
-            Action {
+            MenuItem {
                 id: actionSelectAllBookmarks
-                text: processMenuItem(qsTr("Select All &Bookmarks"), actionSelectAllBookmarks)
-                onTriggered: sciteQt.cmdSelectAllBookmarks()
+                text: processMenuItem2(sciteActions.actionSelectAllBookmarks.text, actionSelectAllBookmarks)
+                action: sciteActions.actionSelectAllBookmarks
             }
         }
 
@@ -561,111 +519,77 @@ ApplicationWindow {
             id: viewMenu
             title: processMenuItem(qsTr("&View"),null)
 
-            Action {
+            MenuItem {
                 id: actionToggleCurrentFold
-                text: processMenuItem(qsTr("Toggle &current fold"), actionToggleCurrentFold)
-                //checkable: true
-                //checked: false
-                onTriggered: sciteQt.cmdToggleCurrentFold()
+                text: processMenuItem2(sciteActions.actionToggleCurrentFold.text, actionToggleCurrentFold)
+                action: sciteActions.actionToggleCurrentFold
             }
-            Action {
+            MenuItem {
                 id: actionToggleAllFolds
-                text: processMenuItem(qsTr("Toggle &all folds"), actionToggleAllFolds)
-                //checkable: true
-                //checked: false
-                onTriggered: sciteQt.cmdToggleAllFolds()
+                text: processMenuItem2(sciteActions.actionToggleAllFolds.text, actionToggleAllFolds)
+                action: sciteActions.actionToggleAllFolds
             }
             MenuSeparator {}
-            Action {
+            MenuItem {
                 id: actionFullScreen
-                text: processMenuItem(qsTr("Full Scree&n"), actionFullScreen)
-                shortcut: "F11"
-                enabled: false
-                checkable: true
-                checked: false
-                onTriggered: sciteQt.cmdFullScreen()
+                text: processMenuItem2(sciteActions.actionFullScreen.text, actionFullScreen)
+                action: sciteActions.actionFullScreen
             }
-            Action {
+            MenuItem {
                 id: actionShowToolBar
-                text: processMenuItem(qsTr("&Tool Bar"), actionShowToolBar)
-                checkable: true
-                checked: false
-                onTriggered: sciteQt.cmdShowToolBar()
+                text: processMenuItem2(sciteActions.actionShowToolBar.text, actionShowToolBar)
+                action: sciteActions.actionShowToolBar
             }
-            Action {
+            MenuItem {
                 id: actionShowTabBar
-                text: processMenuItem(qsTr("Tab &Bar"), actionShowTabBar)
-                checkable: true
-                checked: false
-                onTriggered: sciteQt.cmdShowTabBar()
+                text: processMenuItem2(sciteActions.actionShowTabBar.text, actionShowTabBar)
+                action: sciteActions.actionShowTabBar
             }
-            Action {
+            MenuItem {
                 id: actionShowStatusBar
-                text: processMenuItem(qsTr("&Status Bar"), actionShowStatusBar)
-                checkable: true
-                checked: false
-                onTriggered: sciteQt.cmdShowStatusBar()
+                text: processMenuItem2(sciteActions.actionShowStatusBar.text, actionShowStatusBar)
+                action: sciteActions.actionShowStatusBar
             }
             MenuSeparator {}
-            Action {
+            MenuItem {
                 id: actionShowWhitespace
-                text: processMenuItem(qsTr("&Whitespace"), actionShowWhitespace)
-                shortcut: "Ctrl+Shift+8"
-                checkable: true
-                checked: false
-                onTriggered: sciteQt.cmdShowWhitespace()
+                text: processMenuItem2(sciteActions.actionShowWhitespace.text, actionShowWhitespace)
+                action: sciteActions.actionShowWhitespace
             }
-            Action {
+            MenuItem {
                 id: actionShowEndOfLine
-                text: processMenuItem(qsTr("&End of Line"), actionShowEndOfLine)
-                shortcut: "Ctrl+Shift+9"
-                checkable: true
-                checked: false
-                onTriggered: sciteQt.cmdShowEndOfLine()
+                text: processMenuItem2(sciteActions.actionShowEndOfLine.text, actionShowEndOfLine)
+                action: sciteActions.actionShowEndOfLine
             }
-            Action {
+            MenuItem {
                 id: actionIndentaionGuides
-                text: processMenuItem(qsTr("&Indentation Guides"), actionIndentaionGuides)
-                checkable: true
-                checked: false
-                onTriggered: sciteQt.cmdIndentionGuides()
+                text: processMenuItem2(sciteActions.actionIndentaionGuides.text, actionIndentaionGuides)
+                action: sciteActions.actionIndentaionGuides
             }
-            Action {
+            MenuItem {
                 id: actionLineNumbers
-                text: processMenuItem(qsTr("Line &Numbers"), actionLineNumbers)
-                checkable: true
-                checked: false
-                onTriggered: sciteQt.cmdLineNumbers()
+                text: processMenuItem2(sciteActions.actionLineNumbers.text, actionLineNumbers)
+                action: sciteActions.actionLineNumbers
             }
-            Action {
+            MenuItem {
                 id: actionMargin
-                text: processMenuItem(qsTr("&Margin"), actionMargin)
-                checkable: true
-                checked: false
-                onTriggered: sciteQt.cmdMargin()
+                text: processMenuItem2(sciteActions.actionMargin.text, actionMargin)
+                action: sciteActions.actionMargin
             }
-            Action {
+            MenuItem {
                 id: actionFoldMargin
-                text: processMenuItem(qsTr("&Fold Margin"), actionFoldMargin)
-                checkable: true
-                checked: false
-                onTriggered: sciteQt.cmdFoldMargin()
+                text: processMenuItem2(sciteActions.actionFoldMargin.text, actionFoldMargin)
+                action: sciteActions.actionFoldMargin
             }
-            Action {
+            MenuItem {
                 id: actionToggleOutput
-                text: processMenuItem(qsTr("&Output"), actionToggleOutput)
-                shortcut: "F8"
-                checkable: true
-                checked: false
-                onTriggered: sciteQt.cmdToggleOutput()
+                text: processMenuItem2(sciteActions.actionToggleOutput.text, actionToggleOutput)
+                action: sciteActions.actionToggleOutput
             }
-            Action {
+            MenuItem {
                 id: actionParameters
-                text: processMenuItem(qsTr("&Parameters"), actionParameters)
-                shortcut: "Shift+F8"
-                //checkable: true
-                //checked: false
-                onTriggered: sciteQt.cmdParameters()
+                text: processMenuItem2(sciteActions.actionParameters.text, actionParameters)
+                action: sciteActions.actionParameters
             }
         }
 
@@ -673,78 +597,51 @@ ApplicationWindow {
             id: toolsMenu
             title: processMenuItem(qsTr("Tools"),null)
 
-            Action {
+            MenuItem {
                 id: actionCompile
-                text: processMenuItem(qsTr("&Compile"), actionCompile)
-                shortcut: "Ctrl+F7"
-                //checkable: true
-                //checked: false
-                onTriggered: sciteQt.cmdCompile()
+                text: processMenuItem2(sciteActions.actionCompile.text, actionCompile)
+                action: sciteActions.actionCompile
             }
-            Action {
+            MenuItem {
                 id: actionBuild
-                text: processMenuItem(qsTr("&Build"), actionBuild)
-                shortcut: "F7"
-                //checkable: true
-                //checked: false
-                onTriggered: sciteQt.cmdBuild()
+                text: processMenuItem2(sciteActions.actionBuild.text, actionBuild)
+                action: sciteActions.actionBuild
             }
-            Action {
+            MenuItem {
                 id: actionClean
-                text: processMenuItem(qsTr("&Clean"), actionClean)
-                shortcut: "Shift+F7"
-                //checkable: true
-                //checked: false
-                onTriggered: sciteQt.cmdClean()
+                text: processMenuItem2(sciteActions.actionClean.text, actionClean)
+                action: sciteActions.actionClean
             }
-            Action {
+            MenuItem {
                 id: actionGo
-                text: processMenuItem(qsTr("&Go"), actionGo)
-                shortcut: "F5"
-                //checkable: true
-                //checked: false
-                onTriggered: sciteQt.cmdGo()
+                text: processMenuItem2(sciteActions.actionGo.text, actionGo)
+                action: sciteActions.actionGo
             }
-            Action {
+            MenuItem {
                 id: actionStopExecuting
-                text: processMenuItem(qsTr("&Stop Executing"), actionStopExecuting)
-                shortcut: "Ctrl+Break"
-                //checkable: true
-                //checked: false
-                onTriggered: sciteQt.cmdStopExecuting()
+                text: processMenuItem2(sciteActions.actionStopExecuting.text, actionStopExecuting)
+                action: sciteActions.actionStopExecuting
             }
             MenuSeparator {}
-            Action {
+            MenuItem {
                 id: actionNextMessage
-                text: processMenuItem(qsTr("&Next Message"), actionNextMessage)
-                shortcut: "F4"
-                //checkable: true
-                //checked: false
-                onTriggered: sciteQt.cmdNextMessage()
+                text: processMenuItem2(sciteActions.actionNextMessage.text, actionNextMessage)
+                action: sciteActions.actionNextMessage
             }
-            Action {
+            MenuItem {
                 id: actionPreviousMessage
-                text: processMenuItem(qsTr("&Previous Message"), actionPreviousMessage)
-                shortcut: "Shift+F4"
-                //checkable: true
-                //checked: false
-                onTriggered: sciteQt.cmdPreviousMessage()
+                text: processMenuItem2(sciteActions.actionPreviousMessage.text, actionPreviousMessage)
+                action: sciteActions.actionPreviousMessage
             }
-            Action {
+            MenuItem {
                 id: actionClearOutput
-                text: processMenuItem(qsTr("Clear &Output"), actionClearOutput)
-                shortcut: "Shift+F5"
-                //checkable: true
-                //checked: false
-                onTriggered: sciteQt.cmdClearOutput()
+                text: processMenuItem2(sciteActions.actionClearOutput.text, actionClearOutput)
+                action: sciteActions.actionClearOutput
             }
-            Action {
+            MenuItem {
                 id: actionSwitchPane
-                text: processMenuItem(qsTr("&Switch Pane"), actionSwitchPane)
-                shortcut: "Ctrl+F6"
-                //checkable: true
-                //checked: false
-                onTriggered: sciteQt.cmdSwitchPane()
+                text: processMenuItem2(sciteActions.actionSwitchPane.text, actionSwitchPane)
+                action: sciteActions.actionSwitchPane
             }
         }
 
@@ -752,127 +649,103 @@ ApplicationWindow {
             id: optionsMenu
             title: processMenuItem(qsTr("Options"),null)
 
-            Action {
+            MenuItem {
                 id: actionAlwaysOnTop
-                text: processMenuItem(qsTr("&Always On Top"), actionAlwaysOnTop)
-                checkable: true
-                checked: false
-                onTriggered: sciteQt.cmdAlwaysOnTop()
+                text: processMenuItem2(sciteActions.actionAlwaysOnTop.text, actionAlwaysOnTop)
+                action: sciteActions.actionAlwaysOnTop
             }
-            Action {
+            MenuItem {
                 id: actionOpenFilesHere
-                text: processMenuItem(qsTr("Open Files &Here"), actionOpenFilesHere)
-                //checkable: true
-                //checked: false
-                onTriggered: sciteQt.cmdOpenFilesHere()
+                text: processMenuItem2(sciteActions.actionOpenFilesHere.text, actionOpenFilesHere)
+                action: sciteActions.actionOpenFilesHere
             }
-            Action {
+            MenuItem {
                 id: actionVerticalSplit
-                text: processMenuItem(qsTr("Vertical &Split"), actionVerticalSplit)
-                checkable: true
-                checked: false
-                onTriggered: sciteQt.cmdVerticalSplit()
+                text: processMenuItem2(sciteActions.actionVerticalSplit.text, actionVerticalSplit)
+                action: sciteActions.actionVerticalSplit
             }
-            Action {
+            MenuItem {
                 id: actionWrap
-                text: processMenuItem(qsTr("&Wrap"), actionWrap)
-                checkable: true
-                checked: false
-                onTriggered: sciteQt.cmdWrap()
+                text: processMenuItem2(sciteActions.actionWrap.text, actionWrap)
+                action: sciteActions.actionWrap
             }
-            Action {
+            MenuItem {
                 id: actionWrapOutput
-                text: processMenuItem(qsTr("Wrap &Output"), actionWrapOutput)
-                checkable: true
-                checked: false
-                onTriggered: sciteQt.cmdWrapOutput()
+                text: processMenuItem2(sciteActions.actionWrapOutput.text, actionWrapOutput)
+                action: sciteActions.actionWrapOutput
             }
-            Action {
+            MenuItem {
                 id: actionReadOnly
-                text: processMenuItem(qsTr("&Read-Only"), actionReadOnly)
-                checkable: true
-                checked: false
-                onTriggered: sciteQt.cmdReadOnly()
+                text: processMenuItem2(sciteActions.actionReadOnly.text, actionReadOnly)
+                action: sciteActions.actionReadOnly
             }
             MenuSeparator {}
             Menu {
                 id: menuLineEndCharacters
                 title: processMenuItem(qsTr("&Line End Characters"), menuLineEndCharacters)
 
-                Action {
+                MenuItem {
                     id: actionCrLf
-                    text: processMenuItem(qsTr("CR &+ LF"), actionCrLf)
-                    checkable: true
-                    checked: false
-                    onTriggered: sciteQt.cmdCrLf()
+                    text: processMenuItem2(sciteActions.actionCrLf.text, actionCrLf)
+                    action: sciteActions.actionCrLf
                 }
-                Action {
+                MenuItem {
                     id: actionCr
-                    text: processMenuItem(qsTr("&CR"), actionCr)
-                    checkable: true
-                    checked: false
-                    onTriggered: sciteQt.cmdCr()
+                    text: processMenuItem2(sciteActions.actionCr.text, actionCr)
+                    action: sciteActions.actionCr
                 }
-                Action {
+                MenuItem {
                     id: actionLf
-                    text: processMenuItem(qsTr("&LF"), actionLf)
-                    checkable: true
-                    checked: false
-                    onTriggered: sciteQt.cmdLf()
+                    text: processMenuItem2(sciteActions.actionLf.text, actionLf)
+                    action: sciteActions.actionLf
                 }
             }
-            Action {
+            MenuItem {
                 id: actionConvertLineEndChar
-                text: processMenuItem(qsTr("&Convert Line End Characters"), actionConvertLineEndChar)
-                //checkable: true
-                //checked: false
-                onTriggered: sciteQt.cmdConvertLineEndChar()
+                text: processMenuItem2(sciteActions.actionConvertLineEndChar.text, actionConvertLineEndChar)
+                action: sciteActions.actionConvertLineEndChar
             }
             MenuSeparator {}
-            Action {
+            MenuItem {
                 id: actionChangeIndentationSettings
-                text: processMenuItem(qsTr("Change Inden&tation Settings"), actionChangeIndentationSettings)
-                shortcut: "Ctrl+Shift+I"
-                onTriggered: sciteQt.cmdChangeIndentationSettings()
+                text: processMenuItem2(sciteActions.actionChangeIndentationSettings.text, actionChangeIndentationSettings)
+                action: sciteActions.actionChangeIndentationSettings
             }
-            Action {
+            MenuItem {
                 id: actionUseMonospacedFont
-                text: processMenuItem(qsTr("Use &Monospaced Font"), actionUseMonospacedFont)
-                shortcut: "Ctrl+F11"
-                checkable: true
-                checked: false
-                onTriggered: sciteQt.cmdUseMonospacedFont()
+                text: processMenuItem2(sciteActions.actionUseMonospacedFont.text, actionUseMonospacedFont)
+                action: sciteActions.actionUseMonospacedFont
             }
             MenuSeparator {}
-            Action {
+            MenuItem {
                 id: actionOpenLocalOptionsFile
-                text: processMenuItem(qsTr("Open Local &Options File"), actionOpenLocalOptionsFile)
-                onTriggered: sciteQt.cmdOpenLocalOptionsFile()
+                text: processMenuItem2(sciteActions.actionOpenLocalOptionsFile.text, actionOpenLocalOptionsFile)
+                action: sciteActions.actionOpenLocalOptionsFile
             }
-            Action {
+            MenuItem {
                 id: actionOpenDirectoryOptionsFile
-                text: processMenuItem(qsTr("Open &Directory Options File"), actionOpenDirectoryOptionsFile)
-                onTriggered: sciteQt.cmdOpenDirectoryOptionsFile()
+                text: processMenuItem2(sciteActions.actionOpenDirectoryOptionsFile.text, actionOpenDirectoryOptionsFile)
+                action: sciteActions.actionOpenDirectoryOptionsFile
             }
-            Action {
+            MenuItem {
                 id: actionOpenUserOptionsFile
-                text: processMenuItem(qsTr("Open &User Options File"), actionOpenUserOptionsFile)
-                onTriggered: sciteQt.cmdOpenUserOptionsFile()
+                text: processMenuItem2(sciteActions.actionOpenUserOptionsFile.text, actionOpenUserOptionsFile)
+                action: sciteActions.actionOpenUserOptionsFile
             }
-            Action {
+            MenuItem {
                 id: actionOpenGlobalOptionsFile
-                text: processMenuItem(qsTr("Open &Global Options File"), actionOpenGlobalOptionsFile)
-                onTriggered: sciteQt.cmdOpenGlobalOptionsFile()
+                text: processMenuItem2(sciteActions.actionOpenGlobalOptionsFile.text, actionOpenGlobalOptionsFile)
+                action: sciteActions.actionOpenGlobalOptionsFile
             }
-            Action {
+            MenuItem {
                 id: actionOpenAbbreviationsFile
-                text: processMenuItem(qsTr("Open A&bbreviations File"), actionOpenAbbreviationsFile)
-                onTriggered: sciteQt.cmdOpenAbbreviationsFile()
+                text: processMenuItem2(sciteActions.actionOpenAbbreviationsFile.text, actionOpenAbbreviationsFile)
+                action: sciteActions.actionOpenAbbreviationsFile
             }
-            Action {
+            MenuItem {
                 id: actionOpenLuaStartupScript
-                text: processMenuItem(qsTr("Open Lua Startup Scr&ipt"), actionOpenLuaStartupScript)
-                onTriggered: sciteQt.cmdOpenLuaStartupScript()
+                text: processMenuItem2(sciteActions.actionOpenLuaStartupScript.text, actionOpenLuaStartupScript)
+                action: sciteActions.actionOpenLuaStartupScript
             }
             MenuSeparator {}
         }
@@ -900,27 +773,25 @@ ApplicationWindow {
             id: buffersMenu
             title: processMenuItem(qsTr("&Buffers"),null)
 
-            Action {
+            MenuItem {
                 id: actionBuffersPrevious
-                text: processMenuItem(qsTr("&Previous"), actionBuffersPrevious)
-                shortcut: "Shift+F6"
-                onTriggered: sciteQt.cmdBuffersPrevious()
+                text: processMenuItem2(sciteActions.actionBuffersPrevious.text, actionBuffersPrevious)
+                action: sciteActions.actionBuffersPrevious
             }
-            Action {
+            MenuItem {
                 id: actionBuffersNext
-                text: processMenuItem(qsTr("&Next"), actionBuffersNext)
-                shortcut: "F6"
-                onTriggered: sciteQt.cmdBuffersNext()
+                text: processMenuItem2(sciteActions.actionBuffersNext.text, actionBuffersNext)
+                action: sciteActions.actionBuffersNext
             }
-            Action {
+            MenuItem {
                 id: actionBuffersCloseAll
-                text: processMenuItem(qsTr("&Close All"), actionBuffersCloseAll)
-                onTriggered: sciteQt.cmdBuffersCloseAll()
+                text: processMenuItem2(sciteActions.actionBuffersCloseAll.text, actionBuffersCloseAll)
+                action: sciteActions.actionBuffersCloseAll
             }
-            Action {
+            MenuItem {
                 id: actionBuffersSaveAll
-                text: processMenuItem(qsTr("&Save All"), actionBuffersSaveAll)
-                onTriggered: sciteQt.cmdBuffersSaveAll()
+                text: processMenuItem2(sciteActions.actionBuffersSaveAll.text, actionBuffersSaveAll)
+                action: sciteActions.actionBuffersSaveAll
             }
 
             MenuSeparator {}
@@ -944,21 +815,20 @@ ApplicationWindow {
             id: helpMenu
             title: processMenuItem(qsTr("Help"),null)
 
-            Action {
+            MenuItem {
                 id: actionHelp
-                shortcut: "F1"
-                text: processMenuItem(qsTr("&Help"),actionHelp)
-                onTriggered: sciteQt.cmdHelp()
+                text: processMenuItem2(sciteActions.actionHelp.text, actionHelp)
+                action: sciteActions.actionHelp
             }
-            Action {
+            MenuItem {
                 id: actionSciteHelp
-                text: processMenuItem(qsTr("&SciTE Help"),actionSciteHelp)
-                onTriggered: sciteQt.cmdSciteHelp()
+                text: processMenuItem2(sciteActions.actionSciteHelp.text, actionSciteHelp)
+                action: sciteActions.actionSciteHelp
             }
-            Action {
+            MenuItem {
                 id: actionAboutScite
-                text: processMenuItem(qsTr("&About SciTE"),actionAboutScite)
-                onTriggered: sciteQt.cmdAboutScite()
+                text: processMenuItem2(sciteActions.actionAboutScite.text, actionAboutScite)
+                action: sciteActions.actionAboutScite
             }
 
             MenuSeparator {}
@@ -1741,50 +1611,6 @@ ApplicationWindow {
         }
     }
 
-    function handeEolMenus(enumEol) {
-        actionCrLf.checked = false
-        actionCr.checked = false
-        actionLf.checked = false
-        switch(enumEol) {   // see: enum class EndOfLine in ScintillaTypes.h
-            case 0:
-                actionCrLf.checked = true
-                break;
-            case 1:
-                actionCr.checked = true
-                break;
-            case 2:
-                actionLf.checked = true
-                break;
-        }
-    }
-
-    function handleEncodingMenus(enumEncoding) {
-        actionCodePageProperty.checked = false
-        actionUtf16BigEndian.checked = false
-        actionUtf16LittleEndian.checked = false
-        actionUtf8WithBOM.checked = false
-        actionUtf8.checked = false
-        switch(enumEncoding) {  // see: enum UniMode in Cookie.h
-            // 	uni8Bit = 0, uni16BE = 1, uni16LE = 2, uniUTF8 = 3,
-            // uniCookie = 4
-            case 0:
-                actionCodePageProperty.checked = true
-                break;
-            case 1:
-                actionUtf16BigEndian.checked = true
-                break;
-            case 2:
-                actionUtf16LittleEndian.checked = true
-                break;
-            case 3:
-                actionUtf8.checked = true
-                break;
-            case 4:
-                actionUtf8WithBOM.checked = true
-                break;
-        }
-    }
-
     ListModel {
         id: buffersModel
         /*
@@ -1829,9 +1655,6 @@ ApplicationWindow {
 
         onSetMenuChecked:             handleMenuChecked(menuID, val)
         onSetMenuEnable:              handleMenuEnable(menuID, val)
-
-        onUpdateEolMenus:             handeEolMenus(enumEol)
-        onUpdateEncodingMenus:        handleEncodingMenus(enumEncoding)
 
         onSetInBuffersModel:          writeInBuffersModel(buffersModel, index, txt, checked)
         onRemoveInBuffersModel:       removeInBuffersModel(buffersModel, index)

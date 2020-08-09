@@ -9,5 +9,6 @@
         <file>FindInFilesDialogForm.ui.qml</file>
         <file>GoToDialog.qml</file>
         <file>GoToDialogForm.ui.qml</file>
+        <file>SciteMenuActions.qml</file>
     </qresource>
 </RCC>

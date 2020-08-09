@@ -1486,6 +1486,22 @@ QVariant SciTEQt::fillToLength(const QString & text, const QString & shortcut)
     return QVariant(text + fill + shortcut);
 }
 
+QVariant SciTEQt::fillToLengthWithFont(const QString & text, const QString & shortcut, const QFont & font)
+{
+    QFontMetricsF metrics(font);
+    double lenText = metrics.boundingRect(text).width();
+    double lenShortcut = metrics.boundingRect(shortcut).width();
+    double lenSpace = metrics.boundingRect("  ").width();
+    double lenTab = metrics.boundingRect("\t").width();
+
+    QString fill(" ");
+    //fill = fill.leftJustified((180-lenText)/lenTab,'\t');
+    fill = fill.leftJustified((180-lenText)/lenSpace,' ');
+
+    //qDebug() << "WITH FONT x " << font << " " << lenText << " " << lenShortcut << " " << lenSpace << " " << lenTab << " --> " << text.length() << " " << fill.length() << " total=" << metrics.boundingRect(text + fill).width() << endl;
+    return QVariant(text + fill + shortcut);
+}
+
 void SciTEQt::setFindText(const QString & text, bool incremental)
 {
     if( incremental )
@@ -1635,6 +1651,15 @@ void SciTEQt::startDragSpliterPos(int currentPosX, int currentPosY)
     GUI::Point pt(currentPosX, currentPosY);
 qDebug() << "startDragSplitterPos " << currentPosX << " "<< currentPosY << " " << endl;
     ptStartDrag = pt;
+}
+
+bool SciTEQt::isMobilePlatform() const
+{
+#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
+    return true;
+#else
+    return false;
+#endif
 }
 
 void SciTEQt::UpdateStatusbarView()
