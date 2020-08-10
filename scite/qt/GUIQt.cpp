@@ -85,8 +85,39 @@ bool IsDBCSLeadByte(int codePage, char ch) {
 #endif
 }
 
-void SleepMilliseconds(int sleepTime) {
+void SleepMilliseconds(int sleepTime)
+{
     QThread::msleep(sleepTime);
+}
+
+inline QObject * GetQObject(WindowID winID)
+{
+    return reinterpret_cast<QObject *>(winID);
+}
+
+inline QQuickItem * GetQuickItem(QObject * qObj)
+{
+    Scintilla::ScintillaQt * pScintilla = qobject_cast<Scintilla::ScintillaQt *>(qObj);
+    if( pScintilla!=0 )
+    {
+        return pScintilla->GetScrollArea();
+    }
+	QQuickItem * pItem = qobject_cast<QQuickItem *>(qObj);
+	if (pItem != 0)
+	{
+		return pItem;
+	}
+	return 0;
+}
+
+inline QQuickWindow * GetQuickWindow(QObject * qObj)
+{
+    QQuickWindow * pWin = qobject_cast<QQuickWindow *>(qObj);
+    if( pWin!=0 )
+    {
+        return pWin;
+    }
+    return 0;
 }
 
 #if defined(WIN32)
@@ -322,31 +353,53 @@ std::string LowerCaseUTF8(std::string_view sv) {
 
 #endif
 
-
 void Window::Destroy()
 {
+    qDebug() << "Window::Destroy()" << endl;
+	// nothing to do...
 }
 
 bool Window::HasFocus()
 {
+    QQuickItem * window = GetQuickItem(GetQObject(GetID()));
+//qDebug() << "has focus " << window->objectName() << endl;
+    if( window != 0 )
+    {
+        return window->hasFocus();
+    }
     return false;
 }
 
 Rectangle Window::GetPosition()
 {
+    QQuickItem * window = GetQuickItem(GetQObject(GetID()));
+    if( window != 0 )
+    {
+//qDebug() << "Window::GetPosition() " << window->width() << " " << window->height() << endl;
+        return Rectangle(window->x(), window->y(), window->x()+window->width(), window->y()+window->height());
+    }
     return Rectangle();
 }
 
 void Window::SetPosition(Rectangle rc)
 {
+    QQuickItem * window = GetQuickItem(GetQObject(GetID()));
+    if( window != 0 )
+    {
+//qDebug() << "Window::SetPosition() " << rc.left << "," << rc.bottom << " / " << rc.right << "," << rc.top << endl;
+        window->setX(rc.left);
+        window->setY(rc.bottom);
+        window->setWidth(rc.right-rc.left);
+        window->setHeight(rc.top-rc.bottom);
+    }
 }
 
 Rectangle Window::GetClientPosition()
 {
-    QQuickItem * window = reinterpret_cast<QQuickItem *>(GetID());
+    QQuickItem * window = GetQuickItem(GetQObject(GetID()));
     if( window != 0 )
     {
-//qDebug() << "GetClientPosition() " << window->width() << " " << window->height() << endl;
+//qDebug() << "Window::GetClientPosition() " << window->width() << " " << window->height() << endl;
         return Rectangle(window->x(), window->y(), window->x()+window->width(), window->y()+window->height());
     }
     return Rectangle();
@@ -354,15 +407,25 @@ Rectangle Window::GetClientPosition()
 
 void Window::Show(bool show)
 {
+	QQuickItem * window = GetQuickItem(GetQObject(GetID()));
+	if (window != 0)
+	{
+		window->setVisible(show);
+	}
 }
 
 void Window::InvalidateAll()
 {
+    QQuickItem * window = GetQuickItem(GetQObject(GetID()));
+    if( window != 0 )
+    {
+        window->update();
+    }
 }
 
 void Window::SetTitle(const gui_char *s)
 {
-    QQuickWindow * window = reinterpret_cast<QQuickWindow *>(GetID());
+    QQuickWindow * window = GetQuickWindow(GetQObject(GetID()));
     if( window != 0 )
     {
         window->setTitle(ConvertGuiCharToQString(s));
@@ -371,14 +434,17 @@ void Window::SetTitle(const gui_char *s)
 
 void Menu::CreatePopUp()
 {
+    qDebug() << "MENU::CreatePopUp()" << endl;
 }
 
 void Menu::Destroy()
 {
+    qDebug() << "MENU::Destroy()" << endl;
 }
 
 void Menu::Show(Point pt, Window &w)
 {
+    qDebug() << "MENU::Show()" << endl;
 }
 
 }   // namespace

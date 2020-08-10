@@ -778,16 +778,14 @@ void SciTEQt::setOutput(QObject * obj)
 
 void SciTEQt::setMainWindow(QObject * obj)
 {
-    QQuickWindow * window = reinterpret_cast<QQuickWindow *>(obj);
-
-    wSciTE.SetID(window);
+//    qDebug() << "setMainWindow " << obj->objectName() << endl;
+    wSciTE.SetID(obj);
 }
 
 void SciTEQt::setContent(QObject * obj)
 {
-    QQuickWindow * window = reinterpret_cast<QQuickWindow *>(obj);
-
-    wContent.SetID(window);
+//    qDebug() << "setContent " << obj->objectName() << endl;
+    wContent.SetID(obj);
 }
 
 // copy file with translations "locale.properties" into directory of the executable

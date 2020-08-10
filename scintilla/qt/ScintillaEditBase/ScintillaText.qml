@@ -16,6 +16,10 @@ ScrollView {
     //focusPolicy: Qt.StrongFocus
     //filtersChildMouseEvents: false
 
+    onFocusChanged: {
+        quickScintillaEditor.focus = focus
+    }
+
     property alias quickScintillaEditor: quickScintillaEditor
     property alias text: quickScintillaEditor.text
     property alias scintilla: quickScintillaEditor
@@ -42,6 +46,7 @@ ScrollView {
         // the QuickScintilla control
         ScintillaEditBase {
             id: quickScintillaEditor
+            objectName: scrollView.objectName+"Scintilla"
 
             width: scrollView.availableWidth-scrollView.ScrollBar.vertical.width //+ 2*quickScintillaEditor.charHeight
             height: scrollView.availableHeight-scrollView.ScrollBar.horizontal.height //+ 2*quickScintillaEditor.charWidth

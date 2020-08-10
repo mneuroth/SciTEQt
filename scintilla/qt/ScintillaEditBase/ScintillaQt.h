@@ -83,6 +83,7 @@ public:
 #ifdef PLAT_QT_QML
     explicit ScintillaQt(QQuickPaintedItem *parent);
     void UpdateInfos(int winId);
+    QQuickPaintedItem * GetScrollArea() { return scrollArea; }
 #else
     explicit ScintillaQt(QAbstractScrollArea *parent);
 #endif

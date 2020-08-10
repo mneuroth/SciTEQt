@@ -10,5 +10,6 @@
         <file>GoToDialog.qml</file>
         <file>GoToDialogForm.ui.qml</file>
         <file>SciteMenuActions.qml</file>
+        <file>SciteMenu.qml</file>
     </qresource>
 </RCC>
