@@ -1550,7 +1550,7 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     //    }
 
         // Process any initial switches
-//        ProcessCommandLine(args, 0);
+        ProcessCommandLine(args, 0);
 
     /*
         // Break up the command line into individual arguments
@@ -1598,13 +1598,13 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     */
 
     // TODO --> nach setApplicationData --> besser applicationdata direkt beim konstruieren rein reichen... ??? Property binding?
-//        ProcessCommandLine(args, 1);
+        ProcessCommandLine(args, 1);
 
         CheckMenus();
         SizeSubWindows();
         //SetFocus(wEditor);
 
-    qDebug() << "SciteQt::SciteQt " << (void *)this << endl;
+    //qDebug() << "SciteQt::SciteQt " << (void *)this << endl;
     /* TODO: improve startup !
 
         // Break up the command line into individual arguments
@@ -1630,10 +1630,10 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     */
     }
 
-    qDebug() << "----> OPEN" << endl;
+//    qDebug() << "----> OPEN" << endl;
 
     // open the untitled (empty) document at startup
-    Open(FilePath());
+//    Open(FilePath());
 // TODO --> update ui components wie statusbar etc.
 }
 
