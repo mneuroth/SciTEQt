@@ -1001,7 +1001,7 @@ ApplicationWindow {
     }
 
     function insertTab(index, title) {
-        var item = tabButton.createObject(tabBar, {text: title, fcnClicked: function () { sciteQt.cmdSelectBuffer(index) }})
+        var item = tabButton.createObject(tabBar, {text: title, fcnClicked: function () { sciteQt.cmdSelectBuffer(index); quickScintillaEditor.focus = true }})
         tabBar.insertItem(index, item)
     }
 }
