@@ -511,7 +511,7 @@ void ScintillaEditBase::mouseReleaseEvent(QMouseEvent *event)
 void ScintillaEditBase::mouseDoubleClickEvent(QMouseEvent *event)
 {
 	// Scintilla does its own double-click detection.
-	mousePressEvent(event);
+    //mousePressEvent(event);
 }
 
 void ScintillaEditBase::mouseMoveEvent(QMouseEvent *event)
