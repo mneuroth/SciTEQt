@@ -54,6 +54,18 @@
 #include "MatchMarker.h"
 #include "EditorConfig.h"
 
+#ifndef NO_EXTENSIONS
+#include "MultiplexExtension.h"
+
+//#ifndef NO_FILER
+//#include "DirectorExtension.h"
+//#endif
+
+#ifndef NO_LUA
+#include "LuaExtension.h"
+#endif
+#endif
+
 #include "Scintilla.h"
 
 #include "SciTEBase.h"

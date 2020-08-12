@@ -1529,6 +1529,8 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     if(m_pApplicationData!=0)
     {
 // TODO implement ! improve !!!
+        extender = pApplicationData->GetExtension();
+
         m_pEngine = &pApplicationData->GetQmlApplicationEngine();
 
         QStringList cmdArgs = QGuiApplication::arguments();
@@ -1569,6 +1571,8 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     //	}
 
         // CreateUI();
+        UIAvailable();
+
     /*
         if (bBatchProcessing) {
             // Reprocess the command line and read the files
@@ -1635,6 +1639,8 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     // open the untitled (empty) document at startup
 //    Open(FilePath());
 // TODO --> update ui components wie statusbar etc.
+
+    // TODO: enable lua plugin...
 }
 
 void SciTEQt::setSpliterPos(int currentPosX, int currentPosY)

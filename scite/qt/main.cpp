@@ -93,6 +93,18 @@ int main(int argc, char *argv[])
     //qmlRegisterType<ScintillaEditBase>("org.scintilla.scintilla", 1, 0, "ScintillaEditBase");
     RegisterScintillaType();
 
+#ifndef NO_EXTENSIONS
+    MultiplexExtension multiExtender;
+
+#ifndef NO_LUA
+    multiExtender.RegisterExtension(LuaExtension::Instance());
+#endif
+
+#ifndef NO_FILER
+    //multiExtender.RegisterExtension(DirectorExtension::Instance());
+#endif
+#endif
+
     LexillaSetDefaultDirectory(/*GetSciTEPath(FilePath()).AsUTF8()*/".");
     Scintilla_LinkLexers();
     //Scintilla_RegisterClasses(hInstance);
@@ -119,7 +131,7 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
 
-    ApplicationData data(0, engine);
+    ApplicationData data(0, &multiExtender, engine);
     engine.rootContext()->setContextProperty("applicationData", &data);
     engine.load(url);
 

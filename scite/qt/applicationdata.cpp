@@ -12,9 +12,10 @@
 
 #include <QDebug>
 
-ApplicationData::ApplicationData(QObject *parent, QQmlApplicationEngine & aEngine)
+ApplicationData::ApplicationData(QObject *parent, Extension * pExtension, QQmlApplicationEngine & aEngine)
     : QObject(parent),
-      m_aEngine(aEngine)
+      m_aEngine(aEngine),
+      m_pExtension(pExtension)
 {
 }
 
@@ -99,4 +100,9 @@ QString ApplicationData::readLog() const
 QQmlApplicationEngine & ApplicationData::GetQmlApplicationEngine()
 {
     return m_aEngine;
+}
+
+Extension * ApplicationData::GetExtension()
+{
+    return m_pExtension;
 }

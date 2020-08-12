@@ -14,13 +14,14 @@
 // **************************************************************************
 
 class SciTEQt;
+class Extension;
 
 class ApplicationData : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit ApplicationData(QObject *parent, QQmlApplicationEngine & aEngine);
+    explicit ApplicationData(QObject *parent, Extension * pExtension, QQmlApplicationEngine & aEngine);
     ~ApplicationData();
 
     Q_INVOKABLE QString readFileContent(const QString & fileName) const;
@@ -31,9 +32,11 @@ public:
     Q_INVOKABLE QString readLog() const;
 
     QQmlApplicationEngine & GetQmlApplicationEngine();
+    Extension * GetExtension();
 
 private:
     QQmlApplicationEngine &     m_aEngine;
+    Extension *                 m_pExtension;   // not an owner !
 };
 
 #endif // APPLICATIONDATA_H
