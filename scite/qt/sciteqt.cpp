@@ -7,6 +7,7 @@
 #include <QGuiApplication>
 #include <QClipboard>
 #include <QQmlContext>
+#include <QStandardPaths>
 
 #include <QDebug>
 
@@ -139,7 +140,8 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
       m_iMessageDialogAccepted(MSGBOX_RESULT_CANCEL),
       m_bShowToolBar(false),
       m_bShowStatusBar(false),
-      m_bShowTabBar(true)
+      m_bShowTabBar(true),
+      icmd(0)
 {
 #ifdef Q_OS_WINDOWS
     propsPlatform.Set("PLAT_WIN", "1");
@@ -247,22 +249,54 @@ void SciTEQt::SaveAsHTML()
     // TODO implement !
 }
 
+FilePath GetSciTEPath(const QByteArray & home)
+{
+    GUI::gui_char buf[512];
+    if(!home.isEmpty())
+    {
+        int count = QString::fromLocal8Bit(home).toWCharArray((wchar_t *)buf);
+        buf[count] = 0;
+    }
+    else
+    {
+        // return the directory of the executable
+        int count = QCoreApplication::applicationDirPath().toWCharArray((wchar_t *)buf);
+        buf[count] = 0;
+    }
+
+    return FilePath(buf);
+}
+
 FilePath SciTEQt::GetDefaultDirectory()
 {
-    // TODO implement !
-    return FilePath();
+    QByteArray home = qgetenv("SciTE_HOME");
+    return GetSciTEPath(home);
 }
 
 FilePath SciTEQt::GetSciteDefaultHome()
 {
-    // TODO implement !
-    return FilePath();
+    QByteArray home = qgetenv("SciTE_HOME");
+    return GetSciTEPath(home);
 }
 
 FilePath SciTEQt::GetSciteUserHome()
 {
-    // TODO implement !
-    return FilePath();
+    // First looking for environment variable $SciTE_USERHOME
+    // to set SciteUserHome. If not present we look for $SciTE_HOME
+    // then defaulting to $USERPROFILE
+    QByteArray home = qgetenv("SciTE_USERHOME");
+    if (home.isEmpty()) {
+        home = qgetenv("SciTE_HOME");
+        if (home.isEmpty()) {
+            home = qgetenv("USERPROFILE");
+            if(home.isEmpty()) {
+                //QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
+                home = QDir::homePath().toLocal8Bit();
+            }
+        }
+    }
+
+    return GetSciTEPath(home);
 }
 
 void SciTEQt::Find()
@@ -510,7 +544,7 @@ void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
         {
             int posForThisItem = itemID - IDM_BUFFER;
 
-            emit setInBuffersModel(posForThisItem, ConvertGuiCharToQString(text), false);
+            emit setInBuffersModel(posForThisItem, ConvertGuiCharToQString(text), false, ConvertGuiCharToQString(mnemonic));
         }
     }
     else if(menuNumber == 6)
@@ -519,12 +553,21 @@ void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
         {
             int posForThisItem = itemID - IDM_LANGUAGE;
 
-            emit setInLanguagesModel(posForThisItem, ConvertGuiCharToQString(text), false);
+            emit setInLanguagesModel(posForThisItem, ConvertGuiCharToQString(text), false, ConvertGuiCharToQString(mnemonic));
         }
     }
-    else
+	else if (menuNumber == 4)
+	{
+        int posForThisItem = itemID - IDM_TOOLS;
+		
+        // TODO: analyze, msc debug has problems with this ?
+        //QString sMn(ConvertGuiCharToQString(mnemonic));
+        //QString sMn("Ctrl+0");
+        emit setInToolsModel(posForThisItem, ConvertGuiCharToQString(text), false, ConvertGuiCharToQString(mnemonic)/*sMn/*"Ctrl+0"*/);
+	}
+	else
     {
-        qDebug() << "UN_HANDLED: Set Menu Item " << menuNumber << " pos=" << position << " " << itemID << " " << endl; //QString::fromWCharArray(text) << " " << QString::fromWCharArray(mnemonic) << endl;
+        qDebug() << "==> UN_HANDLED: Set Menu Item " << menuNumber << " pos=" << position << " " << itemID << " " << (text != 0 ? ConvertGuiStringToQString (text) : "") << endl; //QString::fromWCharArray(text) << " " << QString::fromWCharArray(mnemonic) << endl;
     }
 }
 
@@ -539,7 +582,16 @@ void SciTEQt::DestroyMenuItem(int menuNumber, int itemID)
     else if(menuNumber == 6)
     {
         int posForThisItem = itemID - IDM_LANGUAGE;
-        emit removeInBuffersModel(posForThisItem);
+        emit removeInLanguagesModel(posForThisItem);
+    }
+    else if(menuNumber == 4)
+    {
+        int posForThisItem = itemID - IDM_TOOLS;
+        // 1100... and 310...314
+        if( posForThisItem>=0 )
+        {
+            emit removeInToolsModel(posForThisItem);
+        }
     }
     else
     {
@@ -557,6 +609,10 @@ void SciTEQt::CheckAMenuItem(int wIDCheckItem, bool val)
     else if( wIDCheckItem >= IDM_LANGUAGE && wIDCheckItem < IDM_LANGUAGE+100 )
     {
         emit checkStateInLanguagesModel(wIDCheckItem-IDM_LANGUAGE, val);
+    }
+    else if( wIDCheckItem >= IDM_TOOLS && wIDCheckItem < IDM_TOOLS+toolMax )
+    {
+        emit checkStateInToolsModel(wIDCheckItem-IDM_TOOLS, val);
     }
     else
     {
@@ -1364,6 +1420,11 @@ void SciTEQt::cmdSelectLanguage(int index)
     MenuCommand(IDM_LANGUAGE+index);
 }
 
+void SciTEQt::cmdCallTool(int index)
+{
+    MenuCommand(IDM_TOOLS+index);
+}
+
 void SciTEQt::cmdHelp()
 {
     MenuCommand(IDM_HELP);
@@ -1440,6 +1501,28 @@ void SciTEQt::CheckMenus()
     emit updateEncodingMenus((int)CurrentBuffer()->unicodeMode);
 }
 
+void SciTEQt::ResetExecution()
+{
+    icmd = 0;
+    jobQueue.SetExecuting(false);
+    if (needReadProperties)
+        ReadProperties();
+    CheckReload();
+    CheckMenus();
+    jobQueue.ClearJobs();
+//    ::SendMessage(MainHWND(), WM_COMMAND, IDM_FINISHEDEXECUTE, 0);
+}
+
+void SciTEQt::ExecuteNext()
+{
+    icmd++;
+    if (icmd < jobQueue.commandCurrent && icmd < jobQueue.commandMax /*&& cmdWorker.exitStatus == 0*/) {
+        Execute();
+    } else {
+        ResetExecution();
+    }
+}
+
 void SciTEQt::Execute()
 {
     if (buffers.SavingInBackground())
@@ -1451,6 +1534,32 @@ void SciTEQt::Execute()
     if (!jobQueue.HasCommandToRun())
         // No commands to execute - possibly cancelled in SciTEBase::Execute
         return;
+
+//    icmd = 0;
+//    cmdWorker.Initialise(false);
+//    cmdWorker.outputScroll = props.GetInt("output.scroll", 1);
+//    cmdWorker.originalEnd = wOutput.Length();
+//    cmdWorker.commandTime.Duration(true);
+//    cmdWorker.flags = jobQueue.jobQueue[cmdWorker.icmd].flags;
+    if (scrollOutput)
+        wOutput.GotoPos(wOutput.Length());
+
+    if (jobQueue.jobQueue[icmd].jobType == jobExtension) {
+        // Execute extensions synchronously
+        if (jobQueue.jobQueue[icmd].flags & jobGroupUndo)
+            wEditor.BeginUndoAction();
+
+        if (extender)
+            extender->OnExecute(jobQueue.jobQueue[icmd].command.c_str());
+
+        if (jobQueue.jobQueue[icmd].flags & jobGroupUndo)
+            wEditor.EndUndoAction();
+
+        ExecuteNext();
+    } else {
+        // Execute other jobs asynchronously on a new thread
+//        PerformOnNewThread(&cmdWorker);
+    }
 
     // TODO: implement for Qt --> use visiscript executer ?
 

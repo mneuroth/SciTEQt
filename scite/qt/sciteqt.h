@@ -186,6 +186,9 @@ public:
 
     virtual bool event(QEvent *e) override;
 
+    void ExecuteNext();
+    void ResetExecution();
+
     bool isShowToolBar() const;
     void setShowToolBar(bool val);
     bool isShowStatusBar() const;
@@ -328,6 +331,7 @@ public:
     Q_INVOKABLE void cmdBuffersSaveAll();
     Q_INVOKABLE void cmdSelectBuffer(int index);
     Q_INVOKABLE void cmdSelectLanguage(int index);
+    Q_INVOKABLE void cmdCallTool(int index);
     Q_INVOKABLE void cmdHelp();
     Q_INVOKABLE void cmdSciteHelp();
     Q_INVOKABLE void cmdAboutScite();
@@ -376,12 +380,15 @@ signals:
     void wrapAroundChanged();
     void searchUpChanged();
 
-    void setInBuffersModel(int index, const QString & txt, bool checked);
+    void setInBuffersModel(int index, const QString & txt, bool checked, const QString & shortcut);
     void removeInBuffersModel(int index);
     void checkStateInBuffersModel(int index, bool checked);
-    void setInLanguagesModel(int index, const QString & txt, bool checked);
+    void setInLanguagesModel(int index, const QString & txt, bool checked, const QString & shortcut);
     void removeInLanguagesModel(int index);
     void checkStateInLanguagesModel(int index, bool checked);
+    void setInToolsModel(int index, const QString & txt, bool checked, const QString & shortcut);
+	void removeInToolsModel(int index);
+	void checkStateInToolsModel(int index, bool checked);
 
     void startFileDialog(const QString & sDirectory, const QString & sFilter, bool bAsOpenDialog = true);
     void showInfoDialog(const QString & sInfoText, int style);
@@ -413,6 +420,8 @@ private:
     bool                    m_bShowStatusBar;
     bool                    m_bShowTabBar;
     QString                 m_sStatusBarText;
+
+    size_t                  icmd;                   // needed for executing scripts
 };
 
 #define MSGBOX_RESULT_CANCEL 0

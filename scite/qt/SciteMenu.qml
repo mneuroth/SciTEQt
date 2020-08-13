@@ -451,6 +451,20 @@ MenuBar {
             text: processMenuItem2(sciteActions.actionGo.text, actionGo)
             action: sciteActions.actionGo
         }
+        Instantiator {
+            id: currentToolsItems
+            model: toolsModel
+            delegate: MenuItem {
+                action: Action {
+                    text: model.display+(shortcut.length>0 ? (" ("+shortcut+")") : "")
+                    shortcut: model.shortcut
+                    onTriggered: sciteQt.cmdCallTool(index)
+                }
+            }
+
+            onObjectAdded: toolsMenu.insertItem(index+4, object)
+            onObjectRemoved: toolsMenu.removeItem(object)
+        }
         MenuItem {
             id: actionStopExecuting
             text: processMenuItem2(sciteActions.actionStopExecuting.text, actionStopExecuting)
@@ -591,11 +605,14 @@ MenuBar {
         Instantiator {
             id: currentLanguagesItems
             model: languagesModel
-            delegate: MenuItem {
+            delegate: MenuItem {                
                 //checkable: true
                 //checked: model !== null ? model.checkState : false
-                text: model.display // index is also available
-                onTriggered: sciteQt.cmdSelectLanguage(index)
+                action: Action {
+                    text: model.display+(shortcut.length>0 ? (" ("+shortcut+")") : "")
+                    shortcut: model.shortcut
+                    onTriggered: sciteQt.cmdSelectLanguage(index)
+                }
             }
 
             onObjectAdded: languageMenu.insertItem(index, object)
@@ -636,8 +653,11 @@ MenuBar {
             delegate: MenuItem {
                 checkable: true
                 checked: model.checkState ? Qt.Checked : Qt.Unchecked
-                text: model.display // index is also available
-                onTriggered: sciteQt.cmdSelectBuffer(index)
+                action: Action {
+                    text: model.display+(shortcut.length>0 ? (" ("+shortcut+")") : "")
+                    shortcut: model.shortcut
+                    onTriggered: sciteQt.cmdSelectBuffer(index)
+                }
             }
 
             onObjectAdded: buffersMenu.insertItem(index+5, object)
@@ -676,7 +696,7 @@ MenuBar {
                 //console.log("dbg: "+myModel+" "+myModel.count)
                 //myModel.append({"display":"blub blub"})
                 //console.log("dbg: "+myModel+" "+myModel.count+" "+myModel.get(0))
-                removeInBuffersModel(0)
+                removeInMenuModel(0)
             }
         }
 /*
@@ -699,6 +719,7 @@ MenuBar {
 
     ListModel {
         id: buffersModel
+        objectName: "buffersMenu"
         /*
         ListElement {
             display: "hello"
@@ -709,6 +730,18 @@ MenuBar {
 
     ListModel {
         id: languagesModel
+        objectName: "languagesMenu"
+        /*
+        ListElement {
+            display: "hello"
+            checkState: true
+        }
+        */
+    }
+
+    ListModel {
+        id: toolsModel
+        objectName: "toolsMenu"
         /*
         ListElement {
             display: "hello"
@@ -721,17 +754,17 @@ MenuBar {
         model.clear()
     }
 
-    function writeInBuffersModel(model,index, name, checked) {
-        model.set(index, {"display":name, "checkState":checked})
+    function writeInMenuModel(model, index, name, checked, shortcut) {
+        model.set(index, {"display":name, "checkState":checked, "shortcut":shortcut})
     }
 
-    function removeInBuffersModel(model,index) {
+    function removeInMenuModel(model,index) {
         if(index < model.count) {
             model.remove(index)
         }
     }
 
-    function setCheckStateInBuffersModel(model,index, checked) {
+    function setCheckStateInMenuModel(model,index, checked) {
         if(index < model.count) {
             model.setProperty(index,"checkState",checked)
         }
@@ -804,7 +837,6 @@ MenuBar {
 //#define IDM_SHOWCALLTIP		232
 //#define IDM_COMPLETE		233
             case 201:   //IDM_UNDO
-                console.log("UNDO "+val)
                 actionUndo.enabled = val
                 break;
             case 202:   //IDM_REDO
@@ -814,11 +846,19 @@ MenuBar {
                 actionCut.enabled = val
                 break;
             case 204:   //IDM_COPY
-                console.log("COPY "+val)
                 actionCopy.enabled = val
                 break;
             case 205:   //IDM_PASTE
                 actionPaste.enabled = val
+                break;
+            case 206:  //IDM_CLEAR
+                actionDelete.enabled = val
+                break;
+            case 232:  //IDM_SHOWCALLTIP
+                actionShowCalltip.enabled = val
+                break;
+            case 233:  //IDM_COMPLETE
+                actionCompleteSymbol.enabled = val
                 break;
             case 301:  //IDM_COMPILE
                 actionCompile.enabled = val
@@ -853,13 +893,17 @@ MenuBar {
         onSetMenuChecked:             handleMenuChecked(menuID, val)
         onSetMenuEnable:              handleMenuEnable(menuID, val)
 
-        onSetInBuffersModel:          writeInBuffersModel(buffersModel, index, txt, checked)
-        onRemoveInBuffersModel:       removeInBuffersModel(buffersModel, index)
-        onCheckStateInBuffersModel:   setCheckStateInBuffersModel(buffersModel, index, checked)
+        onSetInBuffersModel:          writeInMenuModel(buffersModel, index, txt, checked, shortcut)
+        onRemoveInBuffersModel:       removeInMenuModel(buffersModel, index)
+        onCheckStateInBuffersModel:   setCheckStateInMenuModel(buffersModel, index, checked)
 
-        onSetInLanguagesModel:        writeInBuffersModel(languagesModel, index, txt, checked)
-        onRemoveInLanguagesModel:     removeInLanguagesModel(languagesModel, index)
-        onCheckStateInLanguagesModel: setCheckStateInLanguagesModel(languagesModel, index, checked)
+        onSetInLanguagesModel:        writeInMenuModel(languagesModel, index, txt, checked, shortcut)
+        onRemoveInLanguagesModel:     removeInMenuModel(languagesModel, index)
+        onCheckStateInLanguagesModel: setCheckStateInMenuModel(languagesModel, index, checked)
+
+        onSetInToolsModel:            writeInMenuModel(toolsModel, index, txt, checked, shortcut)
+        onRemoveInToolsModel:         removeInMenuModel(toolsModel, index)
+        onCheckStateInToolsModel:     setCheckStateInMenuModel(toolsModel, index, checked)
     }
 
 }
