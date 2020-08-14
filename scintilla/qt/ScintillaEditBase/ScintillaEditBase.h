@@ -189,6 +189,7 @@ signals:
     void visibleColumnsChanged();
     void inputMethodHintsChanged();
     void showContextMenu(const QPoint & pos);
+    void enableScrollViewInteraction(bool value);
 #endif
 
 protected:

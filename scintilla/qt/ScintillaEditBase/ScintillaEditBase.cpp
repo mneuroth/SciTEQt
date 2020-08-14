@@ -68,6 +68,7 @@ ScintillaEditBase::ScintillaEditBase(QQuickItem/*QWidget*/ *parent)
     setAcceptTouchEvents(true);
     //setFiltersChildMouseEvents(false);
     //grabMouse();
+    setFlags(QQuickItem::ItemAcceptsInputMethod | QQuickItem::ItemHasContents);
 #endif
 
 	sqt = new ScintillaQt(this);
@@ -203,7 +204,7 @@ void ScintillaEditBase::scrollVertical(int value)
 
 bool ScintillaEditBase::event(QEvent *event)
 {
-    //qDebug() << "event " << event << endl;
+    //qDebug() << "event " << event << " " << event->type() << endl;
 	bool result = false;
 
 	if (event->type() == QEvent::KeyPress) {
@@ -215,13 +216,15 @@ bool ScintillaEditBase::event(QEvent *event)
         setMouseTracking(true);
         result = QAbstractScrollArea::event(event);
 #else
-        result = QQuickPaintedItem::event(event);
+        //grabMouse();
+		result = QQuickPaintedItem::event(event);
 #endif
     } else if (event->type() == QEvent::Hide) {
 #ifndef PLAT_QT_QML
         setMouseTracking(false);
         result = QAbstractScrollArea::event(event);
 #else
+        //ungrabMouse();
         result = QQuickPaintedItem::event(event);
 #endif
     } else {
@@ -442,7 +445,7 @@ static int modifierTranslated(int sciModifier)
 
 void ScintillaEditBase::mousePressEvent(QMouseEvent *event)
 {
-//qDebug() << "mouse press event " << event << endl;       // irgendwann gehen mouse move events verloren ? warum
+//qDebug() << "mouse press event " << event << " time=" << curTime << endl;       // irgendwann gehen mouse move events verloren ? warum
     Point pos = PointFromQPoint(event->pos());
 
 	emit buttonPressed(event);
@@ -468,11 +471,11 @@ void ScintillaEditBase::mousePressEvent(QMouseEvent *event)
 		bool alt   = QApplication::keyboardModifiers() & Qt::AltModifier;
 #endif
 
-		sqt->ButtonDownWithModifiers(pos, time.elapsed(), ScintillaQt::ModifierFlags(shift, ctrl, alt));
+        sqt->ButtonDownWithModifiers(pos, time.elapsed(), ScintillaQt::ModifierFlags(shift, ctrl, alt));
     }
 
 	if (event->button() == Qt::RightButton) {
-		sqt->RightButtonDownWithModifiers(pos, time.elapsed(), ModifiersOfKeyboard());
+        sqt->RightButtonDownWithModifiers(pos, time.elapsed(), ModifiersOfKeyboard());
 
 #ifdef PLAT_QT_QML
         Point pos = PointFromQPoint(event->globalPos());
@@ -481,16 +484,21 @@ void ScintillaEditBase::mousePressEvent(QMouseEvent *event)
             sqt->SetEmptySelection(sqt->PositionFromLocation(pt));
         }
         if (sqt->ShouldDisplayPopup(pt)) {
+// TODO: fill context menu and transfer to qml ?
+            //sqt->ContextMenu(pos); --> move menu data to qml...
             emit showContextMenu(event->pos());
-            //sqt->ContextMenu(pos);
         }
 #endif
     }
 
 #ifdef PLAT_QT_QML
 //    setFocus(true);
-      forceActiveFocus();
-#endif
+    forceActiveFocus();
+
+    emit enableScrollViewInteraction(false);
+
+    event->setAccepted(true);
+#endif      
 }
 
 void ScintillaEditBase::mouseReleaseEvent(QMouseEvent *event)
@@ -506,6 +514,12 @@ void ScintillaEditBase::mouseReleaseEvent(QMouseEvent *event)
 
 	emit textAreaClicked(line, modifiers);
 	emit buttonReleased(event);
+
+#ifdef PLAT_QT_QML
+    emit enableScrollViewInteraction(true);
+
+    event->setAccepted(true);
+#endif
 }
 
 void ScintillaEditBase::mouseDoubleClickEvent(QMouseEvent *event)
@@ -532,6 +546,10 @@ void ScintillaEditBase::mouseMoveEvent(QMouseEvent *event)
 	const int modifiers = ScintillaQt::ModifierFlags(shift, ctrl, alt);
 
 	sqt->ButtonMoveWithModifiers(pos, time.elapsed(), modifiers);
+
+#ifdef PLAT_QT_QML
+      event->setAccepted(true);
+#endif
 }
 
 #ifndef PLAT_QT_QML
