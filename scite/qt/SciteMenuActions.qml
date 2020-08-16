@@ -9,6 +9,7 @@ Item {
     property alias actionClose: actionClose
     property alias actionSave: actionSave
     property alias actionSaveAs: actionSaveAs
+    property alias actionSaveACopy: actionSaveACopy
     property alias actionCopyPath: actionCopyPath
 
     Action {
@@ -53,6 +54,11 @@ Item {
         id: actionSaveAs
         text: qsTr("Save &As...")
         onTriggered: sciteQt.cmdSaveAs()
+    }
+    Action {
+        id: actionSaveACopy
+        text: qsTr("Save a &Copy...")
+        onTriggered: sciteQt.cmdSaveACopy()
     }
     Action {
         id: actionCopyPath

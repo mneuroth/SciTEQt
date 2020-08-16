@@ -230,6 +230,7 @@ public:
     Q_INVOKABLE void cmdClose();
     Q_INVOKABLE void cmdSave();
     Q_INVOKABLE void cmdSaveAs();
+    Q_INVOKABLE void cmdSaveACopy();
     Q_INVOKABLE void cmdCopyPath();
     Q_INVOKABLE void cmdCodePageProperty();
     Q_INVOKABLE void cmdUtf16BigEndian();
@@ -355,12 +356,15 @@ public:
     Q_INVOKABLE bool isMobilePlatform() const;
 
     Q_INVOKABLE void updateCurrentWindowPosAndSize(int left, int top, int width, int height, bool maximize);
+    Q_INVOKABLE void updateCurrentSelectedFileUrl(const QString & fileUrl);
 
     void UpdateStatusbarView();
 
 public slots:
     void OnAcceptedClicked();
     void OnRejectedClicked();
+    void OnFileDialogAcceptedClicked();
+    void OnFileDialogRejectedClicked();
     void OnYesClicked();
     void OnNoClicked();
 
@@ -392,7 +396,7 @@ signals:
      void removeInToolsModel(int index);
      void checkStateInToolsModel(int index, bool checked);
 
-    void startFileDialog(const QString & sDirectory, const QString & sFilter, bool bAsOpenDialog = true);
+    void startFileDialog(const QString & sDirectory, const QString & sFilter, const QString & sTitle, bool bAsOpenDialog = true);
     void showInfoDialog(const QString & sInfoText, int style);
 
     void showFindInFilesDialog(const QString & text);
@@ -414,6 +418,8 @@ signals:
 
 private:
     QObject * getCurrentInfoDialog();
+    QObject * getCurrentFileDialog();
+    bool ProcessCurrentFileDialog();
     void RestorePosition();
 
     ApplicationData *       m_pApplicationData;     // not an owner !
@@ -421,6 +427,8 @@ private:
 
     bool                    m_bWaitDoneFlag;
     int                     m_iMessageDialogAccepted;
+    bool                    m_bFileDialogWaitDoneFlag;
+    int                     m_iFileDialogMessageDialogAccepted;
 
     bool                    m_bShowToolBar;
     bool                    m_bShowStatusBar;
@@ -434,6 +442,7 @@ private:
     int                     m_width;
     int                     m_height;
     bool                    m_maximize;
+    QString                 m_sCurrentFileUrl;
 };
 
 #define MSGBOX_RESULT_CANCEL 0

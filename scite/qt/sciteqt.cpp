@@ -140,6 +140,8 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
       m_pEngine(pEngine),
       m_bWaitDoneFlag(false),
       m_iMessageDialogAccepted(MSGBOX_RESULT_CANCEL),
+      m_bFileDialogWaitDoneFlag(false),
+      m_iFileDialogMessageDialogAccepted(MSGBOX_RESULT_CANCEL),
       m_bShowToolBar(false),
       m_bShowStatusBar(false),
       m_bShowTabBar(true),
@@ -236,52 +238,126 @@ void SciTEQt::GetWindowPosition(int *left, int *top, int *width, int *height, in
     }
 }
 
+FilePath GetPathFromUrl(const QString & url)
+{
+    QUrl aUrl(url);
+    QString sLocalFileName = aUrl.toLocalFile();
+
+    GUI::gui_char buf[512];
+    int count = sLocalFileName.toWCharArray((wchar_t *)buf);
+    buf[count] = 0;
+    return FilePath(buf);
+}
+
+bool SciTEQt::ProcessCurrentFileDialog()
+{
+    QObject * pFileDialog = getCurrentFileDialog();
+    connect(pFileDialog,SIGNAL(accepted()),this,SLOT(OnFileDialogAcceptedClicked()));
+    connect(pFileDialog,SIGNAL(rejected()),this,SLOT(OnFileDialogRejectedClicked()));
+
+    // simulate a synchronious call: wait for signal from FileDialog and then return with result
+    m_bFileDialogWaitDoneFlag = false;
+    while(!m_bFileDialogWaitDoneFlag)
+    {
+        QCoreApplication::processEvents();
+        QThread::msleep(10);
+    }
+
+    disconnect(pFileDialog,SIGNAL(accepted()),this,SLOT(OnFileDialogAcceptedClicked()));
+    disconnect(pFileDialog,SIGNAL(rejected()),this,SLOT(OnFileDialogRejectedClicked()));
+
+    return m_iFileDialogMessageDialogAccepted == MSGBOX_RESULT_OK;
+}
+
 bool SciTEQt::OpenDialog(const FilePath &directory, const GUI::gui_char *filesFilter)
 {
-    emit startFileDialog(directory.AbsolutePath().AsUTF8().c_str(), ConvertGuiCharToQString(filesFilter), true);
-    return true;
+    QString s = ConvertGuiCharToQString(filesFilter);
+    if (s.startsWith("All Source|"))
+    {
+        s = s.remove(0, 11);
+    }
+    s = "*";
+
+    emit startFileDialog(directory.AbsolutePath().AsUTF8().c_str(), s/*ConvertGuiStringToQString(openFilter)*/, "Open File", true);
+
+    if(ProcessCurrentFileDialog())
+    {
+        return Open(GetPathFromUrl(m_sCurrentFileUrl));
+    }
+
+    return false;
 }
 
 bool SciTEQt::SaveAsDialog()
 {
-    emit startFileDialog("", "", false);
-    return true;
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save File", false);
+
+    if(ProcessCurrentFileDialog())
+    {
+        return SaveIfNotOpen(GetPathFromUrl(m_sCurrentFileUrl), false);
+    }
+
+    return false;
 }
 
 void SciTEQt::SaveACopy()
 {
-    // TODO implement !
-    emit showInfoDialog("Sorry: SaveACopy() is not implemented yet!", 0);
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save a Copy", false);
+
+    if(ProcessCurrentFileDialog())
+    {
+        SaveBuffer(GetPathFromUrl(m_sCurrentFileUrl), sfNone);
+    }
 }
 
 void SciTEQt::SaveAsRTF()
 {
-    // TODO implement !
-    emit showInfoDialog("Sorry: SaveAsRTF() is not implemented yet!", 0);
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.rtf", "Export File As RTF", false);
+
+    if(ProcessCurrentFileDialog())
+    {
+        SaveToRTF(GetPathFromUrl(m_sCurrentFileUrl));
+    }
 }
 
 void SciTEQt::SaveAsPDF()
 {
-    // TODO implement !
-    emit showInfoDialog("Sorry: SaveAsPDF() is not implemented yet!", 0);
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.pdf", "Export File As PDF", false);
+
+    if(ProcessCurrentFileDialog())
+    {
+        SaveToPDF(GetPathFromUrl(m_sCurrentFileUrl));
+    }
 }
 
 void SciTEQt::SaveAsTEX()
 {
-    // TODO implement !
-    emit showInfoDialog("Sorry: SaveAsTEX() is not implemented yet!", 0);
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.tex", "Export File As LaTeX", false);
+
+    if(ProcessCurrentFileDialog())
+    {
+        SaveToTEX(GetPathFromUrl(m_sCurrentFileUrl));
+    }
 }
 
 void SciTEQt::SaveAsXML()
 {
-    // TODO implement !
-    emit showInfoDialog("Sorry: SaveAsXML() is not implemented yet!", 0);
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.xml", "Export File As XML", false);
+
+    if(ProcessCurrentFileDialog())
+    {
+        SaveToXML(GetPathFromUrl(m_sCurrentFileUrl));
+    }
 }
 
 void SciTEQt::SaveAsHTML()
 {
-    // TODO implement !
-    emit showInfoDialog("Sorry: SaveAsHTML() is not implemented yet!", 0);
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.html", "Export File As HTML", false);
+
+    if(ProcessCurrentFileDialog())
+    {
+        SaveToHTML(GetPathFromUrl(m_sCurrentFileUrl));
+    }
 }
 
 FilePath GetSciTEPath(const QByteArray & home)
@@ -1028,6 +1104,11 @@ void SciTEQt::cmdSaveAs()
     MenuCommand(IDM_SAVEAS);
 }
 
+void SciTEQt::cmdSaveACopy()
+{
+    MenuCommand(IDM_SAVEACOPY);
+}
+
 void SciTEQt::cmdCopyPath()
 {
     MenuCommand(IDM_COPYPATH);
@@ -1678,6 +1759,12 @@ QObject * SciTEQt::getCurrentInfoDialog()
     return infoDlg;
 }
 
+QObject * SciTEQt::getCurrentFileDialog()
+{
+    QObject * fileDlg = childObject<QObject*>(*m_pEngine, "fileDialog", "", false);
+    return fileDlg;
+}
+
 void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
 {
     m_pApplicationData = pApplicationData;
@@ -1844,6 +1931,11 @@ void SciTEQt::updateCurrentWindowPosAndSize(int left, int top, int width, int he
     m_maximize = maximize;
 }
 
+void SciTEQt::updateCurrentSelectedFileUrl(const QString & fileUrl)
+{
+    m_sCurrentFileUrl = fileUrl;
+}
+
 void SciTEQt::UpdateStatusbarView()
 {
     sbNum++;
@@ -1863,6 +1955,18 @@ void SciTEQt::OnRejectedClicked()
 {
     m_bWaitDoneFlag = true;
     m_iMessageDialogAccepted = MSGBOX_RESULT_CANCEL;
+}
+
+void SciTEQt::OnFileDialogAcceptedClicked()
+{
+    m_bFileDialogWaitDoneFlag = true;
+    m_iFileDialogMessageDialogAccepted = MSGBOX_RESULT_OK;
+}
+
+void SciTEQt::OnFileDialogRejectedClicked()
+{
+    m_bFileDialogWaitDoneFlag = true;
+    m_iFileDialogMessageDialogAccepted = MSGBOX_RESULT_CANCEL;
 }
 
 void SciTEQt::OnYesClicked()

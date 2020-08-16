@@ -45,6 +45,11 @@ MenuBar {
             action: sciteActions.actionSaveAs
         }
         MenuItem {
+            id: actionSaveACopy
+            text: processMenuItem2(sciteActions.actionSaveACopy.text, actionSaveACopy)
+            action: sciteActions.actionSaveACopy
+        }
+        MenuItem {
             id: actionCopyPath
             text: processMenuItem2(sciteActions.actionCopyPath.text, actionCopyPath)
             action: sciteActions.actionCopyPath
@@ -456,7 +461,7 @@ MenuBar {
             model: toolsModel
             delegate: MenuItem {
                 action: Action {
-                    text: model.display+(shortcut.length>0 ? (" ("+shortcut+")") : "")
+                    text: model.display+(model.shortcut.length>0 ? (" ("+model.shortcut+")") : "")
                     shortcut: model.shortcut
                     onTriggered: sciteQt.cmdCallTool(index)
                 }
@@ -609,7 +614,7 @@ MenuBar {
                 //checkable: true
                 //checked: model !== null ? model.checkState : false
                 action: Action {
-                    text: model.display+(shortcut.length>0 ? (" ("+shortcut+")") : "")
+                    text: model.display+(model.shortcut.length>0 ? (" ("+model.shortcut+")") : "")
                     shortcut: model.shortcut
                     onTriggered: sciteQt.cmdSelectLanguage(index)
                 }
@@ -654,7 +659,7 @@ MenuBar {
                 checkable: true
                 checked: model.checkState ? Qt.Checked : Qt.Unchecked
                 action: Action {
-                    text: model.display+(shortcut.length>0 ? (" ("+shortcut+")") : "")
+                    text: model.display+(model.shortcut.length>0 ? (" ("+model.shortcut+")") : "")
                     shortcut: model.shortcut
                     onTriggered: sciteQt.cmdSelectBuffer(index)
                 }

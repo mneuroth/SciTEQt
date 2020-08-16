@@ -52,11 +52,19 @@ ApplicationWindow {
         applicationWindow.visibility = maximize ? /*QWindow.Maximized*/4 : 2;
     }
 
-    function startFileDialog(sDirectory, sFilter, bAsOpenDialog) {
+    function startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog) {
         //fileDialog.selectExisting = bAsOpenDialog
         fileDialog.openMode = bAsOpenDialog
         fileDialog.folder = sDirectory
-        //fileDialog.nameFilters = sFilter // as list of strings...
+        if( sTitle !== undefined && sTitle.length > 0 ) {
+            fileDialog.title = sciteQt.getLocalisedText(sTitle)
+        }
+        if( sFilter.length > 0) {
+            fileDialog.nameFilters = [sFilter]
+        }
+        else {
+            fileDialog.nameFilters = ["*"]
+        }
         fileDialog.open()
     }
 
@@ -251,14 +259,15 @@ ApplicationWindow {
         selectFolder: false
 
         onAccepted: {
-            //console.log("Accepted: " + /*currentFile*/fileUrl+" "+fileDialog.openMode)
-            if(!fileDialog.openMode) {
-                writeCurrentDoc(fileUrl)
-            }
-            else {
-                //Android: quickScintillaEditor.text = fileUrl
-                readCurrentDoc(fileUrl)
-            }
+//            //console.log("Accepted: " + /*currentFile*/fileUrl+" "+fileDialog.openMode)
+//            if(!fileDialog.openMode) {
+//                writeCurrentDoc(fileUrl)
+//            }
+//            else {
+//                //Android: quickScintillaEditor.text = fileUrl
+//                readCurrentDoc(fileUrl)
+//            }
+            sciteQt.updateCurrentSelectedFileUrl(fileUrl)
             quickScintillaEditor.focus = true
         }
         onRejected: {
@@ -853,7 +862,7 @@ ApplicationWindow {
         onTriggerUpdateCurrentWindowPosAndSize: updateCurrentWindowPosAndSize()
         onSetWindowPosAndSize:                  setWindowPosAndSize(left, top, width, height, maximize)
 
-        onStartFileDialog:            startFileDialog(sDirectory, sFilter, bAsOpenDialog)
+        onStartFileDialog:            startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog)
         onShowInfoDialog:             showInfoDialog(sInfoText, style)
 
         onShowFindInFilesDialog:      showFindInFilesDialog(text)
