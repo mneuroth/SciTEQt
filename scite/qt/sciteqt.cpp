@@ -8,6 +8,8 @@
 #include <QClipboard>
 #include <QQmlContext>
 #include <QStandardPaths>
+#include <QFileInfo>
+#include <QDateTime>
 
 #include <qdesktopservices.h>
 
@@ -572,8 +574,21 @@ void SciTEQt::StopExecute()
 
 void SciTEQt::SetFileProperties(PropSetFile &ps)
 {
-    // TODO implement !
-    emit showInfoDialog("Sorry: SetFileProperties() is not implemented yet!", 0);
+    QString fileName = QString::fromStdString(filePath.AsUTF8());
+
+    QFileInfo aFileInfo(fileName);
+
+    QString temp;
+    temp = aFileInfo.fileTime(QFileDevice::FileModificationTime).toString("hh:mm:ss");
+    ps.Set("FileTime", temp.toStdString());
+    temp = aFileInfo.fileTime(QFileDevice::FileModificationTime).toString("dd.MM.yyyy");
+    ps.Set("FileDate", temp.toStdString());
+    temp = QString("%1%2%3").arg(aFileInfo.isWritable() ? " " : "R").arg(aFileInfo.isHidden() ? "H" : " ").arg(" ");
+    ps.Set("FileAttr", temp.toStdString());
+
+    QDateTime now = QDateTime::currentDateTime();
+    ps.Set("CurrentDate", now.toString("dd.MM.yyyy").toStdString());
+    ps.Set("CurrentTime", now.toString("hh:mm:ss").toStdString());
 }
 
 void SciTEQt::AboutDialog()
