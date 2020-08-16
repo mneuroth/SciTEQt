@@ -26,6 +26,7 @@ ApplicationWindow {
 // TODO: gibt es besseren weg scintilla controls bei sciteqt zu registrieren?
         sciteQt.setScintilla(quickScintillaEditor.scintilla)
         sciteQt.setOutput(quickScintillaOutput.scintilla)
+        sciteQt.setAboutScite(aboutSciteDialog.scintilla)
         sciteQt.setContent(splitView)
         sciteQt.setMainWindow(applicationWindow)
         sciteQt.setApplicationData(applicationData)
@@ -123,6 +124,10 @@ ApplicationWindow {
 
         infoDialog.text = infoText
         infoDialog.open()
+    }
+
+    function showAboutSciteDialog() {
+        aboutSciteDialog.show()
     }
 
     function showFindInFilesDialog(text) {
@@ -279,7 +284,7 @@ ApplicationWindow {
         onRejected: {
             quickScintillaEditor.focus = true
         }
-    }
+    }       
 
     MessageDialog {
         id: infoDialog
@@ -298,6 +303,19 @@ ApplicationWindow {
         onYes: console.log("yes")
         onNo: console.log("no")
         */
+    }
+
+    AboutSciteDialog {
+        id: aboutSciteDialog
+        objectName: "aboutSciteDialog"
+        visible: false
+        modality: Qt.ApplicationModal
+        title: sciteQt.getLocalisedText(qsTr("About SciTE"))
+
+        fcnLocalisation: sciteQt.getLocalisedText
+
+        width: 500
+        height: 500
     }
 
     FindInFilesDialog {
@@ -871,6 +889,7 @@ ApplicationWindow {
 
         onStartFileDialog:            startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog)
         onShowInfoDialog:             showInfoDialog(sInfoText, style)
+        onShowAboutSciteDialog:       showAboutSciteDialog()
 
         onShowFindInFilesDialog:      showFindInFilesDialog(text)
         onShowFind:                   showFind(text, incremental, withReplace)

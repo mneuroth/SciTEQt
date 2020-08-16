@@ -215,6 +215,7 @@ public:
     Q_INVOKABLE bool doOpen(const QString & sFileName);
     Q_INVOKABLE void setScintilla(QObject * obj);
     Q_INVOKABLE void setOutput(QObject * obj);
+    Q_INVOKABLE void setAboutScite(QObject * obj);
     Q_INVOKABLE void setContent(QObject * obj);
     Q_INVOKABLE void setMainWindow(QObject * obj);
 
@@ -399,6 +400,7 @@ signals:
 
     void startFileDialog(const QString & sDirectory, const QString & sFilter, const QString & sTitle, bool bAsOpenDialog = true);
     void showInfoDialog(const QString & sInfoText, int style);
+    void showAboutSciteDialog();
 
     void showFindInFilesDialog(const QString & text);
     void showFind(const QString & text, bool incremental, bool withReplace);
@@ -445,6 +447,8 @@ private:
     int                     m_height;
     bool                    m_maximize;
     QString                 m_sCurrentFileUrl;
+
+    GUI::ScintillaWindow    wAboutScite;
 };
 
 #define MSGBOX_RESULT_CANCEL 0

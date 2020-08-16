@@ -698,6 +698,11 @@ MenuBar {
         MenuSeparator {}
 
         MenuItem {
+            id: actionTestFunction
+            text: processMenuItem2(sciteActions.actionTestFunction.text, actionTestFunction)
+            action: sciteActions.actionTestFunction
+        }
+        MenuItem {
             id: actionDebugInfo
             text: processMenuItem(qsTr("Debug info"),actionDebugInfo)
             onTriggered: {
@@ -706,7 +711,7 @@ MenuBar {
                 //console.log("dbg: "+myModel+" "+myModel.count)
                 //myModel.append({"display":"blub blub"})
                 //console.log("dbg: "+myModel+" "+myModel.count+" "+myModel.get(0))
-                removeInMenuModel(0)
+                //removeInMenuModel(0)
             }
         }
 /*

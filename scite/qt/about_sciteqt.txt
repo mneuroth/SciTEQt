@@ -26,4 +26,3 @@ Missing features are:
   * Execute external Scripts (build, go, stop, etc.)
   * Find in Files dialog
   * Printing
-  * About Dialog

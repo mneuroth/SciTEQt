@@ -578,8 +578,10 @@ void SciTEQt::SetFileProperties(PropSetFile &ps)
 
 void SciTEQt::AboutDialog()
 {
-    // TODO: see: SciTEBase::SetAboutMessage
-    emit showInfoDialog("Sorry: AboutDialog() is not implemented yet!", 0);
+    // see: SciTEBase::SetAboutMessage
+
+    SetAboutMessage(wAboutScite, "About SciTE");
+    emit showAboutSciteDialog();
 }
 
 void SciTEQt::QuitProgram()
@@ -951,6 +953,16 @@ void SciTEQt::setOutput(QObject * obj)
     const sptr_t ptr_ = base->send(SCI_GETDIRECTPOINTER, 0, 0);
     wOutput.SetFnPtr(fn_, ptr_);
     wOutput.SetID(base->sqt);
+}
+
+void SciTEQt::setAboutScite(QObject * obj)
+{
+    ScintillaEditBase * base = reinterpret_cast<ScintillaEditBase *>(obj);
+
+    SciFnDirect fn_ = reinterpret_cast<SciFnDirect>(base->send(SCI_GETDIRECTFUNCTION, 0, 0));
+    const sptr_t ptr_ = base->send(SCI_GETDIRECTPOINTER, 0, 0);
+    wAboutScite.SetFnPtr(fn_, ptr_);
+    wAboutScite.SetID(base->sqt);
 }
 
 void SciTEQt::setMainWindow(QObject * obj)
