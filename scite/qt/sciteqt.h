@@ -354,6 +354,8 @@ public:
 
     Q_INVOKABLE bool isMobilePlatform() const;
 
+    Q_INVOKABLE void updateCurrentWindowPosAndSize(int left, int top, int width, int height, bool maximize);
+
     void UpdateStatusbarView();
 
 public slots:
@@ -387,8 +389,8 @@ signals:
     void removeInLanguagesModel(int index);
     void checkStateInLanguagesModel(int index, bool checked);
     void setInToolsModel(int index, const QString & txt, bool checked, const QString & shortcut);
-	void removeInToolsModel(int index);
-	void checkStateInToolsModel(int index, bool checked);
+     void removeInToolsModel(int index);
+     void checkStateInToolsModel(int index, bool checked);
 
     void startFileDialog(const QString & sDirectory, const QString & sFilter, bool bAsOpenDialog = true);
     void showInfoDialog(const QString & sInfoText, int style);
@@ -407,8 +409,12 @@ signals:
     void selectTab(int index);
     void removeAllTabs();
 
+    void triggerUpdateCurrentWindowPosAndSize();
+    void setWindowPosAndSize(int left, int top, int width, int height, bool maximize);
+
 private:
     QObject * getCurrentInfoDialog();
+    void RestorePosition();
 
     ApplicationData *       m_pApplicationData;     // not an owner !
     QQmlApplicationEngine * m_pEngine;
@@ -422,6 +428,12 @@ private:
     QString                 m_sStatusBarText;
 
     size_t                  icmd;                   // needed for executing scripts
+
+    int                     m_left;
+    int                     m_top;
+    int                     m_width;
+    int                     m_height;
+    bool                    m_maximize;
 };
 
 #define MSGBOX_RESULT_CANCEL 0

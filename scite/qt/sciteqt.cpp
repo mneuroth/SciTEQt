@@ -9,6 +9,8 @@
 #include <QQmlContext>
 #include <QStandardPaths>
 
+#include <qdesktopservices.h>
+
 #include <QDebug>
 
 #include "ScintillaEditBase.h"
@@ -141,7 +143,12 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
       m_bShowToolBar(false),
       m_bShowStatusBar(false),
       m_bShowTabBar(true),
-      icmd(0)
+      icmd(0),
+      m_left(0),
+      m_top(0),
+      m_width(0),
+      m_height(0),
+      m_maximize(false)
 {
 #ifdef Q_OS_WINDOWS
     propsPlatform.Set("PLAT_WIN", "1");
@@ -200,11 +207,33 @@ void SciTEQt::RemoveAllTabs()
 void SciTEQt::WarnUser(int warnID)
 {
     // TODO implement !
+    emit showInfoDialog(QString("Sorry: WarnUser() is not implemented yet! warnID=%1").arg(warnID), 0);
 }
 
 void SciTEQt::GetWindowPosition(int *left, int *top, int *width, int *height, int *maximize)
 {
-    // TODO implement !
+    emit triggerUpdateCurrentWindowPosAndSize();
+
+    if(left!=0)
+    {
+        *left = m_left;
+    }
+    if(top!=0)
+    {
+        *top = m_top;
+    }
+    if(width!=0)
+    {
+        *width = m_width;
+    }
+    if(height!=0)
+    {
+        *height = m_height;
+    }
+    if(maximize!=0)
+    {
+        *maximize = (int)m_maximize;
+    }
 }
 
 bool SciTEQt::OpenDialog(const FilePath &directory, const GUI::gui_char *filesFilter)
@@ -222,31 +251,37 @@ bool SciTEQt::SaveAsDialog()
 void SciTEQt::SaveACopy()
 {
     // TODO implement !
+    emit showInfoDialog("Sorry: SaveACopy() is not implemented yet!", 0);
 }
 
 void SciTEQt::SaveAsRTF()
 {
     // TODO implement !
+    emit showInfoDialog("Sorry: SaveAsRTF() is not implemented yet!", 0);
 }
 
 void SciTEQt::SaveAsPDF()
 {
     // TODO implement !
+    emit showInfoDialog("Sorry: SaveAsPDF() is not implemented yet!", 0);
 }
 
 void SciTEQt::SaveAsTEX()
 {
     // TODO implement !
+    emit showInfoDialog("Sorry: SaveAsTEX() is not implemented yet!", 0);
 }
 
 void SciTEQt::SaveAsXML()
 {
     // TODO implement !
+    emit showInfoDialog("Sorry: SaveAsXML() is not implemented yet!", 0);
 }
 
 void SciTEQt::SaveAsHTML()
 {
     // TODO implement !
+    emit showInfoDialog("Sorry: SaveAsHTML() is not implemented yet!", 0);
 }
 
 FilePath GetSciTEPath(const QByteArray & home)
@@ -417,49 +452,58 @@ void SciTEQt::GoLineDialog()
 bool SciTEQt::AbbrevDialog()
 {
     // TODO implement !
+    emit showInfoDialog("Sorry: AbbrevDialog() is not implemented yet!", 0);
     return false;
 }
 
 void SciTEQt::TabSizeDialog()
 {
     // TODO implement !
+    emit showInfoDialog("Sorry: TabSizeDialog() is not implemented yet!", 0);
 }
 
 bool SciTEQt::ParametersOpen()
 {
     // TODO implement !
+    //emit showInfoDialog("Sorry: ParametersOpen() is not implemented yet!", 0);
     return false;
 }
 
 void SciTEQt::ParamGrab()
 {
     // TODO implement !
+    emit showInfoDialog("Sorry: ParamGrab() is not implemented yet!", 0);
 }
 
 bool SciTEQt::ParametersDialog(bool modal)
 {
     // TODO implement !
+    emit showInfoDialog("Sorry: ParametersDialog() is not implemented yet!", 0);
     return false;
 }
 
 void SciTEQt::FindReplace(bool replace)
 {
     // TODO implement ! --> find replace (advanced) --> not used ?
+    emit showInfoDialog("Sorry: FindReplace() is not implemented yet!", 0);
 }
 
 void SciTEQt::StopExecute()
 {
     // TODO implement !
+    emit showInfoDialog("Sorry: StopExecute() is not implemented yet!", 0);
 }
 
 void SciTEQt::SetFileProperties(PropSetFile &ps)
 {
     // TODO implement !
+    emit showInfoDialog("Sorry: SetFileProperties() is not implemented yet!", 0);
 }
 
 void SciTEQt::AboutDialog()
 {
     // TODO: see: SciTEBase::SetAboutMessage
+    emit showInfoDialog("Sorry: AboutDialog() is not implemented yet!", 0);
 }
 
 void SciTEQt::QuitProgram()
@@ -509,6 +553,7 @@ void SciTEQt::ShowStatusBar()
 void SciTEQt::ActivateWindow(const char *timestamp)
 {
     // TODO implement !
+    emit showInfoDialog("Sorry: ActivateWindow() is not implemented yet!", 0);
 }
 
 void SciTEQt::SizeContentWindows()
@@ -1432,7 +1477,8 @@ void SciTEQt::cmdHelp()
 
 void SciTEQt::cmdSciteHelp()
 {
-    MenuCommand(IDM_HELP_SCITE);
+    QDesktopServices::openUrl(QUrl::fromLocalFile("SciTEDoc.html"));
+    //MenuCommand(IDM_HELP_SCITE);
 }
 
 void SciTEQt::cmdAboutScite()
@@ -1663,6 +1709,9 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
         // Process any initial switches
         ProcessCommandLine(args, 0);
 
+        if (props.GetInt("save.position"))
+            RestorePosition();
+
     /*
         // Break up the command line into individual arguments
         GUI::gui_string args = ProcessArgs(cmdLine);
@@ -1752,6 +1801,17 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     // TODO: enable lua plugin...
 }
 
+void SciTEQt::RestorePosition()
+{
+    const int left = propsSession.GetInt("position.left", 0);
+    const int top = propsSession.GetInt("position.top", 0);
+    const int width = propsSession.GetInt("position.width", 600);
+    const int height = propsSession.GetInt("position.height", 800);
+    bool maximize = propsSession.GetInt("position.maximize", 0)==1;
+
+    emit setWindowPosAndSize(left, top, width, height, maximize);
+}
+
 void SciTEQt::setSpliterPos(int currentPosX, int currentPosY)
 {
     GUI::Point pt(currentPosX, currentPosY);
@@ -1773,6 +1833,15 @@ bool SciTEQt::isMobilePlatform() const
 #else
     return false;
 #endif
+}
+
+void SciTEQt::updateCurrentWindowPosAndSize(int left, int top, int width, int height, bool maximize)
+{
+    m_left = left;
+    m_top = top;
+    m_width = width;
+    m_height = height;
+    m_maximize = maximize;
 }
 
 void SciTEQt::UpdateStatusbarView()

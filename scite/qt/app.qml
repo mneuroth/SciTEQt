@@ -10,8 +10,8 @@ import org.scintilla.sciteqt 1.0
 ApplicationWindow {
     id: applicationWindow
     objectName: "SciteMainWindow"
-    width: 800
-    height: 600
+    width: 600
+    height: 800
     visible: true
 
     property string urlPrefix: "file://"
@@ -23,6 +23,7 @@ ApplicationWindow {
 
     Component.onCompleted: {
         console.log("ON Completed")
+// TODO: gibt es besseren weg scintilla controls bei sciteqt zu registrieren?
         sciteQt.setScintilla(quickScintillaEditor.scintilla)
         sciteQt.setOutput(quickScintillaOutput.scintilla)
         sciteQt.setContent(splitView)
@@ -37,6 +38,18 @@ ApplicationWindow {
 
     function max(v1, v2) {
         return v1 < v2 ? v2 : v1;
+    }
+
+    function updateCurrentWindowPosAndSize() {
+        sciteQt.updateCurrentWindowPosAndSize(applicationWindow.x, applicationWindow.y, applicationWindow.width, applicationWindow.height, applicationWindow.visibility === /*QWindow.Maximized*/4)
+    }
+
+    function setWindowPosAndSize(left, top, width, height, maximize) {
+        applicationWindow.x = left
+        applicationWindow.y = top
+        applicationWindow.width = width
+        applicationWindow.height = height
+        applicationWindow.visibility = maximize ? /*QWindow.Maximized*/4 : 2;
     }
 
     function startFileDialog(sDirectory, sFilter, bAsOpenDialog) {
@@ -431,18 +444,21 @@ ApplicationWindow {
             id: quickScintillaEditor
             objectName: "ScintillaEditor"
 
+            focus: true
+            onFocusChanged: {
+                console.log("FOCUS editor changed "+focus)
+            }
+
             SplitView.fillWidth: true
             SplitView.fillHeight: true
 
             //text: "editor area !"
-            onFocusChanged: {
-                console.log("FOCUS changed "+focus)
-            }
         }
 
         ScintillaText {
             id: quickScintillaOutput
             objectName: "ScintillaOutput"
+
             focus: false
             onFocusChanged: {
                 console.log("FOCUS output changed "+focus)
@@ -833,6 +849,9 @@ ApplicationWindow {
 
     Connections {
         target: sciteQt
+
+        onTriggerUpdateCurrentWindowPosAndSize: updateCurrentWindowPosAndSize()
+        onSetWindowPosAndSize:                  setWindowPosAndSize(left, top, width, height, maximize)
 
         onStartFileDialog:            startFileDialog(sDirectory, sFilter, bAsOpenDialog)
         onShowInfoDialog:             showInfoDialog(sInfoText, style)
