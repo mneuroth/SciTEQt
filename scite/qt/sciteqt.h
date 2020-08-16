@@ -136,6 +136,8 @@ public:
     virtual void GetWindowPosition(int *left, int *top, int *width, int *height, int *maximize) override;
     virtual bool OpenDialog(const FilePath &directory, const GUI::gui_char *filesFilter) override;
     virtual bool SaveAsDialog() override;
+    virtual void LoadSessionDialog() override;
+    virtual void SaveSessionDialog() override;
     virtual void SaveACopy() override;
     virtual void SaveAsRTF() override;
     virtual void SaveAsPDF() override;
@@ -145,6 +147,8 @@ public:
     virtual FilePath GetDefaultDirectory() override;
     virtual FilePath GetSciteDefaultHome() override;
     virtual FilePath GetSciteUserHome() override;
+    virtual void Print(bool) override;
+    virtual void PrintSetup() override;
     virtual void Find() override;
     virtual MessageBoxChoice WindowMessageBox(GUI::Window &w, const GUI::gui_string &msg, MessageBoxStyle style = mbsIconWarning) override;
     virtual void FindMessageBox(const std::string &msg, const std::string *findItem = nullptr) override;
@@ -164,6 +168,7 @@ public:
     virtual void AboutDialog() override;
     virtual void QuitProgram() override;
     virtual void CopyPath() override;
+    virtual void CopyAsRTF() override;
     virtual void SetStatusBarText(const char *s) override;
     virtual void ShowToolBar() override;
     virtual void ShowTabBar() override;

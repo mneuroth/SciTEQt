@@ -302,6 +302,27 @@ bool SciTEQt::SaveAsDialog()
     return false;
 }
 
+void SciTEQt::LoadSessionDialog()
+{
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.session", "Load Session File", true);
+
+    if(ProcessCurrentFileDialog())
+    {
+        LoadSessionFile(GetPathFromUrl(m_sCurrentFileUrl).AsInternal());
+        RestoreSession();
+    }
+}
+
+void SciTEQt::SaveSessionDialog()
+{
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.session", "Save Session File", false);
+
+    if(ProcessCurrentFileDialog())
+    {
+        SaveSessionFile(GetPathFromUrl(m_sCurrentFileUrl).AsInternal());
+    }
+}
+
 void SciTEQt::SaveACopy()
 {
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save a Copy", false);
@@ -410,6 +431,16 @@ FilePath SciTEQt::GetSciteUserHome()
     }
 
     return GetSciTEPath(home);
+}
+
+void SciTEQt::Print(bool)
+{
+    // TODO implement !
+}
+
+void SciTEQt::PrintSetup()
+{
+    // TODO implement !
 }
 
 void SciTEQt::Find()
@@ -621,6 +652,11 @@ void SciTEQt::CopyPath()
 
     QClipboard * pClipboard = QGuiApplication::clipboard();
     pClipboard->setText(ConvertGuiCharToQString(clipText.c_str()));
+}
+
+void SciTEQt::CopyAsRTF()
+{
+    // TODO implement !
 }
 
 void SciTEQt::SetStatusBarText(const char *s)
@@ -1089,25 +1125,21 @@ void SciTEQt::cmdAsXml()
 
 void SciTEQt::cmdPageSetup()
 {
-// TODO implement ...
     MenuCommand(IDM_PRINTSETUP);
 }
 
 void SciTEQt::cmdPrint()
 {
-// TODO implement ...
     MenuCommand(IDM_PRINT);
 }
 
 void SciTEQt::cmdLoadSession()
 {
-// TODO implement ...
     MenuCommand(IDM_LOADSESSION);
 }
 
 void SciTEQt::cmdSaveSession()
 {
-// TODO implement ...
     MenuCommand(IDM_SAVESESSION);
 }
 
