@@ -1567,6 +1567,30 @@ void SciTEQt::cmdAboutScite()
     MenuCommand(IDM_ABOUT);
 }
 
+QString simpleReadFileContent(const QString & fileName)
+{
+    QFile file(fileName);
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        return QString(QObject::tr("Error reading ") + fileName);
+    }
+
+    QTextStream stream(&file);
+    auto text = stream.readAll();
+
+    file.close();
+
+    return text;
+}
+
+void SciTEQt::cmdAboutSciteQt()
+{
+    New();
+    QString aboutSciteQt = simpleReadFileContent(":/about_sciteqt.txt");
+    emit setTextToCurrent(aboutSciteQt);
+}
+
 void SciTEQt::cmdMarkAll()
 {
     MarkAll(markWithBookMarks);
@@ -1886,6 +1910,13 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
 // TODO --> update ui components wie statusbar etc.
 
     // TODO: enable lua plugin...
+
+    // if no real document (but only the default document) is loaded: show the default document for SciteQt
+    QString currentFileName = QString::fromStdString(FileNameExt().Name().AsUTF8());
+    if( buffers.length == 1 && currentFileName.length()==0 )
+    {
+        cmdAboutSciteQt();
+    }
 }
 
 void SciTEQt::RestorePosition()

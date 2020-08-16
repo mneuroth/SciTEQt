@@ -336,6 +336,7 @@ public:
     Q_INVOKABLE void cmdHelp();
     Q_INVOKABLE void cmdSciteHelp();
     Q_INVOKABLE void cmdAboutScite();
+    Q_INVOKABLE void cmdAboutSciteQt();
 
     Q_INVOKABLE void cmdMarkAll();
     Q_INVOKABLE void cmdTriggerReplace(const QString & find, const QString & replace, bool inSection);
@@ -415,6 +416,7 @@ signals:
 
     void triggerUpdateCurrentWindowPosAndSize();
     void setWindowPosAndSize(int left, int top, int width, int height, bool maximize);
+    void setTextToCurrent(const QString & text);
 
 private:
     QObject * getCurrentInfoDialog();

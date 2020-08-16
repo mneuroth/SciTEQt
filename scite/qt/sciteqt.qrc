@@ -11,5 +11,6 @@
         <file>GoToDialogForm.ui.qml</file>
         <file>SciteMenuActions.qml</file>
         <file>SciteMenu.qml</file>
+        <file alias="about_sciteqt.txt">about_sciteqt.txt</file>
     </qresource>
 </RCC>

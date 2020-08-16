@@ -817,6 +817,7 @@ Item {
     property alias actionHelp: actionHelp
     property alias actionSciteHelp: actionSciteHelp
     property alias actionAboutScite: actionAboutScite
+    property alias actionAboutSciteQt: actionAboutSciteQt
 
     Action {
         id: actionHelp
@@ -833,6 +834,11 @@ Item {
         id: actionAboutScite
         text: qsTr("&About SciTE")
         onTriggered: sciteQt.cmdAboutScite()
+    }
+    Action {
+        id: actionAboutSciteQt
+        text: qsTr("About SciTE &Qt")
+        onTriggered: sciteQt.cmdAboutSciteQt()
     }
 
     // ************************************************

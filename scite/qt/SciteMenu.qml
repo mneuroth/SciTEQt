@@ -689,6 +689,11 @@ MenuBar {
             text: processMenuItem2(sciteActions.actionAboutScite.text, actionAboutScite)
             action: sciteActions.actionAboutScite
         }
+        MenuItem {
+            id: actionAboutSciteQt
+            text: processMenuItem2(sciteActions.actionAboutSciteQt.text, actionAboutSciteQt)
+            action: sciteActions.actionAboutSciteQt
+        }
 
         MenuSeparator {}
 

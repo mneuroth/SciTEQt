@@ -52,6 +52,12 @@ ApplicationWindow {
         applicationWindow.visibility = maximize ? /*QWindow.Maximized*/4 : 2;
     }
 
+    function setTextToCurrent(text) {
+        quickScintillaEditor.text = text
+        quickScintillaEditor.focus = true
+        quickScintillaEditor.update()
+    }
+
     function startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog) {
         //fileDialog.selectExisting = bAsOpenDialog
         fileDialog.openMode = bAsOpenDialog
@@ -861,6 +867,7 @@ ApplicationWindow {
 
         onTriggerUpdateCurrentWindowPosAndSize: updateCurrentWindowPosAndSize()
         onSetWindowPosAndSize:                  setWindowPosAndSize(left, top, width, height, maximize)
+        onSetTextToCurrent:                     setTextToCurrent(text)
 
         onStartFileDialog:            startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog)
         onShowInfoDialog:             showInfoDialog(sInfoText, style)

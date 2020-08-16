@@ -1,0 +1,29 @@
+SciteQt is a port of the SciTE editor to the Qt QML/Quick platform, 
+which is optimized for touch devices.
+
+All target platforms of the Qt framework are supported (Android, IOS, 
+Webassembly, Windows, Mac and Linux). The application runs even in 
+a browser via Webassembly (http://mneuroth.de/sciteqt.html)
+
+The current homepage of the project can be found on github: 
+
+  https://github.com/mneuroth/SciTEQt
+
+SciteQt ist still under development, therefore it has most probably 
+some bugs and not all the features of the SciTE editor are implemented 
+yet.
+
+Missing features are:
+
+  * Context menus
+  * Abrev dialog
+  * TabSize dialog
+  * Parameters dialog
+  * Parameters open
+  * Parameter grab
+  * Find/Replace extended dialog
+  * SetFileProperties
+  * Execute external Scripts (build, go, stop, etc.)
+  * Find in Files dialog
+  * Printing
+  * About Dialog
