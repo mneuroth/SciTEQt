@@ -26,5 +26,8 @@
         <file alias="redo.svg">icons/redo-black-24dp.svg</file>
         <file alias="save.svg">icons/save-black-24dp.svg</file>
         <file alias="undo.svg">icons/undo-black-24dp.svg</file>
+        <file alias="play_arrow.svg">icons/play_arrow-black-24dp.svg</file>
+        <file alias="stop.svg">icons/stop-black-24dp.svg</file>
+        <file alias="build.svg">icons/build-black-24dp.svg</file>
     </qresource>
 </RCC>

@@ -208,7 +208,7 @@ ApplicationWindow {
     menuBar: sciteMenu
 
     header: ToolBar {
-        contentHeight: readonlyIcon.implicitHeight
+        contentHeight: toolButtonNew.implicitHeight
         visible: sciteQt.showToolBar
 
         /* see: static BarButton bbs[] or void SciTEGTK::AddToolBar()
@@ -227,8 +227,9 @@ ApplicationWindow {
           Find  --> find_in_page
           Replace--> find_replace
 
-          compile
-          run
+          compile --> build
+          run   --> play_arrow
+          stop  --> stop
         */
         Row {
             anchors.fill: parent
@@ -319,6 +320,28 @@ ApplicationWindow {
                 //text: "Replace"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdReplace()
+            }
+            ToolSeparator {}
+            ToolButton {
+                id: toolButtonBuild
+                icon.source: "build.svg"
+                //text: "Build"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdBuild()
+            }
+            ToolButton {
+                id: toolButtonGo
+                icon.source: "play_arrow.svg"
+                //text: "Go"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdGo()
+            }
+            ToolButton {
+                id: toolButtonStop
+                icon.source: "stop.svg"
+                //text: Stop"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdStop()
             }
         }
     }
