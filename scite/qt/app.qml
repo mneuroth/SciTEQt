@@ -211,18 +211,114 @@ ApplicationWindow {
         contentHeight: readonlyIcon.implicitHeight
         visible: sciteQt.showToolBar
 
-        ToolButton {
-            id: readonlyIcon
-            //icon.name: "document-open"
-            //icon.source: "edit.svg"
-            text: "Open"
-            visible: sciteQt.showToolBar
-            //focusPolicy: Qt.NoFocus
-            //anchors.right: readonlySwitch.left
-            //anchors.rightMargin: 1
-            onClicked: {
-                fileDialog.openMode = true
-                fileDialog.open()
+        /* see: static BarButton bbs[] or void SciTEGTK::AddToolBar()
+          icons see: https://material.io/resources/icons/?style=baseline
+          New   --> create
+          Open  --> open_in_new
+          Save  --> save
+          Close --> clear
+          Print --> print
+          Cut   --> content_cut
+          Copy  --> content_copy
+          Paste --> content_paste
+          Delete--> delete
+          Undo  --> undo
+          Redo  --> redo
+          Find  --> find_in_page
+          Replace--> find_replace
+
+          compile
+          run
+        */
+        Row {
+            anchors.fill: parent
+            ToolButton {
+                id: toolButtonNew
+                icon.source: "create.svg"
+                //text: "New"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdNew()
+            }
+            ToolButton {
+                id: toolButtonOpen
+                icon.source: "open_in_new.svg"
+                //text: "Open"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdOpen()
+            }
+            ToolButton {
+                id: toolButtonSave
+                icon.source: "save.svg"
+                //text: "Save"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdSave()
+            }
+            ToolButton {
+                id: toolButtonClose
+                icon.source: "clear.svg"
+                //text: "Close"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdClose()
+            }
+            ToolSeparator {}
+            ToolButton {
+                id: toolButtonPrint
+                icon.source: "print.svg"
+                //text: "Print"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdPrint()
+            }
+            ToolSeparator {}
+            ToolButton {
+                id: toolButtonCut
+                icon.source: "content_cut.svg"
+                //text: "Cut"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdCut()
+            }
+            ToolButton {
+                id: toolButtonCopy
+                icon.source: "content_copy.svg"
+                //text: "Copy"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdCopy()
+            }
+            ToolButton {
+                id: toolButtonPaste
+                icon.source: "content_paste.svg"
+                //text: "Paste"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdPaste()
+            }
+            ToolSeparator {}
+            ToolButton {
+                id: toolButtonUndo
+                icon.source: "undo.svg"
+                //text: "Undo"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdUndo()
+            }
+            ToolButton {
+                id: toolButtonRedo
+                icon.source: "redo.svg"
+                //text: "Redo"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdRedo()
+            }
+            ToolSeparator {}
+            ToolButton {
+                id: toolButtonFind
+                icon.source: "find_in_page.svg"
+                //text: "Find"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdFind()
+            }
+            ToolButton {
+                id: toolButtonReplace
+                icon.source: "find_replace.svg"
+                //text: "Replace"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdReplace()
             }
         }
     }
@@ -577,7 +673,7 @@ ApplicationWindow {
 
         text: sciteQt.getLocalisedText(qsTr("&Find Next"))
         onClicked: {
-            sciteQt.setFindText(findInput.text)
+            sciteQt.setFindText(findInput.text, isIncrementalSearch)
             sciteQt.cmdFindNext()
             hideFindRow()
         }
@@ -600,7 +696,7 @@ ApplicationWindow {
 
         text: sciteQt.getLocalisedText(qsTr("Mark &All"))
         onClicked: {
-            sciteQt.setFindText(findInput.text)
+            sciteQt.setFindText(findInput.text, isIncrementalSearch)
             sciteQt.cmdMarkAll()
             hideFindRow()
         }

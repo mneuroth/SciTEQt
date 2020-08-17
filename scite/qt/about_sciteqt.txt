@@ -16,14 +16,12 @@ yet.
 Missing features are:
 
   * Context menus
-  * Toolbar icons
+  * Printing
+  * Execute external Scripts (build, go, stop, etc.)
+  * Find in Files dialog
   * Abrev dialog
   * TabSize dialog
   * Parameters dialog
   * Parameters open
   * Parameter grab
   * Find/Replace extended dialog
-  * SetFileProperties
-  * Execute external Scripts (build, go, stop, etc.)
-  * Find in Files dialog
-  * Printing

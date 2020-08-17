@@ -46,7 +46,7 @@ Window {
         anchors.topMargin: 5
         anchors.bottomMargin: 5
 
-        text: localiseText("Close")
+        text: localiseText("OK")
 
         onClicked: root.visible = false
     }
