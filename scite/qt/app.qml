@@ -291,6 +291,13 @@ ApplicationWindow {
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdPaste()
             }
+            ToolButton {
+                id: toolButtonDelete
+                icon.source: "delete.svg"
+                //text: "Delete"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdDelete()
+            }
             ToolSeparator {}
             ToolButton {
                 id: toolButtonUndo
