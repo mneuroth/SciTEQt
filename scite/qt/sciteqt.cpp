@@ -250,8 +250,12 @@ FilePath GetPathFromUrl(const QString & url)
     QString sLocalFileName = aUrl.toLocalFile();
 
     GUI::gui_char buf[512];
+#ifdef Q_OS_WIN
     int count = sLocalFileName.toWCharArray((wchar_t *)buf);
     buf[count] = 0;
+#else
+    strcpy(buf,sLocalFileName.toStdString().c_str());
+#endif
     return FilePath(buf);
 }
 
@@ -395,14 +399,22 @@ FilePath GetSciTEPath(const QByteArray & home)
     GUI::gui_char buf[512];
     if(!home.isEmpty())
     {
+#ifdef Q_OS_WIN
         int count = QString::fromLocal8Bit(home).toWCharArray((wchar_t *)buf);
         buf[count] = 0;
+#else
+        strcpy(buf,QString::fromLocal8Bit(home).toStdString().c_str());
+#endif
     }
     else
     {
+#ifdef Q_OS_WIN
         // return the directory of the executable
         int count = QCoreApplication::applicationDirPath().toWCharArray((wchar_t *)buf);
         buf[count] = 0;
+#else
+        strcpy(buf,QCoreApplication::applicationDirPath().toStdString().c_str());
+#endif
     }
 
     return FilePath(buf);
@@ -1888,8 +1900,12 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
         QString s = cmdArgs.join("\n");
 
         GUI::gui_char buf[512];
+#ifdef Q_OS_WIN
         int count = s.toWCharArray((wchar_t *)buf);
         buf[count] = 0;
+#else
+        strcpy(buf,s.toStdString().c_str());
+#endif
         GUI::gui_string args = buf;
 
         // Collect the argv into one string with each argument separated by '\n'
