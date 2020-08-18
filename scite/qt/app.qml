@@ -1,8 +1,10 @@
 import QtQuick 2.9
-import QtQuick.Controls 2.14
+import QtQuick.Controls 2.9
 import QtQuick.Dialogs 1.2
-import QtQml.Models 2.14
+import QtQml.Models 2.9
 import Qt.labs.platform 1.1 as Platform
+import QtQuick.Controls 1.4 as Controls1
+import QtQuick.Layouts 1.0
 import Qt.labs.settings 1.0
 
 import org.scintilla.sciteqt 1.0
@@ -381,14 +383,18 @@ ApplicationWindow {
 
         onAccepted: {
 //            //console.log("Accepted: " + /*currentFile*/fileUrl+" "+fileDialog.openMode)
-//            if(!fileDialog.openMode) {
-//                writeCurrentDoc(fileUrl)
-//            }
-//            else {
-//                //Android: quickScintillaEditor.text = fileUrl
-//                readCurrentDoc(fileUrl)
-//            }
-            sciteQt.updateCurrentSelectedFileUrl(fileUrl)
+            if(sciteQt.isWebassemblyPlatform()) {
+                if(!fileDialog.openMode) {
+                    writeCurrentDoc(fileUrl)
+                }
+                else {
+                    //Android: quickScintillaEditor.text = fileUrl
+                    readCurrentDoc(fileUrl)
+                }
+            }
+            else {
+                sciteQt.updateCurrentSelectedFileUrl(fileUrl)
+            }
             quickScintillaEditor.focus = true
         }
         onRejected: {
@@ -507,9 +513,11 @@ ApplicationWindow {
         }
     }
 
-    SplitView {
+    Controls1.SplitView {
         id: splitView        
         objectName: "SplitView"
+
+        resizing: true
 
         orientation: verticalSplit ? Qt.Horizontal : Qt.Vertical
 
@@ -541,46 +549,46 @@ ApplicationWindow {
         }
 */
         // see: https://doc.qt.io/qt-5/qtquickcontrols2-customize.html#customizing-splitview
-        handle: Rectangle {
-            implicitWidth: 5
-            implicitHeight: 5
+//        handle: Rectangle {
+//            implicitWidth: 5
+//            implicitHeight: 5
 
-            property bool startDrag: false
+//            property bool startDrag: false
 
-            color: SplitHandle.pressed ? "#81e889"
-                : (SplitHandle.hovered ? Qt.lighter("#c2f4c6", 1.1) : "#c2f4c6")
+//            color: SplitHandle.pressed ? "#81e889"
+//                : (SplitHandle.hovered ? Qt.lighter("#c2f4c6", 1.1) : "#c2f4c6")
 
-            onXChanged: {
-                if(SplitHandle.pressed) {
-                    console.log("drag x... "+(splitView.width-x)+" "+!startDrag)
-                    //sciteQt.startDragSpliterPos(splitView.width-x,0)
-                    if( !startDrag )
-                        startDrag = true
-                } else {
-                    console.log("finished drag x... "+(splitView.width-x))
-                    startDrag = false
-                    //sciteQt.setSpliterPos(splitView.width-x,0)
-                    //splitView.handleChanged(splitView.width-x,0)
-                }
-            }
-            onYChanged: {
-                if(SplitHandle.pressed)  {
-                    console.log("drag y... "+(splitView.height-y)+" "+!startDrag)
-                    //sciteQt.startDragSpliterPos(0,splitView.height-y)
-                    if( !startDrag )
-                        startDrag = true
-                } else {
-                    console.log("finished drag y... "+(splitView.height-y))
-                    startDrag = false
-                    //sciteQt.setSpliterPos(0,splitView.height-y)
-                    //splitView.handleChanged(0,splitView.height-y,!startDrag)
-                }
-            }
+//            onXChanged: {
+//                if(SplitHandle.pressed) {
+//                    console.log("drag x... "+(splitView.width-x)+" "+!startDrag)
+//                    //sciteQt.startDragSpliterPos(splitView.width-x,0)
+//                    if( !startDrag )
+//                        startDrag = true
+//                } else {
+//                    console.log("finished drag x... "+(splitView.width-x))
+//                    startDrag = false
+//                    //sciteQt.setSpliterPos(splitView.width-x,0)
+//                    //splitView.handleChanged(splitView.width-x,0)
+//                }
+//            }
+//            onYChanged: {
+//                if(SplitHandle.pressed)  {
+//                    console.log("drag y... "+(splitView.height-y)+" "+!startDrag)
+//                    //sciteQt.startDragSpliterPos(0,splitView.height-y)
+//                    if( !startDrag )
+//                        startDrag = true
+//                } else {
+//                    console.log("finished drag y... "+(splitView.height-y))
+//                    startDrag = false
+//                    //sciteQt.setSpliterPos(0,splitView.height-y)
+//                    //splitView.handleChanged(0,splitView.height-y,!startDrag)
+//                }
+//            }
 
-            MouseArea {
-                onClicked: console.log("CLICK Splitter")
-            }
-        }
+//            MouseArea {
+//                onClicked: console.log("CLICK Splitter")
+//            }
+//        }
 // TODO: moveSplit --> SciTEBase::MoveSplit() aufrufen !
 
         ScintillaText {
@@ -592,8 +600,10 @@ ApplicationWindow {
                 console.log("FOCUS editor changed "+focus)
             }
 
-            SplitView.fillWidth: true
-            SplitView.fillHeight: true
+            //SplitView.fillWidth: true
+            //SplitView.fillHeight: true
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
             //menuCommandDelegate: sciteQt.cmdContextMenu
 
@@ -609,8 +619,12 @@ ApplicationWindow {
                 console.log("FOCUS output changed "+focus)
             }
 
-            SplitView.preferredWidth: splitView.outputHeight
-            SplitView.preferredHeight: splitView.outputHeight
+            //SplitView.preferredWidth: splitView.outputHeight
+            //SplitView.preferredHeight: splitView.outputHeight
+            width: splitView.outputHeight               // user draging of splitter will brake the binding !!!
+            height: splitView.outputHeight
+            //implicitWidth: splitView.outputHeight
+            //implicitHeight: splitView.outputHeight
 
             //menuCommandDelegate: sciteQt.cmdContextMenu
 

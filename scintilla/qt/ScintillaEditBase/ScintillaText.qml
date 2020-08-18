@@ -1,8 +1,9 @@
-import org.scintilla.scintilla 1.0
 import QtQuick 2.9
-import QtQuick.Controls 2.14
+import QtQuick.Controls 2.9
 import QtQuick.Dialogs 1.2
-import QtQml.Models 2.14
+import QtQml.Models 2.9
+
+import org.scintilla.scintilla 1.0
 
 // Use Scrollview to handle ScrollBars for QuickScintilla control.
 // Scrollbar uses Rectangle as flickable item which has the implicitSize of the QuickScintilla control

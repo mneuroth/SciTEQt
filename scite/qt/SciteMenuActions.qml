@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import QtQuick.Controls 2.14
+import QtQuick.Controls 2.9
 
 Item {
     property alias actionNew: actionNew

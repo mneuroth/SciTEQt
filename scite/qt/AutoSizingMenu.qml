@@ -1,5 +1,5 @@
 // AutoSizingMenu.qml, see: https://martin.rpdev.net/2018/03/13/qt-quick-controls-2-automatically-set-the-width-of-menus.html
-import QtQuick 2.10
+import QtQuick 2.9
 import QtQuick.Controls 2.3
 
 Menu {

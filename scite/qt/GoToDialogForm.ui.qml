@@ -1,8 +1,8 @@
 import QtQuick 2.4
-import QtQuick.Controls 2.13
-import QtQuick.Layouts 1.13
+import QtQuick.Controls 2.9
+import QtQuick.Layouts 1.0
 //import QtQuick.Dialogs 1.3
-import QtQuick.Window 2.13
+import QtQuick.Window 2.9
 
 Window {
 
