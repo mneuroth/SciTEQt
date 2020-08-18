@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("applicationData", &data);
     engine.load(url);
 
-    qDebug() << "LOAD QML DONE" << endl;
+    //qDebug() << "LOAD QML DONE" << endl;
 
     return app.exec();
 }

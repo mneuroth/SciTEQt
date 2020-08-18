@@ -24,7 +24,7 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
-        console.log("ON Completed")
+        //console.log("ON Completed")
 // TODO: gibt es besseren weg scintilla controls bei sciteqt zu registrieren?
         sciteQt.setScintilla(quickScintillaEditor.scintilla)
         sciteQt.setOutput(quickScintillaOutput.scintilla)
@@ -32,7 +32,7 @@ ApplicationWindow {
         sciteQt.setContent(splitView)
         sciteQt.setMainWindow(applicationWindow)
         sciteQt.setApplicationData(applicationData)
-        console.log("ON Completed done")
+        //console.log("ON Completed done")
         //splitView.restoreState(settings.splitView)
     }
     Component.onDestruction: {
@@ -451,7 +451,7 @@ ApplicationWindow {
         }
         findButton {
             onClicked: {
-                console.log("find: "+findWhatInput.text)
+                //console.log("find: "+findWhatInput.text)
                 //GrabFields()
                 //SetFindInFilesOptions()
                 //SelectionIntoProperties()
@@ -596,9 +596,9 @@ ApplicationWindow {
             objectName: "ScintillaEditor"
 
             focus: true
-            onFocusChanged: {
-                console.log("FOCUS editor changed "+focus)
-            }
+            //onFocusChanged: {
+            //    console.log("FOCUS editor changed "+focus)
+            //}
 
             //SplitView.fillWidth: true
             //SplitView.fillHeight: true
@@ -615,9 +615,9 @@ ApplicationWindow {
             objectName: "ScintillaOutput"
 
             focus: false
-            onFocusChanged: {
-                console.log("FOCUS output changed "+focus)
-            }
+            //onFocusChanged: {
+            //    console.log("FOCUS output changed "+focus)
+            //}
 
             //SplitView.preferredWidth: splitView.outputHeight
             //SplitView.preferredHeight: splitView.outputHeight

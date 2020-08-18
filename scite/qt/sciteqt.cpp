@@ -709,7 +709,7 @@ void SciTEQt::ActivateWindow(const char *timestamp)
 
 void SciTEQt::SizeContentWindows()
 {
-    qDebug() << "SizeContentWindows " << heightOutput << " " << splitVertical << endl;
+//    qDebug() << "SizeContentWindows " << heightOutput << " " << splitVertical << endl;
 
     emit setVerticalSplit(splitVertical);
     emit setOutputHeight(heightOutput);
@@ -717,7 +717,7 @@ void SciTEQt::SizeContentWindows()
 
 void SciTEQt::SizeSubWindows()
 {
-    qDebug() << "SizeSubWindows " << heightOutput << " " << splitVertical << endl;
+//    qDebug() << "SizeSubWindows " << heightOutput << " " << splitVertical << endl;
 
     SizeContentWindows();
 }
@@ -1890,7 +1890,6 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
         QStringList cmdArgs = QGuiApplication::arguments();
         cmdArgs.removeAt(0);
         QString s = cmdArgs.join("\n");
-        qDebug() << "INIT " << s << endl;
 
         GUI::gui_char buf[512];
         int count = s.toWCharArray((wchar_t *)buf);
@@ -2021,14 +2020,14 @@ void SciTEQt::RestorePosition()
 void SciTEQt::setSpliterPos(int currentPosX, int currentPosY)
 {
     GUI::Point pt(currentPosX, currentPosY);
-qDebug() << "setSplitterPos " << currentPosX << " "<< currentPosY << " " << endl;
+//qDebug() << "setSplitterPos " << currentPosX << " "<< currentPosY << " " << endl;
     MoveSplit(pt);
 }
 
 void SciTEQt::startDragSpliterPos(int currentPosX, int currentPosY)
 {
     GUI::Point pt(currentPosX, currentPosY);
-qDebug() << "startDragSplitterPos " << currentPosX << " "<< currentPosY << " " << endl;
+//qDebug() << "startDragSplitterPos " << currentPosX << " "<< currentPosY << " " << endl;
     ptStartDrag = pt;
 }
 

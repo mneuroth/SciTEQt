@@ -355,7 +355,7 @@ std::string LowerCaseUTF8(std::string_view sv) {
 
 void Window::Destroy()
 {
-    qDebug() << "Window::Destroy()" << endl;
+    //qDebug() << "Window::Destroy()" << endl;
 	// nothing to do...
 }
 
@@ -434,17 +434,17 @@ void Window::SetTitle(const gui_char *s)
 
 void Menu::CreatePopUp()
 {
-    qDebug() << "MENU::CreatePopUp()" << endl;
+    //qDebug() << "MENU::CreatePopUp()" << endl;
 }
 
 void Menu::Destroy()
 {
-    qDebug() << "MENU::Destroy()" << endl;
+    //qDebug() << "MENU::Destroy()" << endl;
 }
 
 void Menu::Show(Point pt, Window &w)
 {
-    qDebug() << "MENU::Show()" << endl;
+    //qDebug() << "MENU::Show()" << endl;
 }
 
 }   // namespace
