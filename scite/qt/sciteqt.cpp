@@ -145,7 +145,7 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
       m_pApplicationData(0),
       m_pEngine(pEngine),
       m_bWaitDoneFlag(false),
-      m_iMessageDialogAccepted(MSGBOX_RESULT_CANCEL),
+      m_iMessageDialogAccepted(MSGBOX_RESULT_EMPTY),
       m_bFileDialogWaitDoneFlag(false),
       m_iFileDialogMessageDialogAccepted(MSGBOX_RESULT_CANCEL),
       m_bShowToolBar(false),
@@ -487,9 +487,12 @@ SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::g
 {
     emit showInfoDialog(ConvertGuiStringToQString(msg), style);
 
+	m_iMessageDialogAccepted = MSGBOX_RESULT_EMPTY;
     QObject * pMessageBox = getCurrentInfoDialog();
     connect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnAcceptedClicked()));
     connect(pMessageBox,SIGNAL(rejected()),this,SLOT(OnRejectedClicked()));
+	connect(pMessageBox,SIGNAL(okClicked()), this, SLOT(OnOkClicked()));
+	connect(pMessageBox,SIGNAL(cancelClicked()),this,SLOT(OnCancelClicked()));
     connect(pMessageBox,SIGNAL(yes()),this,SLOT(OnYesClicked()));
     connect(pMessageBox,SIGNAL(no()),this,SLOT(OnNoClicked()));
 
@@ -503,28 +506,21 @@ SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::g
 
     disconnect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnAcceptedClicked()));
     disconnect(pMessageBox,SIGNAL(rejected()),this,SLOT(OnRejectedClicked()));
+	disconnect(pMessageBox,SIGNAL(ok()), this, SLOT(OnOkClicked()));
+	disconnect(pMessageBox,SIGNAL(cancel()),this,SLOT(OnCancelClicked()));
     disconnect(pMessageBox,SIGNAL(yes()),this,SLOT(OnYesClicked()));
     disconnect(pMessageBox,SIGNAL(no()),this,SLOT(OnNoClicked()));
 
-    SciTEQt::MessageBoxChoice result;
-    switch(m_iMessageDialogAccepted)
-    {
-        case MSGBOX_RESULT_CANCEL:
-            result = SciTEQt::MessageBoxChoice::mbCancel;
-            break;
-        case MSGBOX_RESULT_OK:
-            result = SciTEQt::MessageBoxChoice::mbOK;
-            break;
-        case MSGBOX_RESULT_NO:
-            result = SciTEQt::MessageBoxChoice::mbNo;
-            break;
-        case MSGBOX_RESULT_YES:
-            result = SciTEQt::MessageBoxChoice::mbYes;
-            break;
-        default:
-            result = SciTEQt::MessageBoxChoice::mbCancel;
-    }
-    return result;
+	if ((m_iMessageDialogAccepted & MSGBOX_RESULT_NO) == MSGBOX_RESULT_NO)
+		return SciTEQt::MessageBoxChoice::mbNo;
+	if ((m_iMessageDialogAccepted & MSGBOX_RESULT_YES) == MSGBOX_RESULT_YES)
+		return SciTEQt::MessageBoxChoice::mbYes;
+	if ((m_iMessageDialogAccepted & MSGBOX_RESULT_OK) == MSGBOX_RESULT_OK)
+		return SciTEQt::MessageBoxChoice::mbOK;
+	if ((m_iMessageDialogAccepted & MSGBOX_RESULT_CANCEL) == MSGBOX_RESULT_CANCEL)
+		return SciTEQt::MessageBoxChoice::mbCancel;
+
+	return SciTEQt::MessageBoxChoice::mbCancel;
 }
 
 void SciTEQt::FindMessageBox(const std::string &msg, const std::string *findItem)
@@ -2075,13 +2071,13 @@ void SciTEQt::UpdateStatusbarView()
 void SciTEQt::OnAcceptedClicked()
 {
     m_bWaitDoneFlag = true;
-    m_iMessageDialogAccepted = MSGBOX_RESULT_OK;
+    m_iMessageDialogAccepted |= MSGBOX_RESULT_OK;
 }
 
 void SciTEQt::OnRejectedClicked()
 {
     m_bWaitDoneFlag = true;
-    m_iMessageDialogAccepted = MSGBOX_RESULT_CANCEL;
+    m_iMessageDialogAccepted |= MSGBOX_RESULT_CANCEL;
 }
 
 void SciTEQt::OnFileDialogAcceptedClicked()
@@ -2096,16 +2092,28 @@ void SciTEQt::OnFileDialogRejectedClicked()
     m_iFileDialogMessageDialogAccepted = MSGBOX_RESULT_CANCEL;
 }
 
+void SciTEQt::OnOkClicked()
+{
+	m_bWaitDoneFlag = true;
+	m_iMessageDialogAccepted |= MSGBOX_RESULT_OK;
+}
+
+void SciTEQt::OnCancelClicked()
+{
+    m_bWaitDoneFlag = true;
+    m_iMessageDialogAccepted |= MSGBOX_RESULT_CANCEL;
+}
+
 void SciTEQt::OnYesClicked()
 {
     m_bWaitDoneFlag = true;
-    m_iMessageDialogAccepted = MSGBOX_RESULT_YES;
+    m_iMessageDialogAccepted |= MSGBOX_RESULT_YES;
 }
 
 void SciTEQt::OnNoClicked()
 {
     m_bWaitDoneFlag = true;
-    m_iMessageDialogAccepted = MSGBOX_RESULT_NO;
+    m_iMessageDialogAccepted |= MSGBOX_RESULT_NO;
 }
 
 void SciTEQt::OnNotifiedFromScintilla(SCNotification scn)

@@ -375,6 +375,8 @@ public slots:
     void OnRejectedClicked();
     void OnFileDialogAcceptedClicked();
     void OnFileDialogRejectedClicked();
+    void OnOkClicked();
+    void OnCancelClicked();
     void OnYesClicked();
     void OnNoClicked();
 
@@ -461,10 +463,11 @@ private:
     QPrinter                m_aPrinter;
 };
 
-#define MSGBOX_RESULT_CANCEL 0
-#define MSGBOX_RESULT_OK 1
-#define MSGBOX_RESULT_NO 2
-#define MSGBOX_RESULT_YES 3
+#define MSGBOX_RESULT_EMPTY 0
+#define MSGBOX_RESULT_CANCEL 1
+#define MSGBOX_RESULT_OK 2
+#define MSGBOX_RESULT_NO 4
+#define MSGBOX_RESULT_YES 8
 
 QString ConvertGuiCharToQString(const GUI::gui_char * s);
 QString ConvertGuiStringToQString(const GUI::gui_string & s);
