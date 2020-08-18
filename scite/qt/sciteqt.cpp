@@ -2041,6 +2041,15 @@ bool SciTEQt::isMobilePlatform() const
 #endif
 }
 
+bool SciTEQt::isWebassemblyPlatform() const
+{
+#if defined(Q_OS_WASM)
+    return true;
+#else
+    return false;
+#endif
+}
+
 void SciTEQt::updateCurrentWindowPosAndSize(int left, int top, int width, int height, bool maximize)
 {
     m_left = left;

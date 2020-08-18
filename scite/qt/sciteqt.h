@@ -363,6 +363,7 @@ public:
     Q_INVOKABLE void startDragSpliterPos(int currentPosX, int currentPosY);
 
     Q_INVOKABLE bool isMobilePlatform() const;
+    Q_INVOKABLE bool isWebassemblyPlatform() const;
 
     Q_INVOKABLE void updateCurrentWindowPosAndSize(int left, int top, int width, int height, bool maximize);
     Q_INVOKABLE void updateCurrentSelectedFileUrl(const QString & fileUrl);
