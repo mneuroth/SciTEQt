@@ -71,7 +71,9 @@ ScintillaEditBase::ScintillaEditBase(QQuickItem/*QWidget*/ *parent)
 #ifdef PLAT_QT_QML
     setAcceptedMouseButtons(Qt::AllButtons);
     //setAcceptHoverEvents(true);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     setAcceptTouchEvents(true);
+#endif
     //setFiltersChildMouseEvents(false);
     //grabMouse();
     setFlags(QQuickItem::ItemAcceptsInputMethod | QQuickItem::ItemHasContents);
