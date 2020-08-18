@@ -15,8 +15,8 @@ yet.
 
 Missing features are:
 
-  * Context menus
-  * Printing
+  * Context menus (partly)
+  * Printing (partly)
   * Execute external Scripts (build, go, stop, etc.)
   * Find in Files dialog
   * Abrev dialog
@@ -25,3 +25,4 @@ Missing features are:
   * Parameters open
   * Parameter grab
   * Find/Replace extended dialog
+  * Improve splitter handling
