@@ -211,52 +211,36 @@ ApplicationWindow {
         contentHeight: toolButtonNew.implicitHeight
         visible: sciteQt.showToolBar
 
-        /* see: static BarButton bbs[] or void SciTEGTK::AddToolBar()
+        /*
+          code see: static BarButton bbs[] or void SciTEGTK::AddToolBar()
           icons see: https://material.io/resources/icons/?style=baseline
-          New   --> create
-          Open  --> open_in_new
-          Save  --> save
-          Close --> clear
-          Print --> print
-          Cut   --> content_cut
-          Copy  --> content_copy
-          Paste --> content_paste
-          Delete--> delete
-          Undo  --> undo
-          Redo  --> redo
-          Find  --> find_in_page
-          Replace--> find_replace
-
-          compile --> build
-          run   --> play_arrow
-          stop  --> stop
         */
         Row {
             anchors.fill: parent
             ToolButton {
                 id: toolButtonNew
-                icon.source: "create.svg"
+                icon.source: "icons/create.svg"
                 //text: "New"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdNew()
             }
             ToolButton {
                 id: toolButtonOpen
-                icon.source: "open_in_new.svg"
+                icon.source: "icons/open_in_new.svg"
                 //text: "Open"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdOpen()
             }
             ToolButton {
                 id: toolButtonSave
-                icon.source: "save.svg"
+                icon.source: "icons/save.svg"
                 //text: "Save"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdSave()
             }
             ToolButton {
                 id: toolButtonClose
-                icon.source: "clear.svg"
+                icon.source: "icons/clear.svg"
                 //text: "Close"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdClose()
@@ -264,7 +248,7 @@ ApplicationWindow {
             ToolSeparator {}
             ToolButton {
                 id: toolButtonPrint
-                icon.source: "print.svg"
+                icon.source: "icons/print.svg"
                 //text: "Print"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdPrint()
@@ -272,28 +256,28 @@ ApplicationWindow {
             ToolSeparator {}
             ToolButton {
                 id: toolButtonCut
-                icon.source: "content_cut.svg"
+                icon.source: "icons/content_cut.svg"
                 //text: "Cut"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdCut()
             }
             ToolButton {
                 id: toolButtonCopy
-                icon.source: "content_copy.svg"
+                icon.source: "icons/content_copy.svg"
                 //text: "Copy"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdCopy()
             }
             ToolButton {
                 id: toolButtonPaste
-                icon.source: "content_paste.svg"
+                icon.source: "icons/content_paste.svg"
                 //text: "Paste"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdPaste()
             }
             ToolButton {
                 id: toolButtonDelete
-                icon.source: "delete.svg"
+                icon.source: "icons/delete.svg"
                 //text: "Delete"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdDelete()
@@ -301,14 +285,14 @@ ApplicationWindow {
             ToolSeparator {}
             ToolButton {
                 id: toolButtonUndo
-                icon.source: "undo.svg"
+                icon.source: "icons/undo.svg"
                 //text: "Undo"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdUndo()
             }
             ToolButton {
                 id: toolButtonRedo
-                icon.source: "redo.svg"
+                icon.source: "icons/redo.svg"
                 //text: "Redo"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdRedo()
@@ -316,14 +300,14 @@ ApplicationWindow {
             ToolSeparator {}
             ToolButton {
                 id: toolButtonFind
-                icon.source: "find_in_page.svg"
+                icon.source: "icons/find_in_page.svg"
                 //text: "Find"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdFind()
             }
             ToolButton {
                 id: toolButtonReplace
-                icon.source: "find_replace.svg"
+                icon.source: "icons/find_replace.svg"
                 //text: "Replace"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdReplace()
@@ -331,21 +315,21 @@ ApplicationWindow {
             ToolSeparator {}
             ToolButton {
                 id: toolButtonBuild
-                icon.source: "build.svg"
+                icon.source: "icons/build.svg"
                 //text: "Build"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdBuild()
             }
             ToolButton {
                 id: toolButtonGo
-                icon.source: "play_arrow.svg"
+                icon.source: "icons/play_arrow.svg"
                 //text: "Go"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdGo()
             }
             ToolButton {
                 id: toolButtonStop
-                icon.source: "stop.svg"
+                icon.source: "icons/stop.svg"
                 //text: Stop"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdStop()
@@ -611,6 +595,8 @@ ApplicationWindow {
             SplitView.fillWidth: true
             SplitView.fillHeight: true
 
+            //menuCommandDelegate: sciteQt.cmdContextMenu
+
             //text: "editor area !"
         }
 
@@ -625,6 +611,8 @@ ApplicationWindow {
 
             SplitView.preferredWidth: splitView.outputHeight
             SplitView.preferredHeight: splitView.outputHeight
+
+            //menuCommandDelegate: sciteQt.cmdContextMenu
 
             //text: "output area !"
         }

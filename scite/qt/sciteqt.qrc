@@ -13,21 +13,21 @@
         <file>SciteMenu.qml</file>
         <file alias="about_sciteqt.txt">about_sciteqt.txt</file>
         <file>AboutSciteDialog.qml</file>
-        <file alias="clear.svg">icons/clear-black-24dp.svg</file>
-        <file alias="content_copy.svg">icons/content_copy-black-24dp.svg</file>
-        <file alias="content_cut.svg">icons/content_cut-black-24dp.svg</file>
-        <file alias="content_paste.svg">icons/content_paste-black-24dp.svg</file>
-        <file alias="create.svg">icons/create-black-24dp.svg</file>
-        <file alias="delete.svg">icons/delete-black-24dp.svg</file>
-        <file alias="find_in_page.svg">icons/find_in_page-black-24dp.svg</file>
-        <file alias="find_replace.svg">icons/find_replace-black-24dp.svg</file>
-        <file alias="open_in_new.svg">icons/open_in_new-black-24dp.svg</file>
-        <file alias="print.svg">icons/print-black-24dp.svg</file>
-        <file alias="redo.svg">icons/redo-black-24dp.svg</file>
-        <file alias="save.svg">icons/save-black-24dp.svg</file>
-        <file alias="undo.svg">icons/undo-black-24dp.svg</file>
-        <file alias="play_arrow.svg">icons/play_arrow-black-24dp.svg</file>
-        <file alias="stop.svg">icons/stop-black-24dp.svg</file>
-        <file alias="build.svg">icons/build-black-24dp.svg</file>
+        <file alias="icons/clear.svg">icons/clear-black-24dp.svg</file>
+        <file alias="icons/content_copy.svg">icons/content_copy-black-24dp.svg</file>
+        <file alias="icons/content_cut.svg">icons/content_cut-black-24dp.svg</file>
+        <file alias="icons/content_paste.svg">icons/content_paste-black-24dp.svg</file>
+        <file alias="icons/create.svg">icons/create-black-24dp.svg</file>
+        <file alias="icons/delete.svg">icons/delete-black-24dp.svg</file>
+        <file alias="icons/find_in_page.svg">icons/find_in_page-black-24dp.svg</file>
+        <file alias="icons/find_replace.svg">icons/find_replace-black-24dp.svg</file>
+        <file alias="icons/open_in_new.svg">icons/open_in_new-black-24dp.svg</file>
+        <file alias="icons/print.svg">icons/print-black-24dp.svg</file>
+        <file alias="icons/redo.svg">icons/redo-black-24dp.svg</file>
+        <file alias="icons/save.svg">icons/save-black-24dp.svg</file>
+        <file alias="icons/undo.svg">icons/undo-black-24dp.svg</file>
+        <file alias="icons/play_arrow.svg">icons/play_arrow-black-24dp.svg</file>
+        <file alias="icons/stop.svg">icons/stop-black-24dp.svg</file>
+        <file alias="icons/build.svg">icons/build-black-24dp.svg</file>
     </qresource>
 </RCC>
