@@ -2,6 +2,7 @@
 
 #include <QtQuick/QQuickView>
 #include <QGuiApplication>
+#include <QApplication>
 #include <QFile>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -116,7 +117,7 @@ int main(int argc, char *argv[])
     qInstallMessageHandler(PrivateMessageHandler);
 #endif
 
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
     app.setOrganizationName("scintilla.org");
     app.setOrganizationDomain("scintilla.org");
     app.setApplicationName("SciTEQt");

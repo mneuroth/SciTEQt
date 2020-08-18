@@ -746,23 +746,11 @@ MenuBar {
     ListModel {
         id: languagesModel
         objectName: "languagesMenu"
-        /*
-        ListElement {
-            display: "hello"
-            checkState: true
-        }
-        */
     }
 
     ListModel {
         id: toolsModel
         objectName: "toolsMenu"
-        /*
-        ListElement {
-            display: "hello"
-            checkState: true
-        }
-        */
     }
 
     function clearBuffersModel(model) {

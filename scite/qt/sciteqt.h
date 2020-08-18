@@ -74,7 +74,8 @@
 
 #include <QEvent>
 #include <QQmlApplicationEngine>
-#include <QStandardItemModel>
+//#include <QStandardItemModel>
+#include <QPrinter>
 
 #define POST_TO_MAIN (QEvent::User + 1)
 
@@ -347,6 +348,7 @@ public:
     Q_INVOKABLE void cmdMarkAll();
     Q_INVOKABLE void cmdTriggerReplace(const QString & find, const QString & replace, bool inSection);
     Q_INVOKABLE void cmdGotoLine(int lineNo, int colPos);
+    Q_INVOKABLE void cmdContextMenu(int menuID);
 
     Q_INVOKABLE QVariant fillToLength(const QString & text, const QString & shortcut);
     Q_INVOKABLE QVariant fillToLengthWithFont(const QString & text, const QString & shortcut, const QFont & font);
@@ -400,8 +402,8 @@ signals:
     void removeInLanguagesModel(int index);
     void checkStateInLanguagesModel(int index, bool checked);
     void setInToolsModel(int index, const QString & txt, bool checked, const QString & shortcut);
-     void removeInToolsModel(int index);
-     void checkStateInToolsModel(int index, bool checked);
+    void removeInToolsModel(int index);
+    void checkStateInToolsModel(int index, bool checked);
 
     void startFileDialog(const QString & sDirectory, const QString & sFilter, const QString & sTitle, bool bAsOpenDialog = true);
     void showInfoDialog(const QString & sInfoText, int style);
@@ -454,6 +456,8 @@ private:
     QString                 m_sCurrentFileUrl;
 
     GUI::ScintillaWindow    wAboutScite;
+
+    QPrinter                m_aPrinter;
 };
 
 #define MSGBOX_RESULT_CANCEL 0

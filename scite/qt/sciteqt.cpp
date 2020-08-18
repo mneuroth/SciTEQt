@@ -10,6 +10,10 @@
 #include <QStandardPaths>
 #include <QFileInfo>
 #include <QDateTime>
+#include <QPainter>
+#include <QPrinter>
+#include <QPrintDialog>
+#include <QPageSetupDialog>
 
 #include <qdesktopservices.h>
 
@@ -261,7 +265,8 @@ bool SciTEQt::ProcessCurrentFileDialog()
     m_bFileDialogWaitDoneFlag = false;
     while(!m_bFileDialogWaitDoneFlag)
     {
-        QCoreApplication::processEvents();
+        //QCoreApplication::processEvents();
+        QGuiApplication::processEvents();
         QThread::msleep(10);
     }
 
@@ -282,12 +287,15 @@ bool SciTEQt::OpenDialog(const FilePath &directory, const GUI::gui_char *filesFi
 
     emit startFileDialog(directory.AbsolutePath().AsUTF8().c_str(), s/*ConvertGuiStringToQString(openFilter)*/, "Open File", true);
 
+#ifndef Q_OS_WASM
     if(ProcessCurrentFileDialog())
     {
         return Open(GetPathFromUrl(m_sCurrentFileUrl));
     }
-
     return false;
+#else
+    return true;
+#endif
 }
 
 bool SciTEQt::SaveAsDialog()
@@ -298,7 +306,6 @@ bool SciTEQt::SaveAsDialog()
     {
         return SaveIfNotOpen(GetPathFromUrl(m_sCurrentFileUrl), false);
     }
-
     return false;
 }
 
@@ -436,11 +443,26 @@ FilePath SciTEQt::GetSciteUserHome()
 void SciTEQt::Print(bool)
 {
     // TODO implement !
+
+    long lengthDoc = static_cast<long>(wEditor.Length());
+    std::string txt = wEditor.GetText(lengthDoc);
+
+    m_aPrinter.setFullPage( true );
+    QPrintDialog aDlg(&m_aPrinter, 0);
+    if( aDlg.exec() )
+    {
+        QPainter aPainter;
+        aPainter.begin(&m_aPrinter);
+// TODO: better printer implementation...
+        aPainter.drawText(10, 10, QString::fromStdString(txt));
+        aPainter.end();
+    }
 }
 
 void SciTEQt::PrintSetup()
 {
-    // TODO implement !
+    QPageSetupDialog aPageSetupDialog(&m_aPrinter);
+    aPageSetupDialog.exec();
 }
 
 void SciTEQt::Find()
@@ -802,6 +824,8 @@ void SciTEQt::EnableAMenuItem(int wIDCheckItem, bool val)
 
 void SciTEQt::AddToPopUp(const char *label, int cmd, bool enabled)
 {
+// see: SciTEBase::ContextMenu(
+
     // TODO implement !
     qDebug() << "AddToPopup " << label << " " << cmd << " " << enabled << endl;
 }
@@ -1688,6 +1712,11 @@ void SciTEQt::cmdGotoLine(int lineNo, int colPos)
 
         wEditor.GotoPos(position);
     }
+}
+
+void SciTEQt::cmdContextMenu(int menuID)
+{
+    MenuCommand(menuID);
 }
 
 void SciTEQt::ReadEmbeddedProperties()
