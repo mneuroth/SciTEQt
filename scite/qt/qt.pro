@@ -1,4 +1,4 @@
-QT += quick quickcontrols2 widgets printsupport
+QT += quick quickcontrols2 widgets printsupport svg
 
 TARGET = sciteqt
 
