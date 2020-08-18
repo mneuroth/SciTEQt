@@ -213,9 +213,36 @@ void SciTEQt::RemoveAllTabs()
 }
 
 void SciTEQt::WarnUser(int warnID)
-{
-    // TODO implement !
-    emit showInfoDialog(QString("Sorry: WarnUser() is not implemented yet! warnID=%1").arg(warnID), 0);
+{  
+    std::string warning;
+
+    // play a warning sound...
+    switch (warnID) {
+        case warnFindWrapped:
+            warning = props.GetString("warning.findwrapped");
+            break;
+        case warnNotFound:
+            warning = props.GetString("warning.notfound");
+            break;
+        case warnWrongFile:
+            warning = props.GetString("warning.wrongfile");
+            break;
+        case warnExecuteOK:
+            warning = props.GetString("warning.executeok");
+            break;
+        case warnExecuteKO:
+            warning = props.GetString("warning.executeko");
+            break;
+        case warnNoOtherBookmark:
+            warning = props.GetString("warning.nootherbookmark");
+            break;
+        default:
+            warning = QString("unknown message for warnID=%1").arg(warnID).toStdString();
+            break;
+    }
+
+    // playing sounds not implemented yet...
+    //emit showInfoDialog(QString::fromStdString(warning), 0);
 }
 
 void SciTEQt::GetWindowPosition(int *left, int *top, int *width, int *height, int *maximize)
@@ -639,10 +666,18 @@ void SciTEQt::SetFileProperties(PropSetFile &ps)
 
     QFileInfo aFileInfo(fileName);
 
-    QString temp;
+    QString temp("?");
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     temp = aFileInfo.fileTime(QFileDevice::FileModificationTime).toString("hh:mm:ss");
+#else
+    temp = aFileInfo.lastModified().toString("hh:mm:ss");
+#endif
     ps.Set("FileTime", temp.toStdString());
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     temp = aFileInfo.fileTime(QFileDevice::FileModificationTime).toString("dd.MM.yyyy");
+#else
+    temp = aFileInfo.lastModified().toString("dd.MM.yyyy");
+#endif
     ps.Set("FileDate", temp.toStdString());
     temp = QString("%1%2%3").arg(aFileInfo.isWritable() ? " " : "R").arg(aFileInfo.isHidden() ? "H" : " ").arg(" ");
     ps.Set("FileAttr", temp.toStdString());
