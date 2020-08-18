@@ -737,6 +737,7 @@ void ScintillaQt::AddToPopUp(const char *label,
                              int cmd,
                              bool enabled)
 {
+#ifndef PLAT_QT_QML
 	QMenu *menu = static_cast<QMenu *>(popup.GetID());
 	QString text(label);
 
@@ -752,6 +753,12 @@ void ScintillaQt::AddToPopUp(const char *label,
 	menu->disconnect();
 	connect(menu, SIGNAL(triggered(QAction *)),
 	        this, SLOT(execCommand(QAction *)));
+#else
+	QList<QPair<QString, QPair<int, bool>>> *menu = static_cast<QList<QPair<QString, QPair<int, bool>>> *>(popup.GetID());
+
+	QPair<QString, QPair<int, bool>> item(label, QPair<int, bool>(cmd, enabled));
+	menu->append(item);
+#endif
 }
 
 sptr_t ScintillaQt::WndProc(unsigned int iMessage, uptr_t wParam, sptr_t lParam)

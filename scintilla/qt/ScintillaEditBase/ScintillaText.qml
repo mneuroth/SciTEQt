@@ -2,6 +2,7 @@ import org.scintilla.scintilla 1.0
 import QtQuick 2.9
 import QtQuick.Controls 2.14
 import QtQuick.Dialogs 1.2
+import QtQml.Models 2.14
 
 // Use Scrollview to handle ScrollBars for QuickScintilla control.
 // Scrollbar uses Rectangle as flickable item which has the implicitSize of the QuickScintilla control
@@ -15,12 +16,15 @@ ScrollView {
 
     focusPolicy: Qt.StrongFocus
     //filtersChildMouseEvents: false
+
     property alias quickScintillaEditor: quickScintillaEditor
     property alias text: quickScintillaEditor.text
     property alias scintilla: quickScintillaEditor
     //property Flickable flickableItem: flickableItem
     //property alias vScrollBar: ScrollBar.vertical
     property bool actionFromKeyboard: false
+
+    property var menuCommandDelegate: undefined
 
     focus: true
     onFocusChanged: {
@@ -96,27 +100,40 @@ ScrollView {
         }
     }
 
+    // see: SciTEBase::ContextMenu
     Menu {
         id: editContextMenu
 
-        MenuItem {
-            text: "Copy"
-            onTriggered: {
-                console.log("Copy! "+quickScintillaEditor.visibleColumns)
+        Instantiator {
+            id: contextMenuItems
+            model: contextMenuModel
+            delegate: MenuItem {
+                text: model.display
+                enabled: model.enabled
+                onTriggered: menuCommandDelegate !== undefined ? menuCommandDelegate(model.menuId) : quickScintillaEditor.cmdContextMenu(model.menuId)
             }
+
+            onObjectAdded: editContextMenu.insertItem(index, object)
+            onObjectRemoved: editContextMenu.removeItem(object)
         }
-        MenuItem {
-            text: "Cut"
-            onTriggered: {
-                console.log("Cut!")
-            }
+
+    }
+
+    ListModel {
+        id: contextMenuModel
+        objectName: "contextMenu"
+        /*
+        ListElement {
+            display: "hello"
+            enabled: true
+            menuId: 123
         }
-        MenuItem {
-            text: "Paste"
-            onTriggered: {
-                console.log("Paste!")
-            }
+        ListElement {
+            display: "World !"
+            enabled: false
+            menuId: 124
         }
+        */
     }
 
     Connections {
@@ -193,9 +210,11 @@ ScrollView {
            root.contentItem.interactive = value
         }
 
-        onShowContextMenu: {
-            editContextMenu.popup(pos)
-        }
+        onShowContextMenu: editContextMenu.popup(pos)
+
+        onAddToContextMenu: contextMenuModel.append({"display":txt, "enabled":enabled, "menuId":menuId})
+
+        onClearContextMenu: contextMenuModel.clear()
 
         onDoubleClick: {
             //console.log("double click !")

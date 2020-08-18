@@ -46,6 +46,10 @@
 #ifdef PLAT_QT_QML
 #include <QQuickPaintedItem>
 #include <QScreen>
+#include <QList>
+#include <QPair>
+
+extern void ProcessScintillaContextMenu(Scintilla::Point pt, Scintilla::Window & w, const QList<QPair<QString, QPair<int, bool>>> & menu);
 #endif
 
 namespace Scintilla {
@@ -1191,21 +1195,35 @@ Menu::Menu() noexcept : mid(nullptr) {}
 void Menu::CreatePopUp()
 {
 	Destroy();
+#ifndef PLAT_QT_QML
 	mid = new QMenu();
+#else
+	mid = new QList<QPair<QString, QPair<int, bool>>>();	// text, menuId, enabled
+#endif
 }
 
 void Menu::Destroy()
 {
 	if (mid) {
+#ifndef PLAT_QT_QML
 		QMenu *menu = static_cast<QMenu *>(mid);
 		delete menu;
+#else
+		QList<QPair<QString, QPair<int, bool>>> *menu = static_cast<QList<QPair<QString, QPair<int, bool>>> *>(mid);
+		delete menu;
+#endif
 	}
 	mid = nullptr;
 }
-void Menu::Show(Point pt, Window & /*w*/)
+void Menu::Show(Point pt, Window & w)
 {
+#ifndef PLAT_QT_QML
 	QMenu *menu = static_cast<QMenu *>(mid);
 	menu->exec(QPoint(pt.x, pt.y));
+#else
+	QList<QPair<QString, QPair<int, bool>>> *menu = static_cast<QList<QPair<QString, QPair<int, bool>>> *>(mid);
+	ProcessScintillaContextMenu(pt, w, *menu);
+#endif
 	Destroy();
 }
 

@@ -176,6 +176,11 @@ void ScintillaEditBase::debug()
     qDebug() << "Debug: " << send(SCI_GETCURRENTPOS ) << endl;
 }
 
+void ScintillaEditBase::cmdContextMenu(int menuID)
+{
+    sqt->Command(menuID);
+}
+
 void ScintillaEditBase::enableUpdate(bool enable)
 {
     enableUpdateFlag = enable;
@@ -484,9 +489,7 @@ void ScintillaEditBase::mousePressEvent(QMouseEvent *event)
             sqt->SetEmptySelection(sqt->PositionFromLocation(pt));
         }
         if (sqt->ShouldDisplayPopup(pt)) {
-// TODO: fill context menu and transfer to qml ?
-            //sqt->ContextMenu(pos); --> move menu data to qml...
-            emit showContextMenu(event->pos());
+            sqt->ContextMenu(pos); 
         }
 #endif
     }
@@ -500,6 +503,26 @@ void ScintillaEditBase::mousePressEvent(QMouseEvent *event)
     event->setAccepted(true);
 #endif      
 }
+
+#ifdef PLAT_QT_QML
+void ProcessScintillaContextMenu(Point pt, Scintilla::Window & w, const QList<QPair<QString, QPair<int, bool>>> & menu)
+{
+    ScintillaEditBase * pQtObj = static_cast<ScintillaEditBase *>(w.GetID());
+
+	emit pQtObj->clearContextMenu();
+	for each (QPair<QString, QPair<int, bool>> item in menu)
+	{
+		if (item.first.size() > 0)
+		{
+			emit pQtObj->addToContextMenu(item.second.first, item.first, item.second.second);
+		}
+	
+	}
+
+	QPoint point(pt.x, pt.y);
+    emit pQtObj->showContextMenu(point);
+}
+#endif
 
 void ScintillaEditBase::mouseReleaseEvent(QMouseEvent *event)
 {

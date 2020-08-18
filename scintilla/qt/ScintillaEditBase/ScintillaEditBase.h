@@ -113,6 +113,7 @@ public:
     Q_INVOKABLE void scrollColumn(int deltaColumns);
     Q_INVOKABLE void enableUpdate(bool enable);
     Q_INVOKABLE void debug();
+    Q_INVOKABLE virtual void cmdContextMenu(int menuID);
 #endif
 
 public slots:
@@ -190,6 +191,8 @@ signals:
     void inputMethodHintsChanged();
     void showContextMenu(const QPoint & pos);
     void enableScrollViewInteraction(bool value);
+    void addToContextMenu(int menuId, const QString & txt, bool enabled);
+    void clearContextMenu();
 #endif
 
 protected:
