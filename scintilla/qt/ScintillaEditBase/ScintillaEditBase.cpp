@@ -26,6 +26,12 @@
 #include <QVarLengthArray>
 #include <QScrollBar>
 #include <QTextFormat>
+#ifdef PLAT_QT_QML
+#include <QtGlobal>
+#include <QPoint>
+#include <QPair>
+#include <QList>
+#endif
 
 #define INDIC_INPUTMETHOD 24
 
@@ -510,17 +516,16 @@ void ProcessScintillaContextMenu(Point pt, Scintilla::Window & w, const QList<QP
     ScintillaEditBase * pQtObj = static_cast<ScintillaEditBase *>(w.GetID());
 
 	emit pQtObj->clearContextMenu();
-	for each (QPair<QString, QPair<int, bool>> item in menu)
+    for (QPair<QString, QPair<int, bool>> item: menu)
 	{
 		if (item.first.size() > 0)
 		{
 			emit pQtObj->addToContextMenu(item.second.first, item.first, item.second.second);
-		}
-	
+		}	
 	}
 
-	QPoint point(pt.x, pt.y);
-    emit pQtObj->showContextMenu(point);
+    QPoint aPoint(pt.x, pt.y);
+    emit pQtObj->showContextMenu(aPoint);
 }
 #endif
 
