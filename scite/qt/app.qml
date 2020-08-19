@@ -220,6 +220,7 @@ ApplicationWindow {
         var tmpFilePath = "/tmp/temp.txt"
         writeCurrentDoc("file://" + tmpFilePath)
         //project.saveAs("file://" + tmpFilePath)
+// TODO: current document name...
         htmlFileAccess.saveFsFile(tmpFilePath, "temp.txt")
     }
 /*
@@ -253,6 +254,12 @@ ApplicationWindow {
         /*
           code see: static BarButton bbs[] or void SciTEGTK::AddToolBar()
           icons see: https://material.io/resources/icons/?style=baseline
+
+          TODO for Android:
+            + find next
+            + readonly
+            + share
+            - print
         */
         Row {
             anchors.fill: parent
@@ -407,7 +414,7 @@ ApplicationWindow {
         id: fileDialog
         objectName: "fileDialog"
         visible: false
-        modality: Qt.WindowModal
+        modality: Qt.ApplicationModal
         //fileMode: openMode ? FileDialog.OpenFile : FileDialog.SaveFile
         title: openMode ? qsTr("Choose a file") : qsTr("Save as")
         folder: "."
@@ -445,7 +452,7 @@ ApplicationWindow {
         visible: false
         title: qsTr("Info")
         //modal: true
-        //modality: Qt.WindowModality
+        modality: Qt.ApplicationModal
         standardButtons: StandardButton.Ok
         /*
         onAccepted: {
@@ -469,12 +476,20 @@ ApplicationWindow {
 
         width: 500
         height: 500
+
+        closeButton {
+            onClicked: {
+                aboutSciteDialog.close()
+                quickScintillaEditor.focus = true
+                quickScintillaEditor.update()
+            }
+        }
     }
 
     FindInFilesDialog {
         id: findInFilesDialog
         objectName: "findInFilesDialog"
-        modality: Qt.NonModal
+        modality: sciteQt.isMobilePlatform() || sciteQt.isWebassemblyPlatform() ? Qt.ApplicationModal : Qt.NonModal
         title: sciteQt.getLocalisedText(qsTr("Find in Files"))
         //width: 450
         //height: 200
@@ -484,7 +499,16 @@ ApplicationWindow {
         visible: false
 
         cancelButton {
-            onClicked: findInFilesDialog.close()
+            onClicked: {
+                console.log("find in files cancel")
+                console.log("--> "+findInFilesDialog+" "+quickScintillaEditor)
+                findInFilesDialog.close()
+                console.log("find in files (1)")
+                quickScintillaEditor.focus = true
+                console.log("find in files (2)")
+                quickScintillaEditor.update()
+                console.log("find in files (3)")
+            }
         }
         findButton {
             onClicked: {
@@ -497,6 +521,10 @@ ApplicationWindow {
                 // FindInFilesCmd() // gtk
 
                 // TODO: implement Qt version of find in files (visiscript?)
+
+                cancelButton.clicked()
+                quickScintillaEditor.focus = true
+                quickScintillaEditor.update()
             }
         }
     }
@@ -514,13 +542,19 @@ ApplicationWindow {
         visible: false
 
         cancelButton {
-            onClicked: gotoDialog.close()
+            onClicked: {
+                console.log("goto cancel")
+                gotoDialog.close()
+                quickScintillaEditor.focus = true
+                quickScintillaEditor.update()
+            }
         }
         gotoButton {
             onClicked: {
                 sciteQt.cmdGotoLine(parseInt(gotoDialog.destinationLineInput.text), parseInt(gotoDialog.columnInput.text))
                 cancelButton.clicked()
                 quickScintillaEditor.focus = true
+                quickScintillaEditor.update()
             }
         }
     }

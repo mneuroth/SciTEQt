@@ -12,10 +12,10 @@ Window {
     //flags: Qt.MSWindowsFixedSizeDialogHint
 
     maximumHeight: height
-    //maximumWidth: width
+    maximumWidth: width
 
     minimumHeight: height
-    //minimumWidth: width
+    minimumWidth: width
 
     property alias cancelButton: cancelButton
     property alias findButton: findButton

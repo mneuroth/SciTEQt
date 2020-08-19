@@ -22,6 +22,10 @@
 #include "ScintillaEditBase.h"
 #include "ScintillaQt.h"
 
+#ifdef Q_OS_WASM
+#include <emscripten.h>
+#endif
+
 QString ConvertGuiCharToQString(const GUI::gui_char * s)
 {
 #ifdef Q_OS_WINDOWS
@@ -296,8 +300,13 @@ bool SciTEQt::ProcessCurrentFileDialog()
     m_bFileDialogWaitDoneFlag = false;
     while(!m_bFileDialogWaitDoneFlag)
     {
-        //QCoreApplication::processEvents();
-        QGuiApplication::processEvents();
+        // for Webassembly see:
+        // https://bugreports.qt.io/browse/QTBUG-64020
+        // http://vps2.etotheipiplusone.com:30176/redmine/projects/emscripten-qt/wiki/
+        QCoreApplication::processEvents();
+#ifdef Q_OS_WASM
+        emscripten_sleep(10);
+#endif
         QThread::msleep(10);
     }
 
@@ -318,15 +327,11 @@ bool SciTEQt::OpenDialog(const FilePath &directory, const GUI::gui_char *filesFi
 
     emit startFileDialog(directory.AbsolutePath().AsUTF8().c_str(), s/*ConvertGuiStringToQString(openFilter)*/, "Open File", true);
 
-#ifndef Q_OS_WASM
     if(ProcessCurrentFileDialog())
     {
         return Open(GetPathFromUrl(m_sCurrentFileUrl));
     }
     return false;
-#else
-    return true;
-#endif
 }
 
 bool SciTEQt::SaveAsDialog()
@@ -522,31 +527,70 @@ void SciTEQt::Find()
     }
 }
 
+//#include <QMessageBox>
+
 SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::gui_string &msg, MessageBoxStyle style)
 {
+//qDebug() << "WindowMessageBox "     << endl;
+//    int standardButton1 = QMessageBox::Cancel;
+//    int standardButton2 = QMessageBox::NoButton;
+//    int standardButton3 = QMessageBox::NoButton;
+//    if((style & 7) == 4)
+//    {
+//        standardButton1 = QMessageBox::Yes;
+//        standardButton2 = QMessageBox::No;
+//    }
+//    if((style & 7) == 3)
+//    {
+//        standardButton1 = QMessageBox::Yes;
+//        standardButton2 = QMessageBox::No;
+//        standardButton3 = QMessageBox::Cancel;
+//    }
+
+//    qDebug() << "WindowMessageBox (1)"     << endl;
+//    int result = QMessageBox::information(0, "Info", ConvertGuiStringToQString(msg), standardButton1, standardButton2, standardButton3);
+//    qDebug() << "WindowMessageBox (2) " << result    <<  endl;
+//    switch(result)
+//    {
+//        case QMessageBox::Ok:
+//            return mbOK;
+//        case QMessageBox::Cancel:
+//            return mbCancel;
+//        case QMessageBox::Yes:
+//            return mbYes;
+//        case QMessageBox::No:
+//            return mbNo;
+//        default:
+//            return mbCancel;
+//    }
+
     emit showInfoDialog(ConvertGuiStringToQString(msg), style);
 
-	m_iMessageDialogAccepted = MSGBOX_RESULT_EMPTY;
+    m_iMessageDialogAccepted = MSGBOX_RESULT_EMPTY;
     QObject * pMessageBox = getCurrentInfoDialog();
     connect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnAcceptedClicked()));
     connect(pMessageBox,SIGNAL(rejected()),this,SLOT(OnRejectedClicked()));
-	connect(pMessageBox,SIGNAL(okClicked()), this, SLOT(OnOkClicked()));
-	connect(pMessageBox,SIGNAL(cancelClicked()),this,SLOT(OnCancelClicked()));
+    //connect(pMessageBox,SIGNAL(okClicked()), this, SLOT(OnOkClicked()));
+    //connect(pMessageBox,SIGNAL(cancelClicked()),this,SLOT(OnCancelClicked()));
     connect(pMessageBox,SIGNAL(yes()),this,SLOT(OnYesClicked()));
     connect(pMessageBox,SIGNAL(no()),this,SLOT(OnNoClicked()));
 
     // simulate a synchronious call: wait for signal from MessageBox and then return with result
+// TODO: problems with webassembly !!!
     m_bWaitDoneFlag = false;
     while(!m_bWaitDoneFlag)
     {
         QCoreApplication::processEvents();
+#ifdef Q_OS_WASM
+        emscripten_sleep(10);
+#endif
         QThread::msleep(10);
     }
 
     disconnect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnAcceptedClicked()));
     disconnect(pMessageBox,SIGNAL(rejected()),this,SLOT(OnRejectedClicked()));
-	disconnect(pMessageBox,SIGNAL(ok()), this, SLOT(OnOkClicked()));
-	disconnect(pMessageBox,SIGNAL(cancel()),this,SLOT(OnCancelClicked()));
+    //disconnect(pMessageBox,SIGNAL(ok()), this, SLOT(OnOkClicked()));
+    //disconnect(pMessageBox,SIGNAL(cancel()),this,SLOT(OnCancelClicked()));
     disconnect(pMessageBox,SIGNAL(yes()),this,SLOT(OnYesClicked()));
     disconnect(pMessageBox,SIGNAL(no()),this,SLOT(OnNoClicked()));
 
@@ -558,6 +602,8 @@ SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::g
 		return SciTEQt::MessageBoxChoice::mbOK;
 	if ((m_iMessageDialogAccepted & MSGBOX_RESULT_CANCEL) == MSGBOX_RESULT_CANCEL)
 		return SciTEQt::MessageBoxChoice::mbCancel;
+
+// TODO: Frage: Warum wird der Dialog ueberhaupt geschlossen ?
 
 	return SciTEQt::MessageBoxChoice::mbCancel;
 }
@@ -631,6 +677,8 @@ void SciTEQt::TabSizeDialog()
 bool SciTEQt::ParametersOpen()
 {
     // TODO implement !
+
+    // is parameters dialog open ?
     //emit showInfoDialog("Sorry: ParametersOpen() is not implemented yet!", 0);
     return false;
 }
@@ -638,13 +686,36 @@ bool SciTEQt::ParametersOpen()
 void SciTEQt::ParamGrab()
 {
     // TODO implement !
-    emit showInfoDialog("Sorry: ParamGrab() is not implemented yet!", 0);
+//    emit showInfoDialog("Sorry: ParamGrab() is not implemented yet!", 0);
+
+    // read parameters from open parameters dialog, see code Win and Gtk:
+/*
+    if (wParameters.Created()) {
+        HWND hDlg = HwndOf(wParameters);
+        Dialog dlg(hDlg);
+        for (int param = 0; param < maxParam; param++) {
+            std::string paramVal = GUI::UTF8FromString(dlg.ItemTextG(IDPARAMSTART + param));
+            std::string paramText = StdStringFromInteger(param + 1);
+            props.Set(paramText.c_str(), paramVal.c_str());
+        }
+        UpdateStatusBar(true);
+    }
+    if (dlgParameters.Created()) {
+        for (int param = 0; param < maxParam; param++) {
+            std::string paramText = StdStringFromInteger(param + 1);
+            const char *paramVal = dlgParameters.entryParam[param].Text();
+            props.Set(paramText.c_str(), paramVal);
+        }
+        UpdateStatusBar(true);
+    }
+*/
 }
 
 bool SciTEQt::ParametersDialog(bool modal)
 {
     // TODO implement !
     emit showInfoDialog("Sorry: ParametersDialog() is not implemented yet!", 0);
+// TODO --> ProcessEvents() for closing .... --> needed for Webassembly to close the message dialog box
     return false;
 }
 
@@ -1046,8 +1117,18 @@ bool SciTEQt::doOpen(const QString & sFileName)
     // c) set file content at buffer/document
     return Open(path);
 #else
-    return Open(path);
+    OpenFlags openFlags = ofNone;
+#ifdef Q_OS_WASM
+    openFlags = ofSynchronous;
 #endif
+    return Open(path, openFlags);
+#endif
+}
+
+// TODO: only for debugging
+void mylog(GUI::gui_char * txt)
+{
+    qDebug() << "MYLOG: " << txt << endl;
 }
 
 void SciTEQt::setScintilla(QObject * obj)
@@ -1113,11 +1194,16 @@ bool SciTEQt::saveCurrentAs(const QString & sFileName)
     buf[sLocalFileName.length()] = 0;
     FilePath path(buf);
 #else
-    FilePath path(sFileName.toStdString());
+    FilePath path(sLocalFileName.toStdString());
 #endif
     if(path.IsSet())
     {
+#ifdef Q_OS_WASM
+// TODO improve --> synchronous saving of data needed for webassembly platform !
+        ret = SaveBuffer(path, sfSynchronous);
+#else
         ret = SaveIfNotOpen(path, false);
+#endif
     }
 #ifdef Q_OS_WINDOWS
     delete [] buf;

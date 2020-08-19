@@ -4,6 +4,10 @@ TARGET = sciteqt
 
 CONFIG += c++1z
 
+wasm {
+    QMAKE_CXXFLAGS += "-s ASYNCIFY=1 -s ASSERTIONS=1"
+}
+
 include(qhtml5file/qhtml5file.pri)
 
 HEADERS += applicationdata.h\

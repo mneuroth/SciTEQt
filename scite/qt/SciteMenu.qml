@@ -703,6 +703,11 @@ MenuBar {
             action: sciteActions.actionTestFunction
         }
         MenuItem {
+            id: actionTest2Function
+            text: processMenuItem2(sciteActions.actionTest2Function.text, actionTest2Function)
+            action: sciteActions.actionTest2Function
+        }
+        MenuItem {
             id: actionDebugInfo
             text: processMenuItem(qsTr("Debug info"),actionDebugInfo)
             onTriggered: {

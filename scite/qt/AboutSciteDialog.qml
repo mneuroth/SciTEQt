@@ -12,6 +12,8 @@ Window {
     height: 500
 
     property alias scintilla: aboutText.quickScintillaEditor
+    property alias closeButton: closeButton
+
     property var fcnLocalisation: undefined
 
     function localiseText(text) {
@@ -27,16 +29,15 @@ Window {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom: findCloseButton.top
+        anchors.bottom: closeButton.top
         anchors.rightMargin: 5
         anchors.leftMargin: 5
         anchors.topMargin: 5
         anchors.bottomMargin: 5
-
     }
 
     Button {
-        id: findCloseButton
+        id: closeButton
 
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -47,7 +48,5 @@ Window {
         anchors.bottomMargin: 5
 
         text: localiseText("OK")
-
-        onClicked: root.close()
     }
 }

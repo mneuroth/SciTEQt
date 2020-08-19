@@ -76,15 +76,14 @@ namespace {
 
         ::g_qtFileDataReadyCallback = fileDataReady;
         EM_ASM_({
-            //const accept = Pointer_stringify($0); // PATCH
-            //const accept = UTF8ToString($0);      // PATCH
+            const accept = UTF8ToString($0);      // PATCH
 
             // Crate file file input which whil display the native file dialog
             var fileElement = document.createElement("input");
             document.body.appendChild(fileElement);
             fileElement.type = "file";
             fileElement.style = "display:none";
-            fileElement.accept = "*.*"; //accept;   // PATCH
+            fileElement.accept = accept;
             fileElement.onchange = function(event) {
                 const files = event.target.files;
 
@@ -140,7 +139,7 @@ namespace {
             // the char * to a JavaScript string and create a subarray view into the C heap.
             const contentPointer = $0;
             const contentLength = $1;
-            const fileNameHint = Pointer_stringify($2);
+            const fileNameHint = UTF8ToString($2);
             const fileContent = Module.HEAPU8.subarray(contentPointer, contentPointer + contentLength);
 
             // Create a hidden download link and click it programatically
