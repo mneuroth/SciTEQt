@@ -48,6 +48,6 @@ Window {
 
         text: localiseText("OK")
 
-        onClicked: root.visible = false
+        onClicked: root.close()
     }
 }
