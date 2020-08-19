@@ -146,7 +146,7 @@ MenuBar {
 
     AutoSizingMenu {
         id: editMenu
-        title: processMenuItem(qsTr("Edit"),null)
+        title: processMenuItem(qsTr("&Edit"),null)
 
         MenuItem {
             id: actionUndo
@@ -279,7 +279,7 @@ MenuBar {
 
     AutoSizingMenu {
         id: searchMenu
-        title: processMenuItem(qsTr("Search"),null)
+        title: processMenuItem(qsTr("&Search"),null)
 
         MenuItem {
             id: actionFind
@@ -434,7 +434,7 @@ MenuBar {
 
     AutoSizingMenu {
         id: toolsMenu
-        title: processMenuItem(qsTr("Tools"),null)
+        title: processMenuItem(qsTr("&Tools"),null)
 
         MenuItem {
             id: actionCompile
@@ -500,7 +500,7 @@ MenuBar {
 
     AutoSizingMenu {
         id: optionsMenu
-        title: processMenuItem(qsTr("Options"),null)
+        title: processMenuItem(qsTr("&Options"),null)
 
         MenuItem {
             id: actionAlwaysOnTop
@@ -605,7 +605,7 @@ MenuBar {
 
     Menu {
         id: languageMenu
-        title: processMenuItem(qsTr("Language"),null)
+        title: processMenuItem(qsTr("&Language"),null)
 
         Instantiator {
             id: currentLanguagesItems
@@ -672,7 +672,7 @@ MenuBar {
 
     AutoSizingMenu {
         id: helpMenu
-        title: processMenuItem(qsTr("Help"),null)
+        title: processMenuItem(qsTr("&Help"),null)
 
         MenuItem {
             id: actionHelp
