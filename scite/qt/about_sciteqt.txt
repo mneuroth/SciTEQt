@@ -26,3 +26,4 @@ Missing features are:
   * Parameter grab
   * Find/Replace extended dialog
   * Improve splitter handling
+  * Webassembly: processing of modal dialogs (FileDialog, MessageBox)

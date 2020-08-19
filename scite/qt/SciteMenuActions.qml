@@ -844,7 +844,7 @@ Item {
     Action {
         id: actionTestFunction
         text: qsTr("Test")
-        onTriggered: applicationWindow.showAboutSciteDialog()
+        onTriggered: applicationWindow.htmlOpen() //applicationWindow.showAboutSciteDialog()
     }
 
     // ************************************************

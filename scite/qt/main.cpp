@@ -11,6 +11,8 @@
 #include "applicationdata.h"
 #include "sciteqt.h"
 
+#include <qhtml5file/qhtmlfileaccess.h>
+
 #ifndef Q_OS_WIN
 #define _WITH_QDEBUG_REDIRECT
 #define _WITH_ADD_TO_LOG
@@ -134,6 +136,10 @@ int main(int argc, char *argv[])
 
     ApplicationData data(0, &multiExtender, engine);
     engine.rootContext()->setContextProperty("applicationData", &data);
+
+    QHtmlFileAccess htmlFileAccess(qApp);
+    engine.rootContext()->setContextProperty("htmlFileAccess", &htmlFileAccess);
+
     engine.load(url);
 
     //qDebug() << "LOAD QML DONE" << endl;

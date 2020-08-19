@@ -4,6 +4,8 @@ TARGET = sciteqt
 
 CONFIG += c++1z
 
+include(qhtml5file/qhtml5file.pri)
+
 HEADERS += applicationdata.h\
            ../../scintilla/lexilla/src/Lexilla.h \
            sciteqt.h

@@ -199,6 +199,43 @@ ApplicationWindow {
         replaceInput.visible = false
     }
 
+    // *** for webassembly platform ... ***
+
+    function htmlOpen() {
+        console.log("htmlOpen");
+        htmlFileAccess.loadFsFile("*.*", "/tmp");
+    }
+
+    Connections {
+        target: htmlFileAccess
+        onFsFileReady: {
+            console.log("onFsFileReady " + tmpFilePath + " " + fileName)
+            readCurrentDoc("file://" + tmpFilePath)
+            //loadProject("file://" + tmpFilePath)
+        }
+    }
+
+    function htmlSave() {
+        console.log("htmlSave");
+        var tmpFilePath = "/tmp/temp.txt"
+        writeCurrentDoc("file://" + tmpFilePath)
+        //project.saveAs("file://" + tmpFilePath)
+        htmlFileAccess.saveFsFile(tmpFilePath, "temp.txt")
+    }
+/*
+    function saveOrSaveAs() {
+        htmlSave();
+        return;
+
+        if (project.url.toString().length > 0) {
+            project.save();
+        } else {
+            saveAsDialog.open();
+        }
+    }
+*/
+    // *** for webassembly platform done ***
+
     SciteMenuActions {
         id: sciteActions
     }
@@ -483,6 +520,7 @@ ApplicationWindow {
             onClicked: {
                 sciteQt.cmdGotoLine(parseInt(gotoDialog.destinationLineInput.text), parseInt(gotoDialog.columnInput.text))
                 cancelButton.clicked()
+                quickScintillaEditor.focus = true
             }
         }
     }
