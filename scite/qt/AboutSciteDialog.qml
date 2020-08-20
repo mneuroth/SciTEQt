@@ -48,5 +48,7 @@ Window {
         anchors.bottomMargin: 5
 
         text: localiseText("OK")
+        Keys.onEscapePressed: closeButton.clicked()
+        Keys.onBackPressed: closeButton.clicked()
     }
 }

@@ -23,6 +23,11 @@ ApplicationWindow {
         close.accepted = false
     }
 
+    onFocusObjectChanged: {
+        console.log("Focus obj changed "+object)
+        logToOutput("Focus obj changed "+object)
+    }
+
     Component.onCompleted: {
         //console.log("ON Completed")
 // TODO: gibt es besseren weg scintilla controls bei sciteqt zu registrieren?
@@ -57,8 +62,7 @@ ApplicationWindow {
 
     function setTextToCurrent(text) {
         quickScintillaEditor.text = text
-        quickScintillaEditor.focus = true
-        quickScintillaEditor.update()
+        focusToEditor()
     }
 
     function startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog) {
@@ -157,7 +161,8 @@ ApplicationWindow {
         gotoDialog.currentLineOutput.text = currentLine
         gotoDialog.currentColumnOutput.text = currentColumn
         gotoDialog.lastLineOutput.text = maxLine
-        gotoDialog.show() //open()
+        gotoDialog.show()
+        //gotoDialog.open()
         gotoDialog.destinationLineInput.focus = true
     }
 
@@ -194,9 +199,20 @@ ApplicationWindow {
     }
 
     function hideFindRow() {
-        quickScintillaEditor.focus = true
+        focusToEditor()
         findInput.visible = false
         replaceInput.visible = false
+    }
+
+    function focusToEditor() {
+        logToOutput("focusToEditor()")
+        //quickScintillaEditor.focus = true
+        quickScintillaEditor.forceActiveFocus()
+        //quickScintillaEditor.update()
+    }
+
+    function logToOutput(txt) {
+        quickScintillaOutput.text = quickScintillaOutput.text+"\n"+txt+"\n"
     }
 
     // *** for webassembly platform ... ***
@@ -439,10 +455,10 @@ ApplicationWindow {
             else {
                 sciteQt.updateCurrentSelectedFileUrl(fileUrl)
             }
-            quickScintillaEditor.focus = true
+            focusToEditor()
         }
         onRejected: {
-            quickScintillaEditor.focus = true
+            focusToEditor()
         }
     }       
 
@@ -456,7 +472,7 @@ ApplicationWindow {
         standardButtons: StandardButton.Ok
         /*
         onAccepted: {
-            quickScintillaEditor.focus = true
+            focusToEditor()
             console.log("accept")
         }
         onRejected: console.log("reject")
@@ -480,8 +496,7 @@ ApplicationWindow {
         closeButton {
             onClicked: {
                 aboutSciteDialog.close()
-                quickScintillaEditor.focus = true
-                quickScintillaEditor.update()
+                focusToEditor()
             }
         }
     }
@@ -498,16 +513,15 @@ ApplicationWindow {
 
         visible: false
 
+        Keys.onBackPressed: {
+            logToOutput("find in files BACK Pressed")
+            focusToEditor()
+        }
+
         cancelButton {
             onClicked: {
-                console.log("find in files cancel")
-                console.log("--> "+findInFilesDialog+" "+quickScintillaEditor)
                 findInFilesDialog.close()
-                console.log("find in files (1)")
-                quickScintillaEditor.focus = true
-                console.log("find in files (2)")
-                quickScintillaEditor.update()
-                console.log("find in files (3)")
+                focusToEditor()
             }
         }
         findButton {
@@ -523,8 +537,7 @@ ApplicationWindow {
                 // TODO: implement Qt version of find in files (visiscript?)
 
                 cancelButton.clicked()
-                quickScintillaEditor.focus = true
-                quickScintillaEditor.update()
+                //focusToEditor()
             }
         }
     }
@@ -541,20 +554,22 @@ ApplicationWindow {
 
         visible: false
 
+        Keys.onBackPressed: {
+            logToOutput("goto BACK Pressed")
+            focusToEditor()
+        }
+
         cancelButton {
             onClicked: {
-                console.log("goto cancel")
                 gotoDialog.close()
-                quickScintillaEditor.focus = true
-                quickScintillaEditor.update()
+                focusToEditor()
             }
         }
         gotoButton {
             onClicked: {
                 sciteQt.cmdGotoLine(parseInt(gotoDialog.destinationLineInput.text), parseInt(gotoDialog.columnInput.text))
                 cancelButton.clicked()
-                quickScintillaEditor.focus = true
-                quickScintillaEditor.update()
+                //focusToEditor()
             }
         }
     }
@@ -760,6 +775,7 @@ ApplicationWindow {
             }
         }
         Keys.onEscapePressed: hideFindRow()
+        Keys.onBackPressed: hideFindRow()
     }
 
     Button {
@@ -782,6 +798,7 @@ ApplicationWindow {
             hideFindRow()
         }
         Keys.onEscapePressed: hideFindRow()
+        Keys.onBackPressed: hideFindRow()
     }
 
     Button {
@@ -805,6 +822,7 @@ ApplicationWindow {
             hideFindRow()
         }
         Keys.onEscapePressed: hideFindRow()
+        Keys.onBackPressed: hideFindRow()
     }
 
     Button {
@@ -827,6 +845,7 @@ ApplicationWindow {
         checked: sciteQt.wholeWord
         onClicked: sciteQt.wholeWord = !sciteQt.wholeWord
         Keys.onEscapePressed: hideFindRow()
+        Keys.onBackPressed: hideFindRow()
     }
 
     Button {
@@ -849,6 +868,7 @@ ApplicationWindow {
         checked: sciteQt.caseSensitive
         onClicked: sciteQt.caseSensitive = !sciteQt.caseSensitive
         Keys.onEscapePressed: hideFindRow()
+        Keys.onBackPressed: hideFindRow()
     }
 
     Button {
@@ -871,6 +891,7 @@ ApplicationWindow {
         checked: sciteQt.regularExpression
         onClicked: sciteQt.regularExpression = !sciteQt.regularExpression
         Keys.onEscapePressed: hideFindRow()
+        Keys.onBackPressed: hideFindRow()
     }
 
     Button {
@@ -893,6 +914,7 @@ ApplicationWindow {
         checked: sciteQt.transformBackslash
         onClicked: sciteQt.transformBackslash = !sciteQt.transformBackslash
         Keys.onEscapePressed: hideFindRow()
+        Keys.onBackPressed: hideFindRow()
     }
 
     Button {
@@ -915,6 +937,7 @@ ApplicationWindow {
         checked: sciteQt.wrapAround
         onClicked: sciteQt.wrapAround = !sciteQt.wrapAround
         Keys.onEscapePressed: hideFindRow()
+        Keys.onBackPressed: hideFindRow()
     }
 
     Button {
@@ -937,6 +960,7 @@ ApplicationWindow {
         checked: sciteQt.searchUp
         onClicked: sciteQt.searchUp = !sciteQt.searchUp
         Keys.onEscapePressed: hideFindRow()
+        Keys.onBackPressed: hideFindRow()
     }
 
     Button {
@@ -961,6 +985,7 @@ ApplicationWindow {
 
         onClicked: hideFindRow()
         Keys.onEscapePressed: hideFindRow()
+        Keys.onBackPressed: hideFindRow()
     }
 
     // Find/replace Dialog above status bar:
@@ -1018,6 +1043,7 @@ ApplicationWindow {
             }
         }
         Keys.onEscapePressed: hideFindRow()
+        Keys.onBackPressed: hideFindRow()
     }
 
     Button {
@@ -1036,6 +1062,7 @@ ApplicationWindow {
         text: sciteQt.getLocalisedText(qsTr("&Replace"))
         onClicked: sciteQt.cmdTriggerReplace(findInput.text, replaceInput.text, false)
         Keys.onEscapePressed: hideFindRow()
+        Keys.onBackPressed: hideFindRow()
     }
 
     Button {
@@ -1054,6 +1081,7 @@ ApplicationWindow {
         text: sciteQt.getLocalisedText(qsTr("In &Section"))
         onClicked: sciteQt.cmdTriggerReplace(findInput.text, replaceInput.text, true)
         Keys.onEscapePressed: hideFindRow()
+        Keys.onBackPressed: hideFindRow()
     }
 
     Label {
@@ -1114,7 +1142,7 @@ ApplicationWindow {
     }
 
     function insertTab(index, title) {
-        var item = tabButton.createObject(tabBar, {text: title, fcnClicked: function () { sciteQt.cmdSelectBuffer(index); quickScintillaEditor.focus = true }})
+        var item = tabButton.createObject(tabBar, {text: title, fcnClicked: function () { sciteQt.cmdSelectBuffer(index); focusToEditor() }})
         tabBar.insertItem(index, item)
     }
 }

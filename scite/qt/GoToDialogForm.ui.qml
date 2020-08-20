@@ -11,11 +11,11 @@ Window {
 
     //flags: Qt.MSWindowsFixedSizeDialogHint
 
-    maximumHeight: height
-    maximumWidth: width
+    //maximumHeight: height
+    //maximumWidth: width
 
-    minimumHeight: height
-    minimumWidth: width
+    //minimumHeight: height
+    //minimumWidth: width
 
     property alias cancelButton: cancelButton
     property alias gotoButton: gotoButton
@@ -62,6 +62,7 @@ Window {
                 id: destinationLineInput
                 //font.pixelSize: 12
                 Keys.onEscapePressed: cancelButton.clicked()
+                Keys.onBackPressed: cancelButton.clicked()
             }
 
             Label {
@@ -73,12 +74,14 @@ Window {
                 id: columnInput
                 //font.pixelSize: 12
                 Keys.onEscapePressed: cancelButton.clicked()
+                Keys.onBackPressed: cancelButton.clicked()
             }
 
             Button {
                 id: gotoButton
                 text: localiseText(qsTr("&Go To"))
                 Keys.onEscapePressed: cancelButton.clicked()
+                Keys.onBackPressed: cancelButton.clicked()
             }
 
             Label {
@@ -103,6 +106,7 @@ Window {
                 id: cancelButton
                 text: localiseText(qsTr("Cancel"))
                 Keys.onEscapePressed: cancelButton.clicked()
+                Keys.onBackPressed: cancelButton.clicked()
             }
 
             Label {

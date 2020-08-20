@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 #if defined(Q_OS_WIN) || defined(Q_OS_MACOS) || defined(Q_OS_LINUX)
     QQuickStyle::setStyle("Fusion");
 #elif defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
-    QQuickStyle::setStyle("Default");
+    //QQuickStyle::setStyle("Default");
 #endif
 
     qRegisterMetaType<SCNotification>("SCNotification");

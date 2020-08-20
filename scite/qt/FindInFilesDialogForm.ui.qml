@@ -63,12 +63,14 @@ Window {
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
                 Keys.onEscapePressed: cancelButton.clicked()
+                Keys.onBackPressed: cancelButton.clicked()
             }
 
             Button {
                 id: findButton
                 text: qsTr("Find")
                 Keys.onEscapePressed: cancelButton.clicked()
+                Keys.onBackPressed: cancelButton.clicked()
             }
 
             Label {
@@ -83,12 +85,14 @@ Window {
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
                 Keys.onEscapePressed: cancelButton.clicked()
+                Keys.onBackPressed: cancelButton.clicked()
             }
 
             Button {
                 id: cancelButton
                 text: localiseText(qsTr("Cancel"))
                 Keys.onEscapePressed: cancelButton.clicked()
+                Keys.onBackPressed: cancelButton.clicked()
             }
 
             Label {
@@ -102,6 +106,7 @@ Window {
                 font.pixelSize: 12
                 Layout.fillWidth: true
                 Keys.onEscapePressed: cancelButton.clicked()
+                Keys.onBackPressed: cancelButton.clicked()
             }
 
             Button {
@@ -109,12 +114,14 @@ Window {
                 width: browseButton.width / 2
                 text: localiseText(qsTr(".."))
                 Keys.onEscapePressed: cancelButton.clicked()
+                Keys.onBackPressed: cancelButton.clicked()
             }
 
             Button {
                 id: browseButton
                 text: localiseText(qsTr("Browse..."))
                 Keys.onEscapePressed: cancelButton.clicked()
+                Keys.onBackPressed: cancelButton.clicked()
             }
 
             Row {
@@ -124,12 +131,14 @@ Window {
                     id: wholeWordButton
                     text: localiseText(qsTr("Match whole word only"))
                     Keys.onEscapePressed: cancelButton.clicked()
+                    Keys.onBackPressed: cancelButton.clicked()
                 }
 
                 CheckBox {
                     id: caseSensitiveButton
                     text: localiseText(qsTr("Case sensitive"))
                     Keys.onEscapePressed: cancelButton.clicked()
+                    Keys.onBackPressed: cancelButton.clicked()
                 }
             }
 /*
