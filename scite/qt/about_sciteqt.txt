@@ -27,6 +27,6 @@ Missing features are:
   * Find/Replace extended dialog
   * Improve splitter handling
   * ((Webassembly: processing of modal dialogs (FileDialog, MessageBox)
-  * Webassembly: cancel Dialogs creates crash !
-  * Webassembly: after closing dialog (FileDialog) app needs mouse click to update view
-  * Android: focus lost problem after closing dialog, need to touch on tabbar
+  * Webassembly: click on Buttons (i. e. Cancel) in Dialogs creates crash ! BUT: setting focus via Keyboard and return on button works sometimes !!!???
+  * ((Webassembly: after closing dialog (FileDialog) app needs mouse click to update view
+  * ((Android: focus lost problem after closing dialog, need to touch on tabbar

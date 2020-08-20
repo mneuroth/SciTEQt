@@ -4,6 +4,10 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 
 FindInFilesDialogForm {
+    id: root
+
+    signal canceled()
+    signal accepted()
 
     findWhatInput {
         onAccepted: findButton.clicked()
@@ -15,6 +19,20 @@ FindInFilesDialogForm {
 
     directoryInput {
         onAccepted: findButton.clicked()
+    }
+
+    cancelButton {
+        onClicked: {
+            root.close()
+            canceled()
+        }
+    }
+
+    findButton {
+        onClicked: {
+            root.close()
+            accepted()
+        }
     }
 
 }
