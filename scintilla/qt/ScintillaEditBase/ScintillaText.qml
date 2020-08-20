@@ -19,7 +19,12 @@ ScrollView {
     //filtersChildMouseEvents: false
 
     property alias quickScintillaEditor: quickScintillaEditor
+
+    // public properties
     property alias text: quickScintillaEditor.text
+    property alias readonly: quickScintillaEditor.readonly
+
+    // private properties, used only for technical details...
     property alias scintilla: quickScintillaEditor
     //property Flickable flickableItem: flickableItem
     //property alias vScrollBar: ScrollBar.vertical
@@ -58,6 +63,8 @@ ScrollView {
         ScintillaEditBase {
             id: quickScintillaEditor
             objectName: root.objectName+"Scintilla"
+
+            readonly: false
 
             width: root.availableWidth-root.ScrollBar.vertical.width //+ 2*quickScintillaEditor.charHeight
             height: root.availableHeight-root.ScrollBar.horizontal.height //+ 2*quickScintillaEditor.charWidth

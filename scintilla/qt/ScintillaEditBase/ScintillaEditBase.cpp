@@ -1231,6 +1231,17 @@ void ScintillaEditBase::setInputMethodHints(Qt::InputMethodHints hints)
     emit inputMethodHintsChanged();
 }
 
+bool ScintillaEditBase::getReadonly() const
+{
+    bool flag = (bool)send(SCI_GETREADONLY);
+    return flag;
+}
+
+void ScintillaEditBase::setReadonly(bool value)
+{
+    send(SCI_SETREADONLY, value);
+}
+
 void ScintillaEditBase::UpdateQuickView()
 {
     int lineCount = send(SCI_GETLINECOUNT);

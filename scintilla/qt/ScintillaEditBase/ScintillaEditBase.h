@@ -76,6 +76,7 @@ class EXPORT_IMPORT_API ScintillaEditBase : public
 
     Q_PROPERTY(QString text READ getText WRITE setText)
     Q_PROPERTY(QFont font READ getFont WRITE setFont)
+    Q_PROPERTY(bool readonly READ getReadonly WRITE setReadonly)
     Q_PROPERTY(int logicalWidth READ getLogicalWidth NOTIFY logicalWidthChanged)
     Q_PROPERTY(int logicalHeight READ getLogicalHeight NOTIFY logicalHeightChanged)
     Q_PROPERTY(int charHeight READ getCharHeight NOTIFY charHeightChanged)
@@ -193,6 +194,7 @@ signals:
     void enableScrollViewInteraction(bool value);
     void addToContextMenu(int menuId, const QString & txt, bool enabled);
     void clearContextMenu();
+    //void readonlyChanged();
 #endif
 
 protected:
@@ -252,6 +254,8 @@ private:
     int getVisibleColumns() const;
     Qt::InputMethodHints inputMethodHints() const;
     void setInputMethodHints(Qt::InputMethodHints hints);
+    bool getReadonly() const;
+    void setReadonly(bool value);
 
     void UpdateQuickView();
 
