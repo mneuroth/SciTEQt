@@ -7,7 +7,7 @@ import QtQuick.Controls 1.4 as Controls1
 import QtQuick.Layouts 1.0
 import Qt.labs.settings 1.0
 
-import QtQuick.Window 2.9   // for test only
+import QtQuick.Window 2.9   // for dialog test only (webassembly)
 
 import org.scintilla.sciteqt 1.0
 
@@ -26,8 +26,8 @@ ApplicationWindow {
     }
 
     onFocusObjectChanged: {
-        console.log("Focus obj changed "+object)
-        logToOutput("Focus obj changed "+object)
+        //console.log("Focus obj changed "+object)
+        //logToOutput("Focus obj changed "+object)
     }
 
     Component.onCompleted: {
@@ -207,7 +207,7 @@ ApplicationWindow {
     }
 
     function focusToEditor() {
-        logToOutput("focusToEditor()")
+        //logToOutput("focusToEditor()")
         //quickScintillaEditor.focus = true
         quickScintillaEditor.forceActiveFocus()
         //quickScintillaEditor.update()
@@ -285,14 +285,16 @@ ApplicationWindow {
     menuBar: sciteMenu
 
     header: ToolBar {
-        contentHeight: toolButtonNew.implicitHeight
+        contentHeight: tooButtonContainer.implicitHeight
         visible: sciteQt.showToolBar
 
         /*
           code see: static BarButton bbs[] or void SciTEGTK::AddToolBar()
           icons see: https://material.io/resources/icons/?style=baseline
         */
-        Row {
+        Flow {
+            id: tooButtonContainer
+
             anchors.fill: parent
             ToolButton {
                 id: toolButtonNew
@@ -331,6 +333,7 @@ ApplicationWindow {
                 onClicked: {
                     quickScintillaEditor.readonly = toolButtonReadonly.checked
                     quickScintillaOutput.readonly = toolButtonReadonly.checked
+                    focusToEditor()
                 }
             }
             ToolSeparator {}

@@ -33,5 +33,6 @@
         <file alias="icons/arrow_back_ios.svg">icons/arrow_back_ios-black-24dp.svg</file>
         <file alias="icons/do_not_touch.svg">icons/do_not_touch-black-24dp.svg</file>
         <file alias="icons/share.svg">icons/share-black-24dp.svg</file>
+        <file>+android/SciteMenu.qml</file>
     </qresource>
 </RCC>
