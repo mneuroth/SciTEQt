@@ -338,14 +338,14 @@ ApplicationWindow {
                 id: toolButtonPrint
                 icon.source: "icons/print.svg"
                 //text: "Print"
-                visible: sciteQt.showToolBar
+                visible: sciteQt.showToolBar && !sciteQt.isMobilePlatform()
                 onClicked: sciteQt.cmdPrint()
             }
             ToolButton {
                 id: toolButtonShare
                 icon.source: "icons/share.svg"
                 //text: "Share"
-                visible: sciteQt.showToolBar
+                visible: sciteQt.showToolBar && sciteQt.isMobilePlatform()
                 onClicked: sciteQt.cmdShare()
             }
             ToolSeparator {}

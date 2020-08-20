@@ -84,6 +84,8 @@ int main(int argc, char *argv[])
 
 #if defined(Q_OS_WIN) || defined(Q_OS_MACOS) || defined(Q_OS_LINUX)
     QQuickStyle::setStyle("Fusion");
+    //QQuickStyle::setStyle("Material");
+    //QQuickStyle::setStyle("Universal");
 #elif defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
     //QQuickStyle::setStyle("Default");
 #endif

@@ -6,14 +6,16 @@ import QtQuick.Window 2.9
 
 Window {
 
-    width: 500
-    height: 130
+    //width: 500
+    //height: 130
+    width: grid.implicitWidth+10
+    height: grid.implicitHeight+10
 
     //flags: Qt.MSWindowsFixedSizeDialogHint
 
+    // Window is not resizable !
     maximumHeight: height
     maximumWidth: width
-
     minimumHeight: height
     minimumWidth: width
 
