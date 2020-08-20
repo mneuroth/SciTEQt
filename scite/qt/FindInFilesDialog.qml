@@ -4,4 +4,17 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 
 FindInFilesDialogForm {
+
+    findWhatInput {
+        onAccepted: findButton.clicked()
+    }
+
+    filesExtensionsInput {
+        onAccepted: findButton.clicked()
+    }
+
+    directoryInput {
+        onAccepted: findButton.clicked()
+    }
+
 }

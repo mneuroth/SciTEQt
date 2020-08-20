@@ -4,6 +4,10 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 
 GoToDialogForm {
+    id: root
+
+    signal canceled()
+    signal accepted()
 
     destinationLineInput {
         validator: IntValidator { bottom: 1; top: 999999 /*lastLineNumber*/ }
@@ -23,4 +27,17 @@ GoToDialogForm {
         }
     }
 
+    cancelButton {
+        onClicked: {
+            root.close()
+            canceled()
+        }
+    }
+
+    gotoButton {
+        onClicked: {
+            root.close()
+            accepted()
+        }
+    }
 }

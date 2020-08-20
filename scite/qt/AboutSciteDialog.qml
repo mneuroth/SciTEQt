@@ -11,6 +11,8 @@ Window {
     width: 500
     height: 500
 
+    signal closed()
+
     property alias scintilla: aboutText.quickScintillaEditor
     property alias closeButton: closeButton
 
@@ -50,5 +52,10 @@ Window {
         text: localiseText("OK")
         Keys.onEscapePressed: closeButton.clicked()
         Keys.onBackPressed: closeButton.clicked()
+
+        onClicked: {
+            root.close()
+            closed()
+        }
     }
 }

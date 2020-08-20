@@ -7,6 +7,8 @@ import QtQuick.Controls 1.4 as Controls1
 import QtQuick.Layouts 1.0
 import Qt.labs.settings 1.0
 
+import QtQuick.Window 2.9   // for test only
+
 import org.scintilla.sciteqt 1.0
 
 ApplicationWindow {
@@ -215,6 +217,10 @@ ApplicationWindow {
         quickScintillaOutput.text = quickScintillaOutput.text+"\n"+txt+"\n"
     }
 
+    function showTestDialog() {
+        testDialog.show()
+    }
+
     // *** for webassembly platform ... ***
 
     function htmlOpen() {
@@ -270,12 +276,6 @@ ApplicationWindow {
         /*
           code see: static BarButton bbs[] or void SciTEGTK::AddToolBar()
           icons see: https://material.io/resources/icons/?style=baseline
-
-          TODO for Android:
-            + find next
-            + readonly
-            + share
-            - print
         */
         Row {
             anchors.fill: parent
@@ -307,6 +307,17 @@ ApplicationWindow {
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdClose()
             }
+            ToolButton {
+                id: toolButtonReadonly
+                icon.source: "icons/do_not_touch.svg"
+                //text: "Readonly"
+                visible: sciteQt.showToolBar
+                checkable: true
+                onClicked: {
+                    quickScintillaEditor.readonly = toolButtonReadonly.checked
+                    quickScintillaOutput.readonly = toolButtonReadonly.checked
+                }
+            }
             ToolSeparator {}
             ToolButton {
                 id: toolButtonPrint
@@ -314,6 +325,13 @@ ApplicationWindow {
                 //text: "Print"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdPrint()
+            }
+            ToolButton {
+                id: toolButtonShare
+                icon.source: "icons/share.svg"
+                //text: "Share"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdShare()
             }
             ToolSeparator {}
             ToolButton {
@@ -374,6 +392,20 @@ ApplicationWindow {
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdReplace()
             }
+            ToolButton {
+                id: toolButtonFindPrevious
+                icon.source: "icons/arrow_back_ios.svg"
+                //text: "Previous"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdFindPrevious()
+            }
+            ToolButton {
+                id: toolButtonFindNext
+                icon.source: "icons/arrow_forward_ios.svg"
+                //text: "Next"
+                visible: sciteQt.showToolBar
+                onClicked: sciteQt.cmdFindNext()
+            }
             ToolSeparator {}
             ToolButton {
                 id: toolButtonBuild
@@ -424,154 +456,6 @@ ApplicationWindow {
         anchors.topMargin: 5
         anchors.bottomMargin: 5
         text: "?"
-    }
-
-    FileDialog {
-        id: fileDialog
-        objectName: "fileDialog"
-        visible: false
-        modality: Qt.ApplicationModal
-        //fileMode: openMode ? FileDialog.OpenFile : FileDialog.SaveFile
-        title: openMode ? qsTr("Choose a file") : qsTr("Save as")
-        folder: "."
-
-        property bool openMode: true
-
-        selectExisting: openMode ? true : false
-        selectMultiple: false
-        selectFolder: false
-
-        onAccepted: {
-//            //console.log("Accepted: " + /*currentFile*/fileUrl+" "+fileDialog.openMode)
-            if(sciteQt.isWebassemblyPlatform()) {
-                if(!fileDialog.openMode) {
-                    writeCurrentDoc(fileUrl)
-                }
-                else {
-                    //Android: quickScintillaEditor.text = fileUrl
-                    readCurrentDoc(fileUrl)
-                }
-            }
-            else {
-                sciteQt.updateCurrentSelectedFileUrl(fileUrl)
-            }
-            focusToEditor()
-        }
-        onRejected: {
-            focusToEditor()
-        }
-    }       
-
-    MessageDialog {
-        id: infoDialog
-        objectName: "infoDialog"
-        visible: false
-        title: qsTr("Info")
-        //modal: true
-        modality: Qt.ApplicationModal
-        standardButtons: StandardButton.Ok
-        /*
-        onAccepted: {
-            focusToEditor()
-            console.log("accept")
-        }
-        onRejected: console.log("reject")
-        onYes: console.log("yes")
-        onNo: console.log("no")
-        */
-    }
-
-    AboutSciteDialog {
-        id: aboutSciteDialog
-        objectName: "aboutSciteDialog"
-        visible: false
-        modality: Qt.ApplicationModal
-        title: sciteQt.getLocalisedText(qsTr("About SciTE"))
-
-        fcnLocalisation: sciteQt.getLocalisedText
-
-        width: 500
-        height: 500
-
-        closeButton {
-            onClicked: {
-                aboutSciteDialog.close()
-                focusToEditor()
-            }
-        }
-    }
-
-    FindInFilesDialog {
-        id: findInFilesDialog
-        objectName: "findInFilesDialog"
-        modality: sciteQt.isMobilePlatform() || sciteQt.isWebassemblyPlatform() ? Qt.ApplicationModal : Qt.NonModal
-        title: sciteQt.getLocalisedText(qsTr("Find in Files"))
-        //width: 450
-        //height: 200
-
-        fcnLocalisation: sciteQt.getLocalisedText
-
-        visible: false
-
-        Keys.onBackPressed: {
-            logToOutput("find in files BACK Pressed")
-            focusToEditor()
-        }
-
-        cancelButton {
-            onClicked: {
-                findInFilesDialog.close()
-                focusToEditor()
-            }
-        }
-        findButton {
-            onClicked: {
-                //console.log("find: "+findWhatInput.text)
-                //GrabFields()
-                //SetFindInFilesOptions()
-                //SelectionIntoProperties()
-                // --> grep command bauen und ausfuehren....
-                // PerformGrep()    // windows
-                // FindInFilesCmd() // gtk
-
-                // TODO: implement Qt version of find in files (visiscript?)
-
-                cancelButton.clicked()
-                //focusToEditor()
-            }
-        }
-    }
-
-    GoToDialog {
-        id: gotoDialog
-        objectName: "gotoDialog"
-        modality: Qt.ApplicationModal
-        title: sciteQt.getLocalisedText(qsTr("Go To"))
-        //width: 600
-        //height: 100
-
-        fcnLocalisation: sciteQt.getLocalisedText
-
-        visible: false
-
-        Keys.onBackPressed: {
-            logToOutput("goto BACK Pressed")
-            focusToEditor()
-        }
-
-        cancelButton {
-            onClicked: {
-                gotoDialog.close()
-                focusToEditor()
-            }
-        }
-        gotoButton {
-            onClicked: {
-                sciteQt.cmdGotoLine(parseInt(gotoDialog.destinationLineInput.text), parseInt(gotoDialog.columnInput.text))
-                cancelButton.clicked()
-                //focusToEditor()
-            }
-        }
     }
 
     TabBar {
@@ -1144,5 +1028,200 @@ ApplicationWindow {
     function insertTab(index, title) {
         var item = tabButton.createObject(tabBar, {text: title, fcnClicked: function () { sciteQt.cmdSelectBuffer(index); focusToEditor() }})
         tabBar.insertItem(index, item)
+    }
+
+    FileDialog {
+        id: fileDialog
+        objectName: "fileDialog"
+        visible: false
+        modality: Qt.ApplicationModal
+        //fileMode: openMode ? FileDialog.OpenFile : FileDialog.SaveFile
+        title: openMode ? qsTr("Choose a file") : qsTr("Save as")
+        folder: "."
+
+        property bool openMode: true
+
+        selectExisting: openMode ? true : false
+        selectMultiple: false
+        selectFolder: false
+
+        onAccepted: {
+//            //console.log("Accepted: " + /*currentFile*/fileUrl+" "+fileDialog.openMode)
+            if(sciteQt.isWebassemblyPlatform()) {
+                if(!fileDialog.openMode) {
+                    writeCurrentDoc(fileUrl)
+                }
+                else {
+                    //Android: quickScintillaEditor.text = fileUrl
+                    readCurrentDoc(fileUrl)
+                }
+            }
+            else {
+                sciteQt.updateCurrentSelectedFileUrl(fileUrl)
+            }
+            focusToEditor()
+        }
+        onRejected: {
+            focusToEditor()
+        }
+    }
+
+    MessageDialog {
+        id: infoDialog
+        objectName: "infoDialog"
+        visible: false
+        title: qsTr("Info")
+        //modal: true
+        modality: Qt.ApplicationModal
+        standardButtons: StandardButton.Ok
+        /*
+        onAccepted: {
+            focusToEditor()
+            console.log("accept")
+        }
+        onRejected: console.log("reject")
+        onYes: console.log("yes")
+        onNo: console.log("no")
+        */
+    }
+
+    Window {
+        id: testDialog
+        width: 200
+        height: 200
+
+        Row {
+            Button {
+                text: "ok"
+                onClicked: {
+                    logToOutput("test dialog ok")
+                    testDialog.close()
+                }
+            }
+            Button {
+                text: "cancel"
+                onClicked: {
+                    logToOutput("test dialog cancel")
+                    testDialog.close()
+                }
+            }
+        }
+    }
+
+    AboutSciteDialog {
+        id: aboutSciteDialog
+        objectName: "aboutSciteDialog"
+        visible: false
+        modality: Qt.ApplicationModal
+        title: sciteQt.getLocalisedText(qsTr("About SciTE"))
+
+        fcnLocalisation: sciteQt.getLocalisedText
+
+        width: 500
+        height: 500
+/*
+        closeButton {
+            onClicked: {
+                aboutSciteDialog.close()
+                focusToEditor()
+            }
+        }
+*/
+    }
+
+    Connections {
+        target: aboutSciteDialog
+
+        onClosed: focusToEditor()
+    }
+
+    FindInFilesDialog {
+        id: findInFilesDialog
+        objectName: "findInFilesDialog"
+        modality: sciteQt.isMobilePlatform() || sciteQt.isWebassemblyPlatform() ? Qt.ApplicationModal : Qt.NonModal
+        title: sciteQt.getLocalisedText(qsTr("Find in Files"))
+        //width: 450
+        //height: 200
+
+        fcnLocalisation: sciteQt.getLocalisedText
+
+        visible: false
+
+//        Keys.onBackPressed: {
+//            logToOutput("find in files BACK Pressed")
+//            focusToEditor()
+//        }
+
+        cancelButton {
+            onClicked: {
+                findInFilesDialog.close()
+                focusToEditor()
+            }
+        }
+        findButton {
+            onClicked: {
+                //console.log("find: "+findWhatInput.text)
+                //GrabFields()
+                //SetFindInFilesOptions()
+                //SelectionIntoProperties()
+                // --> grep command bauen und ausfuehren....
+                // PerformGrep()    // windows
+                // FindInFilesCmd() // gtk
+
+                // TODO: implement Qt version of find in files (visiscript?)
+
+                cancelButton.clicked()
+                //focusToEditor()
+            }
+        }
+    }
+
+    GoToDialog {
+        id: gotoDialog
+        objectName: "gotoDialog"
+        modality: Qt.ApplicationModal
+        title: sciteQt.getLocalisedText(qsTr("Go To"))
+        //width: 600
+        //height: 100
+
+        fcnLocalisation: sciteQt.getLocalisedText
+
+        visible: false
+
+//        Keys.onBackPressed: {
+//            logToOutput("goto BACK Pressed")
+//            focusToEditor()
+//        }
+/*
+        cancelButton {
+            onClicked: {
+                gotoDialog.close()
+                focusToEditor()
+            }
+        }
+        gotoButton {
+            onClicked: {
+                sciteQt.cmdGotoLine(parseInt(gotoDialog.destinationLineInput.text), parseInt(gotoDialog.columnInput.text))
+                cancelButton.clicked()
+                //focusToEditor()
+            }
+        }
+*/
+    }
+
+    Connections {
+        target: gotoDialog
+
+        onCanceled: {
+            console.log("goto canceled")
+            //gotoDialog.close()
+            focusToEditor()
+        }
+        onAccepted: {
+            console.log("goto accepted")
+            sciteQt.cmdGotoLine(parseInt(gotoDialog.destinationLineInput.text), parseInt(gotoDialog.columnInput.text))
+            //gotoDialog.close()
+            focusToEditor()
+        }
     }
 }
