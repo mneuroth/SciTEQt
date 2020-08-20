@@ -15,7 +15,7 @@ yet.
 
 Missing features are:
 
-  * Context menus (partly)
+  * Context menus (partly, missing: context menu for tab page)
   * Printing (partly)
   * Execute external Scripts (build, go, stop, etc.)
   * Find in Files dialog
@@ -25,8 +25,18 @@ Missing features are:
   * Parameters open
   * Parameter grab
   * Find/Replace extended dialog
+  * History for find/replace items
+  * Support multiple languages via resources
+  * Support Drag&Drop (desktop)
+  * Detect monitor change/removement and move position if needed
+  * Support list of last opened files
   * Improve splitter handling
-  * ((Webassembly: processing of modal dialogs (FileDialog, MessageBox)
-  * Webassembly: click on Buttons (i. e. Cancel) in Dialogs creates crash ! BUT: setting focus via Keyboard and return on button works sometimes !!!???
   * ((Webassembly: after closing dialog (FileDialog) app needs mouse click to update view
+  * Webassembly: processing of modal dialogs (FileDialog, MessageBox)
+  * Webassembly: click on Buttons (i. e. Cancel) in Dialogs creates crash ! BUT: setting focus via Keyboard and return on button works sometimes !!!???
   * ((Android: focus lost problem after closing dialog, need to touch on tabbar
+  * Android: improve selection of text
+  * Android: improve Menu/Toolbar layout
+  * Android: implement file access
+  * Android: implement sharing
+  * Android: improve deployment
