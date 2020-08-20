@@ -820,6 +820,7 @@ Item {
     property alias actionAboutSciteQt: actionAboutSciteQt
     property alias actionTestFunction: actionTestFunction
     property alias actionTest2Function: actionTest2Function
+    property alias actionTest3Function: actionTest3Function
 
     Action {
         id: actionHelp
@@ -844,13 +845,18 @@ Item {
     }
     Action {
         id: actionTestFunction
-        text: qsTr("Test")
+        text: qsTr("Html Open")
         onTriggered: applicationWindow.htmlOpen() //applicationWindow.showAboutSciteDialog()
     }
     Action {
         id: actionTest2Function
-        text: qsTr("Test 2")
+        text: qsTr("Html Save")
         onTriggered: applicationWindow.htmlSave() //applicationWindow.showAboutSciteDialog()
+    }
+    Action {
+        id: actionTest3Function
+        text: qsTr("Test Dialog")
+        onTriggered: applicationWindow.showTestDialog()
     }
 
     // ************************************************

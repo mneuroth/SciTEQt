@@ -1803,6 +1803,11 @@ void SciTEQt::cmdAboutSciteQt()
     emit setTextToCurrent(aboutSciteQt);
 }
 
+void SciTEQt::cmdShare()
+{
+    // TODO
+}
+
 void SciTEQt::cmdMarkAll()
 {
     MarkAll(markWithBookMarks);

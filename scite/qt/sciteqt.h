@@ -344,6 +344,7 @@ public:
     Q_INVOKABLE void cmdSciteHelp();
     Q_INVOKABLE void cmdAboutScite();
     Q_INVOKABLE void cmdAboutSciteQt();
+    Q_INVOKABLE void cmdShare();
 
     Q_INVOKABLE void cmdMarkAll();
     Q_INVOKABLE void cmdTriggerReplace(const QString & find, const QString & replace, bool inSection);
