@@ -673,7 +673,23 @@ MenuBar {
     AutoSizingMenu {
         id: helpMenu
         title: processMenuItem(qsTr("&Help"),null)
+/*
+        Menu {
+            id: helpMenu2
+            title: processMenuItem(qsTr("&Help 2"),null)
 
+            MenuItem {
+                id: actionHelp2
+                text: processMenuItem2(sciteActions.actionHelp.text, actionHelp2)
+                action: sciteActions.actionHelp
+            }
+            MenuItem {
+                id: actionSciteHelp2
+                text: processMenuItem2(sciteActions.actionSciteHelp.text, actionSciteHelp2)
+                action: sciteActions.actionSciteHelp
+            }
+        }
+*/
         MenuItem {
             id: actionHelp
             text: processMenuItem2(sciteActions.actionHelp.text, actionHelp)

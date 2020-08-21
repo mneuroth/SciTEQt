@@ -11,6 +11,15 @@
 #define LOG_NAME "mgv_quick_qdebug.log"
 #endif
 
+#define ASSETS_DIR                  "assets:/files/"
+#define FILES_DIR                   "/data/data/org.scintilla.sciteqt/files/"
+
+#define SCITE_PROPERTIES            "SciTE.properties"
+#define SCITE_GLOBAL_PROPERTIES     "SciTEGlobal.properties"
+#define SCITE_ABBREV_PROPERTIES     "abbrev.properties"
+#define SCITE_SCITE_USER_PROPERTIES "SciTEUser.properties"
+#define SCITE_SCITE_DOC_HTML        "SciTEDoc.html"
+
 // **************************************************************************
 
 class SciTEQt;
@@ -38,5 +47,7 @@ private:
     QQmlApplicationEngine &     m_aEngine;
     Extension *                 m_pExtension;   // not an owner !
 };
+
+void UnpackFiles();
 
 #endif // APPLICATIONDATA_H

@@ -5,7 +5,7 @@ import QtQml.Models 2.9
 import Qt.labs.platform 1.1 as Platform
 import QtQuick.Controls 1.4 as Controls1
 import QtQuick.Layouts 1.0
-import Qt.labs.settings 1.0
+//import Qt.labs.settings 1.0
 
 import QtQuick.Window 2.9   // for dialog test only (webassembly)
 
@@ -66,6 +66,10 @@ ApplicationWindow {
     function setTextToCurrent(text) {
         quickScintillaEditor.text = text
         focusToEditor()
+    }
+
+    function addTextToOutput(text) {
+        quickScintillaOutput.text += text
     }
 
     function startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog) {
@@ -1056,12 +1060,12 @@ ApplicationWindow {
         anchors.topMargin: 5
         anchors.bottomMargin: 5
     }
-
+/*
     Settings {
         id: settings
         property var splitView
     }
-
+*/
     SciTEQt {
        id: sciteQt
     }
@@ -1072,6 +1076,7 @@ ApplicationWindow {
         onTriggerUpdateCurrentWindowPosAndSize: updateCurrentWindowPosAndSize()
         onSetWindowPosAndSize:                  setWindowPosAndSize(left, top, width, height, maximize)
         onSetTextToCurrent:                     setTextToCurrent(text)
+        onAddTextToOutput:                      addTextToOutput(text)
 
         onStartFileDialog:            startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog)
         onShowInfoDialog:             showInfoDialog(sInfoText, style)

@@ -77,6 +77,8 @@
 //#include <QStandardItemModel>
 #include <QPrinter>
 
+#define SCITE_HOME  "SciTE_HOME"
+
 #define POST_TO_MAIN (QEvent::User + 1)
 
 class QSciTEQtEvent : public QEvent
@@ -430,6 +432,7 @@ signals:
     void triggerUpdateCurrentWindowPosAndSize();
     void setWindowPosAndSize(int left, int top, int width, int height, bool maximize);
     void setTextToCurrent(const QString & text);
+    void addTextToOutput(const QString & text);
 
 private:
     QObject * getCurrentInfoDialog();

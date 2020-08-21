@@ -145,6 +145,30 @@ win32 {
 }
 
 android {
+    QT += androidextras
+
+    equals(ANDROID_TARGET_ARCH, arm64-v8a) {
+        ARCH_PATH = arm64
+    }
+    equals(ANDROID_TARGET_ARCH, armeabi-v7a) {
+        ARCH_PATH = arm
+    }
+    equals(ANDROID_TARGET_ARCH, armeabi) {
+        ARCH_PATH = arm
+    }
+    equals(ANDROID_TARGET_ARCH, x86)  {
+        ARCH_PATH = x86
+    }
+    equals(ANDROID_TARGET_ARCH, x86_64)  {
+        ARCH_PATH = x64
+    }
+    equals(ANDROID_TARGET_ARCH, mips)  {
+        ARCH_PATH = mips
+    }
+    equals(ANDROID_TARGET_ARCH, mips64)  {
+        ARCH_PATH = mips64
+    }
+
     deployment1.files=../src/SciTE.properties
     deployment1.path=/assets/files
     deployment2.files=../src/SciTEGlobal.properties

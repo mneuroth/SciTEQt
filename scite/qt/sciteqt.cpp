@@ -426,7 +426,7 @@ void SciTEQt::SaveAsHTML()
     }
 }
 
-FilePath GetSciTEPath(const QByteArray & home)
+FilePath toGetSciTEPath(const QByteArray & home)
 {
     GUI::gui_char buf[512];
     if(!home.isEmpty())
@@ -454,13 +454,13 @@ FilePath GetSciTEPath(const QByteArray & home)
 
 FilePath SciTEQt::GetDefaultDirectory()
 {
-    QByteArray home = qgetenv("SciTE_HOME");
+    QByteArray home = qgetenv(SCITE_HOME);
     return GetSciTEPath(home);
 }
 
 FilePath SciTEQt::GetSciteDefaultHome()
 {
-    QByteArray home = qgetenv("SciTE_HOME");
+    QByteArray home = qgetenv(SCITE_HOME);
     return GetSciTEPath(home);
 }
 
@@ -471,7 +471,7 @@ FilePath SciTEQt::GetSciteUserHome()
     // then defaulting to $USERPROFILE
     QByteArray home = qgetenv("SciTE_USERHOME");
     if (home.isEmpty()) {
-        home = qgetenv("SciTE_HOME");
+        home = qgetenv(SCITE_HOME);
         if (home.isEmpty()) {
             home = qgetenv("USERPROFILE");
             if(home.isEmpty()) {
@@ -1770,7 +1770,17 @@ void SciTEQt::cmdHelp()
 
 void SciTEQt::cmdSciteHelp()
 {
-    QDesktopServices::openUrl(QUrl::fromLocalFile("SciTEDoc.html"));
+#ifdef Q_OS_ANDROID
+    if( !QDesktopServices::openUrl(QUrl::fromLocalFile("/data/data/org.scintilla.sciteqt/files/SciTEDoc.html")) )
+    {
+        QDesktopServices::openUrl(QUrl("https://www.scintilla.org/ScintillaDoc.html"));
+    }
+#else
+    if( !QDesktopServices::openUrl(QUrl::fromLocalFile("SciTEDoc.html")) )
+    {
+        QDesktopServices::openUrl(QUrl("https://www.scintilla.org/ScintillaDoc.html"));
+    }
+#endif
     //MenuCommand(IDM_HELP_SCITE);
 }
 
@@ -2146,6 +2156,8 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
 
 void SciTEQt::RestorePosition()
 {
+    // for android platform the size of the main window must not change !!! --> ignore RestorePosition call
+#ifndef Q_OS_ANDROID
     const int left = propsSession.GetInt("position.left", 0);
     const int top = propsSession.GetInt("position.top", 0);
     const int width = propsSession.GetInt("position.width", 600);
@@ -2153,6 +2165,7 @@ void SciTEQt::RestorePosition()
     bool maximize = propsSession.GetInt("position.maximize", 0)==1;
 
     emit setWindowPosAndSize(left, top, width, height, maximize);
+#endif
 }
 
 void SciTEQt::setSpliterPos(int currentPosX, int currentPosY)

@@ -431,7 +431,7 @@ MenuBar {
             action: sciteActions.actionParameters
         }
     }
-/*
+
     AutoSizingMenu {
         id: toolsMenu
         title: processMenuItem(qsTr("&Tools"),null)
@@ -497,7 +497,7 @@ MenuBar {
             action: sciteActions.actionSwitchPane
         }
     }
-*/
+
     AutoSizingMenu {
         id: optionsMenu
         title: processMenuItem(qsTr("&Options"),null)

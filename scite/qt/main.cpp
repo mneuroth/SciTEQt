@@ -90,6 +90,11 @@ int main(int argc, char *argv[])
     //QQuickStyle::setStyle("Default");
 #endif
 
+#ifdef Q_OS_ANDROID
+    UnpackFiles();
+    qputenv(SCITE_HOME, FILES_DIR);
+#endif
+
     qRegisterMetaType<SCNotification>("SCNotification");
     qRegisterMetaType<SCNotification>("uptr_t");
     qRegisterMetaType<SCNotification>("sptr_t");
