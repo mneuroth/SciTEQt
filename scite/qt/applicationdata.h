@@ -13,6 +13,8 @@
 
 #define ASSETS_DIR                  "assets:/files/"
 #define FILES_DIR                   "/data/data/org.scintilla.sciteqt/files/"
+#define SCRIPTS_DIR                 "/data/data/org.scintilla.sciteqt/files/scripts/"
+#define SDCARD_DIRECTORY            "/sdcard"
 
 #define SCITE_PROPERTIES            "SciTE.properties"
 #define SCITE_GLOBAL_PROPERTIES     "SciTEGlobal.properties"
@@ -29,9 +31,21 @@ class ApplicationData : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY(QString filesPath READ getFilesPath)
+    Q_PROPERTY(QString homePath READ getHomePath)
+    Q_PROPERTY(QString sdCardPath READ getSDCardPath)
+
+    Q_PROPERTY(bool isAppStoreSupported READ isAppStoreSupported NOTIFY isAppStoreSupportedChanged)
+    Q_PROPERTY(bool isShareSupported READ isShareSupported NOTIFY isShareSupportedChanged)
+
 public:
     explicit ApplicationData(QObject *parent, Extension * pExtension, QQmlApplicationEngine & aEngine);
     ~ApplicationData();
+
+    Q_INVOKABLE QString getNormalizedPath(const QString & path) const;
+
+    Q_INVOKABLE bool hasAccessToSDCardPath() const;
+    Q_INVOKABLE bool grantAccessToSDCardPath();
 
     Q_INVOKABLE QString readFileContent(const QString & fileName) const;
     Q_INVOKABLE bool writeFileContent(const QString & fileName, const QString & content);
@@ -40,8 +54,20 @@ public:
 
     Q_INVOKABLE QString readLog() const;
 
+    Q_INVOKABLE QStringList getSDCardPaths() const;
+    QString getFilesPath() const;
+    QString getHomePath() const;
+    QString getSDCardPath() const;
+
+    bool isAppStoreSupported() const;
+    bool isShareSupported() const;
+
     QQmlApplicationEngine & GetQmlApplicationEngine();
     Extension * GetExtension();
+
+signals:
+    void isAppStoreSupportedChanged();
+    void isShareSupportedChanged();
 
 private:
     QQmlApplicationEngine &     m_aEngine;

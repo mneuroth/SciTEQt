@@ -1246,4 +1246,31 @@ ApplicationWindow {
             focusToEditor()
         }
     }
+
+    MobileFileDialog {
+        id: mobileFileDialog
+    }
+
+    Connections {
+        target: mobileFileDialog
+
+        onOpenSelectedFile: {
+            console.log("OPEN file "+fileName)
+            readCurrentDoc(fileName)
+        }
+        onSaveSelectedFile: {
+            console.log("SAVE file "+fileName)
+            writeCurrentDoc(buildValidUrl(fileName))
+        }
+    }
+
+    function openViaMobileFileDialog() {
+        mobileFileDialog.setOpenModus()
+        mobileFileDialog.show()
+    }
+    function saveViaMobileFileDialog() {
+        mobileFileDialog.setDirectory(mobileFileDialog.currentDirectory)
+        mobileFileDialog.setSaveAsModus()
+        mobileFileDialog.show()
+    }
 }

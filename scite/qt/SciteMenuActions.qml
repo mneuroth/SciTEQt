@@ -821,6 +821,8 @@ Item {
     property alias actionTestFunction: actionTestFunction
     property alias actionTest2Function: actionTest2Function
     property alias actionTest3Function: actionTest3Function
+    property alias actionTest4Function: actionTest4Function
+    property alias actionTest5Function: actionTest5Function
 
     Action {
         id: actionHelp
@@ -857,6 +859,16 @@ Item {
         id: actionTest3Function
         text: qsTr("Test Dialog")
         onTriggered: applicationWindow.showTestDialog()
+    }
+    Action {
+        id: actionTest4Function
+        text: qsTr("Open Mobile")
+        onTriggered: applicationWindow.openViaMobileFileDialog()
+    }
+    Action {
+        id: actionTest5Function
+        text: qsTr("Save Mobile")
+        onTriggered: applicationWindow.saveViaMobileFileDialog()
     }
 
     // ************************************************
