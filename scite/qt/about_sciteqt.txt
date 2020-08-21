@@ -40,3 +40,4 @@ Missing features are:
   * Android: implement file access
   * Android: implement sharing
   * Android: improve deployment
+  * github ci: windows build is green, but compile step was failing !!!???

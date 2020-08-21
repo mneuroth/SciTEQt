@@ -188,7 +188,13 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
     ReadEnvironment();
 
     ReadGlobalPropFile();
+
     SetPropertiesInitial();
+    // sync property files with state of qt application
+    setShowTabBar(tabVisible);
+    setShowToolBar(tbVisible);
+    setShowStatusBar(sbVisible);
+
     ReadAbbrevPropFile();
 
     CreateBuffers();
@@ -426,7 +432,7 @@ void SciTEQt::SaveAsHTML()
     }
 }
 
-FilePath toGetSciTEPath(const QByteArray & home)
+FilePath GetSciTEPath(const QByteArray & home)
 {
     GUI::gui_char buf[512];
     if(!home.isEmpty())

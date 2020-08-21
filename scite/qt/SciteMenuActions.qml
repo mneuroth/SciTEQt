@@ -489,21 +489,21 @@ Item {
         id: actionShowToolBar
         text: qsTr("&Tool Bar")
         checkable: true
-        checked: false
+        checked: sciteQt.showToolBar
         onTriggered: sciteQt.cmdShowToolBar()
     }
     Action {
         id: actionShowTabBar
         text: qsTr("Tab &Bar")
         checkable: true
-        checked: false
+        checked: sciteQt.showTabBar
         onTriggered: sciteQt.cmdShowTabBar()
     }
     Action {
         id: actionShowStatusBar
         text: qsTr("&Status Bar")
         checkable: true
-        checked: false
+        checked: sciteQt.showStatusBar
         onTriggered: sciteQt.cmdShowStatusBar()
     }
     Action {
