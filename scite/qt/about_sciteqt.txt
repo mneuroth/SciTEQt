@@ -42,4 +42,6 @@ Missing features are:
   * Android: improve deployment
   * Android: after new document the input focus is lost
   * Android: does Qt FileDialog interfere with MobileFileDialog ? --> Qt FileDialog does not run good with MobileFileDialog enabled
+  * Android: add grantAccess to FileSystem for StorageAccess
+  * Android: add new document --> focus lost
   * github ci: windows build is green, but compile step was failing !!!???

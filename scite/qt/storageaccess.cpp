@@ -1,5 +1,7 @@
 #include "storageaccess.h"
 
+#include <QDebug>
+
 #if defined(Q_OS_ANDROID)
 #include <QtAndroidExtras>
 #include <QtAndroidExtras/QAndroidJniObject>
