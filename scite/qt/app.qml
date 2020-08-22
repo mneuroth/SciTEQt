@@ -42,6 +42,7 @@ ApplicationWindow {
         //console.log("ON Completed done")
         //splitView.restoreState(settings.splitView)
         //sciteQt.showToolBar = true
+         sciteQt.logToDebug("=============== APPLICATION START ==========================")
     }
     Component.onDestruction: {
         //settings.splitView = splitView.saveState()
@@ -1113,6 +1114,7 @@ ApplicationWindow {
 
         onAccepted: {
 //            //console.log("Accepted: " + /*currentFile*/fileUrl+" "+fileDialog.openMode)
+            sciteQt.logToDebug("FileDialog accepted: "+fileUri)
             if(sciteQt.isWebassemblyPlatform()) {
                 if(!fileDialog.openMode) {
                     writeCurrentDoc(fileUrl)
@@ -1125,9 +1127,12 @@ ApplicationWindow {
             else {
                 sciteQt.updateCurrentSelectedFileUrl(fileUrl)
             }
+            fileDialog.close()
             focusToEditor()
         }
         onRejected: {
+            sciteQt.logToDebug("FileDialog rejected: "+fileUri)
+            fileDialog.close()
             focusToEditor()
         }
     }
@@ -1272,5 +1277,40 @@ ApplicationWindow {
         mobileFileDialog.setDirectory(mobileFileDialog.currentDirectory)
         mobileFileDialog.setSaveAsModus()
         mobileFileDialog.show()
+    }
+
+    Connections {
+        target: storageAccess
+
+        onOpenFileContentReceived: {
+            //applicationData.logText("==> onOpenFileContentReceived "+fileUri+" "+decodedFileUri)
+// TODO does not work (improve!):            window.readCurrentDoc(decodedFileUri) --> stackView.pop() not working
+            sciteQt.logToDebug("STORAGE loading: "+fileUri+" "+decodedFileUri)
+            //addTextToOutput("loading: "+fileUri)
+        //    homePage.currentFileUrl = fileUri
+        //    homePage.textArea.text = content // window.readCurrentDoc(fileUri)  //content
+        //    homePage.textArea.textDocument.modified = false
+        //    homePage.lblFileName.text = applicationData.getOnlyFileName(fileUri)
+        //    stackView.pop()
+        }
+        onOpenFileCanceled: {
+            sciteQt.logToDebug("STORAGE canceled !")
+        //    stackView.pop()
+        }
+        onOpenFileError: {
+            sciteQt.logToDebug("STORAGE open ERROR ! "+message)
+        //    homePage.textArea.text = message
+        //    stackView.pop()
+        }
+        onCreateFileReceived: {
+            // create file is used for save as handling !
+            //applicationData.logText("onCreateFileReceived "+fileUri)
+        //    homePage.currentFileUrl = fileUri
+        //    homePage.textArea.textDocument.modified = false
+        //    homePage.lblFileName.text = applicationData.getOnlyFileName(fileUri)
+            // fill content into the newly created file...
+        //    mobileFileDialog.saveAsCurrentFileNow(fileUri)
+            //stackView.pop()   // already done in saveAs... above
+        }
     }
 }

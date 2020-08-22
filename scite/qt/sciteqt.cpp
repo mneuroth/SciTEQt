@@ -1194,6 +1194,7 @@ bool SciTEQt::saveCurrentAs(const QString & sFileName)
     bool ret = false;
     QUrl aUrl(sFileName);
     QString sLocalFileName = aUrl.toLocalFile();
+qDebug() << "save Current As " << sFileName << " " << sLocalFileName << endl;
 #ifdef Q_OS_WINDOWS
     wchar_t * buf = new wchar_t[sLocalFileName.length()+1];
     sLocalFileName.toWCharArray(buf);
@@ -2218,6 +2219,11 @@ void SciTEQt::updateCurrentWindowPosAndSize(int left, int top, int width, int he
 void SciTEQt::updateCurrentSelectedFileUrl(const QString & fileUrl)
 {
     m_sCurrentFileUrl = fileUrl;
+}
+
+void SciTEQt::logToDebug(const QString & text)
+{
+    qDebug() << text << endl;
 }
 
 void SciTEQt::UpdateStatusbarView()

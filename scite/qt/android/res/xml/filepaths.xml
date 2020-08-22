@@ -1,0 +1,3 @@
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <files-path name="my_shared_files" path="sciteqt_shared_files/" />
+</paths>

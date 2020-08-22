@@ -67,7 +67,7 @@ bool extractAssetFile(const QString & sAssetFileName, const QString & sOutputFil
 
 void UnpackFiles()
 {
-    // extract the gnuplot binary and help file to call gnuplot as external process
+    // extract the sciteqt properties and help file
     QString sAsset,sOutput;
     //QString sCpuArchitecture(QSysInfo::buildCpuArchitecture());
     sAsset = QString(ASSETS_DIR)+QString(SCITE_PROPERTIES);
@@ -114,8 +114,10 @@ bool GrantAccessToSDCardPath()
 
 // **************************************************************************
 
-ApplicationData::ApplicationData(QObject *parent, Extension * pExtension, QQmlApplicationEngine & aEngine)
+ApplicationData::ApplicationData(QObject *parent, ShareUtils * pShareUtils, StorageAccess & aStorageAccess, Extension * pExtension, QQmlApplicationEngine & aEngine)
     : QObject(parent),
+      m_aStorageAccess(aStorageAccess),
+      m_pShareUtils(pShareUtils),
       m_aEngine(aEngine),
       m_pExtension(pExtension)
 {
@@ -227,7 +229,7 @@ QString ApplicationData::getFilesPath() const
 QString ApplicationData::getHomePath() const
 {
 #if defined(Q_OS_ANDROID)
-    return SCRIPTS_DIR;
+    return FILES_DIR;
 #else
     return ".";
 #endif
@@ -268,11 +270,98 @@ static QString GetSDCardPathOrg()
 #endif
 }
 
+#if defined(Q_OS_ANDROID)
+static inline QString GetAbsolutePath(const QAndroidJniObject &file)
+{
+    QAndroidJniObject path = file.callObjectMethod("getAbsolutePath",
+                                                   "()Ljava/lang/String;");
+    if (!path.isValid())
+        return QString();
+
+    return path.toString();
+}
+#endif
+
+static QStringList GetOriginalExternalFilesDirs(/*const char *directoryField = 0*/)
+{
+    QStringList result;
+
+#if defined(Q_OS_ANDROID)
+    QAndroidJniObject appCtx = QtAndroid::androidContext();
+    if (!appCtx.isValid())
+        return QStringList();
+
+    QAndroidJniObject dirField = QAndroidJniObject::fromString(QLatin1String(""));
+/*
+    if (directoryField) {
+        dirField = QJNIObjectPrivate::getStaticObjectField("android/os/Environment",
+                                                           directoryField,
+                                                           "Ljava/lang/String;");
+        if (!dirField.isValid())
+            return QStringList();
+    }
+*/
+    QAndroidJniObject files = appCtx.callObjectMethod("getExternalFilesDirs",
+                                                     "(Ljava/lang/String;)[Ljava/io/File;",
+                                                     dirField.object());
+
+    if (!files.isValid())
+        return QStringList();
+
+    QAndroidJniEnvironment env;
+
+    // Converts the QAndroidJniObject into a jobjectArray
+    jobjectArray arr = files.object<jobjectArray>();
+    int size = env->GetArrayLength(arr);
+
+    /* Loop that converts all the elements in the jobjectArray
+     * into QStrings and puts them in a QStringList*/
+    for (int i = 0; i < size; i++)
+    {
+        jobject file = env->GetObjectArrayElement(arr, i);
+
+        QAndroidJniObject afile(file);
+        result.append(GetAbsolutePath(afile));
+
+        env->DeleteLocalRef(file);
+    }
+
+    //env->DeleteLocalRef(arr);
+#else
+    // nothing to do...
+#endif
+
+    return result;
+}
+
+static QString RemoveAppPath(const QString & item)
+{
+    int iFound = item.indexOf("/Android/data");
+    if(iFound>=0)
+    {
+        return item.left(iFound);
+    }
+    return item;
+}
+
+static QStringList GetExternalFilesDirs(/*const char *directoryField = 0*/)
+{
+    QStringList result = GetOriginalExternalFilesDirs();
+    QStringList newResult;
+
+    foreach(const QString & item, result)
+    {
+        newResult.append(RemoveAppPath(item));
+    }
+
+    return newResult;
+}
+
 QStringList ApplicationData::getSDCardPaths() const
 {
     QStringList allPaths;
     allPaths.append(SDCARD_DIRECTORY);
-//TODO:    allPaths.append(GetExternalFilesDirs());
+    allPaths.append(GetExternalFilesDirs());
 #if defined(Q_OS_WIN)
     // for testing...
     allPaths.append("c:\\tmp");
@@ -312,4 +401,20 @@ bool ApplicationData::grantAccessToSDCardPath()
 {
     return ::GrantAccessToSDCardPath();
 }
+
+#if defined(Q_OS_ANDROID)
+void ApplicationData::sltApplicationStateChanged(Qt::ApplicationState applicationState)
+{
+    if( applicationState == Qt::ApplicationState::ApplicationSuspended )
+    {
+/* TODO
+        QObject* homePage = childObject<QObject*>(m_aEngine, "homePage", "");
+        if( homePage!=0 )
+        {
+            QMetaObject::invokeMethod(homePage, "checkForModified", QGenericReturnArgument());
+        }
+*/
+    }
+}
+#endif
 

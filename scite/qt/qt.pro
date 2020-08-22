@@ -12,11 +12,17 @@ include(qhtml5file/qhtml5file.pri)
 
 HEADERS += applicationdata.h\
            ../../scintilla/lexilla/src/Lexilla.h \
+           applicationui.hpp \
+           shareutils.hpp \
+           storageaccess.h \
            sciteqt.h
 SOURCES += applicationdata.cpp\
            GUIQt.cpp\
            ../../scintilla/lexilla/src/Lexilla.cxx\
            main.cpp \
+           applicationui.cpp \
+           shareutils.cpp \
+           storageaccess.cpp \
            sciteqt.cpp
 
 RC_ICONS = ../win32/SciBall.ico
@@ -145,6 +151,10 @@ win32 {
 }
 
 android {
+    SOURCES += android/androidshareutils.cpp
+
+    HEADERS += android/androidshareutils.hpp
+
     QT += androidextras
 
     equals(ANDROID_TARGET_ARCH, arm64-v8a) {
@@ -205,6 +215,11 @@ DISTFILES += \
     android/gradle/wrapper/gradle-wrapper.properties \
     android/gradlew \
     android/gradlew.bat \
-    android/res/values/libs.xml
+    android/res/values/libs.xml \
+    android/res/xml/filepaths.xml \
+    android/src/org/scintilla/activity/sharex/QShareActivity.java \
+    android/src/org/scintilla/utils/QSharePathResolver.java \
+    android/src/org/scintilla/utils/QShareUtils.java \
+    android/src/org/scintilla/utils/QStorageAccess.java
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android

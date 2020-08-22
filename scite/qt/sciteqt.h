@@ -371,6 +371,8 @@ public:
     Q_INVOKABLE void updateCurrentWindowPosAndSize(int left, int top, int width, int height, bool maximize);
     Q_INVOKABLE void updateCurrentSelectedFileUrl(const QString & fileUrl);
 
+    Q_INVOKABLE void logToDebug(const QString & text);
+
     void UpdateStatusbarView();
 
 public slots:

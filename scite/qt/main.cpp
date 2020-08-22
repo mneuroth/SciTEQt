@@ -13,6 +13,9 @@
 
 #include <qhtml5file/qhtmlfileaccess.h>
 
+#include "applicationui.hpp"
+#include "storageaccess.h"
+
 #ifndef Q_OS_WIN
 #define _WITH_QDEBUG_REDIRECT
 #define _WITH_ADD_TO_LOG
@@ -126,6 +129,10 @@ int main(int argc, char *argv[])
     qInstallMessageHandler(PrivateMessageHandler);
 #endif
 
+#if defined(Q_OS_ANDROID)
+    ApplicationUI appui;
+#endif
+
     QApplication app(argc, argv);
     app.setOrganizationName("scintilla.org");
     app.setOrganizationDomain("scintilla.org");
@@ -141,8 +148,22 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
 
-    ApplicationData data(0, &multiExtender, engine);
+    StorageAccess aStorageAccess;
+
+#if defined(Q_OS_ANDROID)
+    QObject::connect(&app, SIGNAL(applicationStateChanged(Qt::ApplicationState)), &appui, SLOT(onApplicationStateChanged(Qt::ApplicationState)));
+    QObject::connect(&app, SIGNAL(saveStateRequest(QSessionManager &)), &appui, SLOT(onSaveStateRequest(QSessionManager &)), Qt::DirectConnection);
+    QObject::connect(&appui, SIGNAL(requestApplicationQuit()), &app, SLOT(quit())/* , Qt::QueuedConnection*/);
+#endif
+
+#if defined(Q_OS_ANDROID)
+    ApplicationData data(0, appui.GetShareUtils(), aStorageAccess, &multiExtender, engine);
+    QObject::connect(&app, SIGNAL(applicationStateChanged(Qt::ApplicationState)), &data, SLOT(sltApplicationStateChanged(Qt::ApplicationState)));
+#else
+    ApplicationData data(0, new ShareUtils(), aStorageAccess, &multiExtender, engine);
+#endif
     engine.rootContext()->setContextProperty("applicationData", &data);
+    engine.rootContext()->setContextProperty("storageAccess", &aStorageAccess);
 
     QHtmlFileAccess htmlFileAccess(qApp);
     engine.rootContext()->setContextProperty("htmlFileAccess", &htmlFileAccess);

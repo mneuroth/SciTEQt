@@ -26,6 +26,8 @@
 
 class SciTEQt;
 class Extension;
+class ShareUtils;
+class StorageAccess;
 
 class ApplicationData : public QObject
 {
@@ -39,7 +41,7 @@ class ApplicationData : public QObject
     Q_PROPERTY(bool isShareSupported READ isShareSupported NOTIFY isShareSupportedChanged)
 
 public:
-    explicit ApplicationData(QObject *parent, Extension * pExtension, QQmlApplicationEngine & aEngine);
+    explicit ApplicationData(QObject *parent, ShareUtils * pShareUtils, StorageAccess & aStorageAccess, Extension * pExtension, QQmlApplicationEngine & aEngine);
     ~ApplicationData();
 
     Q_INVOKABLE QString getNormalizedPath(const QString & path) const;
@@ -65,11 +67,19 @@ public:
     QQmlApplicationEngine & GetQmlApplicationEngine();
     Extension * GetExtension();
 
+public slots:
+#if defined(Q_OS_ANDROID)
+     void sltApplicationStateChanged(Qt::ApplicationState applicationState);
+#endif
+
 signals:
     void isAppStoreSupportedChanged();
     void isShareSupportedChanged();
 
 private:
+    StorageAccess &             m_aStorageAccess;
+    ShareUtils *                m_pShareUtils;      // not an owner !
+
     QQmlApplicationEngine &     m_aEngine;
     Extension *                 m_pExtension;   // not an owner !
 };

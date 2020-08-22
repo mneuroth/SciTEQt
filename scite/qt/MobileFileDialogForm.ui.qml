@@ -1,11 +1,9 @@
 
 /***************************************************************************
  *
- * MobileGnuplotViewer(Quick) - a simple frontend for gnuplot
+ * SciteQt - a port of SciTE to Qt Quick/QML
  *
  * Copyright (C) 2020 by Michael Neuroth
- *
- * License: GPL
  *
  ***************************************************************************/
 import QtQuick 2.0
