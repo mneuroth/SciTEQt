@@ -98,6 +98,9 @@ int main(int argc, char *argv[])
     qputenv(SCITE_HOME, FILES_DIR);
 #endif
 
+    QString sLanguage = QLocale::system().name().mid(0,2).toLower();
+    qputenv(SCITE_QT_LANGUAGE, sLanguage.toLocal8Bit());
+
     qRegisterMetaType<SCNotification>("SCNotification");
     qRegisterMetaType<SCNotification>("uptr_t");
     qRegisterMetaType<SCNotification>("sptr_t");

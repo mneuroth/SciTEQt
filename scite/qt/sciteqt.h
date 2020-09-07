@@ -77,7 +77,8 @@
 //#include <QStandardItemModel>
 #include <QPrinter>
 
-#define SCITE_HOME  "SciTE_HOME"
+#define SCITE_HOME          "SciTE_HOME"
+#define SCITE_QT_LANGUAGE   "SciteQtLanguage"
 
 #define POST_TO_MAIN (QEvent::User + 1)
 
