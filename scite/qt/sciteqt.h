@@ -388,6 +388,7 @@ public slots:
 
     void OnNotifiedFromScintilla(SCNotification scn);
     void OnNotifiedFromOutput(SCNotification scn);
+    void OnUriDroppedFromScintilla(const QString & uri);
 
 signals:
     void showToolBarChanged();

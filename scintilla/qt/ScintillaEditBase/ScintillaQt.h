@@ -177,7 +177,7 @@ protected:
 
 private:
 #ifdef PLAT_QT_QML
-    QQuickPaintedItem *scrollArea;
+    QQuickPaintedItem *scrollArea;      // is a ScintillaEditBase
 #else
     QAbstractScrollArea *scrollArea;
 #endif

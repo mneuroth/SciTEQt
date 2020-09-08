@@ -76,7 +76,7 @@ ScintillaEditBase::ScintillaEditBase(QQuickItem/*QWidget*/ *parent)
 #endif
     //setFiltersChildMouseEvents(false);
     //grabMouse();
-    setFlags(QQuickItem::ItemAcceptsInputMethod | QQuickItem::ItemHasContents);
+    setFlags(QQuickItem::ItemAcceptsInputMethod | QQuickItem::ItemIsFocusScope | QQuickItem::ItemHasContents | QQuickItem::ItemAcceptsDrops);
 #endif
 
 	sqt = new ScintillaQt(this);

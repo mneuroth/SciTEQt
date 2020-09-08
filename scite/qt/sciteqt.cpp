@@ -1148,6 +1148,8 @@ void SciTEQt::setScintilla(QObject * obj)
     base->sqt->UpdateInfos(IDM_SRCWIN);
 
     connect(base->sqt,SIGNAL(notifyParent(SCNotification)),this,SLOT(OnNotifiedFromScintilla(SCNotification)));
+
+    connect(base,SIGNAL(uriDropped(QString)),this,SLOT(OnUriDroppedFromScintilla(QString)));
 }
 
 void SciTEQt::setOutput(QObject * obj)
@@ -2292,6 +2294,12 @@ void SciTEQt::OnNotifiedFromOutput(SCNotification scn)
 {
     qDebug() << "OnNotifiedFromOutput " << scn.message << endl;
 }
+
+void SciTEQt::OnUriDroppedFromScintilla(const QString & uri)
+{
+    qDebug() << "OnUriDroppedFromScintilla " << uri << endl;
+}
+
 /*
 DynamicMenuModel::DynamicMenuModel()
     : m_aRoles(QStandardItemModel::roleNames())
