@@ -99,6 +99,10 @@ int main(int argc, char *argv[])
 #endif
 
     QString sLanguage = QLocale::system().name().mid(0,2).toLower();
+    if(sLanguage=="pt")
+    {
+        sLanguage = "pt_PT";
+    }
     qputenv(SCITE_QT_LANGUAGE, sLanguage.toLocal8Bit());
 
     qRegisterMetaType<SCNotification>("SCNotification");

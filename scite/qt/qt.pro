@@ -191,12 +191,31 @@ android {
     deployment4.path=/assets/files
     deployment5.files=../doc/SciTEDoc.html
     deployment5.path=/assets/files
+# TODO: deploy locale.*.properties
+    deployment6.files=../translations/locale.de.properties
+    deployment6.path=/assets/files
+    deployment7.files=../translations/locale.nl.properties
+    deployment7.path=/assets/files
+    deployment8.files=../translations/locale.fr.properties
+    deployment8.path=/assets/files
+    deployment9.files=../translations/locale.es.properties
+    deployment9.path=/assets/files
+    deployment10.files=../translations/locale.pt_PT.properties
+    deployment10.path=/assets/files
+    deployment11.files=../translations/locale.it.properties
+    deployment11.path=/assets/files
 
     INSTALLS += deployment1
     INSTALLS += deployment2
     INSTALLS += deployment3
     INSTALLS += deployment4
     INSTALLS += deployment5
+    INSTALLS += deployment6
+    INSTALLS += deployment7
+    INSTALLS += deployment8
+    INSTALLS += deployment9
+    INSTALLS += deployment10
+    INSTALLS += deployment11
 }
 
 RESOURCES += sciteqt.qrc

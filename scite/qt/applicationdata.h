@@ -21,6 +21,12 @@
 #define SCITE_ABBREV_PROPERTIES     "abbrev.properties"
 #define SCITE_SCITE_USER_PROPERTIES "SciTEUser.properties"
 #define SCITE_SCITE_DOC_HTML        "SciTEDoc.html"
+#define SCITE_LOCALE_DE_PROPERTIES  "locale.de.properties"
+#define SCITE_LOCALE_NL_PROPERTIES  "locale.nl.properties"
+#define SCITE_LOCALE_FR_PROPERTIES  "locale.fr.properties"
+#define SCITE_LOCALE_ES_PROPERTIES  "locale.es.properties"
+#define SCITE_LOCALE_IT_PROPERTIES  "locale.it.properties"
+#define SCITE_LOCALE_PT_PROPERTIES  "locale.pt_PT.properties"
 
 // **************************************************************************
 
