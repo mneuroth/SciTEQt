@@ -2297,7 +2297,7 @@ void SciTEQt::OnNotifiedFromOutput(SCNotification scn)
 
 void SciTEQt::OnUriDroppedFromScintilla(const QString & uri)
 {
-    qDebug() << "OnUriDroppedFromScintilla " << uri << endl;
+    Open(GetPathFromUrl(uri));
 }
 
 /*
