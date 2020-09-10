@@ -1254,6 +1254,8 @@ ApplicationWindow {
 
     MobileFileDialog {
         id: mobileFileDialog
+
+        fcnLocalisation: sciteQt.getLocalisedText
     }
 
     Connections {

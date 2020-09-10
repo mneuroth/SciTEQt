@@ -38,7 +38,7 @@
 #include "GUI.h"
 #include "ScintillaWindow.h"
 
-#if defined(__unix__) || defined(__APPLE__)
+#if (defined(__unix__) || defined(__APPLE__)) && !defined(QT_QML)
 
 const GUI::gui_char menuAccessIndicator[] = GUI_TEXT("_");
 
@@ -1656,7 +1656,7 @@ void SciTEBase::ReadLocalization() {
 	}
 	FilePath propdir = GetSciteDefaultHome();
 	FilePath localePath(propdir, title);
-	localiser.Read(localePath, propdir, filter, &importFiles, 0);
+    localiser.Read(localePath, propdir, filter, &importFiles, 0);
 	localiser.SetMissing(props.GetString("translation.missing"));
 	localiser.read = true;
 }

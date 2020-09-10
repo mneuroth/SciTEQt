@@ -2,6 +2,8 @@ QT += quick quickcontrols2 widgets printsupport svg
 
 TARGET = sciteqt
 
+DEFINES += QT_QML
+
 CONFIG += c++1z
 
 wasm {
@@ -145,7 +147,7 @@ win32 {
     QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\..\\gtk\\Sci48M.png\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data/sciteqt_512x512.png\")
     QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\..\\src\\SciTE.properties\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
     #QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\..\\src\\SciTEUser.properties\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
-    QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\..\\src\\SciTEGlobal.properties\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
+    QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\..\\qt\\SciTEGlobal.properties\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
     QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\..\\src\\abbrev.properties\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
     QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\SciTEUser.properties\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
     QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\translations\\*.*\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
@@ -183,26 +185,26 @@ android {
 
     deployment1.files=../src/SciTE.properties
     deployment1.path=/assets/files
-    deployment2.files=../src/SciTEGlobal.properties
+    deployment2.files=../src/abbrev.properties
     deployment2.path=/assets/files
-    deployment3.files=../src/abbrev.properties
+    deployment3.files=SciTEGlobal.properties
     deployment3.path=/assets/files
     deployment4.files=SciTEUser.properties
     deployment4.path=/assets/files
     deployment5.files=../doc/SciTEDoc.html
     deployment5.path=/assets/files
 # TODO: deploy locale.*.properties
-    deployment6.files=../translations/locale.de.properties
+    deployment6.files=translations/locale.de.properties
     deployment6.path=/assets/files
-    deployment7.files=../translations/locale.nl.properties
+    deployment7.files=translations/locale.nl.properties
     deployment7.path=/assets/files
-    deployment8.files=../translations/locale.fr.properties
+    deployment8.files=translations/locale.fr.properties
     deployment8.path=/assets/files
-    deployment9.files=../translations/locale.es.properties
+    deployment9.files=translations/locale.es.properties
     deployment9.path=/assets/files
-    deployment10.files=../translations/locale.pt_PT.properties
+    deployment10.files=translations/locale.pt_PT.properties
     deployment10.path=/assets/files
-    deployment11.files=../translations/locale.it.properties
+    deployment11.files=translations/locale.it.properties
     deployment11.path=/assets/files
 
     INSTALLS += deployment1
@@ -244,3 +246,5 @@ DISTFILES += \
     android/src/org/scintilla/utils/QStorageAccess.java
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
+ANDROID_ABIS = arm64-v8a

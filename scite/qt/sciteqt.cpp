@@ -450,6 +450,8 @@ FilePath GetSciTEPath(const QByteArray & home)
         // return the directory of the executable
         int count = QCoreApplication::applicationDirPath().toWCharArray((wchar_t *)buf);
         buf[count] = 0;
+#elif defined(Q_OS_ANDROID)
+        strcpy(buf,FILES_DIR);
 #else
         strcpy(buf,QCoreApplication::applicationDirPath().toStdString().c_str());
 #endif
@@ -1187,7 +1189,7 @@ void SciTEQt::setContent(QObject * obj)
 // copy file with translations "locale.properties" into directory of the executable
 QString SciTEQt::getLocalisedText(const QString & textInput)
 {
-    auto localisedText = localiser.Text(textInput.toStdString().c_str(),true);
+    auto localisedText = localiser.Text(textInput.toUtf8()/*textInput.toStdString().c_str()*/,true);
     return ConvertGuiStringToQString(localisedText);
 }
 

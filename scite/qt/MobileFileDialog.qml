@@ -16,6 +16,15 @@ MobileFileDialogForm {
     property bool isDeleteModus: false
     property var textControl: null
 
+    property var fcnLocalisation: undefined
+
+    function localiseText(text) {
+        if(fcnLocalisation !== undefined) {
+            return fcnLocalisation(text)
+        }
+        return text
+    }
+
     signal openSelectedFile(string fileName)
     signal saveSelectedFile(string fileName)
 
@@ -47,29 +56,29 @@ MobileFileDialogForm {
     function setSaveAsModus() {
         mobileFileDialog.isSaveAsModus = true
         mobileFileDialog.isDeleteModus = false
-        mobileFileDialog.lblMFDInput.text = qsTr("new file name:")
-        mobileFileDialog.txtMFDInput.text = qsTr("unknown.txt")
+        mobileFileDialog.lblMFDInput.text = localiseText(qsTr("new file name:"))
+        mobileFileDialog.txtMFDInput.text = localiseText(qsTr("unknown.txt"))
         mobileFileDialog.txtMFDInput.readOnly = false
-        mobileFileDialog.btnOpen.text = qsTr("Save as")
+        mobileFileDialog.btnOpen.text = localiseText(qsTr("Save as"))
         mobileFileDialog.btnOpen.enabled = true
     }
 
     function setOpenModus() {
         mobileFileDialog.isSaveAsModus = false
         mobileFileDialog.isDeleteModus = false
-        mobileFileDialog.lblMFDInput.text = qsTr("open name:")
+        mobileFileDialog.lblMFDInput.text = localiseText(qsTr("open name:"))
         mobileFileDialog.txtMFDInput.readOnly = true
-        mobileFileDialog.btnOpen.text = qsTr("Open")
+        mobileFileDialog.btnOpen.text = localiseText(qsTr("Open"))
         mobileFileDialog.btnOpen.enabled = false
     }
 
     function setDeleteModus() {
         mobileFileDialog.isSaveAsModus = false
         mobileFileDialog.isDeleteModus = true
-        mobileFileDialog.lblMFDInput.text = qsTr("current file name:")
+        mobileFileDialog.lblMFDInput.text = localiseText(qsTr("current file name:"))
         mobileFileDialog.txtMFDInput.text = ""
         mobileFileDialog.txtMFDInput.readOnly = true
-        mobileFileDialog.btnOpen.text = qsTr("Delete")
+        mobileFileDialog.btnOpen.text = localiseText(qsTr("Delete"))
         mobileFileDialog.btnOpen.enabled = false
     }
 
@@ -93,7 +102,7 @@ MobileFileDialogForm {
         stackView.pop()
         if( !ok )
         {
-            outputPage.txtOutput.text += qsTr("can not delete file ") + fullPath
+            outputPage.txtOutput.text += localiseText(qsTr("can not delete file ")) + fullPath
             stackView.push(outputPage)
         }
     }

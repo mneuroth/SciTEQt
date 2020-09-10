@@ -93,6 +93,15 @@ int main(int argc, char *argv[])
     //QQuickStyle::setStyle("Default");
 #endif
 
+    QApplication app(argc, argv);
+    app.setOrganizationName("scintilla.org");
+    app.setOrganizationDomain("scintilla.org");
+    app.setApplicationName("SciTEQt");
+
+#ifdef _WITH_QDEBUG_REDIRECT
+    qInstallMessageHandler(PrivateMessageHandler);
+#endif
+
 #ifdef Q_OS_ANDROID
     UnpackFiles();
     qputenv(SCITE_HOME, FILES_DIR);
@@ -132,18 +141,9 @@ int main(int argc, char *argv[])
         return CreateLexer(name);
     });
 
-#ifdef _WITH_QDEBUG_REDIRECT
-    qInstallMessageHandler(PrivateMessageHandler);
-#endif
-
 #if defined(Q_OS_ANDROID)
     ApplicationUI appui;
 #endif
-
-    QApplication app(argc, argv);
-    app.setOrganizationName("scintilla.org");
-    app.setOrganizationDomain("scintilla.org");
-    app.setApplicationName("SciTEQt");
 
     app.setWindowIcon(QIcon("scite_logo.png"));
 

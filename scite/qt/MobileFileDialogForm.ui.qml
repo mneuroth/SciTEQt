@@ -33,7 +33,7 @@ Window {
     id: page
     //anchors.fill: parent
 
-    title: qsTr("Select file")
+    title: localiseText(qsTr("Select file"))
 
     RowLayout {
         id: columnLayout
@@ -84,7 +84,7 @@ Window {
 
         Button {
             id: btnStorage
-            text: qsTr("Storage")
+            text: localiseText(qsTr("Storage"))
             Layout.rightMargin: 0
             Layout.leftMargin: 0
             Layout.bottomMargin: 0
@@ -99,7 +99,7 @@ Window {
         x: 16
         width: 418
         height: 40
-        text: qsTr("Show current directory here")
+        text: localiseText(qsTr("Show current directory here"))
         anchors.top: columnLayout.bottom
         anchors.topMargin: 5
         horizontalAlignment: Text.AlignLeft
@@ -135,7 +135,7 @@ Window {
         id: lblMFDInput
         width: 221
         height: 40
-        text: qsTr("Any input")
+        text: localiseText(qsTr("Any input"))
         anchors.left: parent.left
         anchors.leftMargin: 5
         anchors.bottom: btnOpen.top
@@ -162,7 +162,7 @@ Window {
     Button {
         id: btnOpen
         enabled: false
-        text: qsTr("Open")
+        text: localiseText(qsTr("Open"))
         width: btnUp.width + btnUp.width / 2
         anchors.left: parent.left
         anchors.leftMargin: 5
@@ -173,7 +173,7 @@ Window {
     Button {
         id: btnCancel
         width: btnStorage.width + btnStorage.width / 2
-        text: qsTr("Cancel")
+        text: localiseText(qsTr("Cancel"))
         anchors.right: parent.right
         anchors.rightMargin: 5
         anchors.bottom: parent.bottom
