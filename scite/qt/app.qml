@@ -560,8 +560,8 @@ ApplicationWindow {
             //focusPolicy: Qt.NoFocus
             text: "some text"
             onClicked: fcnClicked()
+            }
         }
-    }
 
     Controls1.SplitView {
         id: splitView        
@@ -880,13 +880,14 @@ ApplicationWindow {
         Keys.onBackPressed: hideFindRow()
     }
 
-    Button {
+    ToolButton {
         id: findWrapAroundButton
 
         visible: findInput.visible && !isIncrementalSearch
         checkable: true
         flat: true
         width: isIncrementalSearch ? 0 : findNextButton.width / 2
+        icon.source: "icons/loop.svg"
         //focusPolicy: Qt.NoFocus
 
         anchors.bottom: replaceInput.top
@@ -903,13 +904,14 @@ ApplicationWindow {
         Keys.onBackPressed: hideFindRow()
     }
 
-    Button {
+    ToolButton {
         id: findUpButton
 
         visible: findInput.visible && !isIncrementalSearch
         checkable: true
         flat: true
         width: isIncrementalSearch ? 0 : findNextButton.width / 2
+        icon.source: "icons/arrow_upward.svg"
         //focusPolicy: Qt.NoFocus
 
         anchors.bottom: replaceInput.top
@@ -1013,6 +1015,7 @@ ApplicationWindow {
         id: replaceButton
 
         visible: replaceInput.visible
+        width: findNextButton.width
         //focusPolicy: Qt.NoFocus
 
         anchors.bottom: parent.bottom
@@ -1032,6 +1035,7 @@ ApplicationWindow {
         id: inSectionButton
 
         visible: replaceInput.visible
+        width: findMarkAllButton.width
         //focusPolicy: Qt.NoFocus
 
         anchors.bottom: parent.bottom

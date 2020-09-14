@@ -36,6 +36,9 @@
         <file alias="icons/directory.svg">icons/folder-black-24dp.svg</file>
         <file alias="icons/document.svg">icons/insert_drive_file-black-24dp.svg</file>
         <file alias="icons/file.svg">icons/text_snippet-black-24dp.svg</file>
+        <file alias="icons/loop.svg">icons/loop-black-24dp.svg</file>
+        <file alias="icons/arrow_upward.svg">icons/arrow_upward-black-24dp.svg</file>
+        <file alias="icons/arrow_downward.svg">icons/arrow_downward-black-24dp.svg</file>
         <file>+android/SciteMenu.qml</file>
         <file>MobileFileDialog.qml</file>
         <file>MobileFileDialogForm.ui.qml</file>
