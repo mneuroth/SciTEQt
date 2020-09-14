@@ -166,7 +166,7 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
     propsPlatform.Set("PLAT_WIN", "1");
     propsPlatform.Set("PLAT_WINNT", "1");
 #endif
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     propsPlatform.Set("PLAT_GTK", "1");
 #endif
 #ifdef Q_OS_MACOS
