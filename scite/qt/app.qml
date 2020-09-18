@@ -177,6 +177,14 @@ ApplicationWindow {
         gotoDialog.destinationLineInput.focus = true
     }
 
+    function showTabSizeDialog(tabSize, indentSize, useTabs) {
+        tabSizeDialog.tabSizeInput.text = tabSize
+        tabSizeDialog.indentSizeInput.text = indentSize
+        tabSizeDialog.useTabsCheckBox.checked = useTabs
+        tabSizeDialog.show()
+        tabSizeDialog.tabSizeInput.focus = true
+    }
+
     function setVerticalSplit(verticalSplit) {
         splitView.verticalSplit = verticalSplit
     }
@@ -1147,6 +1155,7 @@ ApplicationWindow {
         onShowFindInFilesDialog:      showFindInFilesDialog(text)
         onShowFind:                   showFind(text, incremental, withReplace)
         onShowGoToDialog:             showGoToDialog(currentLine, currentColumn, maxLine)
+        onShowTabSizeDialog:          showTabSizeDialog(tabSize, indentSize, useTabs)
 
         onSetVerticalSplit:           setVerticalSplit(verticalSplit)
         onSetOutputHeight:            setOutputHeight(heightOutput)
@@ -1309,6 +1318,33 @@ ApplicationWindow {
         }
         onAccepted: {
             sciteQt.cmdGotoLine(parseInt(gotoDialog.destinationLineInput.text), parseInt(gotoDialog.columnInput.text))
+            focusToEditor()
+        }
+    }
+
+    TabSizeDialog {
+        id: tabSizeDialog
+        objectName: "tabSizeDialog"
+        modality: Qt.ApplicationModal
+        title: sciteQt.getLocalisedText(qsTr("Indentation Settings"))
+
+        fcnLocalisation: sciteQt.getLocalisedText
+
+        visible: false
+    }
+
+    Connections {
+        target: tabSizeDialog
+
+        onCanceled: {
+            focusToEditor()
+        }
+        onAccepted: {
+            sciteQt.cmdUpdateTabSizeValues(parseInt(tabSizeDialog.tabSizeInput.text), parseInt(tabSizeDialog.indentSizeInput.text), tabSizeDialog.useTabsCheckBox.checked, false)
+            focusToEditor()
+        }
+        onConvert: {
+            sciteQt.cmdUpdateTabSizeValues(parseInt(tabSizeDialog.tabSizeInput.text), parseInt(tabSizeDialog.indentSizeInput.text), tabSizeDialog.useTabsCheckBox.checked, true)
             focusToEditor()
         }
     }

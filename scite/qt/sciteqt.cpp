@@ -681,8 +681,7 @@ bool SciTEQt::AbbrevDialog()
 
 void SciTEQt::TabSizeDialog()
 {
-    // TODO implement !
-    emit showInfoDialog("Sorry: TabSizeDialog() is not implemented yet!", 0);
+    emit showTabSizeDialog(wEditor.TabWidth(), wEditor.Indent(), wEditor.UseTabs());
 }
 
 bool SciTEQt::ParametersOpen()
@@ -1870,6 +1869,17 @@ void SciTEQt::cmdGotoLine(int lineNo, int colPos)
 
         wEditor.GotoPos(position);
     }
+}
+
+void SciTEQt::cmdUpdateTabSizeValues(int tabSize, int indentSize, bool useTabs, bool convert)
+{
+    if (tabSize > 0)
+        wEditor.SetTabWidth(tabSize);
+    if (indentSize > 0)
+        wEditor.SetIndent(indentSize);
+    wEditor.SetUseTabs(useTabs);
+    if (convert)
+        ConvertIndentation(tabSize, useTabs);
 }
 
 void SciTEQt::cmdContextMenu(int menuID)

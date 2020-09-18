@@ -19,11 +19,10 @@ Missing features are:
   * Execute external Scripts (build, go, stop, etc.)
   * Find in Files dialog
   * Abrev dialog
-  * TabSize dialog
   * Parameters dialog
   * Parameters open
   * Parameter grab
-  * Find/Replace extended dialog
+  * Find/Replace extended dialog --> find.use.strip=0 / replace.use.strip=1 / find.replace.advanced=1
   * History for find/replace items
   * Detect monitor change/removement and move position if needed
   * Support list of last opened files
@@ -48,3 +47,4 @@ Now already implemented:
   * Support multiple languages via resources
   * Support Drag&Drop (desktop)
   * Context menus (partly, missing: context menu for tab page)
+  * TabSize dialog
