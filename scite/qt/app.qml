@@ -695,6 +695,8 @@ ApplicationWindow {
             id: quickScintillaEditor
             objectName: "ScintillaEditor"
 
+            fcnLocalisation: sciteQt.getLocalisedText
+
             focus: true
             //onFocusChanged: {
             //    console.log("FOCUS editor changed "+focus)
@@ -713,6 +715,8 @@ ApplicationWindow {
         ScintillaText {
             id: quickScintillaOutput
             objectName: "ScintillaOutput"
+
+            fcnLocalisation: sciteQt.getLocalisedText
 
             focus: false
             //onFocusChanged: {

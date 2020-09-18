@@ -2021,6 +2021,7 @@ QVariant SciTEQt::fillTabContextMenu()
     //    AddToMenu(menu, "");
 
     AddToMenu(menu, "Print", IDM_PRINT, true);
+    AddToMenu(menu, "Copy Path", IDM_COPYPATH, true);
 
     return QVariant(menu);
 }

@@ -37,6 +37,15 @@ ScrollView {
         quickScintillaEditor.focus = focus
     }
 
+    property var fcnLocalisation: undefined
+
+    function localiseText(text) {
+        if(fcnLocalisation !== undefined) {
+            return fcnLocalisation(text)
+        }
+        return text
+    }
+
     // fixes problem with selecting text with the mouse --> mouse events will be consumed by ScrollView instead of ScintillaEditor control
     // see: https://forum.qt.io/topic/94260/scrollview-interfering-with-mousearea-and-or-mouseevents
     Component.onCompleted: {
@@ -116,7 +125,7 @@ ScrollView {
             id: contextMenuItems
             model: contextMenuModel
             delegate: MenuItem {
-                text: model.display
+                text: localiseText(model.display)
                 enabled: model.enabled
                 onTriggered: menuCommandDelegate !== undefined ? menuCommandDelegate(model.menuId) : quickScintillaEditor.cmdContextMenu(model.menuId)
             }
