@@ -15,7 +15,6 @@ yet.
 
 Missing features are:
 
-  * Context menus (partly, missing: context menu for tab page)
   * Printing (partly)
   * Execute external Scripts (build, go, stop, etc.)
   * Find in Files dialog
@@ -26,8 +25,6 @@ Missing features are:
   * Parameter grab
   * Find/Replace extended dialog
   * History for find/replace items
-  * Support multiple languages via resources
-  * Support Drag&Drop (desktop)
   * Detect monitor change/removement and move position if needed
   * Support list of last opened files
   * Improve splitter handling
@@ -45,3 +42,9 @@ Missing features are:
   * Android: add grantAccess to FileSystem for StorageAccess
   * Android: add new document --> focus lost
   * github ci: windows build is green, but compile step was failing !!!???
+
+Now already implemented:
+
+  * Support multiple languages via resources
+  * Support Drag&Drop (desktop)
+  * Context menus (partly, missing: context menu for tab page)
