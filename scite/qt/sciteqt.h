@@ -354,6 +354,8 @@ public:
     Q_INVOKABLE void cmdGotoLine(int lineNo, int colPos);
     Q_INVOKABLE void cmdContextMenu(int menuID);
 
+    Q_INVOKABLE QVariant fillTabContextMenu();
+
     Q_INVOKABLE QVariant fillToLength(const QString & text, const QString & shortcut);
     Q_INVOKABLE QVariant fillToLengthWithFont(const QString & text, const QString & shortcut, const QFont & font);
 

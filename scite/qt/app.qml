@@ -20,6 +20,9 @@ ApplicationWindow {
 
     property string urlPrefix: "file://"
 
+    // for context menu on tabButton
+    property var menuCommandDelegate: undefined
+
     onClosing: {
         sciteQt.cmdExit()
         close.accepted = false
@@ -560,8 +563,55 @@ ApplicationWindow {
             //focusPolicy: Qt.NoFocus
             text: "some text"
             onClicked: fcnClicked()
+
+            // Handle context menu on TabButton
+            // see: https://stackoverflow.com/questions/32448678/how-to-show-a-context-menu-on-right-click-in-qt5-5-qml-treeview
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.RightButton
+                onClicked: {
+                    console.log("show context menu for row: " + text+" "+mouse.x+","+mouse.y +" current="+tabBar.currentIndex+" parent="+parent)
+
+                    // activate this tab and show context menu
+                    parent.onClicked()
+
+                    //fill menu in c++, see: SciTEWinBar.Notify() NM_RCLICK
+                    var menuItems = sciteQt.fillTabContextMenu()
+
+                    // update menu model with data from c++
+                    sciteContextMenuModel.clear()
+                    for (let i=0; i<menuItems.length; i++) {
+                        sciteContextMenuModel.append({"display":menuItems[i]["display"], "enabled":menuItems[i]["enabled"], "menuId":menuItems[i]["menuId"]})
+                    }
+
+                    tabBarContextMenu.popup()
+                }
             }
         }
+    }
+
+    // see: SciTEBase::ContextMenu
+    Menu {
+        id: tabBarContextMenu
+
+        Instantiator {
+            id: sciteContextMenuItems
+            model: sciteContextMenuModel
+            delegate: MenuItem {
+                text: sciteQt.getLocalisedText(model.display)
+                enabled: model.enabled
+                onTriggered: menuCommandDelegate !== undefined ? menuCommandDelegate(model.menuId) : sciteQt.cmdContextMenu(model.menuId)
+            }
+
+            onObjectAdded: tabBarContextMenu.insertItem(index, object)
+            onObjectRemoved: tabBarContextMenu.removeItem(object)
+        }
+    }
+
+    ListModel {
+        id: sciteContextMenuModel
+        objectName: "sciteContextMenu"
+    }
 
     Controls1.SplitView {
         id: splitView        
@@ -694,7 +744,8 @@ ApplicationWindow {
         height: findInput.height //visible ? implicitHeight : 0
         width: max(replaceLabel.implicitWidth, findLabel.implicitWidth)
 
-        anchors.verticalCenter: findNextButton.verticalCenter
+        anchors.verticalCenter: findInput.verticalCenter
+        //anchors.horizontalCenter: findInput.horizontalCenter
         anchors.bottom: replaceInput.top
         anchors.left: parent.left
         anchors.rightMargin: 5
@@ -887,6 +938,7 @@ ApplicationWindow {
         checkable: true
         flat: true
         width: isIncrementalSearch ? 0 : findNextButton.width / 2
+        height: findNextButton.height
         icon.source: "icons/loop.svg"
         //focusPolicy: Qt.NoFocus
 
@@ -911,6 +963,7 @@ ApplicationWindow {
         checkable: true
         flat: true
         width: isIncrementalSearch ? 0 : findNextButton.width / 2
+        height: findNextButton.height
         icon.source: "icons/arrow_upward.svg"
         //focusPolicy: Qt.NoFocus
 

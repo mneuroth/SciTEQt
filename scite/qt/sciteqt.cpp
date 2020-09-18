@@ -15,6 +15,9 @@
 #include <QPrintDialog>
 #include <QPageSetupDialog>
 
+#include <QJsonObject>
+#include <QJsonArray>
+
 #include <qdesktopservices.h>
 
 #include <QDebug>
@@ -1978,6 +1981,48 @@ bool SciTEQt::event(QEvent *e)
 void SciTEQt::onStatusbarClicked()
 {
     UpdateStatusbarView();
+}
+
+static void AddToMenu(QJsonArray & menu, const QString & menuText, int menuId, bool enabled)
+{
+    QJsonObject menuItem;
+    menuItem["display"] = menuText;
+    menuItem["menuId"] = menuId;
+    menuItem["enabled"] = enabled;
+    menu.append(menuItem);
+}
+
+QVariant SciTEQt::fillTabContextMenu()
+{
+    QJsonArray menu;
+
+    // used code from void SciTEWin::Notify(SCNotification *notification) --> case NM_RCLICK:
+
+    AddToMenu(menu, "Close", IDM_CLOSE, true);
+    //AddToMenu(menu, "");
+    AddToMenu(menu, "Save", IDM_SAVE, true);
+    AddToMenu(menu, "Save As", IDM_SAVEAS, true);
+    //AddToMenu(menu, "");
+
+    bool bAddSeparator = false;
+    for (int item = 0; item < toolMax; item++) {
+        const int itemID = IDM_TOOLS + item;
+        std::string prefix = "command.name.";
+        prefix += StdStringFromInteger(item);
+        prefix += ".";
+        std::string commandName = props.GetNewExpandString(prefix.c_str(), filePath.AsUTF8().c_str());
+        if (commandName.length()) {
+            AddToMenu(menu, commandName.c_str(), itemID, true);
+            bAddSeparator = true;
+        }
+    }
+
+    //if (bAddSeparator)
+    //    AddToMenu(menu, "");
+
+    AddToMenu(menu, "Print", IDM_PRINT, true);
+
+    return QVariant(menu);
 }
 
 QVariant SciTEQt::fillToLength(const QString & text, const QString & shortcut)
