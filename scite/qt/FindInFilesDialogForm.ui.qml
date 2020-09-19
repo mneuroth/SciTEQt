@@ -71,6 +71,7 @@ Window {
             Button {
                 id: findButton
                 text: qsTr("Find")
+                highlighted: true
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }

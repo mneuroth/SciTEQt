@@ -185,6 +185,15 @@ ApplicationWindow {
         tabSizeDialog.tabSizeInput.focus = true
     }
 
+    function showAbbreviationDialog(items) {
+        abbreviationDialog.abbreviationModel.clear()
+        for (let i=0; i<items.length; i++) {
+            abbreviationDialog.abbreviationModel.append({"text":items[i]})
+        }
+        abbreviationDialog.show()
+        abbreviationDialog.abbreviationInput.focus = true
+    }
+
     function setVerticalSplit(verticalSplit) {
         splitView.verticalSplit = verticalSplit
     }
@@ -1156,6 +1165,7 @@ ApplicationWindow {
         onShowFind:                   showFind(text, incremental, withReplace)
         onShowGoToDialog:             showGoToDialog(currentLine, currentColumn, maxLine)
         onShowTabSizeDialog:          showTabSizeDialog(tabSize, indentSize, useTabs)
+        onShowAbbreviationDialog:     showAbbreviationDialog(items)
 
         onSetVerticalSplit:           setVerticalSplit(verticalSplit)
         onSetOutputHeight:            setOutputHeight(heightOutput)
@@ -1345,6 +1355,29 @@ ApplicationWindow {
         }
         onConvert: {
             sciteQt.cmdUpdateTabSizeValues(parseInt(tabSizeDialog.tabSizeInput.text), parseInt(tabSizeDialog.indentSizeInput.text), tabSizeDialog.useTabsCheckBox.checked, true)
+            focusToEditor()
+        }
+    }
+
+    AbbreviationDialog {
+        id: abbreviationDialog
+        objectName: "abbreviationDialog"
+        modality: Qt.ApplicationModal
+        title: sciteQt.getLocalisedText(qsTr("Insert Abbreviation"))
+
+        fcnLocalisation: sciteQt.getLocalisedText
+
+        visible: false
+    }
+
+    Connections {
+        target: abbreviationDialog
+
+        onCanceled: {
+            focusToEditor()
+        }
+        onAccepted: {
+            sciteQt.cmdPerformInsertAbbreviation(abbreviationDialog.abbreviationInput.currentText)
             focusToEditor()
         }
     }

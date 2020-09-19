@@ -81,6 +81,7 @@ Window {
 
             Button {
                 id: gotoButton
+                highlighted: true
                 text: localiseText(qsTr("&Go To"))
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()

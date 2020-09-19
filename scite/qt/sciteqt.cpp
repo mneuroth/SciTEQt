@@ -674,8 +674,23 @@ void SciTEQt::GoLineDialog()
 
 bool SciTEQt::AbbrevDialog()
 {
-    // TODO implement !
-    emit showInfoDialog("Sorry: AbbrevDialog() is not implemented yet!", 0);
+    // create a list of abbrevs...
+    QStringList items;
+
+    // addapted from: FillComboFromProps()
+    const char *key = nullptr;
+    const char *val = nullptr;
+    if (propsAbbrev.GetFirst(key, val)) {
+        GUI::gui_string wkey = GUI::StringFromUTF8(key);
+        items.append(ConvertGuiStringToQString(wkey));
+        while (propsAbbrev.GetNext(key, val)) {
+            wkey = GUI::StringFromUTF8(key);
+            items.append(ConvertGuiStringToQString(wkey));
+        }
+    }
+
+    emit showAbbreviationDialog(items);
+
     return false;
 }
 
@@ -686,7 +701,7 @@ void SciTEQt::TabSizeDialog()
 
 bool SciTEQt::ParametersOpen()
 {
-    // TODO implement !
+    // TODO implement ! --> is non modal parameters dialog open ?
 
     // is parameters dialog open ?
     //emit showInfoDialog("Sorry: ParametersOpen() is not implemented yet!", 0);
@@ -695,7 +710,7 @@ bool SciTEQt::ParametersOpen()
 
 void SciTEQt::ParamGrab()
 {
-    // TODO implement !
+    // TODO implement ! --> get (last?) parameters from (closed) parameters dialog ?
 //    emit showInfoDialog("Sorry: ParamGrab() is not implemented yet!", 0);
 
     // read parameters from open parameters dialog, see code Win and Gtk:
@@ -723,7 +738,7 @@ void SciTEQt::ParamGrab()
 
 bool SciTEQt::ParametersDialog(bool modal)
 {
-    // TODO implement !
+    // TODO implement ! --> Show Dialog
     emit showInfoDialog("Sorry: ParametersDialog() is not implemented yet!", 0);
 // TODO --> ProcessEvents() for closing .... --> needed for Webassembly to close the message dialog box
     return false;
@@ -1880,6 +1895,12 @@ void SciTEQt::cmdUpdateTabSizeValues(int tabSize, int indentSize, bool useTabs, 
     wEditor.SetUseTabs(useTabs);
     if (convert)
         ConvertIndentation(tabSize, useTabs);
+}
+
+void SciTEQt::cmdPerformInsertAbbreviation(const QString & currentText)
+{
+    abbrevInsert = currentText.toStdString().c_str();
+    PerformInsertAbbreviation();
 }
 
 void SciTEQt::cmdContextMenu(int menuID)

@@ -20,11 +20,9 @@ Window {
     minimumWidth: width
 
     property alias cancelButton: cancelButton
-    property alias okButton: okButton
-    property alias convertButton: convertButton
-    property alias tabSizeInput: tabSizeInput
-    property alias indentSizeInput: indentSizeInput
-    property alias useTabsCheckBox: useTabsCheckBox
+    property alias insertButton: insertButton
+    property alias abbreviationInput: abbreviationInput
+    property alias abbreviationModel: abbreviationModel
 
     property var fcnLocalisation: undefined
 
@@ -50,36 +48,37 @@ Window {
             anchors.bottomMargin: 5
 
             columns: 3
-            rows: 3
+            rows: 2
 
             Label {
-                id: tabSizeLabel
-                text: localiseText(qsTr("Tab Size:"))
+                id: abbreviationLabel
+                text: localiseText(qsTr("Abbreviation:"))
             }
 
-            TextField {
-                id: tabSizeInput
+            //ComboBox
+            ComboBox {
+                id: abbreviationInput
+                Layout.columnSpan: 2
+                model: abbreviationModel
+
                 //font.pixelSize: 12
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
+            }
+
+            ListModel {
+                id: abbreviationModel
+                objectName: "abbreviationModel"
+            }
+
+            Label {
+
             }
 
             Button {
-                id: okButton
+                id: insertButton
                 highlighted: true
-                text: localiseText(qsTr("OK"))
-                Keys.onEscapePressed: cancelButton.clicked()
-                Keys.onBackPressed: cancelButton.clicked()
-            }
-
-            Label {
-                id: indentSizeLabel
-                text: localiseText(qsTr("Indent Size:"))
-            }
-
-            TextField {
-                id: indentSizeInput
-                //font.pixelSize: 12
+                text: localiseText(qsTr("Insert"))
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
@@ -90,23 +89,6 @@ Window {
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
-
-            Label {
-                id: useTabsLabel
-                text: localiseText(qsTr("Use tabs:"))
-            }
-
-            CheckBox {
-                id: useTabsCheckBox
-            }
-
-            Button {
-                id: convertButton
-                text: localiseText(qsTr("Convert"))
-                Keys.onEscapePressed: cancelButton.clicked()
-                Keys.onBackPressed: cancelButton.clicked()
-            }
-
         }
     }
 }

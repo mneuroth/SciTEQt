@@ -353,6 +353,7 @@ public:
     Q_INVOKABLE void cmdTriggerReplace(const QString & find, const QString & replace, bool inSection);
     Q_INVOKABLE void cmdGotoLine(int lineNo, int colPos);
     Q_INVOKABLE void cmdUpdateTabSizeValues(int tabSize, int indentSize, bool useTabs, bool convert);
+    Q_INVOKABLE void cmdPerformInsertAbbreviation(const QString & currentText);
     Q_INVOKABLE void cmdContextMenu(int menuID);
 
     Q_INVOKABLE QVariant fillTabContextMenu();
@@ -426,6 +427,7 @@ signals:
     void showFind(const QString & text, bool incremental, bool withReplace);
     void showGoToDialog(int currentLine, int currentColumn, int maxLine);
     void showTabSizeDialog(int tabSize, int indentSize, bool useTabs);
+    void showAbbreviationDialog(const QStringList & items);
 
     void setVerticalSplit(bool verticalSplit);
     void setOutputHeight(int heightOutput);

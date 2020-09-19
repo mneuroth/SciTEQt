@@ -15,18 +15,18 @@ yet.
 
 Missing features are:
 
-  * Printing (partly)
-  * Execute external Scripts (build, go, stop, etc.)
-  * Find in Files dialog
-  * Abrev dialog
   * Parameters dialog
-  * Parameters open
-  * Parameter grab
-  * Find/Replace extended dialog --> find.use.strip=0 / replace.use.strip=1 / find.replace.advanced=1
-  * History for find/replace items
+  * Parameters open --> is parameters dialog open
+  * Parameter grab --> get data from parameters dialog
+  * switch to Scite v4.4.5
   * Detect monitor change/removement and move position if needed
+  * Find/Replace extended dialogs --> find.use.strip=0 / replace.use.strip=1 / find.replace.advanced=1
+  * History for find/replace items --> use combo boxes ?
+  * Find in Files dialog
+  * Execute external Scripts (build, go, stop, etc.)
   * Support list of last opened files
   * Improve splitter handling
+  * Printing (partly)
   * ((Webassembly: after closing dialog (FileDialog) app needs mouse click to update view
   * Webassembly: processing of modal dialogs (FileDialog, MessageBox)
   * Webassembly: click on Buttons (i. e. Cancel) in Dialogs creates crash ! BUT: setting focus via Keyboard and return on button works sometimes !!!???
@@ -48,3 +48,4 @@ Now already implemented:
   * Support Drag&Drop (desktop)
   * Context menus (partly, missing: context menu for tab page)
   * TabSize dialog
+  * Abbreviation dialog
