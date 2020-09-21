@@ -163,7 +163,8 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
       m_top(0),
       m_width(0),
       m_height(0),
-      m_maximize(false)
+      m_maximize(false),
+      m_bParametersDialogOpen(false)
 {
 #ifdef Q_OS_WINDOWS
     propsPlatform.Set("PLAT_WIN", "1");
@@ -538,49 +539,13 @@ void SciTEQt::Find()
     }
 }
 
-//#include <QMessageBox>
-
-SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::gui_string &msg, MessageBoxStyle style)
+SciTEQt::MessageBoxChoice SciTEQt::ProcessModalWindowSynchronious(const QString & objectName)
 {
-//qDebug() << "WindowMessageBox "     << endl;
-//    int standardButton1 = QMessageBox::Cancel;
-//    int standardButton2 = QMessageBox::NoButton;
-//    int standardButton3 = QMessageBox::NoButton;
-//    if((style & 7) == 4)
-//    {
-//        standardButton1 = QMessageBox::Yes;
-//        standardButton2 = QMessageBox::No;
-//    }
-//    if((style & 7) == 3)
-//    {
-//        standardButton1 = QMessageBox::Yes;
-//        standardButton2 = QMessageBox::No;
-//        standardButton3 = QMessageBox::Cancel;
-//    }
-
-//    qDebug() << "WindowMessageBox (1)"     << endl;
-//    int result = QMessageBox::information(0, "Info", ConvertGuiStringToQString(msg), standardButton1, standardButton2, standardButton3);
-//    qDebug() << "WindowMessageBox (2) " << result    <<  endl;
-//    switch(result)
-//    {
-//        case QMessageBox::Ok:
-//            return mbOK;
-//        case QMessageBox::Cancel:
-//            return mbCancel;
-//        case QMessageBox::Yes:
-//            return mbYes;
-//        case QMessageBox::No:
-//            return mbNo;
-//        default:
-//            return mbCancel;
-//    }
-
-    emit showInfoDialog(ConvertGuiStringToQString(msg), style);
-
     m_iMessageDialogAccepted = MSGBOX_RESULT_EMPTY;
-    QObject * pMessageBox = getCurrentInfoDialog();
+    QObject * pMessageBox = getDialog(objectName);
     connect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnAcceptedClicked()));
     connect(pMessageBox,SIGNAL(rejected()),this,SLOT(OnRejectedClicked()));
+    connect(pMessageBox,SIGNAL(canceled()),this,SLOT(OnRejectedClicked()));
     //connect(pMessageBox,SIGNAL(okClicked()), this, SLOT(OnOkClicked()));
     //connect(pMessageBox,SIGNAL(cancelClicked()),this,SLOT(OnCancelClicked()));
     connect(pMessageBox,SIGNAL(yes()),this,SLOT(OnYesClicked()));
@@ -600,23 +565,29 @@ SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::g
 
     disconnect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnAcceptedClicked()));
     disconnect(pMessageBox,SIGNAL(rejected()),this,SLOT(OnRejectedClicked()));
+    disconnect(pMessageBox,SIGNAL(canceled()),this,SLOT(OnRejectedClicked()));
     //disconnect(pMessageBox,SIGNAL(ok()), this, SLOT(OnOkClicked()));
     //disconnect(pMessageBox,SIGNAL(cancel()),this,SLOT(OnCancelClicked()));
     disconnect(pMessageBox,SIGNAL(yes()),this,SLOT(OnYesClicked()));
     disconnect(pMessageBox,SIGNAL(no()),this,SLOT(OnNoClicked()));
 
-	if ((m_iMessageDialogAccepted & MSGBOX_RESULT_NO) == MSGBOX_RESULT_NO)
-		return SciTEQt::MessageBoxChoice::mbNo;
-	if ((m_iMessageDialogAccepted & MSGBOX_RESULT_YES) == MSGBOX_RESULT_YES)
-		return SciTEQt::MessageBoxChoice::mbYes;
-	if ((m_iMessageDialogAccepted & MSGBOX_RESULT_OK) == MSGBOX_RESULT_OK)
-		return SciTEQt::MessageBoxChoice::mbOK;
-	if ((m_iMessageDialogAccepted & MSGBOX_RESULT_CANCEL) == MSGBOX_RESULT_CANCEL)
-		return SciTEQt::MessageBoxChoice::mbCancel;
+    if ((m_iMessageDialogAccepted & MSGBOX_RESULT_NO) == MSGBOX_RESULT_NO)
+        return SciTEQt::MessageBoxChoice::mbNo;
+    if ((m_iMessageDialogAccepted & MSGBOX_RESULT_YES) == MSGBOX_RESULT_YES)
+        return SciTEQt::MessageBoxChoice::mbYes;
+    if ((m_iMessageDialogAccepted & MSGBOX_RESULT_OK) == MSGBOX_RESULT_OK)
+        return SciTEQt::MessageBoxChoice::mbOK;
+    if ((m_iMessageDialogAccepted & MSGBOX_RESULT_CANCEL) == MSGBOX_RESULT_CANCEL)
+        return SciTEQt::MessageBoxChoice::mbCancel;
 
-// TODO: Frage: Warum wird der Dialog ueberhaupt geschlossen ?
+    return SciTEQt::MessageBoxChoice::mbCancel;
+}
 
-	return SciTEQt::MessageBoxChoice::mbCancel;
+SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::gui_string &msg, MessageBoxStyle style)
+{
+    emit showInfoDialog(ConvertGuiStringToQString(msg), style);
+
+    return ProcessModalWindowSynchronious("infoDialog");
 }
 
 void SciTEQt::FindMessageBox(const std::string &msg, const std::string *findItem)
@@ -691,7 +662,8 @@ bool SciTEQt::AbbrevDialog()
 
     emit showAbbreviationDialog(items);
 
-    return false;
+    MessageBoxChoice result = ProcessModalWindowSynchronious("abbreviationDialog");
+    return result == SciTEQt::MessageBoxChoice::mbOK;
 }
 
 void SciTEQt::TabSizeDialog()
@@ -701,46 +673,55 @@ void SciTEQt::TabSizeDialog()
 
 bool SciTEQt::ParametersOpen()
 {
-    // TODO implement ! --> is non modal parameters dialog open ?
-
-    // is parameters dialog open ?
-    //emit showInfoDialog("Sorry: ParametersOpen() is not implemented yet!", 0);
-    return false;
+    // is non modal parameters dialog open ?
+    return m_bParametersDialogOpen;
 }
 
 void SciTEQt::ParamGrab()
 {
-    // TODO implement ! --> get (last?) parameters from (closed) parameters dialog ?
-//    emit showInfoDialog("Sorry: ParamGrab() is not implemented yet!", 0);
+    // get (last?) parameters from (closed) parameters dialog ?
 
     // read parameters from open parameters dialog, see code Win and Gtk:
-/*
-    if (wParameters.Created()) {
-        HWND hDlg = HwndOf(wParameters);
-        Dialog dlg(hDlg);
-        for (int param = 0; param < maxParam; param++) {
-            std::string paramVal = GUI::UTF8FromString(dlg.ItemTextG(IDPARAMSTART + param));
-            std::string paramText = StdStringFromInteger(param + 1);
-            props.Set(paramText.c_str(), paramVal.c_str());
-        }
-        UpdateStatusBar(true);
-    }
-    if (dlgParameters.Created()) {
-        for (int param = 0; param < maxParam; param++) {
-            std::string paramText = StdStringFromInteger(param + 1);
-            const char *paramVal = dlgParameters.entryParam[param].Text();
-            props.Set(paramText.c_str(), paramVal);
-        }
-        UpdateStatusBar(true);
-    }
-*/
+
+    std::string paramText1 = StdStringFromInteger(1);
+    props.Set(paramText1.c_str(), m_parameter1.toStdString().c_str());
+    std::string paramText2 = StdStringFromInteger(2);
+    props.Set(paramText2.c_str(), m_parameter2.toStdString().c_str());
+    std::string paramText3 = StdStringFromInteger(3);
+    props.Set(paramText3.c_str(), m_parameter3.toStdString().c_str());
+    std::string paramText4 = StdStringFromInteger(4);
+    props.Set(paramText4.c_str(), m_parameter4.toStdString().c_str());
+
+// TODO --> handling of parameterisedCommand ?
+
+    UpdateStatusBar(true);
 }
 
 bool SciTEQt::ParametersDialog(bool modal)
 {
-    // TODO implement ! --> Show Dialog
-    emit showInfoDialog("Sorry: ParametersDialog() is not implemented yet!", 0);
-// TODO --> ProcessEvents() for closing .... --> needed for Webassembly to close the message dialog box
+    QStringList parameters;
+
+    // from SciTEWin::ParametersMessage()
+    if (modal/*Parameters*/) {
+        GUI::gui_string sCommand = GUI::StringFromUTF8(parameterisedCommand);
+    }
+    for (int param = 0; param < maxParam; param++) {
+        std::string paramText = StdStringFromInteger(param + 1);
+        std::string paramTextVal = props.GetString(paramText.c_str());
+        GUI::gui_string sVal = GUI::StringFromUTF8(paramTextVal);
+        parameters.append(ConvertGuiStringToQString(sVal));
+    }
+
+    emit showParametersDialog(modal, parameters);
+    m_bParametersDialogOpen = true;
+
+    if(modal)
+    {
+        MessageBoxChoice result = ProcessModalWindowSynchronious("parametersDialog");
+        m_bParametersDialogOpen = false;
+        return result == SciTEQt::MessageBoxChoice::mbOK;
+    }
+
     return false;
 }
 
@@ -1897,10 +1878,23 @@ void SciTEQt::cmdUpdateTabSizeValues(int tabSize, int indentSize, bool useTabs, 
         ConvertIndentation(tabSize, useTabs);
 }
 
-void SciTEQt::cmdPerformInsertAbbreviation(const QString & currentText)
+void SciTEQt::cmdSetAbbreviationText(const QString & currentText)
 {
     abbrevInsert = currentText.toStdString().c_str();
-    PerformInsertAbbreviation();
+}
+
+void SciTEQt::cmdSetParameters(const QString & cmd, const QString & parameter1, const QString & parameter2, const QString & parameter3, const QString & parameter4)
+{
+    m_cmd = cmd;
+    m_parameter1 = parameter1;
+    m_parameter2 = parameter2;
+    m_parameter3 = parameter3;
+    m_parameter4 = parameter4;
+}
+
+void SciTEQt::cmdParametersDialogClosed()
+{
+    m_bParametersDialogOpen = false;
 }
 
 void SciTEQt::cmdContextMenu(int menuID)
@@ -2097,16 +2091,21 @@ void SciTEQt::setFindText(const QString & text, bool incremental)
     }
 }
 
+QObject * SciTEQt::getDialog(const QString & objectName)
+{
+    QObject * dlg = childObject<QObject*>(*m_pEngine, objectName, "", false);
+    return dlg;
+
+}
+
 QObject * SciTEQt::getCurrentInfoDialog()
 {
-    QObject * infoDlg = childObject<QObject*>(*m_pEngine, "infoDialog", "", false);
-    return infoDlg;
+    return getDialog("infoDialog");
 }
 
 QObject * SciTEQt::getCurrentFileDialog()
 {
-    QObject * fileDlg = childObject<QObject*>(*m_pEngine, "fileDialog", "", false);
-    return fileDlg;
+    return getDialog("fileDialog");
 }
 
 void SciTEQt::setApplicationData(ApplicationData * pApplicationData)

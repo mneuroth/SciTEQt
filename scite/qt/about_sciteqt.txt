@@ -15,9 +15,6 @@ yet.
 
 Missing features are:
 
-  * Parameters dialog
-  * Parameters open --> is parameters dialog open
-  * Parameter grab --> get data from parameters dialog
   * switch to Scite v4.4.5
   * Detect monitor change/removement and move position if needed
   * Find/Replace extended dialogs --> find.use.strip=0 / replace.use.strip=1 / find.replace.advanced=1
@@ -49,3 +46,6 @@ Now already implemented:
   * Context menus (partly, missing: context menu for tab page)
   * TabSize dialog
   * Abbreviation dialog
+  * Parameters dialog
+  * Parameters open --> is parameters dialog open
+  * Parameter grab --> get data from parameters dialog

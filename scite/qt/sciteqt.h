@@ -353,7 +353,9 @@ public:
     Q_INVOKABLE void cmdTriggerReplace(const QString & find, const QString & replace, bool inSection);
     Q_INVOKABLE void cmdGotoLine(int lineNo, int colPos);
     Q_INVOKABLE void cmdUpdateTabSizeValues(int tabSize, int indentSize, bool useTabs, bool convert);
-    Q_INVOKABLE void cmdPerformInsertAbbreviation(const QString & currentText);
+    Q_INVOKABLE void cmdSetAbbreviationText(const QString & currentText);
+    Q_INVOKABLE void cmdSetParameters(const QString & cmd, const QString & parameter1, const QString & parameter2, const QString & parameter3, const QString & parameter4);
+    Q_INVOKABLE void cmdParametersDialogClosed();
     Q_INVOKABLE void cmdContextMenu(int menuID);
 
     Q_INVOKABLE QVariant fillTabContextMenu();
@@ -428,6 +430,7 @@ signals:
     void showGoToDialog(int currentLine, int currentColumn, int maxLine);
     void showTabSizeDialog(int tabSize, int indentSize, bool useTabs);
     void showAbbreviationDialog(const QStringList & items);
+    void showParametersDialog(bool modal, const QStringList & parameters);
 
     void setVerticalSplit(bool verticalSplit);
     void setOutputHeight(int heightOutput);
@@ -445,10 +448,12 @@ signals:
     void addTextToOutput(const QString & text);
 
 private:
+    QObject * getDialog(const QString & objectName);
     QObject * getCurrentInfoDialog();
     QObject * getCurrentFileDialog();
     bool ProcessCurrentFileDialog();
     void RestorePosition();
+    MessageBoxChoice ProcessModalWindowSynchronious(const QString & objectName);
 
     ApplicationData *       m_pApplicationData;     // not an owner !
     QQmlApplicationEngine * m_pEngine;
@@ -471,6 +476,13 @@ private:
     int                     m_height;
     bool                    m_maximize;
     QString                 m_sCurrentFileUrl;
+
+    QString                 m_cmd;
+    QString                 m_parameter1;
+    QString                 m_parameter2;
+    QString                 m_parameter3;
+    QString                 m_parameter4;
+    bool                    m_bParametersDialogOpen;
 
     GUI::ScintillaWindow    wAboutScite;
 

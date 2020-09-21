@@ -194,6 +194,14 @@ ApplicationWindow {
         abbreviationDialog.abbreviationInput.focus = true
     }
 
+    function showParametersDialog(modal, parameters) {
+        parametersDialog.modality = modal ? Qt.ApplicationModal : Qt.NonModal
+        parametersDialog.isModal = modal
+        parametersDialog.show()
+        parametersDialog.parameter1Input.focus = !modal
+        parametersDialog.cmdInput.focus = modal
+    }
+
     function setVerticalSplit(verticalSplit) {
         splitView.verticalSplit = verticalSplit
     }
@@ -1166,6 +1174,7 @@ ApplicationWindow {
         onShowGoToDialog:             showGoToDialog(currentLine, currentColumn, maxLine)
         onShowTabSizeDialog:          showTabSizeDialog(tabSize, indentSize, useTabs)
         onShowAbbreviationDialog:     showAbbreviationDialog(items)
+        onShowParametersDialog:       showParametersDialog(modal, parameters)
 
         onSetVerticalSplit:           setVerticalSplit(verticalSplit)
         onSetOutputHeight:            setOutputHeight(heightOutput)
@@ -1377,7 +1386,32 @@ ApplicationWindow {
             focusToEditor()
         }
         onAccepted: {
-            sciteQt.cmdPerformInsertAbbreviation(abbreviationDialog.abbreviationInput.currentText)
+            sciteQt.cmdSetAbbreviationText(abbreviationDialog.abbreviationInput.currentText)
+            focusToEditor()
+        }
+    }
+
+    ParametersDialog {
+        id: parametersDialog
+        objectName: "parametersDialog"
+        modality: Qt.ApplicationModal
+        title: sciteQt.getLocalisedText(qsTr("Parameters"))
+
+        fcnLocalisation: sciteQt.getLocalisedText
+
+        visible: false
+    }
+
+    Connections {
+        target: parametersDialog
+
+        onCanceled: {
+            focusToEditor()
+            sciteQt.cmdParametersDialogClosed()
+        }
+        onAccepted: {
+            sciteQt.cmdSetParameters(parametersDialog.cmdInput.text, parametersDialog.parameter1Input.text, parametersDialog.parameter2Input.text, parametersDialog.parameter3Input.text, parametersDialog.parameter4Input.text)
+            sciteQt.cmdParametersDialogClosed()
             focusToEditor()
         }
     }

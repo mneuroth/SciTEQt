@@ -55,10 +55,10 @@ Window {
                 text: localiseText(qsTr("Abbreviation:"))
             }
 
-            //ComboBox
             ComboBox {
                 id: abbreviationInput
                 Layout.columnSpan: 2
+                Layout.fillWidth: true
                 model: abbreviationModel
 
                 //font.pixelSize: 12
