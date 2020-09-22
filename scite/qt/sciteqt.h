@@ -71,6 +71,7 @@
 #include "SciTEBase.h"
 
 #include "applicationdata.h"
+#include "findinfiles.h"
 
 #include <QEvent>
 #include <QQmlApplicationEngine>
@@ -357,6 +358,7 @@ public:
     Q_INVOKABLE void cmdSetParameters(const QString & cmd, const QString & parameter1, const QString & parameter2, const QString & parameter3, const QString & parameter4);
     Q_INVOKABLE void cmdParametersDialogClosed();
     Q_INVOKABLE void cmdContextMenu(int menuID);
+    Q_INVOKABLE void cmdStartFindInFilesAsync(const QString & directory, const QString & filePattern, const QString & findText);
 
     Q_INVOKABLE QVariant fillTabContextMenu();
 
@@ -396,6 +398,8 @@ public slots:
     void OnNotifiedFromOutput(SCNotification scn);
     void OnUriDroppedFromScintilla(const QString & uri);
 
+    void OnAddToOutput(const QString & text);
+
 signals:
     void showToolBarChanged();
     void showTabBarChanged();
@@ -425,7 +429,7 @@ signals:
     void showInfoDialog(const QString & sInfoText, int style);
     void showAboutSciteDialog();
 
-    void showFindInFilesDialog(const QString & text);
+    void showFindInFilesDialog(const QString & text, const QStringList & findHistory, const QStringList & filePatternHistory, const QStringList & directoryHistory);
     void showFind(const QString & text, bool incremental, bool withReplace);
     void showGoToDialog(int currentLine, int currentColumn, int maxLine);
     void showTabSizeDialog(int tabSize, int indentSize, bool useTabs);
@@ -457,6 +461,8 @@ private:
 
     ApplicationData *       m_pApplicationData;     // not an owner !
     QQmlApplicationEngine * m_pEngine;
+
+    FindInFilesAsync        m_aFindInFiles;
 
     bool                    m_bWaitDoneFlag;
     int                     m_iMessageDialogAccepted;

@@ -35,4 +35,15 @@ FindInFilesDialogForm {
         }
     }
 
+    browseButton {
+        onClicked: {
+            // TODO --> directory selector oeffnen...
+        }
+    }
+
+    upButton {
+        onClicked: {
+            // TODO --> ein verzeichnis nach oben
+        }
+    }
 }

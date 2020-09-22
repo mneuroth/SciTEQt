@@ -15,12 +15,14 @@ include(qhtml5file/qhtml5file.pri)
 HEADERS += applicationdata.h\
            ../../scintilla/lexilla/src/Lexilla.h \
            applicationui.hpp \
+           findinfiles.h \
            shareutils.hpp \
            storageaccess.h \
            sciteqt.h
 SOURCES += applicationdata.cpp\
            GUIQt.cpp\
            ../../scintilla/lexilla/src/Lexilla.cxx\
+           findinfiles.cpp \
            main.cpp \
            applicationui.cpp \
            shareutils.cpp \

@@ -26,6 +26,9 @@ Window {
     property alias findWhatInput: findWhatInput
     property alias filesExtensionsInput: filesExtensionsInput
     property alias directoryInput: directoryInput
+    property alias findWhatModel: findWhatModel
+    property alias filesExtensionsModel: filesExtensionsModel
+    property alias directoryModel: directoryModel
 
     property var fcnLocalisation: undefined
 
@@ -58,14 +61,21 @@ Window {
                 text: localiseText(qsTr("Find what:"))
             }
 
-            TextField {
+            ComboBox {
                 id: findWhatInput
-                text: qsTr("")
-                font.pixelSize: 12
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
+                editable: true
+                model: findWhatModel
+
+                //font.pixelSize: 12
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
+            }
+
+            ListModel {
+                id: findWhatModel
+                objectName: "findWhatModel"
             }
 
             Button {
@@ -81,14 +91,21 @@ Window {
                 text: localiseText(qsTr("Files:"))
             }
 
-            TextField {
+            ComboBox {
                 id: filesExtensionsInput
-                text: qsTr("")
-                font.pixelSize: 12
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
+                editable: true
+                model: filesExtensionsModel
+
+                //font.pixelSize: 12
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
+            }
+
+            ListModel {
+                id: filesExtensionsModel
+                objectName: "filesExtensionsModel"
             }
 
             Button {
@@ -103,18 +120,26 @@ Window {
                 text: localiseText(qsTr("Directory:"))
             }
 
-            TextField {
+            ComboBox {
                 id: directoryInput
-                text: qsTr("")
-                font.pixelSize: 12
+                Layout.columnSpan: 2
                 Layout.fillWidth: true
+                editable: true
+                model: directoryModel
+
+                //font.pixelSize: 12
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
 
+            ListModel {
+                id: directoryModel
+                objectName: "directoryModel"
+            }
+
             Button {
                 id: upButton
-                width: browseButton.width / 2
+                implicitWidth: browseButton.width / 4
                 text: localiseText(qsTr(".."))
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()

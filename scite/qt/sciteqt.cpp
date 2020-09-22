@@ -25,6 +25,8 @@
 #include "ScintillaEditBase.h"
 #include "ScintillaQt.h"
 
+#include "findinfiles.h"
+
 #ifdef Q_OS_WASM
 #include <emscripten.h>
 #endif
@@ -209,6 +211,8 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
     if (props.GetInt("save.session") || props.GetInt("save.position") || props.GetInt("save.recent")) {
         LoadSessionFile(GUI_TEXT(""));
     }
+
+    connect(&m_aFindInFiles,SIGNAL(addToOutput(QString)),this,SLOT(OnAddToOutput(QString)));
 }
 
 void SciTEQt::TabInsert(int index, const GUI::gui_char *title)
@@ -611,9 +615,30 @@ void SciTEQt::FindIncrement()
 
 void SciTEQt::FindInFiles()
 {
+    // see: DialogFindReplace::FillFields() and SciTEWin::PerformGrep() and InternalGrep()
     SelectionIntoFind();    // findWhat
 
-    emit showFindInFilesDialog(QString::fromStdString(findWhat));
+    // see: SciTEWin::FillCombos() and SciTEWin::FillCombosForGrep()
+    QStringList findHistory;
+    Searcher * pSearcher = this;
+    for (int i = 0; i < pSearcher->memFinds.Length(); i++) {
+        GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memFinds.At(i));
+        findHistory.append(ConvertGuiStringToQString(gs));
+    }
+
+    QStringList filePatternHistory;
+    for (int i = 0; i < memFiles.Length(); i++) {
+        GUI::gui_string gs = GUI::StringFromUTF8(memFiles.At(i));
+        filePatternHistory.append(ConvertGuiStringToQString(gs));
+    }
+
+    QStringList directoryHistory;
+    for (int i = 0; i < memDirectory.Length(); i++) {
+        GUI::gui_string gs = GUI::StringFromUTF8(memDirectory.At(i));
+        directoryHistory.append(ConvertGuiStringToQString(gs));
+    }
+
+    emit showFindInFilesDialog(QString::fromStdString(findWhat), findHistory, filePatternHistory, directoryHistory);
 }
 
 void SciTEQt::Replace()
@@ -1160,6 +1185,9 @@ void SciTEQt::setOutput(QObject * obj)
     const sptr_t ptr_ = base->send(SCI_GETDIRECTPOINTER, 0, 0);
     wOutput.SetFnPtr(fn_, ptr_);
     wOutput.SetID(base->sqt);
+	base->sqt->UpdateInfos(IDM_RUNWIN);
+
+	connect(base->sqt, SIGNAL(notifyParent(SCNotification)), this, SLOT(OnNotifiedFromOutput(SCNotification)));
 }
 
 void SciTEQt::setAboutScite(QObject * obj)
@@ -1902,12 +1930,22 @@ void SciTEQt::cmdContextMenu(int menuID)
     MenuCommand(menuID);
 }
 
+void SciTEQt::cmdStartFindInFilesAsync(const QString & directory, const QString & filePattern, const QString & findText)
+{
+    SetFind(findText.toStdString().c_str());
+    //InsertFindInMemory();
+    memFiles.Insert(filePattern.toStdString().c_str());
+    memDirectory.Insert(directory.toStdString().c_str());
+
+    m_aFindInFiles.StartSearch(directory, filePattern, findText, false, false, false);
+}
+
 void SciTEQt::ReadEmbeddedProperties()
 {
     propsEmbed.Clear();
 
     QFile aFile(":/Embedded.properties");
-    if( aFile.open(QIODevice::ReadOnly | QIODevice::Text) > 0 )
+    if( aFile.open(QIODevice::ReadOnly | QIODevice::Text) )
     {
         QByteArray data = aFile.readAll();
         propsEmbed.ReadFromMemory(static_cast<const char *>(data.data()), data.size(), FilePath(), filter, NULL, 0);
@@ -2370,12 +2408,18 @@ void SciTEQt::OnNotifiedFromScintilla(SCNotification scn)
 
 void SciTEQt::OnNotifiedFromOutput(SCNotification scn)
 {
-    qDebug() << "OnNotifiedFromOutput " << scn.message << endl;
+	Notify(&scn);
 }
 
 void SciTEQt::OnUriDroppedFromScintilla(const QString & uri)
 {
     Open(GetPathFromUrl(uri));
+}
+
+void SciTEQt::OnAddToOutput(const QString & text)
+{
+    OutputAppendStringSynchronised(text.toStdString().c_str());
+    ShowOutputOnMainThread();
 }
 
 /*

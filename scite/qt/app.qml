@@ -147,8 +147,23 @@ ApplicationWindow {
         aboutSciteDialog.show()
     }
 
-    function showFindInFilesDialog(text) {
-        findInFilesDialog.findWhatInput.text = text
+    function showFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory) {
+        findInFilesDialog.findWhatModel.clear()
+        findInFilesDialog.findWhatModel.append({"text":text})
+        for (let i=0; i<findHistory.length; i++) {
+            findInFilesDialog.findWhatModel.append({"text":findHistory[i]})
+        }
+        findInFilesDialog.filesExtensionsModel.clear()
+        for (let i=0; i<filePatternHistory.length; i++) {
+            findInFilesDialog.filesExtensionsModel.append({"text":filePatternHistory[i]})
+        }
+        findInFilesDialog.directoryModel.clear()
+        for (let i=0; i<directoryHistory.length; i++) {
+            findInFilesDialog.directoryModel.append({"text":directoryHistory[i]})
+        }
+        findInFilesDialog.findWhatInput.currentIndex = 0
+        findInFilesDialog.filesExtensionsInput.currentIndex = 0
+        findInFilesDialog.directoryInput.currentIndex = 0
         findInFilesDialog.show() //.open()
         findInFilesDialog.findWhatInput.focus = true
     }
@@ -1169,7 +1184,7 @@ ApplicationWindow {
         onShowInfoDialog:             showInfoDialog(sInfoText, style)
         onShowAboutSciteDialog:       showAboutSciteDialog()
 
-        onShowFindInFilesDialog:      showFindInFilesDialog(text)
+        onShowFindInFilesDialog:      showFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory)
         onShowFind:                   showFind(text, incremental, withReplace)
         onShowGoToDialog:             showGoToDialog(currentLine, currentColumn, maxLine)
         onShowTabSizeDialog:          showTabSizeDialog(tabSize, indentSize, useTabs)
@@ -1304,16 +1319,10 @@ ApplicationWindow {
             focusToEditor()
         }
         onAccepted: {
-            console.log("find: "+findInFilesDialog.findWhatInput.text)
-            //GrabFields()
-            //SetFindInFilesOptions()
-            //SelectionIntoProperties()
-            // --> grep command bauen und ausfuehren....
-            // PerformGrep()    // windows
-            // FindInFilesCmd() // gtk
-
-            // TODO: implement Qt version of find in files (visiscript?)
-
+            var findWhatInput = findInFilesDialog.findWhatInput.editText.length > 0 ? findInFilesDialog.findWhatInput.editText : findInFilesDialog.findWhatInput.currentText
+            var filesExtensionsInput = findInFilesDialog.filesExtensionsInput.editText.length > 0 ? findInFilesDialog.filesExtensionsInput.editText : findInFilesDialog.filesExtensionsInput.currentText
+            var directoryInput = findInFilesDialog.directoryInput.editText.length > 0 ? findInFilesDialog.directoryInput.editText : findInFilesDialog.directoryInput.currentText
+            sciteQt.cmdStartFindInFilesAsync(directoryInput, filesExtensionsInput, findWhatInput, directoryInput)
             focusToEditor()
         }
     }
