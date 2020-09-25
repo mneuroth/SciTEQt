@@ -15,7 +15,6 @@ yet.
 
 Missing features are:
 
-  * Execute external Scripts (build, go, stop, etc.)
   * Support list of last opened files
   * Detect monitor change/removement and move position if needed
   * History for find/replace items --> use combo boxes ?
@@ -52,6 +51,8 @@ Now already implemented:
   * Find in Files dialog
   * Double click in output navigates to file (Find in files)
   * Support navigate in find in files dialog
+  * Execute external Scripts (build, go, stop, etc.)
 
 //TODO: use: command.go.*.py=*$(python.command) -u "$(FileNameExt)"  $(1)
+TODO: Accelerator Key funktioniert, obwohl Action disabled ist !!!???
 

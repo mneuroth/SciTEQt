@@ -16,6 +16,7 @@ HEADERS += applicationdata.h\
            ../../scintilla/lexilla/src/Lexilla.h \
            applicationui.hpp \
            findinfiles.h \
+           scriptexecution.h \
            shareutils.hpp \
            storageaccess.h \
            sciteqt.h
@@ -23,6 +24,7 @@ SOURCES += applicationdata.cpp\
            GUIQt.cpp\
            ../../scintilla/lexilla/src/Lexilla.cxx\
            findinfiles.cpp \
+           scriptexecution.cpp \
            main.cpp \
            applicationui.cpp \
            shareutils.cpp \

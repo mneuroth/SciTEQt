@@ -31,6 +31,10 @@
 #include <emscripten.h>
 #endif
 
+enum {
+    WORK_EXECUTE = WORK_PLATFORM + 1
+};
+
 QString ConvertGuiCharToQString(const GUI::gui_char * s)
 {
 #ifdef Q_OS_WINDOWS
@@ -161,7 +165,6 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
       m_bShowToolBar(false),
       m_bShowStatusBar(false),
       m_bShowTabBar(true),
-      icmd(0),
       m_left(0),
       m_top(0),
       m_width(0),
@@ -214,6 +217,9 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
     }
 
     connect(&m_aFindInFiles,SIGNAL(addToOutput(QString)),this,SLOT(OnAddToOutput(QString)));
+    connect(&m_aScriptExecution,SIGNAL(AddLineToOutput(QString)),this,SLOT(OnAddLineToOutput(QString)));
+
+    cmdWorker.pSciTE = this;
 }
 
 void SciTEQt::TabInsert(int index, const GUI::gui_char *title)
@@ -772,8 +778,7 @@ void SciTEQt::FindReplace(bool replace)
 
 void SciTEQt::StopExecute()
 {
-    // TODO implement !
-    emit showInfoDialog("Sorry: StopExecute() is not implemented yet!", 0);
+    m_aScriptExecution.KillExecution();
 }
 
 void SciTEQt::SetFileProperties(PropSetFile &ps)
@@ -977,7 +982,7 @@ void SciTEQt::CheckAMenuItem(int wIDCheckItem, bool val)
 
 void SciTEQt::EnableAMenuItem(int wIDCheckItem, bool val)
 {
-//    qDebug() << "EnableAMenuItem" << wIDCheckItem << " " << val << endl;
+    //qDebug() << "EnableAMenuItem" << wIDCheckItem << " " << val << endl;
     emit setMenuEnable(wIDCheckItem, val);
 }
 
@@ -2017,20 +2022,60 @@ void SciTEQt::CheckMenus()
 
 void SciTEQt::ResetExecution()
 {
-    icmd = 0;
+    cmdWorker.Initialise(true);
     jobQueue.SetExecuting(false);
     if (needReadProperties)
         ReadProperties();
     CheckReload();
     CheckMenus();
     jobQueue.ClearJobs();
-//    ::SendMessage(MainHWND(), WM_COMMAND, IDM_FINISHEDEXECUTE, 0);
+//TODO needed?    ::SendMessage(MainHWND(), WM_COMMAND, IDM_FINISHEDEXECUTE, 0);
+}
+
+void SciTEQt::ProcessExecute()
+{
+    if (scrollOutput)
+        wOutput.Send(SCI_GOTOPOS, wOutput.Send(SCI_GETTEXTLENGTH));
+
+    cmdWorker.exitStatus = ExecuteOne(jobQueue.jobQueue[cmdWorker.icmd]);
+    if (jobQueue.isBuilding) {
+        // The build command is first command in a sequence so it is only built if
+        // that command succeeds not if a second returns after document is modified.
+        jobQueue.isBuilding = false;
+        if (cmdWorker.exitStatus == 0)
+            jobQueue.isBuilt = true;
+    }
+
+    // Move selection back to beginning of this run so that F4 will go
+    // to first error of this run.
+    // scroll and return only if output.scroll equals
+    // one in the properties file
+    if ((cmdWorker.outputScroll == 1) && returnOutputToCommand)
+        wOutput.Send(SCI_GOTOPOS, cmdWorker.originalEnd);
+    returnOutputToCommand = true;
+    PostOnMainThread(WORK_EXECUTE, &cmdWorker);
+}
+
+int SciTEQt::ExecuteOne(const Job &jobToRun)
+{
+    QString cmd;
+    QString args;
+    QString workingDirectory = QString::fromStdString(jobToRun.directory.AsUTF8());
+    QString s = QString::fromStdString(jobToRun.command);
+    int iFirstSpace = s.indexOf(" ");
+    if( iFirstSpace>=0 )
+    {
+        cmd = s.mid(0, iFirstSpace);
+        args = s.mid(iFirstSpace);
+    }
+
+    return m_aScriptExecution.DoScriptExecution(cmd, args, workingDirectory);
 }
 
 void SciTEQt::ExecuteNext()
 {
-    icmd++;
-    if (icmd < jobQueue.commandCurrent && icmd < jobQueue.commandMax /*&& cmdWorker.exitStatus == 0*/) {
+    cmdWorker.icmd++;
+    if (cmdWorker.icmd < jobQueue.commandCurrent && cmdWorker.icmd < jobQueue.commandMax && cmdWorker.exitStatus == 0) {
         Execute();
     } else {
         ResetExecution();
@@ -2039,6 +2084,8 @@ void SciTEQt::ExecuteNext()
 
 void SciTEQt::Execute()
 {
+    // see also: SciTEWin::Execute() and SciTEGTK::Execute()
+
     if (buffers.SavingInBackground())
         // May be saving file that should be used by command so wait until all saved
         return;
@@ -2049,35 +2096,42 @@ void SciTEQt::Execute()
         // No commands to execute - possibly cancelled in SciTEBase::Execute
         return;
 
-//    icmd = 0;
-//    cmdWorker.Initialise(false);
-//    cmdWorker.outputScroll = props.GetInt("output.scroll", 1);
-//    cmdWorker.originalEnd = wOutput.Length();
-//    cmdWorker.commandTime.Duration(true);
-//    cmdWorker.flags = jobQueue.jobQueue[cmdWorker.icmd].flags;
+    cmdWorker.Initialise(false);
+    cmdWorker.outputScroll = props.GetInt("output.scroll", 1);
+    cmdWorker.originalEnd = wOutput.Length();
+    cmdWorker.commandTime.Duration(true);
+    cmdWorker.flags = jobQueue.jobQueue[cmdWorker.icmd].flags;
     if (scrollOutput)
         wOutput.GotoPos(wOutput.Length());
 
-    if (jobQueue.jobQueue[icmd].jobType == jobExtension) {
+    if (jobQueue.jobQueue[cmdWorker.icmd].jobType == jobExtension) {
         // Execute extensions synchronously
-        if (jobQueue.jobQueue[icmd].flags & jobGroupUndo)
+        if (jobQueue.jobQueue[cmdWorker.icmd].flags & jobGroupUndo)
             wEditor.BeginUndoAction();
 
         if (extender)
-            extender->OnExecute(jobQueue.jobQueue[icmd].command.c_str());
+            extender->OnExecute(jobQueue.jobQueue[cmdWorker.icmd].command.c_str());
 
-        if (jobQueue.jobQueue[icmd].flags & jobGroupUndo)
+        if (jobQueue.jobQueue[cmdWorker.icmd].flags & jobGroupUndo)
             wEditor.EndUndoAction();
 
         ExecuteNext();
     } else {
         // Execute other jobs asynchronously on a new thread
-//        PerformOnNewThread(&cmdWorker);
+        PerformOnNewThread(&cmdWorker);
     }
+}
 
-    // TODO: implement for Qt --> use visiscript executer ?
-
-    // see also: SciTEWin::Execute() and SciTEGTK::Execute()
+void SciTEQt::WorkerCommand(int cmd, Worker *pWorker)
+{
+    if (cmd < WORK_PLATFORM) {
+        SciTEBase::WorkerCommand(cmd, pWorker);
+    } else {
+        if (cmd == WORK_EXECUTE) {
+            // Move to next command
+            ExecuteNext();
+        }
+    }
 }
 
 bool SciTEQt::event(QEvent *e)
@@ -2476,16 +2530,25 @@ void SciTEQt::OnAddToOutput(const QString & text)
     ShowOutputOnMainThread();
 }
 
-/*
-DynamicMenuModel::DynamicMenuModel()
-    : m_aRoles(QStandardItemModel::roleNames())
+void SciTEQt::OnAddLineToOutput(const QString & text)
 {
-    // see: https://forum.qt.io/topic/88211/binding-qstandarditemmodel-from-c-with-qml/3
-    m_aRoles[Qt::CheckStateRole] = "checkState";
+    OnAddToOutput(text+"\n");
 }
 
-QHash<int,QByteArray> DynamicMenuModel::roleNames() const
-{
-    return m_aRoles;
+QtCommandWorker::QtCommandWorker() noexcept {
+    Initialise(true);
 }
-*/
+
+void QtCommandWorker::Initialise(bool resetToStart) noexcept {
+    if (resetToStart)
+        icmd = 0;
+    originalEnd = 0;
+    exitStatus = 0;
+    flags = 0;
+    seenOutput = false;
+    outputScroll = 1;
+}
+
+void QtCommandWorker::Execute() {
+    pSciTE->ProcessExecute();
+}

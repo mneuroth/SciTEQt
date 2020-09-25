@@ -72,16 +72,21 @@
 
 #include "applicationdata.h"
 #include "findinfiles.h"
+#include "scriptexecution.h"
 
 #include <QEvent>
 #include <QQmlApplicationEngine>
 //#include <QStandardItemModel>
 #include <QPrinter>
 
+class SciTEQt;
+
 #define SCITE_HOME          "SciTE_HOME"
 #define SCITE_QT_LANGUAGE   "SciteQtLanguage"
 
 #define POST_TO_MAIN (QEvent::User + 1)
+
+// ************************************************************************
 
 class QSciTEQtEvent : public QEvent
 {
@@ -98,18 +103,28 @@ private:
     int         m_cmd;
     Worker *    m_pWorker;
 };
-/*
-class DynamicMenuModel : public QStandardItemModel
-{
+
+// ************************************************************************
+
+class QtCommandWorker : public Worker {
 public:
-    DynamicMenuModel();
+    SciTEQt *pSciTE;
+    size_t icmd;
+    SA::Position originalEnd;
+    int exitStatus;
+    GUI::ElapsedTime commandTime;
+    std::string output;
+    int flags;
+    bool seenOutput;
+    int outputScroll;
 
-    virtual QHash<int,QByteArray> roleNames() const override;
-
-private:
-    QHash<int,QByteArray> m_aRoles;
+    QtCommandWorker() noexcept;
+    void Initialise(bool resetToStart) noexcept;
+    void Execute() override;
 };
-*/
+
+// ************************************************************************
+
 class SciTEQt : public QObject, public SciTEBase
 {
     Q_OBJECT
@@ -196,10 +211,14 @@ public:
     virtual void CheckMenus() override;
     virtual void Execute() override;
 
+    virtual void WorkerCommand(int cmd, Worker *pWorker) override;
+
     virtual bool event(QEvent *e) override;
 
     void ExecuteNext();
     void ResetExecution();
+    void ProcessExecute();
+    int ExecuteOne(const Job &jobToRun);
 
     bool isShowToolBar() const;
     void setShowToolBar(bool val);
@@ -406,6 +425,7 @@ public slots:
     void OnUriDroppedFromScintilla(const QString & uri);
 
     void OnAddToOutput(const QString & text);
+    void OnAddLineToOutput(const QString & text);
 
 signals:
     void showToolBarChanged();
@@ -471,6 +491,7 @@ private:
     QQmlApplicationEngine * m_pEngine;
 
     FindInFilesAsync        m_aFindInFiles;
+    ScriptExecution         m_aScriptExecution;
 
     bool                    m_bWaitDoneFlag;
     int                     m_iMessageDialogAccepted;
@@ -482,8 +503,6 @@ private:
     bool                    m_bShowStatusBar;
     bool                    m_bShowTabBar;
     QString                 m_sStatusBarText;
-
-    size_t                  icmd;                   // needed for executing scripts
 
     int                     m_left;
     int                     m_top;
@@ -502,6 +521,8 @@ private:
     GUI::ScintillaWindow    wAboutScite;
 
     QPrinter                m_aPrinter;
+
+    QtCommandWorker         cmdWorker;
 };
 
 #define MSGBOX_RESULT_EMPTY 0
