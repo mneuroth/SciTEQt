@@ -13,6 +13,8 @@
 #include <QTextStream>
 #include <QThread>
 
+//#include <QDebug>
+
 #include "findinfiles.h"
 
 #define _USER_EVENT_MSG                 QEvent::User+1
@@ -147,7 +149,7 @@ static QString singleFileSearch( const QString & strFileName,
             else
             {
                 iFoundPos = strLine.indexOf( strSearch, 0, bCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive );
-                //cout << "--> " << iFoundPos << " " << bCaseSensitive << " " << (const char *)strSearch << " " << (const char *)strLine << endl;
+                //qDebug() << "--> " << iFoundPos << " " << bCaseSensitive << " " << strSearch << " " << strLine << endl;
             }
             if( iFoundPos >= 0 )
             {
@@ -407,7 +409,7 @@ void FindInFilesAsync::StartSearch( const QString & sSearchDir, const QString & 
     if( bOnlyWholeWords )
     {
         bRegularExpr = true;
-       sFindText = g_strWhitespaces+sFindTextIn+g_strWhitespaces;
+        sFindText = g_strWhitespaces+sFindTextIn+g_strWhitespaces;
     }
 
     if( m_pFindThread==0 )

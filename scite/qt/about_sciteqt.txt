@@ -15,8 +15,6 @@ yet.
 
 Missing features are:
 
-  * Find in Files dialog
-  * Double click in output navigates to file (Find in files)
   * Execute external Scripts (build, go, stop, etc.)
   * Support list of last opened files
   * Detect monitor change/removement and move position if needed
@@ -51,6 +49,9 @@ Now already implemented:
   * Parameters dialog
   * Parameters open --> is parameters dialog open
   * Parameter grab --> get data from parameters dialog
+  * Find in Files dialog
+  * Double click in output navigates to file (Find in files)
+  * Support navigate in find in files dialog
 
 //TODO: use: command.go.*.py=*$(python.command) -u "$(FileNameExt)"  $(1)
 

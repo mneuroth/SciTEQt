@@ -37,13 +37,24 @@ FindInFilesDialogForm {
 
     browseButton {
         onClicked: {
-            // TODO --> directory selector oeffnen...
+            var currentDirectory = findInFilesDialog.directoryInput.editText.length > 0 ? findInFilesDialog.directoryInput.editText : findInFilesDialog.directoryInput.currentText
+            folderDialog.folder = buildValidUrl(currentDirectory)
+            folderDialog.open()
         }
     }
 
     upButton {
         onClicked: {
-            // TODO --> ein verzeichnis nach oben
+            var currentDirectory = findInFilesDialog.directoryInput.editText.length > 0 ? findInFilesDialog.directoryInput.editText : findInFilesDialog.directoryInput.currentText
+            directoryInput.editText = sciteQt.cmdDirectoryUp(currentDirectory)
+        }
+    }
+
+    Connections {
+        target: folderDialog
+
+        onAccepted: {
+            directoryInput.editText = sciteQt.cmdUrlToLocalPath(folderDialog.folder)
         }
     }
 }

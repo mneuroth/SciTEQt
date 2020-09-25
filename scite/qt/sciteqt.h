@@ -358,7 +358,10 @@ public:
     Q_INVOKABLE void cmdSetParameters(const QString & cmd, const QString & parameter1, const QString & parameter2, const QString & parameter3, const QString & parameter4);
     Q_INVOKABLE void cmdParametersDialogClosed();
     Q_INVOKABLE void cmdContextMenu(int menuID);
-    Q_INVOKABLE void cmdStartFindInFilesAsync(const QString & directory, const QString & filePattern, const QString & findText);
+    Q_INVOKABLE void cmdStartFindInFilesAsync(const QString & directory, const QString & filePattern, const QString & findText, bool wholeWord, bool caseSensitive, bool regularExpression);
+
+    Q_INVOKABLE QString cmdDirectoryUp(const QString & directoryPath);
+    Q_INVOKABLE QString cmdUrlToLocalPath(const QString & url);
 
     Q_INVOKABLE QVariant fillTabContextMenu();
 
@@ -429,7 +432,7 @@ signals:
     void showInfoDialog(const QString & sInfoText, int style);
     void showAboutSciteDialog();
 
-    void showFindInFilesDialog(const QString & text, const QStringList & findHistory, const QStringList & filePatternHistory, const QStringList & directoryHistory);
+    void showFindInFilesDialog(const QString & text, const QStringList & findHistory, const QStringList & filePatternHistory, const QStringList & directoryHistory, bool wholeWord, bool caseSensitive, bool regularExpression);
     void showFind(const QString & text, bool incremental, bool withReplace);
     void showGoToDialog(int currentLine, int currentColumn, int maxLine);
     void showTabSizeDialog(int tabSize, int indentSize, bool useTabs);

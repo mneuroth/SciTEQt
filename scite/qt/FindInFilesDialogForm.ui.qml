@@ -15,10 +15,11 @@ Window {
 
     // Window is not resizable !
     maximumHeight: height
-    maximumWidth: width
     minimumHeight: height
+/*
+    maximumWidth: width
     minimumWidth: width
-
+*/
     property alias cancelButton: cancelButton
     property alias findButton: findButton
     property alias browseButton: browseButton
@@ -29,6 +30,9 @@ Window {
     property alias findWhatModel: findWhatModel
     property alias filesExtensionsModel: filesExtensionsModel
     property alias directoryModel: directoryModel
+    property alias wholeWordCheckBox: wholeWordCheckBox
+    property alias caseSensitiveCheckBox: caseSensitiveCheckBox
+    property alias regularExpressionCheckBox: regularExpressionCheckBox
 
     property var fcnLocalisation: undefined
 
@@ -122,7 +126,6 @@ Window {
 
             ComboBox {
                 id: directoryInput
-                Layout.columnSpan: 2
                 Layout.fillWidth: true
                 editable: true
                 model: directoryModel
@@ -154,17 +157,28 @@ Window {
 
             Row {
                 Layout.columnSpan: 4
+                Layout.fillWidth: true
 
                 CheckBox {
-                    id: wholeWordButton
+                    id: wholeWordCheckBox
+                    width: 150
                     text: localiseText(qsTr("Match whole word only"))
                     Keys.onEscapePressed: cancelButton.clicked()
                     Keys.onBackPressed: cancelButton.clicked()
                 }
 
                 CheckBox {
-                    id: caseSensitiveButton
+                    id: caseSensitiveCheckBox
+                    width: wholeWordCheckBox.width
                     text: localiseText(qsTr("Case sensitive"))
+                    Keys.onEscapePressed: cancelButton.clicked()
+                    Keys.onBackPressed: cancelButton.clicked()
+                }
+
+                CheckBox {
+                    id: regularExpressionCheckBox
+                    width: wholeWordCheckBox.width
+                    text: localiseText(qsTr("Regular expression"))
                     Keys.onEscapePressed: cancelButton.clicked()
                     Keys.onBackPressed: cancelButton.clicked()
                 }

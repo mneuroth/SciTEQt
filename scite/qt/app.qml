@@ -147,7 +147,7 @@ ApplicationWindow {
         aboutSciteDialog.show()
     }
 
-    function showFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory) {
+    function showFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory, wholeWord, caseSensitive, regularExpression) {
         findInFilesDialog.findWhatModel.clear()
         findInFilesDialog.findWhatModel.append({"text":text})
         for (let i=0; i<findHistory.length; i++) {
@@ -164,6 +164,9 @@ ApplicationWindow {
         findInFilesDialog.findWhatInput.currentIndex = 0
         findInFilesDialog.filesExtensionsInput.currentIndex = 0
         findInFilesDialog.directoryInput.currentIndex = 0
+        findInFilesDialog.wholeWordCheckBox.checked = wholeWord
+        findInFilesDialog.caseSensitiveCheckBox.checked = caseSensitive
+        findInFilesDialog.regularExpressionCheckBox.checked = regularExpression
         findInFilesDialog.show() //.open()
         findInFilesDialog.findWhatInput.focus = true
     }
@@ -1184,7 +1187,7 @@ ApplicationWindow {
         onShowInfoDialog:             showInfoDialog(sInfoText, style)
         onShowAboutSciteDialog:       showAboutSciteDialog()
 
-        onShowFindInFilesDialog:      showFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory)
+        onShowFindInFilesDialog:      showFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory, wholeWord, caseSensitive, regularExpression)
         onShowFind:                   showFind(text, incremental, withReplace)
         onShowGoToDialog:             showGoToDialog(currentLine, currentColumn, maxLine)
         onShowTabSizeDialog:          showTabSizeDialog(tabSize, indentSize, useTabs)
@@ -1200,6 +1203,14 @@ ApplicationWindow {
     }
 
     // **********************************************************************
+
+    Platform.FolderDialog {
+        id: folderDialog
+        objectName: "folderDialog"
+        visible: false
+        modality: Qt.ApplicationModal
+        title: qsTr("Choose a directory")
+    }
 
     FileDialog {
         id: fileDialog
@@ -1322,7 +1333,10 @@ ApplicationWindow {
             var findWhatInput = findInFilesDialog.findWhatInput.editText.length > 0 ? findInFilesDialog.findWhatInput.editText : findInFilesDialog.findWhatInput.currentText
             var filesExtensionsInput = findInFilesDialog.filesExtensionsInput.editText.length > 0 ? findInFilesDialog.filesExtensionsInput.editText : findInFilesDialog.filesExtensionsInput.currentText
             var directoryInput = findInFilesDialog.directoryInput.editText.length > 0 ? findInFilesDialog.directoryInput.editText : findInFilesDialog.directoryInput.currentText
-            sciteQt.cmdStartFindInFilesAsync(directoryInput, filesExtensionsInput, findWhatInput, directoryInput)
+            var wholeWord = findInFilesDialog.wholeWordCheckBox.checked
+            var caseSensitive = findInFilesDialog.caseSensitiveCheckBox.checked
+            var regularExpression = findInFilesDialog.regularExpressionCheckBox.checked
+            sciteQt.cmdStartFindInFilesAsync(directoryInput, filesExtensionsInput, findWhatInput, wholeWord, caseSensitive, regularExpression)
             focusToEditor()
         }
     }

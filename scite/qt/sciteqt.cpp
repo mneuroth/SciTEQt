@@ -304,6 +304,11 @@ FilePath GetPathFromUrl(const QString & url)
     return FilePath(buf);
 }
 
+QUrl GetUrlFromPath(const QString & path)
+{
+    return QUrl::fromLocalFile(path);
+}
+
 bool SciTEQt::ProcessCurrentFileDialog()
 {
     QObject * pFileDialog = getCurrentFileDialog();
@@ -637,8 +642,16 @@ void SciTEQt::FindInFiles()
         GUI::gui_string gs = GUI::StringFromUTF8(memDirectory.At(i));
         directoryHistory.append(ConvertGuiStringToQString(gs));
     }
+    if (directoryHistory.length()==0)
+    {
+        directoryHistory.append(QDir::toNativeSeparators(QDir::current().absolutePath()));
+    }
 
-    emit showFindInFilesDialog(QString::fromStdString(findWhat), findHistory, filePatternHistory, directoryHistory);
+    bool wholeWord = pSearcher->wholeWord;
+    bool caseSensitive = pSearcher->matchCase;
+    bool regularExpression = pSearcher->regExp;
+
+    emit showFindInFilesDialog(QString::fromStdString(findWhat), findHistory, filePatternHistory, directoryHistory, wholeWord, caseSensitive, regularExpression);
 }
 
 void SciTEQt::Replace()
@@ -1930,14 +1943,31 @@ void SciTEQt::cmdContextMenu(int menuID)
     MenuCommand(menuID);
 }
 
-void SciTEQt::cmdStartFindInFilesAsync(const QString & directory, const QString & filePattern, const QString & findText)
+void SciTEQt::cmdStartFindInFilesAsync(const QString & directory, const QString & filePattern, const QString & findText, bool wholeWord, bool caseSensitive, bool regularExpression)
 {
     SetFind(findText.toStdString().c_str());
     //InsertFindInMemory();
     memFiles.Insert(filePattern.toStdString().c_str());
     memDirectory.Insert(directory.toStdString().c_str());
 
-    m_aFindInFiles.StartSearch(directory, filePattern, findText, false, false, false);
+    Searcher * pSearcher = this;
+    pSearcher->wholeWord = wholeWord;
+    pSearcher->matchCase = caseSensitive;
+    pSearcher->regExp = regularExpression;
+
+    m_aFindInFiles.StartSearch(directory, filePattern, findText, caseSensitive, wholeWord, regularExpression);
+}
+
+QString SciTEQt::cmdDirectoryUp(const QString & directoryPath)
+{
+    QDir aDirInfo(directoryPath);
+    aDirInfo.cdUp();
+    return QDir::toNativeSeparators(aDirInfo.absolutePath());
+}
+
+QString SciTEQt::cmdUrlToLocalPath(const QString & url)
+{
+    return QDir::toNativeSeparators(QUrl(url).toLocalFile());
 }
 
 void SciTEQt::ReadEmbeddedProperties()
