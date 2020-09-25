@@ -1229,7 +1229,7 @@ ApplicationWindow {
 
         onAccepted: {
 //            //console.log("Accepted: " + /*currentFile*/fileUrl+" "+fileDialog.openMode)
-            sciteQt.logToDebug("FileDialog accepted: "+fileUri)
+            sciteQt.logToDebug("FileDialog accepted: "+fileUrl)
             if(sciteQt.isWebassemblyPlatform()) {
                 if(!fileDialog.openMode) {
                     writeCurrentDoc(fileUrl)
@@ -1246,7 +1246,7 @@ ApplicationWindow {
             focusToEditor()
         }
         onRejected: {
-            sciteQt.logToDebug("FileDialog rejected: "+fileUri)
+            sciteQt.logToDebug("FileDialog rejected: "+fileUrl)
             fileDialog.close()
             focusToEditor()
         }
