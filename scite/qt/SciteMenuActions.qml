@@ -385,7 +385,7 @@ Item {
     }
     Action {
         id: actionFindInFiles
-        text: qsTr("F&ind in Files...")
+        text: sciteQt.findInFilesRunning ? qsTr("Stop F&ind in Files") : qsTr("F&ind in Files...")
         shortcut: "Ctrl+Shift+F"
         onTriggered: sciteQt.cmdFindInFiles()
     }

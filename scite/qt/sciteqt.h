@@ -129,6 +129,8 @@ class SciTEQt : public QObject, public SciTEBase
     // control content of ui controls
     Q_PROPERTY(QString statusBarText READ getStatusBarText WRITE setStatusBarText NOTIFY statusBarTextChanged)
 
+    Q_PROPERTY(bool findInFilesRunning READ isFindInFilesRunning WRITE setFindInFilesRunning NOTIFY findInFilesRunningChanged)
+
 public:
     explicit SciTEQt(QObject *parent=nullptr, QQmlApplicationEngine * pEngine=nullptr);
 
@@ -218,6 +220,8 @@ public:
     void setWrapAround(bool val);
     bool isSearchUp() const;
     void setSearchUp(bool val);
+    bool isFindInFilesRunning() const;
+    void setFindInFilesRunning(bool val);
 
     QString getStatusBarText() const;
     void setStatusBarText(const QString & txt);
@@ -417,6 +421,7 @@ signals:
     void transformBackslashChanged();
     void wrapAroundChanged();
     void searchUpChanged();
+    void findInFilesRunningChanged();
 
     void setInBuffersModel(int index, const QString & txt, bool checked, const QString & shortcut);
     void removeInBuffersModel(int index);
@@ -471,6 +476,7 @@ private:
     int                     m_iMessageDialogAccepted;
     bool                    m_bFileDialogWaitDoneFlag;
     int                     m_iFileDialogMessageDialogAccepted;
+    bool                    m_bFindInFilesRunning;
 
     bool                    m_bShowToolBar;
     bool                    m_bShowStatusBar;

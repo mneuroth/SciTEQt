@@ -21,6 +21,7 @@ public:
     virtual ~FindInFilesAsync();
 
     void StartSearch( const QString & sSearchDir, const QString & sSearchFiles, const QString & sFindTextIn, bool bCaseSensitive, bool bOnlyWholeWords, bool bRegularExpr );
+    void StopSearch();
 
 public slots:
     void sltFindThreadFinished();

@@ -157,6 +157,7 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
       m_iMessageDialogAccepted(MSGBOX_RESULT_EMPTY),
       m_bFileDialogWaitDoneFlag(false),
       m_iFileDialogMessageDialogAccepted(MSGBOX_RESULT_CANCEL),
+      m_bFindInFilesRunning(false),
       m_bShowToolBar(false),
       m_bShowStatusBar(false),
       m_bShowTabBar(true),
@@ -1120,6 +1121,20 @@ void SciTEQt::setSearchUp(bool val)
     }
 }
 
+bool SciTEQt::isFindInFilesRunning() const
+{
+    return m_bFindInFilesRunning;
+}
+
+void SciTEQt::setFindInFilesRunning(bool val)
+{
+    if(m_bFindInFilesRunning != val)
+    {
+        m_bFindInFilesRunning = val;
+        emit findInFilesRunningChanged();
+    }
+}
+
 QString SciTEQt::getStatusBarText() const
 {
     return m_sStatusBarText;
@@ -1518,7 +1533,15 @@ void SciTEQt::cmdFindPrevious()
 
 void SciTEQt::cmdFindInFiles()
 {
-    MenuCommand(IDM_FINDINFILES);
+    if( isFindInFilesRunning() )
+    {
+        m_aFindInFiles.StopSearch();
+        setFindInFilesRunning(false);
+    }
+    else
+    {
+        MenuCommand(IDM_FINDINFILES);
+    }
 }
 
 void SciTEQt::cmdReplace()
@@ -1956,6 +1979,7 @@ void SciTEQt::cmdStartFindInFilesAsync(const QString & directory, const QString 
     pSearcher->regExp = regularExpression;
 
     m_aFindInFiles.StartSearch(directory, filePattern, findText, caseSensitive, wholeWord, regularExpression);
+    setFindInFilesRunning(true);
 }
 
 QString SciTEQt::cmdDirectoryUp(const QString & directoryPath)

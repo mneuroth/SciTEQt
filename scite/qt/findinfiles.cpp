@@ -19,12 +19,7 @@
 
 #define _USER_EVENT_MSG                 QEvent::User+1
 #define _USER_EVENT_DONE                QEvent::User+2
-#define _USER_EVENT_CHECK_RELOAD        QEvent::User+3
-#define _USER_EVENT_QSCRIPT_FINISHED    QEvent::User+4
-#define _USER_EVENT_QSCRIPT_ACTION      QEvent::User+5
-#define _USER_EVENT_SEARCH_IN_MSG       QEvent::User+6
-#define _USER_EVENT_ADD_TO_OUTPUT       QEvent::User+7
-#define _USER_EVENT_PERFORMANCE_TEST_FINISHED QEvent::User+8
+#define _USER_EVENT_SEARCH_IN_MSG       QEvent::User+3
 
 const QString g_strWhitespaces = "[ \t;:.-+*/=<>?!(){}\\[]";		// whitespaces and separators \[\]\{\}
 
@@ -99,40 +94,38 @@ static void inc_if( int * pValue )
     }
 }
 
-static QString singleFileSearch( const QString & strFileName,
-                                 const QString & strSearch,
+static QString SingleFileSearch( const QString & sFileName,
+                                 const QString & sSearch,
                                  bool bCaseSensitive=true,
                                  bool bRegExpr=true,
                                  bool bWildcard=false,
                                  int * pFoundCount=0,
-                                 const QString & strFileTag = "",
-                                 const QString & strLineTag = "",
+                                 const QString & sFileTag = "",
+                                 const QString & sLineTag = "",
                                  QObject * pObserver = 0 )
 {
-    QString strRet;
+    QString sRet;
 
-    QFile aFile( strFileName );
+    QFile aFile( sFileName );
     if( !aFile.open(QIODevice::ReadOnly | QIODevice::Text) )
     {
-        strRet = "Error: can not open file " + strFileName;
+        sRet = QObject::tr("Error: can not open file ") + sFileName;
     }
     else
     {
         if( pObserver )
         {
-            QEvent * pEvent = new SearchInFileMsgEvent(strFileName);
-            QGuiApplication::postEvent(pObserver,pEvent,Qt::LowEventPriority);
+            QEvent * pEvent = new SearchInFileMsgEvent(sFileName);
+            QGuiApplication::postEvent(pObserver, pEvent, Qt::LowEventPriority);
         }
 
         QTextStream aInStream( &aFile );
         //aInStream.setEncoding(QTextStream::UnicodeUTF8);
 
-        //QString strWholeFile = aInStream.read();
-
         QRegExp * pRegExpr = 0;
         if( bRegExpr )
         {
-            pRegExpr = new QRegExp( strSearch, bCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive, bWildcard ? QRegExp::Wildcard : QRegExp::RegExp/*FixedString*/ );
+            pRegExpr = new QRegExp(sSearch, bCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive, bWildcard ? QRegExp::Wildcard : QRegExp::RegExp/*FixedString*/);
         }
 
         int iCount = 0;
@@ -144,25 +137,25 @@ static QString singleFileSearch( const QString & strFileName,
             int iFoundPos = -1;
             if( bRegExpr && pRegExpr )
             {
-                iFoundPos = pRegExpr->indexIn( strLine );
+                iFoundPos = pRegExpr->indexIn(strLine);
             }
             else
             {
-                iFoundPos = strLine.indexOf( strSearch, 0, bCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive );
+                iFoundPos = strLine.indexOf(sSearch, 0, bCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
                 //qDebug() << "--> " << iFoundPos << " " << bCaseSensitive << " " << strSearch << " " << strLine << endl;
             }
             if( iFoundPos >= 0 )
             {
                 // found !
-                QString strTemp = strFileTag + QDir::toNativeSeparators(strFileName) + ":" + strLineTag + QString::number( iCount ) + ": " + strLine + "\n";
+                QString strTemp = sFileTag + QDir::toNativeSeparators(sFileName) + ":" + sLineTag + QString::number( iCount ) + ": " + strLine + "\n";
 
                 if( pObserver )
                 {
                     QEvent * pEvent = new FindFileMsgEvent(strTemp);
-                    QGuiApplication::postEvent(pObserver,pEvent,Qt::LowEventPriority);
+                    QGuiApplication::postEvent(pObserver, pEvent, Qt::LowEventPriority);
                 }
 
-                strRet += strTemp;
+                sRet += strTemp;
 
                 // count all occurences in this line !
                 while( iFoundPos >= 0 )
@@ -171,16 +164,15 @@ static QString singleFileSearch( const QString & strFileName,
 
                     if( bRegExpr && pRegExpr )
                     {
-                        iFoundPos = pRegExpr->indexIn( strLine, iFoundPos+1/*pRegExpr->matchedLength()*/ );
+                        iFoundPos = pRegExpr->indexIn(strLine, iFoundPos+1/*pRegExpr->matchedLength()*/);
                     }
                     else
                     {
-                        iFoundPos = strLine.indexOf( strSearch, iFoundPos+1, bCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive );
+                        iFoundPos = strLine.indexOf(sSearch, iFoundPos+1, bCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
                     }
                 }
             }
         }
-        //strRet += strFileName + " count=" + QString::number(iCount) + "\n";
 
         if( pRegExpr )
         {
@@ -188,41 +180,41 @@ static QString singleFileSearch( const QString & strFileName,
         }
     }
 
-    return strRet;
+    return sRet;
 }
 
-static QString ProcessSingleFileFind(const QString & strPath,
-          const QString & strFile,
-          const QString & strSearch,
+static QString ProcessSingleFileFind(const QString & sPath,
+          const QString & sFile,
+          const QString & sSearch,
           bool bCaseSensitive=true,
           bool bRegExpr=true,
           bool bWildcard=false,
           int * pFoundCount=0,
           int * pFindFileCount=0,
           int * pTotalCount=0,
-          const QString & strFileTag = "",
-          const QString & strLineTag = "",
+          const QString & sFileTag = "",
+          const QString & sLineTag = "",
           QObject * pObserver = 0)
 {
-    QString strRet;
-    QString strName = QFileInfo(strPath, strFile).absoluteFilePath();
-    QString strFound = singleFileSearch( strName, strSearch, bCaseSensitive, bRegExpr, bWildcard, pFoundCount, strFileTag, strLineTag, pObserver );
+    QString sRet;
+    QString sName = QFileInfo(sPath, sFile).absoluteFilePath();
+    QString sFound = SingleFileSearch(sName, sSearch, bCaseSensitive, bRegExpr, bWildcard, pFoundCount, sFileTag, sLineTag, pObserver);
 
     inc_if( pTotalCount );
 
-    if( !strFound.isNull() && !strFound.isEmpty() )
+    if( !sFound.isNull() && !sFound.isEmpty() )
     {
-        strRet += strFound;
-        //strRet += "\n";
-        inc_if( pFindFileCount );
+        sRet += sFound;
+        //sRet += "\n";
+        inc_if(pFindFileCount);
     }
 
-    return strFound;
+    return sFound;
 }
 
-static std::pair<bool,QString> recursiveFileSearch( const QString & strPath,
-                                    const QString & strFiles,
-                                    const QString & strSearch,
+static std::pair<bool,QString> RecursiveFileSearch( const QString & sPath,
+                                    const QString & sFiles,
+                                    const QString & sSearch,
                                     bool bCaseSensitive=true,
                                     bool bSerachInSubDirs=true,
                                     bool bRegExpr=true,
@@ -230,38 +222,36 @@ static std::pair<bool,QString> recursiveFileSearch( const QString & strPath,
                                     int * pFoundCount=0,
                                     int * pFindFileCount=0,
                                     int * pTotalCount=0,
-                                    const QString & strFileTag = "",
-                                    const QString & strLineTag = "",
+                                    const QString & sFileTag = "",
+                                    const QString & sLineTag = "",
                                     QObject * pObserver = 0,
                                     bool * pStopFlag = 0 )
 {
-    QString strRet;
-    QDir aDir(strPath);
-    QFileInfo aPathInfo(strPath);
+    QString sRet;
+    QDir aDir(sPath);
+    QFileInfo aPathInfo(sPath);
     QStringList::Iterator it;
 
     QStringList aFiles;
     if( aPathInfo.isDir() )
     {
-        aFiles = aDir.entryList(strFiles.split(" "),QDir::Files);
+        aFiles = aDir.entryList(sFiles.split(" "), QDir::Files);
     }
     else
     {
         // no directory given, just an add single file to list of files
-        aFiles.append(strPath);
+        aFiles.append(sPath);
     }
-
-//    QtConcurrent::blockingMap(aFiles.begin(), aFiles.end(), );
 
     it = aFiles.begin();
     while( it != aFiles.end() )
     {
-        QString strFound = ProcessSingleFileFind(strPath, *it, strSearch, bCaseSensitive, bRegExpr, bWildcard, pFoundCount, pFindFileCount, pTotalCount, strFileTag, strLineTag, pObserver);
+        QString strFound = ProcessSingleFileFind(sPath, *it, sSearch, bCaseSensitive, bRegExpr, bWildcard, pFoundCount, pFindFileCount, pTotalCount, sFileTag, sLineTag, pObserver);
 
         // handle the stopping flag...
         if( pStopFlag && *pStopFlag )
         {
-            return std::pair<bool,QString>(false,strRet);
+            return std::pair<bool,QString>(false, sRet);
         }
 
         ++it;
@@ -275,26 +265,26 @@ static std::pair<bool,QString> recursiveFileSearch( const QString & strPath,
         {
             if( *it != "." && *it != ".." )
             {
-                std::pair<bool,QString> aRet = recursiveFileSearch( strPath + "/" + *it, strFiles, strSearch, bCaseSensitive, bSerachInSubDirs, bRegExpr, bWildcard, pFoundCount, pFindFileCount, pTotalCount, strFileTag, strLineTag, pObserver, pStopFlag );
-                strRet += aRet.second;
+                std::pair<bool,QString> aRet = RecursiveFileSearch(sPath + "/" + *it, sFiles, sSearch, bCaseSensitive, bSerachInSubDirs, bRegExpr, bWildcard, pFoundCount, pFindFileCount, pTotalCount, sFileTag, sLineTag, pObserver, pStopFlag);
+                sRet += aRet.second;
                 if( !aRet.first )
                 {
-                    return std::pair<bool,QString>(aRet.first,strRet);
+                    return std::pair<bool,QString>(aRet.first,sRet);
                 }
             }
             ++it;
         }
     }
 
-    return std::pair<bool,QString>(true,strRet);
+    return std::pair<bool,QString>(true, sRet);
 }
 
 class FindInFilesInThread : public QThread
 {
 public:
-    FindInFilesInThread(  const QString & strPath,
-                    const QString & strFiles,
-                    const QString & strSearch,
+    FindInFilesInThread(  const QString & sPath,
+                    const QString & sFiles,
+                    const QString & sSearch,
                     bool bCaseSensitive=true,
                     bool bSerachInSubDirs=true,
                     bool bRegExpr=true,
@@ -302,14 +292,14 @@ public:
                     int * pFoundCount=0,
                     int * pFindFileCount=0,
                     int * pTotalCount=0,
-                    const QString & strFileTag = "",
-                    const QString & strLineTag = "",
+                    const QString & sFileTag = "",
+                    const QString & sLineTag = "",
                     QObject * pObserver = 0,
                     bool * pStopFlag = 0 )
         : QThread( pObserver )
-        , m_strPath( strPath )
-        , m_strFiles( strFiles )
-        , m_strSearch( strSearch )
+        , m_sPath( sPath )
+        , m_sFiles( sFiles )
+        , m_sSearch( sSearch )
         , m_bCaseSensitive( bCaseSensitive )
         , m_bSerachInSubDirs( bSerachInSubDirs )
         , m_bRegExpr( bRegExpr )
@@ -317,8 +307,8 @@ public:
         , m_pFoundCount( pFoundCount )
         , m_pFindFileCount( pFindFileCount )
         , m_pTotalCount( pTotalCount )
-        , m_strFileTag( strFileTag )
-        , m_strLineTag( strLineTag )
+        , m_sFileTag( sFileTag )
+        , m_sLineTag( sLineTag )
         , m_pObserver( pObserver )
         , m_pStopFlag( pStopFlag )
     {
@@ -326,9 +316,9 @@ public:
 
     virtual void run()
     {
-        std::pair<bool,QString> aRet = recursiveFileSearch( m_strPath,
-                                    m_strFiles,
-                                    m_strSearch,
+        std::pair<bool,QString> aRet = RecursiveFileSearch( m_sPath,
+                                    m_sFiles,
+                                    m_sSearch,
                                     m_bCaseSensitive,
                                     m_bSerachInSubDirs,
                                     m_bRegExpr,
@@ -336,8 +326,8 @@ public:
                                     m_pFoundCount,
                                     m_pFindFileCount,
                                     m_pTotalCount,
-                                    m_strFileTag,
-                                    m_strLineTag,
+                                    m_sFileTag,
+                                    m_sLineTag,
                                     m_pObserver,
                                     m_pStopFlag );
         QString strLastMsg = ""+QObject::tr(">Found: ")+QString::number(*m_pFoundCount)+QObject::tr(" in files: ")+QString::number(*m_pFindFileCount)+QObject::tr(", total files: ")+QString::number(*m_pTotalCount)+"\n";
@@ -349,10 +339,10 @@ public:
                 strResult = QObject::tr(">Search stoped !\n");
             }
             QEvent * pEvent = new FindFileMsgEvent(strResult+strLastMsg);
-            QGuiApplication::postEvent(m_pObserver,pEvent,Qt::LowEventPriority);
+            QGuiApplication::postEvent(m_pObserver, pEvent, Qt::LowEventPriority);
 
             QEvent * pEvent2 = new FindFileDoneEvents();
-            QGuiApplication::postEvent(m_pObserver,pEvent2,Qt::LowEventPriority);
+            QGuiApplication::postEvent(m_pObserver, pEvent2, Qt::LowEventPriority);
 
             QThread::usleep(250000);
         }
@@ -363,9 +353,9 @@ public:
     }
 
 private:
-    QString     m_strPath;
-    QString     m_strFiles;
-    QString     m_strSearch;
+    QString     m_sPath;
+    QString     m_sFiles;
+    QString     m_sSearch;
     bool        m_bCaseSensitive;
     bool		   m_bSerachInSubDirs;
     bool		   m_bRegExpr;
@@ -373,8 +363,8 @@ private:
     int *		   m_pFoundCount;
     int *		   m_pFindFileCount;
     int *		   m_pTotalCount;
-    QString     m_strFileTag;
-    QString     m_strLineTag;
+    QString     m_sFileTag;
+    QString     m_sLineTag;
     QObject *   m_pObserver;
     bool *      m_pStopFlag;
 };
@@ -409,24 +399,19 @@ void FindInFilesAsync::StartSearch( const QString & sSearchDir, const QString & 
     if( bOnlyWholeWords )
     {
         bRegularExpr = true;
-        sFindText = g_strWhitespaces+sFindTextIn+g_strWhitespaces;
+        sFindText = g_strWhitespaces + sFindTextIn + g_strWhitespaces;
     }
 
     if( m_pFindThread==0 )
     {
-        // WARNING: wenn das Ausgabe-Fenster geschlossen wir, dann sturzt das Programm ab !!!
-        // TODO min --> robustere Behandlung der Ausgabe durchfuehren !!!
-//TODO handle manual tab switch                    13 = GetActOutput();
-
         m_bStopFlag = false;
         m_pFindThread = new FindInFilesInThread( sSearchDir, sSearchFiles, sFindText,
-                                           bCaseSensitive, false/*m_pVisiScript->Property_SearchSubDirectories()*/,
-                                           bRegularExpr, false/*m_pVisiScript->Property_Wildcard()*/,
+                                           bCaseSensitive, /*bSerachInSubDirs=*/true,
+                                           bRegularExpr, /*bWildcard=*/false,
                                            &m_iCount, &m_iFoundFileCount, &m_iTotalFileCount,
-                                           ""/*m_pVisiScript->GetFileTag()*/, ""/*m_pVisiScript->GetLineTag()*/, this, &m_bStopFlag );
+                                           /*fileTag=*/"", /*lineTag=*/"", this, &m_bStopFlag );
         connect(m_pFindThread,SIGNAL(finished()),this,SLOT(sltFindThreadFinished()));
         m_pFindThread->start(QThread::IdlePriority);
-//        m_pAction->setText( tr( "Stop f&ind in files" ) );
     }
 }
 
@@ -435,13 +420,11 @@ void FindInFilesAsync::sltFindThreadFinished()
     m_pFindThread->wait();
     delete m_pFindThread;
     m_pFindThread = 0;
-//    m_pFindOutputWindow = 0;
-//    m_pAction->setText( tr( "F&ind in files..." ) );
 }
 
 void FindInFilesAsync::sltFindThreadTerminated()
 {
-//    m_pVisiScript->AddToOutput( m_pFindOutputWindow, tr("search canceled") );
+    emit addToOutput( tr(">search canceled") );
     sltFindThreadFinished();
 }
 
@@ -461,13 +444,17 @@ void FindInFilesAsync::customEvent(QEvent * pEvent)
     else if( pEvent && pEvent->type()==_USER_EVENT_SEARCH_IN_MSG )
     {
         QString sFileName = ((SearchInFileMsgEvent *)pEvent)->GetFileName();
-//        QMainWindow * pMainWindow = m_pVisiScript->GetWindow();
-//        pMainWindow->statusBar()->showMessage(tr("Searching in: ") + sFileName, 5000);
-//        emit addToStatus(tr("Searching in: ") + sFileName);
+        // TODO: maybe show current processed file in status bar ? --> send notification to main window ?
+        //emit addToStatus(tr("Searching in: ") + sFileName);
         pEvent->accept();
     }
     else
     {
         // unknown event --> apple events ?
     }
+}
+
+void FindInFilesAsync::StopSearch()
+{
+    m_bStopFlag = true;
 }
