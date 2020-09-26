@@ -383,6 +383,7 @@ public:
     Q_INVOKABLE void cmdContextMenu(int menuID);
     Q_INVOKABLE void cmdStartFindInFilesAsync(const QString & directory, const QString & filePattern, const QString & findText, bool wholeWord, bool caseSensitive, bool regularExpression);
     Q_INVOKABLE bool cmdExecuteFind(const QString & findWhatInput, bool wholeWord, bool caseSensitive, bool regularExpression, bool wrap, bool transformBackslash, bool down, bool markAll);
+    Q_INVOKABLE void cmdExecuteReplace(const QString & findWhatInput, const QString & replace, bool wholeWord, bool caseSensitive, bool regularExpression, bool wrap, bool transformBackslash, bool replaceAll, bool replaceInSection);
 
     Q_INVOKABLE QString cmdDirectoryUp(const QString & directoryPath);
     Q_INVOKABLE QString cmdUrlToLocalPath(const QString & url);
@@ -446,6 +447,8 @@ signals:
     void searchUpChanged();
     void findInFilesRunningChanged();
 
+    void updateReplacementCount(const QString & count);
+
     void setInBuffersModel(int index, const QString & txt, bool checked, const QString & shortcut);
     void removeInBuffersModel(int index);
     void checkStateInBuffersModel(int index, bool checked);
@@ -463,6 +466,7 @@ signals:
     void showFindInFilesDialog(const QString & text, const QStringList & findHistory, const QStringList & filePatternHistory, const QStringList & directoryHistory, bool wholeWord, bool caseSensitive, bool regularExpression);
     void showFindStrip(const QString & text, bool incremental, bool withReplace);
     void showFind(const QStringList & findHistory, const QString & text, bool wholeWord, bool caseSensitive, bool regExpr, bool wrap, bool transformBackslash, bool down);
+    void showReplace(const QStringList & findHistory, const QStringList & replaceHistory, const QString & text, const QString & replace, bool wholeWord, bool caseSensitive, bool regExpr, bool wrap, bool transformBackslash, bool down);
     void showGoToDialog(int currentLine, int currentColumn, int maxLine);
     void showTabSizeDialog(int tabSize, int indentSize, bool useTabs);
     void showAbbreviationDialog(const QStringList & items);

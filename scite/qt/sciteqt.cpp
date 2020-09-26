@@ -678,14 +678,57 @@ void SciTEQt::FindInFiles()
 
 void SciTEQt::Replace()
 {
-    SelectionIntoFind();    // findWhat
+    // see: SciTEWin::Replace()
 
-    emit showFindStrip(QString::fromStdString(findWhat), false, true);
+    SelectionIntoFind(false);    // findWhat
+
+    if (props.GetInt("replace.use.strip")) {
+        //if (searchStrip.visible)
+        //	searchStrip.Close();
+        //if (findStrip.visible)
+        //	findStrip.Close();
+        //replaceStrip.visible = true;
+        //SizeSubWindows();
+        //replaceStrip.SetIncrementalBehaviour(props.GetInt("replace.strip.incremental"));
+        //replaceStrip.ShowStrip();
+        emit showFindStrip(QString::fromStdString(findWhat), false, true);
+        havefound = false;
+    } else {
+        //if (searchStrip.visible || findStrip.visible)
+        //	return;
+        if( m_bStripFindVisible )
+            return;
+
+        replacing = true;
+        havefound = false;
+
+        Searcher * pSearcher = this;
+
+        QStringList findHistory;
+        for (int i = 0; i < pSearcher->memFinds.Length(); i++) {
+            GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memFinds.At(i));
+            findHistory.append(ConvertGuiStringToQString(gs));
+        }
+
+        QStringList replaceHistory;
+        for (int i = 0; i < pSearcher->memReplaces.Length(); i++) {
+            GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memReplaces.At(i));
+            replaceHistory.append(ConvertGuiStringToQString(gs));
+        }
+
+        emit showReplace(findHistory, replaceHistory, QString::fromStdString(findWhat), QString::fromStdString(pSearcher->replaceWhat), pSearcher->wholeWord, pSearcher->matchCase, pSearcher->regExp, pSearcher->wrapFind, pSearcher->unSlash, !pSearcher->reverseFind);
+
+        //const int dialogID = (!props.GetInt("find.replace.advanced") ? IDD_REPLACE : IDD_REPLACE_ADV);
+        //wFindReplace = CreateParameterisedDialog(MAKEINTRESOURCE(dialogID), ReplaceDlg);
+        //wFindReplace.Show();
+    }
+
 }
 
 void SciTEQt::DestroyFindReplace()
 {
     // TODO implement ! --> for FindReplace (advanced) --> not used ?
+    emit showInfoDialog("Sorry: DestroyFindReplace() is not implemented yet!", 0);
 }
 
 void SciTEQt::GoLineDialog()
@@ -2028,6 +2071,46 @@ bool SciTEQt::cmdExecuteFind(const QString & findWhatInput, bool wholeWord, bool
     }
     // TODO: else: fill search history ?
     return false;
+}
+
+void SciTEQt::cmdExecuteReplace(const QString & findWhatInput, const QString & replace, bool wholeWord, bool caseSensitive, bool regularExpression, bool wrap, bool transformBackslash, bool replaceAll, bool replaceInSection)
+{
+    SetFind(findWhatInput.toStdString().c_str());
+
+    // see: DialogFindReplace::GrabFields()
+    Searcher * pSearcher = this;
+    pSearcher->wholeWord = wholeWord;
+    pSearcher->matchCase = caseSensitive;
+    pSearcher->regExp = regularExpression;
+    pSearcher->wrapFind = wrap;
+    pSearcher->unSlash = transformBackslash;
+    //pSearcher->reverseFind = false;
+
+    pSearcher->SetReplace(replace.toStdString().c_str());
+
+    // see: SciTEWin::HandleReplaceCommand()
+
+    intptr_t replacements = 0;
+    if(replaceAll)
+    {
+        replacements = ReplaceAll(false);
+    }
+    else if(replaceInSection)
+    {
+        replacements = ReplaceAll(true);
+    }
+    //else if(replaceInBuffers)
+    //{
+    //    replacements = ReplaceInBuffers();
+    //}
+    else
+    {
+        ReplaceOnce();
+    }
+
+    GUI::gui_string replDone = std::to_wstring(replacements);
+
+    emit updateReplacementCount(ConvertGuiStringToQString(replDone));
 }
 
 QString SciTEQt::cmdDirectoryUp(const QString & directoryPath)

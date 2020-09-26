@@ -189,6 +189,22 @@ ApplicationWindow {
         stripFindVisible(true)
     }
 
+    function showReplace(findHistory, replaceHistory, text, replace, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down) {
+        replaceDialog.findWhatModel.clear()
+        replaceDialog.findWhatModel.append({"text":text})
+        for (let i=0; i<findHistory.length; i++) {
+            replaceDialog.findWhatModel.append({"text":findHistory[i]})
+        }
+        replaceDialog.findWhatInput.currentIndex = 0
+        replaceDialog.matchWholeWordCheckBox.checked = wholeWord
+        replaceDialog.caseSensitiveCheckBox.checked = caseSensitive
+        replaceDialog.regularExpressionCheckBox.checked = regExpr
+        replaceDialog.wrapAroundCheckBox.checked = wrap
+        replaceDialog.show()
+        replaceDialog.findWhatInput.selectAll()
+        replaceDialog.findWhatInput.focus = true
+    }
+
     function showFind(findHistory, text, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down) {
         findDialog.findWhatModel.clear()
         findDialog.findWhatModel.append({"text":text})
@@ -207,18 +223,34 @@ ApplicationWindow {
         findDialog.findWhatInput.focus = true
     }
 
-    function doExecuteFind(findDialog, markAll) {
+    function doExecuteFind(findDialog, markAll, useDown) {
         var findWhatInput = findDialog.findWhatInput.editText.length > 0 ? findDialog.findWhatInput.editText : findDialog.findWhatInput.currentText
         var wholeWord = findDialog.matchWholeWordCheckBox.checked
         var caseSensitive = findDialog.caseSensitiveCheckBox.checked
         var regularExpression = findDialog.regularExpressionCheckBox.checked
         var wrap = findDialog.wrapAroundCheckBox.checked
-        var transformBackslash = findDialog.tramsformBackslashExprCheckBox.checked
-        var down = findDialog.searchDownButton.checked
+        var transformBackslash = findDialog.tramsformBackslashExprCheckBox.checked        
+        var down = useDown ? findDialog.searchDownButton.checked : true
         var shouldClose = sciteQt.cmdExecuteFind(findWhatInput, wholeWord, caseSensitive, regularExpression, wrap, transformBackslash, down, markAll)
         if(shouldClose)
         {
             findDialog.close()
+            focusToEditor()
+        }
+    }
+
+    function doExecuteReplace(replaceDialog, replaceAll, replaceInSection) {
+        var findWhatInput = replaceDialog.findWhatInput.editText.length > 0 ? replaceDialog.findWhatInput.editText : replaceDialog.findWhatInput.currentText
+        var replace = replaceDialog.replaceWithInput.editText.length > 0 ? replaceDialog.replaceWithInput.editText : replaceDialog.replaceWithInput.currentText
+        var wholeWord = replaceDialog.matchWholeWordCheckBox.checked
+        var caseSensitive = replaceDialog.caseSensitiveCheckBox.checked
+        var regularExpression = replaceDialog.regularExpressionCheckBox.checked
+        var wrap = replaceDialog.wrapAroundCheckBox.checked
+        var transformBackslash = replaceDialog.tramsformBackslashExprCheckBox.checked
+        var shouldClose = sciteQt.cmdExecuteReplace(findWhatInput, replace, wholeWord, caseSensitive, regularExpression, wrap, transformBackslash, replaceAll, replaceInSection)
+        if(shouldClose)
+        {
+            replaceDialog.close()
             focusToEditor()
         }
     }
@@ -1231,6 +1263,7 @@ ApplicationWindow {
         onShowFindInFilesDialog:      showFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory, wholeWord, caseSensitive, regularExpression)
         onShowFindStrip:              showFindStrip(text, incremental, withReplace)
         onShowFind:                   showFind(findHistory, text, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down)
+        onShowReplace:                showReplace(findHistory, replaceHistory, text, replace, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down)
         onShowGoToDialog:             showGoToDialog(currentLine, currentColumn, maxLine)
         onShowTabSizeDialog:          showTabSizeDialog(tabSize, indentSize, useTabs)
         onShowAbbreviationDialog:     showAbbreviationDialog(items)
@@ -1368,9 +1401,38 @@ ApplicationWindow {
     Connections {
         target: findDialog
 
-        onAccepted: doExecuteFind(findDialog, false)
+        onAccepted: doExecuteFind(findDialog, false, true)
 
-        onMarkAll:  doExecuteFind(findDialog, true)
+        onMarkAll:  doExecuteFind(findDialog, true, true)
+    }
+
+    ReplaceDialog {
+        id: replaceDialog
+        objectName: "replaceDialog"
+        modality: sciteQt.isMobilePlatform() || sciteQt.isWebassemblyPlatform() ? Qt.ApplicationModal : Qt.NonModal
+        title: sciteQt.getLocalisedText(qsTr("Replace"))
+
+        fcnLocalisation: sciteQt.getLocalisedText
+
+        visible: false
+    }
+
+    Connections {
+        target: replaceDialog
+
+        onAccepted:         doExecuteFind(replaceDialog, false, false)
+
+        onReplace:          doExecuteReplace(replaceDialog,false,false)
+        onReplaceAll:       doExecuteReplace(replaceDialog,true,false)
+        onReplaceInSection: doExecuteReplace(replaceDialog,false,true)
+    }
+
+    Connections {
+        target: sciteQt
+
+        onUpdateReplacementCount: {
+            replaceDialog.countReplacementsLabel.text = count
+        }
     }
 
     FindInFilesDialog {
