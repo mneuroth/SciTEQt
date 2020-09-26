@@ -17,7 +17,7 @@ Missing features are:
 
   * Detect monitor change/removement and move position if needed
   * History for find/replace items in strip find --> use combo boxes ?
-  * Extension: History for find in files items persistent machen ?
+  * Extension: History for find in files items persistent machen ? --> SciTEBase::RestoreSession()
   * Support list of last opened files
   * switch to Scite v4.4.5
   * Improve splitter handling

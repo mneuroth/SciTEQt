@@ -195,7 +195,13 @@ ApplicationWindow {
         for (let i=0; i<findHistory.length; i++) {
             replaceDialog.findWhatModel.append({"text":findHistory[i]})
         }
+        replaceDialog.replaceWithModel.clear()
+        replaceDialog.replaceWithModel.append({"text":replace})
+        for (let i=0; i<replaceHistory.length; i++) {
+            replaceDialog.replaceWithModel.append({"text":replaceHistory[i]})
+        }
         replaceDialog.findWhatInput.currentIndex = 0
+        replaceDialog.replaceWithInput.currentIndex = 0
         replaceDialog.matchWholeWordCheckBox.checked = wholeWord
         replaceDialog.caseSensitiveCheckBox.checked = caseSensitive
         replaceDialog.regularExpressionCheckBox.checked = regExpr
