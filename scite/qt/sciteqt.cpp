@@ -2108,9 +2108,9 @@ void SciTEQt::cmdExecuteReplace(const QString & findWhatInput, const QString & r
         ReplaceOnce();
     }
 
-    GUI::gui_string replDone = std::to_wstring(replacements);
+    QString replDone = QString("%1").arg(replacements);
 
-    emit updateReplacementCount(ConvertGuiStringToQString(replDone));
+    emit updateReplacementCount(replDone);
 }
 
 QString SciTEQt::cmdDirectoryUp(const QString & directoryPath)
