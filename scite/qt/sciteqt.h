@@ -382,6 +382,7 @@ public:
     Q_INVOKABLE void cmdParametersDialogClosed();
     Q_INVOKABLE void cmdContextMenu(int menuID);
     Q_INVOKABLE void cmdStartFindInFilesAsync(const QString & directory, const QString & filePattern, const QString & findText, bool wholeWord, bool caseSensitive, bool regularExpression);
+    Q_INVOKABLE bool cmdExecuteFind(const QString & findWhatInput, bool wholeWord, bool caseSensitive, bool regularExpression, bool wrap, bool transformBackslash, bool down, bool markAll);
 
     Q_INVOKABLE QString cmdDirectoryUp(const QString & directoryPath);
     Q_INVOKABLE QString cmdUrlToLocalPath(const QString & url);
@@ -427,6 +428,8 @@ public slots:
     void OnAddToOutput(const QString & text);
     void OnAddLineToOutput(const QString & text);
 
+    void OnStripFindVisible(bool val);
+
 signals:
     void showToolBarChanged();
     void showTabBarChanged();
@@ -458,7 +461,8 @@ signals:
     void showAboutSciteDialog();
 
     void showFindInFilesDialog(const QString & text, const QStringList & findHistory, const QStringList & filePatternHistory, const QStringList & directoryHistory, bool wholeWord, bool caseSensitive, bool regularExpression);
-    void showFind(const QString & text, bool incremental, bool withReplace);
+    void showFindStrip(const QString & text, bool incremental, bool withReplace);
+    void showFind(const QStringList & findHistory, const QString & text, bool wholeWord, bool caseSensitive, bool regExpr, bool wrap, bool transformBackslash, bool down);
     void showGoToDialog(int currentLine, int currentColumn, int maxLine);
     void showTabSizeDialog(int tabSize, int indentSize, bool useTabs);
     void showAbbreviationDialog(const QStringList & items);
@@ -498,6 +502,7 @@ private:
     bool                    m_bFileDialogWaitDoneFlag;
     int                     m_iFileDialogMessageDialogAccepted;
     bool                    m_bFindInFilesRunning;
+    bool                    m_bStripFindVisible;
 
     bool                    m_bShowToolBar;
     bool                    m_bShowStatusBar;

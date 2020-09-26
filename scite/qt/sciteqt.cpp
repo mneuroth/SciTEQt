@@ -162,6 +162,7 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
       m_bFileDialogWaitDoneFlag(false),
       m_iFileDialogMessageDialogAccepted(MSGBOX_RESULT_CANCEL),
       m_bFindInFilesRunning(false),
+      m_bStripFindVisible(false),
       m_bShowToolBar(false),
       m_bShowStatusBar(false),
       m_bShowTabBar(true),
@@ -539,7 +540,6 @@ void SciTEQt::PrintSetup()
 
 void SciTEQt::Find()
 {
-    // TODO: SelectionIntoFind();
     // see: SciTEWin::Find()
 
     SelectionIntoFind();    // findWhat
@@ -547,11 +547,25 @@ void SciTEQt::Find()
 //        replaceStrip.Close();
 //        findStrip.SetIncrementalBehaviour(props.GetInt("find.strip.incremental"));
 //        findStrip.Show(props.GetInt("strip.button.height", -1));
-        emit showFind(QString::fromStdString(findWhat), false, false);
+        emit showFindStrip(QString::fromStdString(findWhat), false, false);
     } else {
 //        if (findStrip.visible || replaceStrip.visible)
 //            return;
-        FindReplace(false);
+//        FindReplace(false);
+        if( m_bStripFindVisible )
+            return;
+
+        replacing = false;
+
+        Searcher * pSearcher = this;
+
+        QStringList findHistory;
+        for (int i = 0; i < pSearcher->memFinds.Length(); i++) {
+            GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memFinds.At(i));
+            findHistory.append(ConvertGuiStringToQString(gs));
+        }
+
+        emit showFind(findHistory, QString::fromStdString(findWhat), pSearcher->wholeWord, pSearcher->matchCase, pSearcher->regExp, pSearcher->wrapFind, pSearcher->unSlash, !pSearcher->reverseFind);
     }
 }
 
@@ -622,7 +636,7 @@ void SciTEQt::FindMessageBox(const std::string &msg, const std::string *findItem
 
 void SciTEQt::FindIncrement()
 {
-    emit showFind("", true, false);
+    emit showFindStrip("", true, false);
 }
 
 void SciTEQt::FindInFiles()
@@ -630,9 +644,10 @@ void SciTEQt::FindInFiles()
     // see: DialogFindReplace::FillFields() and SciTEWin::PerformGrep() and InternalGrep()
     SelectionIntoFind();    // findWhat
 
+    Searcher * pSearcher = this;
+
     // see: SciTEWin::FillCombos() and SciTEWin::FillCombosForGrep()
     QStringList findHistory;
-    Searcher * pSearcher = this;
     for (int i = 0; i < pSearcher->memFinds.Length(); i++) {
         GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memFinds.At(i));
         findHistory.append(ConvertGuiStringToQString(gs));
@@ -665,7 +680,7 @@ void SciTEQt::Replace()
 {
     SelectionIntoFind();    // findWhat
 
-    emit showFind(QString::fromStdString(findWhat), false, true);
+    emit showFindStrip(QString::fromStdString(findWhat), false, true);
 }
 
 void SciTEQt::DestroyFindReplace()
@@ -1235,13 +1250,13 @@ void SciTEQt::setAboutScite(QObject * obj)
 
 void SciTEQt::setMainWindow(QObject * obj)
 {
-//    qDebug() << "setMainWindow " << obj->objectName() << endl;
     wSciTE.SetID(obj);
+
+    connect(obj,SIGNAL(stripFindVisible(bool)),this,SLOT(OnStripFindVisible(bool)));
 }
 
 void SciTEQt::setContent(QObject * obj)
 {
-//    qDebug() << "setContent " << obj->objectName() << endl;
     wContent.SetID(obj);
 }
 
@@ -1987,6 +2002,34 @@ void SciTEQt::cmdStartFindInFilesAsync(const QString & directory, const QString 
     setFindInFilesRunning(true);
 }
 
+bool SciTEQt::cmdExecuteFind(const QString & findWhatInput, bool wholeWord, bool caseSensitive, bool regularExpression, bool wrap, bool transformBackslash, bool down, bool markAll)
+{
+    SetFind(findWhatInput.toStdString().c_str());
+
+    // see: DialogFindReplace::GrabFields()
+    Searcher * pSearcher = this;
+    pSearcher->wholeWord = wholeWord;
+    pSearcher->matchCase = caseSensitive;
+    pSearcher->regExp = regularExpression;
+    pSearcher->wrapFind = wrap;
+    pSearcher->unSlash = transformBackslash;
+    pSearcher->reverseFind = !down;
+
+    if(markAll)
+    {
+        MarkAll(markWithBookMarks);
+    }
+
+    bool found = FindNext(pSearcher->reverseFind);
+    // on mobile platforms --> always close dialog !
+    if(isMobilePlatform() || ShouldClose(found))
+    {
+        return true;
+    }
+    // TODO: else: fill search history ?
+    return false;
+}
+
 QString SciTEQt::cmdDirectoryUp(const QString & directoryPath)
 {
     QDir aDirInfo(directoryPath);
@@ -2533,6 +2576,11 @@ void SciTEQt::OnAddToOutput(const QString & text)
 void SciTEQt::OnAddLineToOutput(const QString & text)
 {
     OnAddToOutput(text+"\n");
+}
+
+void SciTEQt::OnStripFindVisible(bool val)
+{
+    m_bStripFindVisible = val;
 }
 
 QtCommandWorker::QtCommandWorker() noexcept {

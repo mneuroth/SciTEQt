@@ -15,11 +15,11 @@ yet.
 
 Missing features are:
 
-  * Support list of last opened files
   * Detect monitor change/removement and move position if needed
+  * Find/Replace extended dialogs --> find.use.strip=0 / replace.use.strip=1 / find.replace.advanced=1
   * History for find/replace items --> use combo boxes ?
   * History for find in files items persistent machen ?
-  * Find/Replace extended dialogs --> find.use.strip=0 / replace.use.strip=1 / find.replace.advanced=1
+  * Support list of last opened files
   * switch to Scite v4.4.5
   * Improve splitter handling
   * Printing (partly)

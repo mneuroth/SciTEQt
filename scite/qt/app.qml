@@ -18,6 +18,8 @@ ApplicationWindow {
     height: 800
     visible: true
 
+    signal stripFindVisible(bool val)
+
     property string urlPrefix: "file://"
 
     // for context menu on tabButton
@@ -168,10 +170,11 @@ ApplicationWindow {
         findInFilesDialog.caseSensitiveCheckBox.checked = caseSensitive
         findInFilesDialog.regularExpressionCheckBox.checked = regularExpression
         findInFilesDialog.show() //.open()
+        findInFilesDialog.findWhatInput.selectAll()
         findInFilesDialog.findWhatInput.focus = true
     }
 
-    function showFind(text, incremental, withReplace) {
+    function showFindStrip(text, incremental, withReplace) {
         findInput.text = text
         findInput.visible = true
         replaceInput.visible = withReplace
@@ -182,6 +185,42 @@ ApplicationWindow {
         }
 
         isIncrementalSearch = incremental
+
+        stripFindVisible(true)
+    }
+
+    function showFind(findHistory, text, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down) {
+        findDialog.findWhatModel.clear()
+        findDialog.findWhatModel.append({"text":text})
+        for (let i=0; i<findHistory.length; i++) {
+            findDialog.findWhatModel.append({"text":findHistory[i]})
+        }
+        findDialog.findWhatInput.currentIndex = 0
+        findDialog.matchWholeWordCheckBox.checked = wholeWord
+        findDialog.caseSensitiveCheckBox.checked = caseSensitive
+        findDialog.regularExpressionCheckBox.checked = regExpr
+        findDialog.wrapAroundCheckBox.checked = wrap
+        findDialog.searchUpButton.checked = !down
+        findDialog.searchDownButton.checked = down
+        findDialog.show()
+        findDialog.findWhatInput.selectAll()
+        findDialog.findWhatInput.focus = true
+    }
+
+    function doExecuteFind(findDialog, markAll) {
+        var findWhatInput = findDialog.findWhatInput.editText.length > 0 ? findDialog.findWhatInput.editText : findDialog.findWhatInput.currentText
+        var wholeWord = findDialog.matchWholeWordCheckBox.checked
+        var caseSensitive = findDialog.caseSensitiveCheckBox.checked
+        var regularExpression = findDialog.regularExpressionCheckBox.checked
+        var wrap = findDialog.wrapAroundCheckBox.checked
+        var transformBackslash = findDialog.tramsformBackslashExprCheckBox.checked
+        var down = findDialog.searchDownButton.checked
+        var shouldClose = sciteQt.cmdExecuteFind(findWhatInput, wholeWord, caseSensitive, regularExpression, wrap, transformBackslash, down, markAll)
+        if(shouldClose)
+        {
+            findDialog.close()
+            focusToEditor()
+        }
     }
 
     function showGoToDialog(currentLine, currentColumn, maxLine) {
@@ -256,6 +295,8 @@ ApplicationWindow {
         focusToEditor()
         findInput.visible = false
         replaceInput.visible = false
+
+        stripFindVisible(false)
     }
 
     function focusToEditor() {
@@ -551,7 +592,7 @@ ApplicationWindow {
                 icon.width: toolBar.iconWidth
                 //text: Stop"
                 visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdStop()
+                onClicked: sciteQt.cmdStopExecuting()
             }
         }
     }
@@ -1188,7 +1229,8 @@ ApplicationWindow {
         onShowAboutSciteDialog:       showAboutSciteDialog()
 
         onShowFindInFilesDialog:      showFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory, wholeWord, caseSensitive, regularExpression)
-        onShowFind:                   showFind(text, incremental, withReplace)
+        onShowFindStrip:              showFindStrip(text, incremental, withReplace)
+        onShowFind:                   showFind(findHistory, text, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down)
         onShowGoToDialog:             showGoToDialog(currentLine, currentColumn, maxLine)
         onShowTabSizeDialog:          showTabSizeDialog(tabSize, indentSize, useTabs)
         onShowAbbreviationDialog:     showAbbreviationDialog(items)
@@ -1310,6 +1352,25 @@ ApplicationWindow {
         target: aboutSciteDialog
 
         onClosed: focusToEditor()
+    }
+
+    FindDialog {
+        id: findDialog
+        objectName: "findDialog"
+        modality: sciteQt.isMobilePlatform() || sciteQt.isWebassemblyPlatform() ? Qt.ApplicationModal : Qt.NonModal
+        title: sciteQt.getLocalisedText(qsTr("Find"))
+
+        fcnLocalisation: sciteQt.getLocalisedText
+
+        visible: false
+    }
+
+    Connections {
+        target: findDialog
+
+        onAccepted: doExecuteFind(findDialog, false)
+
+        onMarkAll:  doExecuteFind(findDialog, true)
     }
 
     FindInFilesDialog {
