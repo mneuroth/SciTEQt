@@ -464,7 +464,7 @@ signals:
     void showAboutSciteDialog();
 
     void showFindInFilesDialog(const QString & text, const QStringList & findHistory, const QStringList & filePatternHistory, const QStringList & directoryHistory, bool wholeWord, bool caseSensitive, bool regularExpression);
-    void showFindStrip(const QString & text, bool incremental, bool withReplace);
+    void showFindStrip(const QStringList & findHistory, const QStringList & replaceHistory, const QString & text, bool incremental, bool withReplace, bool closeOnFind);
     void showFind(const QStringList & findHistory, const QString & text, bool wholeWord, bool caseSensitive, bool regExpr, bool wrap, bool transformBackslash, bool down);
     void showReplace(const QStringList & findHistory, const QStringList & replaceHistory, const QString & text, const QString & replace, bool wholeWord, bool caseSensitive, bool regExpr, bool wrap, bool transformBackslash, bool down);
     void showGoToDialog(int currentLine, int currentColumn, int maxLine);

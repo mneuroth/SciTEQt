@@ -16,8 +16,6 @@ yet.
 Missing features are:
 
   * Detect monitor change/removement and move position if needed
-  * History for find/replace items in strip find --> use combo boxes ?
-  * Extension: History for find in files items persistent machen ? --> SciTEBase::RestoreSession()
   * Support list of last opened files
   * switch to Scite v4.4.5
   * Improve splitter handling
@@ -52,6 +50,8 @@ Now already implemented:
   * Support navigate in find in files dialog
   * Execute external Scripts (build, go, stop, etc.)
   * Find/Replace extended dialogs --> find.use.strip=0 / replace.use.strip=1 / find.replace.advanced=1
+  * History for find/replace items in strip find --> use combo boxes ?
+  * Extension: History for find in files items persistent machen ? --> SciTEBase::RestoreSession() --> use: save.find=1 in global properties
 
 //TODO: use: command.go.*.py=*$(python.command) -u "$(FileNameExt)"  $(1)
 TODO: Accelerator Key funktioniert, obwohl Action disabled ist !!!???

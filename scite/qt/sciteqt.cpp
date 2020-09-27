@@ -543,11 +543,26 @@ void SciTEQt::Find()
     // see: SciTEWin::Find()
 
     SelectionIntoFind();    // findWhat
+
+    Searcher * pSearcher = this;
+
+    QStringList findHistory;
+    for (int i = 0; i < pSearcher->memFinds.Length(); i++) {
+        GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memFinds.At(i));
+        findHistory.append(ConvertGuiStringToQString(gs));
+    }
+
+    QStringList replaceHistory;
+    for (int i = 0; i < pSearcher->memReplaces.Length(); i++) {
+        GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memReplaces.At(i));
+        replaceHistory.append(ConvertGuiStringToQString(gs));
+    }
+
     if (props.GetInt("find.use.strip")) {
 //        replaceStrip.Close();
 //        findStrip.SetIncrementalBehaviour(props.GetInt("find.strip.incremental"));
 //        findStrip.Show(props.GetInt("strip.button.height", -1));
-        emit showFindStrip(QString::fromStdString(findWhat), false, false);
+        emit showFindStrip(findHistory, replaceHistory, QString::fromStdString(findWhat), false, false, !(pSearcher->closeFind == CloseFind::closePrevent));
     } else {
 //        if (findStrip.visible || replaceStrip.visible)
 //            return;
@@ -556,14 +571,6 @@ void SciTEQt::Find()
             return;
 
         replacing = false;
-
-        Searcher * pSearcher = this;
-
-        QStringList findHistory;
-        for (int i = 0; i < pSearcher->memFinds.Length(); i++) {
-            GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memFinds.At(i));
-            findHistory.append(ConvertGuiStringToQString(gs));
-        }
 
         emit showFind(findHistory, QString::fromStdString(findWhat), pSearcher->wholeWord, pSearcher->matchCase, pSearcher->regExp, pSearcher->wrapFind, pSearcher->unSlash, !pSearcher->reverseFind);
     }
@@ -636,7 +643,21 @@ void SciTEQt::FindMessageBox(const std::string &msg, const std::string *findItem
 
 void SciTEQt::FindIncrement()
 {
-    emit showFindStrip("", true, false);
+    Searcher * pSearcher = this;
+
+    QStringList findHistory;
+    for (int i = 0; i < pSearcher->memFinds.Length(); i++) {
+        GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memFinds.At(i));
+        findHistory.append(ConvertGuiStringToQString(gs));
+    }
+
+    QStringList replaceHistory;
+    for (int i = 0; i < pSearcher->memReplaces.Length(); i++) {
+        GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memReplaces.At(i));
+        replaceHistory.append(ConvertGuiStringToQString(gs));
+    }
+
+    emit showFindStrip(findHistory, replaceHistory, "", true, false, !(pSearcher->closeFind == CloseFind::closePrevent));
 }
 
 void SciTEQt::FindInFiles()
@@ -682,6 +703,20 @@ void SciTEQt::Replace()
 
     SelectionIntoFind(false);    // findWhat
 
+    Searcher * pSearcher = this;
+
+    QStringList findHistory;
+    for (int i = 0; i < pSearcher->memFinds.Length(); i++) {
+        GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memFinds.At(i));
+        findHistory.append(ConvertGuiStringToQString(gs));
+    }
+
+    QStringList replaceHistory;
+    for (int i = 0; i < pSearcher->memReplaces.Length(); i++) {
+        GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memReplaces.At(i));
+        replaceHistory.append(ConvertGuiStringToQString(gs));
+    }
+
     if (props.GetInt("replace.use.strip")) {
         //if (searchStrip.visible)
         //	searchStrip.Close();
@@ -691,7 +726,7 @@ void SciTEQt::Replace()
         //SizeSubWindows();
         //replaceStrip.SetIncrementalBehaviour(props.GetInt("replace.strip.incremental"));
         //replaceStrip.ShowStrip();
-        emit showFindStrip(QString::fromStdString(findWhat), false, true);
+        emit showFindStrip(findHistory, replaceHistory, QString::fromStdString(findWhat), false, true, !(pSearcher->closeFind == CloseFind::closePrevent));
         havefound = false;
     } else {
         //if (searchStrip.visible || findStrip.visible)
@@ -701,20 +736,6 @@ void SciTEQt::Replace()
 
         replacing = true;
         havefound = false;
-
-        Searcher * pSearcher = this;
-
-        QStringList findHistory;
-        for (int i = 0; i < pSearcher->memFinds.Length(); i++) {
-            GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memFinds.At(i));
-            findHistory.append(ConvertGuiStringToQString(gs));
-        }
-
-        QStringList replaceHistory;
-        for (int i = 0; i < pSearcher->memReplaces.Length(); i++) {
-            GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memReplaces.At(i));
-            replaceHistory.append(ConvertGuiStringToQString(gs));
-        }
 
         emit showReplace(findHistory, replaceHistory, QString::fromStdString(findWhat), QString::fromStdString(pSearcher->replaceWhat), pSearcher->wholeWord, pSearcher->matchCase, pSearcher->regExp, pSearcher->wrapFind, pSearcher->unSlash, !pSearcher->reverseFind);
 

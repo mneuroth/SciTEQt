@@ -174,8 +174,21 @@ ApplicationWindow {
         findInFilesDialog.findWhatInput.focus = true
     }
 
-    function showFindStrip(text, incremental, withReplace) {
-        findInput.text = text
+    function showFindStrip(findHistory, replaceHistory, text, incremental, withReplace, closeOnFind) {
+        stripFindWhatModel.clear()
+        stripFindWhatModel.append({"text":text})
+        for (let i=0; i<findHistory.length; i++) {
+            stripFindWhatModel.append({"text":findHistory[i]})
+        }
+        findInput.currentIndex = 0
+
+        stripReplaceWithModel.clear()
+        stripReplaceWithModel.append({"text":""})
+        for (let i=0; i<replaceHistory.length; i++) {
+            stripReplaceWithModel.append({"text":replaceHistory[i]})
+        }
+        replaceInput.currentIndex = 0
+
         findInput.visible = true
         replaceInput.visible = withReplace
         if( withReplace ) {
@@ -185,6 +198,7 @@ ApplicationWindow {
         }
 
         isIncrementalSearch = incremental
+        isCloseOnFind = closeOnFind
 
         stripFindVisible(true)
     }
@@ -862,6 +876,7 @@ ApplicationWindow {
     //==============================
 
     property bool isIncrementalSearch: false
+    property bool isCloseOnFind: true
 
     Label {
         id: findLabel
@@ -882,20 +897,14 @@ ApplicationWindow {
         text: sciteQt.getLocalisedText(qsTr("Find:"))
     }
 
-    TextField /*ComboBox*/ {
+    ComboBox {
         id: findInput
 
-        background: Rectangle {
-                    radius: 2
-                    //implicitWidth: 100
-                    //implicitHeight: 24
-                    border.color: "grey"
-                    border.width: 1
-                }
-
-        //editable: true
+        editable: true
         visible: false
         height: visible ? implicitHeight : 0
+
+        model: stripFindWhatModel
 
         anchors.right: findNextButton.left
         anchors.bottom: replaceInput.top
@@ -906,16 +915,29 @@ ApplicationWindow {
         anchors.bottomMargin: 5
 
         onAccepted: {
-            sciteQt.setFindText(findInput.text, isIncrementalSearch)
-            hideFindRow()
-        }
-        onTextEdited: {
-            if( isIncrementalSearch ) {
-                sciteQt.setFindText(findInput.text, isIncrementalSearch)
+            sciteQt.setFindText(getCurrentFindText(), isIncrementalSearch)
+            if(isCloseOnFind) {     // TODO: handling of close after find is not correct !
+                hideFindRow()
             }
         }
+        onEditTextChanged: {
+            if( isIncrementalSearch ) {
+                sciteQt.setFindText(editText, isIncrementalSearch)
+            }
+        }
+
         Keys.onEscapePressed: hideFindRow()
         Keys.onBackPressed: hideFindRow()
+    }
+
+    ListModel {
+        id: stripFindWhatModel
+        objectName: "stripFindWhatModel"
+    }
+
+    function getCurrentFindText() {
+        var curFindInput = findInput.editText.length > 0 ? findInput.editText : findInput.currentText
+        return curFindInput
     }
 
     Button {
@@ -933,7 +955,7 @@ ApplicationWindow {
 
         text: sciteQt.getLocalisedText(qsTr("&Find Next"))
         onClicked: {
-            sciteQt.setFindText(findInput.text, isIncrementalSearch)
+            sciteQt.setFindText(getCurrentFindText(), isIncrementalSearch)
             sciteQt.cmdFindNext()
             hideFindRow()
         }
@@ -957,7 +979,7 @@ ApplicationWindow {
 
         text: sciteQt.getLocalisedText(qsTr("Mark &All"))
         onClicked: {
-            sciteQt.setFindText(findInput.text, isIncrementalSearch)
+            sciteQt.setFindText(getCurrentFindText(), isIncrementalSearch)
             sciteQt.cmdMarkAll()
             hideFindRow()
         }
@@ -1133,7 +1155,7 @@ ApplicationWindow {
     }
 
     // Find/replace Dialog above status bar:
-    //==============================
+    //======================================
 
     Label {
         id: replaceLabel
@@ -1153,21 +1175,15 @@ ApplicationWindow {
         text: sciteQt.getLocalisedText(qsTr("Replace:"))
     }
 
-    TextField /*ComboBox*/ {
+    ComboBox {
         id: replaceInput
 
-        background: Rectangle {
-                    radius: 2
-                    //implicitWidth: 100
-                    //implicitHeight: 24
-                    border.color: "grey"
-                    border.width: 1
-                }
-
-        //editable: true
+        editable: true
         visible: false
         height: visible ? implicitHeight : 0
         width: findInput.width
+
+        model: stripReplaceWithModel
 
         //anchors.right: replaceButton.left
         anchors.bottom: parent.bottom
@@ -1178,16 +1194,22 @@ ApplicationWindow {
         anchors.bottomMargin: 5
 
         onAccepted: {
-            sciteQt.setFindText(findInput.text, isIncrementalSearch)
-            hideFindRow()
+            sciteQt.setFindText(getCurrentFindText(), isIncrementalSearch)
+            //hideFindRow()
         }
-        onTextEdited: {
-            if( isIncrementalSearch ) {
-                sciteQt.setFindText(findInput.text, isIncrementalSearch)
-            }
-        }
+
         Keys.onEscapePressed: hideFindRow()
         Keys.onBackPressed: hideFindRow()
+    }
+
+    ListModel {
+        id: stripReplaceWithModel
+        objectName: "stripReplaceWithModel"
+    }
+
+    function getCurrentReplaceText() {
+        var curReplaceInput = replaceInput.editText.length > 0 ? replaceInput.editText : replaceInput.currentText
+        return curReplaceInput
     }
 
     Button {
@@ -1205,7 +1227,7 @@ ApplicationWindow {
         anchors.bottomMargin: 5
 
         text: sciteQt.getLocalisedText(qsTr("&Replace"))
-        onClicked: sciteQt.cmdTriggerReplace(findInput.text, replaceInput.text, false)
+        onClicked: sciteQt.cmdTriggerReplace(getCurrentFindText(), getCurrentReplaceText(), false)
         Keys.onEscapePressed: hideFindRow()
         Keys.onBackPressed: hideFindRow()
     }
@@ -1225,7 +1247,7 @@ ApplicationWindow {
         anchors.bottomMargin: 5
 
         text: sciteQt.getLocalisedText(qsTr("In &Section"))
-        onClicked: sciteQt.cmdTriggerReplace(findInput.text, replaceInput.text, true)
+        onClicked: sciteQt.cmdTriggerReplace(getCurrentFindText(), getCurrentReplaceText(), true)
         Keys.onEscapePressed: hideFindRow()
         Keys.onBackPressed: hideFindRow()
     }
@@ -1267,7 +1289,7 @@ ApplicationWindow {
         onShowAboutSciteDialog:       showAboutSciteDialog()
 
         onShowFindInFilesDialog:      showFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory, wholeWord, caseSensitive, regularExpression)
-        onShowFindStrip:              showFindStrip(text, incremental, withReplace)
+        onShowFindStrip:              showFindStrip(findHistory, replaceHistory, text, incremental, withReplace, closeOnFind)
         onShowFind:                   showFind(findHistory, text, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down)
         onShowReplace:                showReplace(findHistory, replaceHistory, text, replace, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down)
         onShowGoToDialog:             showGoToDialog(currentLine, currentColumn, maxLine)
