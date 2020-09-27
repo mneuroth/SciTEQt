@@ -311,6 +311,11 @@ ApplicationWindow {
         parametersDialog.cmdInput.focus = modal
     }
 
+    function closeFindReplaceDialog() {
+        findDialog.close()
+        replaceDialog.close()
+    }
+
     function setVerticalSplit(verticalSplit) {
         splitView.verticalSplit = verticalSplit
     }
@@ -1296,6 +1301,7 @@ ApplicationWindow {
         onShowTabSizeDialog:          showTabSizeDialog(tabSize, indentSize, useTabs)
         onShowAbbreviationDialog:     showAbbreviationDialog(items)
         onShowParametersDialog:       showParametersDialog(modal, parameters)
+        onCloseFindReplaceDialog:     closeFindReplaceDialog()
 
         onSetVerticalSplit:           setVerticalSplit(verticalSplit)
         onSetOutputHeight:            setOutputHeight(heightOutput)

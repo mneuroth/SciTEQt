@@ -471,6 +471,7 @@ signals:
     void showTabSizeDialog(int tabSize, int indentSize, bool useTabs);
     void showAbbreviationDialog(const QStringList & items);
     void showParametersDialog(bool modal, const QStringList & parameters);
+    void closeFindReplaceDialog();
 
     void setVerticalSplit(bool verticalSplit);
     void setOutputHeight(int heightOutput);

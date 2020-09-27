@@ -15,8 +15,9 @@ yet.
 
 Missing features are:
 
-  * Detect monitor change/removement and move position if needed
-  * Support list of last opened files
+  * Detect monitor change/removement and move position if needed --> QScreen, QDesktopWidget, QApplication::desktop(), void QDesktopWidget::screenCountChanged()
+  * Support list of last opened files --> use global property: save.recent=1, --> RestoreRecentMenu()
+  * Cleanup source qt source code
   * switch to Scite v4.4.5
   * Improve splitter handling
   * Printing (partly)

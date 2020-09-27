@@ -517,6 +517,8 @@ void SciTEQt::Print(bool)
 {
     // TODO implement !
 
+    emit showInfoDialog("Sorry: Print() is not implemented yet!", 0);
+/*
     long lengthDoc = static_cast<long>(wEditor.Length());
     std::string txt = wEditor.GetText(lengthDoc);
 
@@ -530,6 +532,7 @@ void SciTEQt::Print(bool)
         aPainter.drawText(10, 10, QString::fromStdString(txt));
         aPainter.end();
     }
+*/
 }
 
 void SciTEQt::PrintSetup()
@@ -748,8 +751,7 @@ void SciTEQt::Replace()
 
 void SciTEQt::DestroyFindReplace()
 {
-    // TODO implement ! --> for FindReplace (advanced) --> not used ?
-    emit showInfoDialog("Sorry: DestroyFindReplace() is not implemented yet!", 0);
+    emit closeFindReplaceDialog();
 }
 
 void SciTEQt::GoLineDialog()
@@ -816,7 +818,7 @@ void SciTEQt::ParamGrab()
     std::string paramText4 = StdStringFromInteger(4);
     props.Set(paramText4.c_str(), m_parameter4.toStdString().c_str());
 
-// TODO --> handling of parameterisedCommand ?
+// TODO --> handling of parametrisedCommand ?
 
     UpdateStatusBar(true);
 }
@@ -851,8 +853,7 @@ bool SciTEQt::ParametersDialog(bool modal)
 
 void SciTEQt::FindReplace(bool replace)
 {
-    // TODO implement ! --> find replace (advanced) --> not used ?
-    emit showInfoDialog("Sorry: FindReplace() is not implemented yet!", 0);
+    replacing = replace;
 }
 
 void SciTEQt::StopExecute()
@@ -1069,7 +1070,7 @@ void SciTEQt::AddToPopUp(const char *label, int cmd, bool enabled)
 {
 // see: SciTEBase::ContextMenu(
 
-    // TODO implement !
+    // TODO implement ! --> not needed, because implemented in qml / quick
     qDebug() << "AddToPopup " << label << " " << cmd << " " << enabled << endl;
 }
 
@@ -2090,7 +2091,6 @@ bool SciTEQt::cmdExecuteFind(const QString & findWhatInput, bool wholeWord, bool
     {
         return true;
     }
-    // TODO: else: fill search history ?
     return false;
 }
 
