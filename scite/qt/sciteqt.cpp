@@ -223,9 +223,9 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
     cmdWorker.pSciTE = this;
 }
 
-void SciTEQt::TabInsert(int index, const GUI::gui_char *title)
+void SciTEQt::TabInsert(int index, const GUI::gui_char *title, const GUI::gui_char *fullPath)
 {
-    emit insertTab(index, ConvertGuiCharToQString(title));
+    emit insertTab(index, ConvertGuiCharToQString(title), ConvertGuiCharToQString(fullPath));
 }
 
 void SciTEQt::TabSelect(int index)

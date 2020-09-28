@@ -381,8 +381,8 @@ ApplicationWindow {
         tabBar.setCurrentIndex(index)
     }
 
-    function insertTab(index, title) {
-        var item = tabButton.createObject(tabBar, {text: title, fcnClicked: function () { sciteQt.cmdSelectBuffer(index); focusToEditor() }})
+    function insertTab(index, title, _fullPath) {
+        var item = tabButton.createObject(tabBar, {text: title, fullPath: _fullPath, fcnClicked: function () { sciteQt.cmdSelectBuffer(index); focusToEditor() }})
         tabBar.insertItem(index, item)
     }
 
@@ -459,6 +459,11 @@ ApplicationWindow {
                 //text: "New"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdNew()
+
+                ToolTip.delay: 1000
+                ToolTip.timeout: 5000
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Create a new document"))
             }
             ToolButton {
                 id: toolButtonOpen
@@ -701,9 +706,15 @@ ApplicationWindow {
         id: tabButton
         TabButton {
             property var fcnClicked: undefined
+            property string fullPath: "?"
             //focusPolicy: Qt.NoFocus
             text: "some text"
             onClicked: fcnClicked()
+
+            ToolTip.delay: 1000
+            ToolTip.timeout: 5000
+            ToolTip.visible: hovered
+            ToolTip.text: fullPath
 
             // Handle context menu on TabButton
             // see: https://stackoverflow.com/questions/32448678/how-to-show-a-context-menu-on-right-click-in-qt5-5-qml-treeview
@@ -711,7 +722,7 @@ ApplicationWindow {
                 anchors.fill: parent
                 acceptedButtons: Qt.RightButton
                 onClicked: {
-                    console.log("show context menu for row: " + text+" "+mouse.x+","+mouse.y +" current="+tabBar.currentIndex+" parent="+parent)
+                    //console.log("show context menu for row: " + text+" "+mouse.x+","+mouse.y +" current="+tabBar.currentIndex+" parent="+parent)
 
                     // activate this tab and show context menu
                     parent.onClicked()
@@ -1306,7 +1317,7 @@ ApplicationWindow {
         onSetVerticalSplit:           setVerticalSplit(verticalSplit)
         onSetOutputHeight:            setOutputHeight(heightOutput)
 
-        onInsertTab:                  insertTab(index, title)
+        onInsertTab:                  insertTab(index, title, fullPath)
         onSelectTab:                  selectTab(index)
         onRemoveAllTabs:              removeAllTabs()
     }

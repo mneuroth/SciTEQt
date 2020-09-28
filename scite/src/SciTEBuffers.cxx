@@ -1145,7 +1145,8 @@ void SciTEBase::SetBuffersMenu() {
 		for (pos = 0; pos < buffers.lengthVisible; pos++) {
 			const int itemID = bufferCmdID + pos;
 			GUI::gui_string entry;
-			GUI::gui_string titleTab;
+            GUI::gui_string fullPath;
+            GUI::gui_string titleTab;
 
 #if defined(_WIN32) || defined(GTK)
 			if (pos < 10) {
@@ -1177,6 +1178,7 @@ void SciTEBase::SetBuffersMenu() {
 				EscapeFilePathsForMenu(filename);
 #endif
 				entry += path;
+                fullPath = path;
 				titleTab += filename;
 			}
 			// For short file names:
@@ -1194,7 +1196,7 @@ void SciTEBase::SetBuffersMenu() {
 			}
 
 			SetMenuItem(menuBuffers, menuStart + pos + 1, itemID, entry.c_str());
-			TabInsert(pos, titleTab.c_str());
+            TabInsert(pos, titleTab.c_str(), fullPath.c_str());
 		}
 	}
 	CheckMenus();
