@@ -214,7 +214,22 @@ int ScriptExecution::DoScriptExecution(const QString & sScriptCmd, const QString
         m_aScriptProcess.start( sScriptCommand, args, QIODevice::Unbuffered|QIODevice::ReadWrite/*|QIODevice::Text*/ );
 
         bool ok = m_aScriptProcess.waitForStarted();    // AddStringKommasIfNeededAndConvertSeparators
-        ok = m_aScriptProcess.waitForFinished(-1);
+        if(!ok)
+        {
+            sOutput += QString(tr(">Error starting process: Id=%1 Message=%2")).arg(m_aScriptProcess.error()).arg(m_aScriptProcess.errorString());
+        }
+        else
+        {
+            ok = m_aScriptProcess.waitForFinished(-1);
+            if(!ok)
+            {
+                if( sOutput.length()>0 )
+                {
+                    sOutput += "\n";
+                }
+                sOutput += QString(tr(">Error running process; Id=%1 Message=%2")).arg(m_aScriptProcess.error()).arg(m_aScriptProcess.errorString());
+            }
+        }
     }
     else
     {
