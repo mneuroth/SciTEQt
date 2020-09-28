@@ -149,7 +149,7 @@ class SciTEQt : public QObject, public SciTEBase
 public:
     explicit SciTEQt(QObject *parent=nullptr, QQmlApplicationEngine * pEngine=nullptr);
 
-    virtual void TabInsert(int index, const GUI::gui_char *title) override;
+    virtual void TabInsert(int index, const GUI::gui_char *title, const GUI::gui_char *fullPath) override;
     virtual void TabSelect(int index) override;
     virtual void RemoveAllTabs() override;
 
@@ -479,7 +479,7 @@ signals:
     void updateEolMenus(int enumEol);
     void updateEncodingMenus(int enumEncoding);
 
-    void insertTab(int index, const QString & title);
+    void insertTab(int index, const QString & title, const QString & fullPath);
     void selectTab(int index);
     void removeAllTabs();
 
