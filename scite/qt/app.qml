@@ -25,6 +25,9 @@ ApplicationWindow {
     // for context menu on tabButton
     property var menuCommandDelegate: undefined
 
+    property int toolTipDelay: 1000
+    property int toolTipTimeout: 5000
+
     onClosing: {
         sciteQt.cmdExit()
         close.accepted = false
@@ -434,6 +437,14 @@ ApplicationWindow {
         visible: true
     }
 
+    Connections {
+        target: sciteMenu
+
+        onReadOnlyChanged: {
+            toolButtonReadonly.checked = value
+        }
+    }
+
     menuBar: sciteMenu
 
     header: ToolBar {
@@ -460,8 +471,8 @@ ApplicationWindow {
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdNew()
 
-                ToolTip.delay: 1000
-                ToolTip.timeout: 5000
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
                 ToolTip.visible: hovered
                 ToolTip.text: sciteQt.getLocalisedText(qsTr("Create a new document"))
             }
@@ -473,6 +484,11 @@ ApplicationWindow {
                 //text: "Open"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdOpen()
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Open an existing document"))
             }
             ToolButton {
                 id: toolButtonSave
@@ -482,6 +498,11 @@ ApplicationWindow {
                 //text: "Save"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdSave()
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Save current document"))
             }
             ToolButton {
                 id: toolButtonClose
@@ -491,6 +512,11 @@ ApplicationWindow {
                 //text: "Close"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdClose()
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Close current document"))
             }
             ToolButton {
                 id: toolButtonReadonly
@@ -501,10 +527,16 @@ ApplicationWindow {
                 visible: sciteQt.showToolBar
                 checkable: true
                 onClicked: {
-                    quickScintillaEditor.readonly = toolButtonReadonly.checked
-                    quickScintillaOutput.readonly = toolButtonReadonly.checked
-                    focusToEditor()
+                    //quickScintillaEditor.readonly = toolButtonReadonly.checked
+                    //quickScintillaOutput.readonly = toolButtonReadonly.checked
+                    //focusToEditor()
+                    sciteQt.cmdReadOnly()
                 }
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Disable possibility to modify current document"))
             }
             ToolSeparator {
                 visible:  sciteQt.showTabBar
@@ -517,6 +549,11 @@ ApplicationWindow {
                 //text: "Print"
                 visible: sciteQt.showToolBar && !sciteQt.isMobilePlatform()
                 onClicked: sciteQt.cmdPrint()
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Print current document"))
             }
             ToolButton {
                 id: toolButtonShare
@@ -526,6 +563,11 @@ ApplicationWindow {
                 //text: "Share"
                 visible: sciteQt.showToolBar && sciteQt.isMobilePlatform()
                 onClicked: sciteQt.cmdShare()
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Share current document"))
             }
             ToolSeparator {
                 visible:  sciteQt.showTabBar
@@ -538,6 +580,11 @@ ApplicationWindow {
                 //text: "Cut"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdCut()
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Cut current selected text to clipboard"))
             }
             ToolButton {
                 id: toolButtonCopy
@@ -547,6 +594,11 @@ ApplicationWindow {
                 //text: "Copy"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdCopy()
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Copy current selected text to clipboard"))
             }
             ToolButton {
                 id: toolButtonPaste
@@ -556,6 +608,11 @@ ApplicationWindow {
                 //text: "Paste"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdPaste()
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Paste text from clipboard"))
             }
             ToolButton {
                 id: toolButtonDelete
@@ -565,6 +622,11 @@ ApplicationWindow {
                 //text: "Delete"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdDelete()
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Delete current selected text"))
             }
             ToolSeparator {
                 visible:  sciteQt.showTabBar
@@ -577,6 +639,11 @@ ApplicationWindow {
                 //text: "Undo"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdUndo()
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Undo last modification"))
             }
             ToolButton {
                 id: toolButtonRedo
@@ -586,6 +653,11 @@ ApplicationWindow {
                 //text: "Redo"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdRedo()
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Redo last modification"))
             }
             ToolSeparator {
                 visible:  sciteQt.showTabBar
@@ -598,6 +670,11 @@ ApplicationWindow {
                 //text: "Find"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdFind()
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Search for text"))
             }
             ToolButton {
                 id: toolButtonReplace
@@ -607,6 +684,11 @@ ApplicationWindow {
                 //text: "Replace"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdReplace()
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Find and replace text"))
             }
             ToolButton {
                 id: toolButtonFindPrevious
@@ -616,6 +698,11 @@ ApplicationWindow {
                 //text: "Previous"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdFindPrevious()
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Search previous text"))
             }
             ToolButton {
                 id: toolButtonFindNext
@@ -625,6 +712,11 @@ ApplicationWindow {
                 //text: "Next"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdFindNext()
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Search next text"))
             }
             ToolSeparator {
                 visible:  sciteQt.showTabBar
@@ -637,6 +729,11 @@ ApplicationWindow {
                 //text: "Build"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdBuild()
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Trigger build"))
             }
             ToolButton {
                 id: toolButtonGo
@@ -646,6 +743,11 @@ ApplicationWindow {
                 //text: "Go"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdGo()
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Run script"))
             }
             ToolButton {
                 id: toolButtonStop
@@ -655,6 +757,11 @@ ApplicationWindow {
                 //text: Stop"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdStopExecuting()
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Stop script execution"))
             }
         }
     }
@@ -711,8 +818,8 @@ ApplicationWindow {
             text: "some text"
             onClicked: fcnClicked()
 
-            ToolTip.delay: 1000
-            ToolTip.timeout: 5000
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
             ToolTip.visible: hovered
             ToolTip.text: fullPath
 

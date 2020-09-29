@@ -5,6 +5,8 @@ import QtQml.Models 2.14
 MenuBar {
     id: menuBar
 
+    signal readOnlyChanged(bool value)
+
     AutoSizingMenu {
         id: fileMenu
         title: processMenuItem(qsTr("&File"),null)
@@ -855,6 +857,7 @@ MenuBar {
                 break;
             case 416:  //IDM_READONLY
                 actionReadOnly.checked = val
+                readOnlyChanged(val)
                 break;
             case 430:  //IDM_EOL_CRLF
                 actionCrLf.checked = val
