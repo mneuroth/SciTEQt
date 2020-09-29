@@ -6,6 +6,12 @@ MenuBar {
     id: menuBar
 
     signal readOnlyChanged(bool value)
+    signal runningChanged(bool value)
+    signal buildChanged(bool value)
+    signal copyCutChanged(bool value)
+    signal pasteChanged(bool value)
+    signal undoChanged(bool value)
+    signal redoChanged(bool value)
 
     AutoSizingMenu {
         id: fileMenu
@@ -880,18 +886,23 @@ MenuBar {
 //#define IDM_COMPLETE		233
             case 201:   //IDM_UNDO
                 actionUndo.enabled = val
+                undoChanged(!val)
                 break;
             case 202:   //IDM_REDO
                 actionRedo.enabled = val
+                redoChanged(!val)
                 break;
             case 203:   //IDM_CUT
                 actionCut.enabled = val
+                copyCutChanged(!val)
                 break;
             case 204:   //IDM_COPY
                 actionCopy.enabled = val
+                copyCutChanged(!val)
                 break;
             case 205:   //IDM_PASTE
                 actionPaste.enabled = val
+                pasteChanged(!val)
                 break;
             case 206:  //IDM_CLEAR
                 actionDelete.enabled = val
@@ -907,12 +918,17 @@ MenuBar {
                 break;
             case 302:  //IDM_BUILD
                 actionBuild.enabled = val
+                buildChanged(!val)
                 break;
             case 303:  //IDM_GO
-                actionGo.enabled = val
+                // Bug: prevents menu item from being closed after trigger...
+                // see: https://bugreports.qt.io/browse/QTBUG-69682
+                Qt.callLater(function() { actionGo.enabled = val })
+                runningChanged(!val)
                 break;
             case 304:  //IDM_STOPEXECUTE
                 actionStopExecuting.enabled = val
+                runningChanged(val)
                 break;
             case 308:  //IDM_CLEAN
                 actionClean.enabled = val

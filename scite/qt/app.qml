@@ -443,6 +443,36 @@ ApplicationWindow {
         onReadOnlyChanged: {
             toolButtonReadonly.checked = value
         }
+        onRunningChanged: {
+            toolButtonGo.enabled = !value
+            toolButtonGo.checked = value
+            toolButtonStop.enabled = value
+            toolButtonStop.checked = !value
+        }
+        onBuildChanged: {
+            toolButtonBuild.enabled = !value
+            toolButtonBuild.checked = value
+        }
+        onCopyCutChanged: {
+            toolButtonCopy.enabled = !value
+            toolButtonCopy.checked = value
+            toolButtonCut.enabled = !value
+            toolButtonCut.checked = value
+            toolButtonDelete.enabled = !value
+            toolButtonDelete.checked = value
+        }
+        onPasteChanged: {
+            toolButtonPaste.enabled = !value
+            toolButtonPaste.checked = value
+        }
+        onUndoChanged: {
+            toolButtonUndo.enabled = !value
+            toolButtonUndo.checked = value
+        }
+        onRedoChanged: {
+            toolButtonRedo.enabled = !value
+            toolButtonRedo.checked = value
+        }
     }
 
     menuBar: sciteMenu
@@ -532,6 +562,7 @@ ApplicationWindow {
                     //focusToEditor()
                     sciteQt.cmdReadOnly()
                 }
+                // see: action: actionReadOnly
 
                 ToolTip.delay: toolTipDelay
                 ToolTip.timeout: toolTipTimeout
