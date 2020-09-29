@@ -426,6 +426,7 @@ public slots:
     void OnNotifiedFromOutput(SCNotification scn);
     void OnUriDroppedFromScintilla(const QString & uri);
 
+    void OnFileSearchFinished();
     void OnAddToOutput(const QString & text);
     void OnAddLineToOutput(const QString & text);
 

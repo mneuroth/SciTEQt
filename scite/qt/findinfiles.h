@@ -29,6 +29,7 @@ public slots:
 
 signals:
     void addToOutput(const QString & text);
+    void searchFinished();
 
 protected:
     virtual void customEvent(QEvent * pEvent);

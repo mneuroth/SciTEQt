@@ -218,6 +218,7 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
     }
 
     connect(&m_aFindInFiles,SIGNAL(addToOutput(QString)),this,SLOT(OnAddToOutput(QString)));
+    connect(&m_aFindInFiles,SIGNAL(searchFinished()),this,SLOT(OnFileSearchFinished()));
     connect(&m_aScriptExecution,SIGNAL(AddLineToOutput(QString)),this,SLOT(OnAddLineToOutput(QString)));
 
     cmdWorker.pSciTE = this;
@@ -2675,6 +2676,11 @@ void SciTEQt::OnAddToOutput(const QString & text)
 {
     OutputAppendStringSynchronised(text.toStdString().c_str());
     ShowOutputOnMainThread();
+}
+
+void SciTEQt::OnFileSearchFinished()
+{
+    setFindInFilesRunning(false);
 }
 
 void SciTEQt::OnAddLineToOutput(const QString & text)

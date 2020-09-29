@@ -420,6 +420,7 @@ void FindInFilesAsync::sltFindThreadFinished()
     m_pFindThread->wait();
     delete m_pFindThread;
     m_pFindThread = 0;
+    emit searchFinished();
 }
 
 void FindInFilesAsync::sltFindThreadTerminated()
