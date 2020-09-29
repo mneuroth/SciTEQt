@@ -4,6 +4,7 @@
 #include <QGuiApplication>
 #include <QApplication>
 #include <QFile>
+#include <QStandardPaths>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickStyle>
@@ -105,6 +106,15 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_ANDROID
     UnpackFiles();
     qputenv(SCITE_HOME, FILES_DIR);
+#endif
+#ifdef Q_OS_WIN
+    // copy SciTEUser.properties from sciteqt installation directory to user directory (if not existing)
+    QString sInstallationFullPath = QCoreApplication::applicationDirPath() + QDir::separator() + "SciTEUser.properties";
+    QString sTargetFullPath = QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first();
+    if( QFile::exists(sInstallationFullPath) && !QFile::exists(sTargetFullPath) )
+    {
+        bool ok = QFile::copy(sInstallationFullPath, sTargetFullPath);
+    }
 #endif
 
     QString sLanguage = QLocale::system().name().mid(0,2).toLower();
