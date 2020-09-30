@@ -410,6 +410,7 @@ Item {
     Action {
         id: actionSelectionAddEach
         text: qsTr("Selection &Add Each")
+        shortcut: "Ctrl+Shift+A"
         onTriggered: sciteQt.cmdSelectionAddEach()
     }
     Action {
