@@ -663,6 +663,7 @@ Item {
     property alias  actionConvertLineEndChar: actionConvertLineEndChar
     property alias  actionChangeIndentationSettings: actionChangeIndentationSettings
     property alias  actionUseMonospacedFont: actionUseMonospacedFont
+    property alias  actionSwitchToLastActivatedTab: actionSwitchToLastActivatedTab
     property alias  actionOpenLocalOptionsFile: actionOpenLocalOptionsFile
     property alias  actionOpenDirectoryOptionsFile: actionOpenDirectoryOptionsFile
     property alias  actionOpenUserOptionsFile: actionOpenUserOptionsFile
@@ -754,6 +755,12 @@ Item {
         checkable: true
         checked: false
         onTriggered: sciteQt.cmdUseMonospacedFont()
+    }
+    Action {
+        id: actionSwitchToLastActivatedTab
+        text: qsTr("Switch to last acti&vated tab")
+        shortcut: "Ctrl+Tab"
+        onTriggered: sciteQt.cmdSwitchToLastActivatedTab()
     }
     Action {
         id: actionOpenLocalOptionsFile

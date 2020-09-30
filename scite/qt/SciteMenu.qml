@@ -577,6 +577,11 @@ MenuBar {
             text: processMenuItem2(sciteActions.actionUseMonospacedFont.text, actionUseMonospacedFont)
             action: sciteActions.actionUseMonospacedFont
         }
+        MenuItem {
+            id: actionSwitchToLastActivatedTab
+            text: processMenuItem2(sciteActions.actionSwitchToLastActivatedTab.text, actionSwitchToLastActivatedTab)
+            action: sciteActions.actionSwitchToLastActivatedTab
+        }
         MenuSeparator {}
         MenuItem {
             id: actionOpenLocalOptionsFile

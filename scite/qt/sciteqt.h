@@ -361,6 +361,7 @@ public:
     Q_INVOKABLE void cmdOpenAbbreviationsFile();
     Q_INVOKABLE void cmdOpenLuaStartupScript();
     Q_INVOKABLE void cmdUseMonospacedFont();
+    Q_INVOKABLE void cmdSwitchToLastActivatedTab();
     Q_INVOKABLE void cmdBuffersPrevious();
     Q_INVOKABLE void cmdBuffersNext();
     Q_INVOKABLE void cmdBuffersCloseAll();
@@ -516,6 +517,8 @@ private:
     int                     m_iFileDialogMessageDialogAccepted;
     bool                    m_bFindInFilesRunning;
     bool                    m_bStripFindVisible;
+    int                     m_iLastTabIndex;
+    int                     m_iCurrentTabIndex;
 
     bool                    m_bShowToolBar;
     bool                    m_bShowStatusBar;

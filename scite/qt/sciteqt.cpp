@@ -167,6 +167,8 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
       m_iFileDialogMessageDialogAccepted(MSGBOX_RESULT_CANCEL),
       m_bFindInFilesRunning(false),
       m_bStripFindVisible(false),
+      m_iLastTabIndex(-1),
+      m_iCurrentTabIndex(-1),
       m_bShowToolBar(false),
       m_bShowStatusBar(false),
       m_bShowTabBar(true),
@@ -237,6 +239,11 @@ void SciTEQt::TabInsert(int index, const GUI::gui_char *title, const GUI::gui_ch
 
 void SciTEQt::TabSelect(int index)
 {
+    if(index != m_iCurrentTabIndex)
+    {
+        m_iLastTabIndex = m_iCurrentTabIndex;
+        m_iCurrentTabIndex = index;
+    }
     emit selectTab(index);
 }
 
@@ -1897,6 +1904,14 @@ void SciTEQt::cmdVerticalSplit()
 void SciTEQt::cmdUseMonospacedFont()
 {
     MenuCommand(IDM_MONOFONT);
+}
+
+void SciTEQt::cmdSwitchToLastActivatedTab()
+{
+    int temp = m_iLastTabIndex;
+    m_iLastTabIndex = m_iCurrentTabIndex;
+    m_iCurrentTabIndex = temp;
+    cmdSelectBuffer(temp);
 }
 
 void SciTEQt::cmdBuffersPrevious()
