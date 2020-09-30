@@ -78,6 +78,7 @@
 #include <QQmlApplicationEngine>
 //#include <QStandardItemModel>
 #include <QPrinter>
+#include <QScreen>
 
 class SciTEQt;
 
@@ -427,10 +428,15 @@ public slots:
     void OnUriDroppedFromScintilla(const QString & uri);
 
     void OnFileSearchFinished();
+    void OnCurrentFindInFilesItemChanged(const QString & currentItem);
     void OnAddToOutput(const QString & text);
     void OnAddLineToOutput(const QString & text);
 
     void OnStripFindVisible(bool val);
+
+    void OnScreenAdded(QScreen * pScreen);
+    void OnScreenRemoved(QScreen * pScreen);
+    void OnPrimaryScreenChanged(QScreen * pScreen);
 
 signals:
     void showToolBarChanged();
@@ -495,6 +501,7 @@ private:
     QObject * getCurrentFileDialog();
     bool ProcessCurrentFileDialog();
     void RestorePosition();
+    void UpdateWindowPosAndSizeIfNeeded(const QRect & rect, bool maximize);
     MessageBoxChoice ProcessModalWindowSynchronious(const QString & objectName);
 
     ApplicationData *       m_pApplicationData;     // not an owner !
@@ -513,7 +520,9 @@ private:
     bool                    m_bShowToolBar;
     bool                    m_bShowStatusBar;
     bool                    m_bShowTabBar;
+    bool                    m_bStatusBarTextTimerRunning;
     QString                 m_sStatusBarText;
+    QString                 m_sSciteStatusBarText;
 
     int                     m_left;
     int                     m_top;

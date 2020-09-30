@@ -219,7 +219,7 @@ int ScriptExecution::DoScriptExecution(const QString & sScriptCmd, const QString
             sOutput += QString(tr(">Error starting process: Id=%1 Message=%2")).arg(m_aScriptProcess.error()).arg(m_aScriptProcess.errorString());
         }
         else
-        {
+        {            
             ok = m_aScriptProcess.waitForFinished(-1);
             if(!ok)
             {
@@ -337,37 +337,24 @@ void ScriptExecution::sltStateChanged(QProcess::ProcessState state)
 
 void ScriptExecution::sltReadyReadStandardErrorScript()
 {
-    if( m_aScriptProcess.state()!=QProcess::NotRunning )
+    //if( m_aScriptProcess.state()!=QProcess::NotRunning )
     {
         QString sResult = /*QString::fromLocal8Bit?*/(m_aScriptProcess.readAllStandardError());
-        QStringList lstLines = sResult.split("\n");
-        foreach( const QString & s, lstLines )
+        if( sResult.length()>0 )
         {
-            if( s.length()>0 )
-            {
-                emit AddLineToOutput(s);
-            }
+            emit AddLineToOutput(sResult);
         }
-    }
-}
-
-void ScriptExecution::sltProcessScriptOutput(const QString & sText)
-{
-    if( sText.length()>0 )
-    {
-        emit AddLineToOutput(sText);
     }
 }
 
 void ScriptExecution::sltReadyReadStandardOutputScript()
 {
-    if( m_aScriptProcess.state()!=QProcess::NotRunning )
+    //if( m_aScriptProcess.state()!=QProcess::NotRunning )
     {
         QString sResult = m_aScriptProcess.readAllStandardOutput();
-        QStringList lstLines = sResult.split("\n");
-        foreach( const QString & s, lstLines )
+        if( sResult.length()>0 )
         {
-            sltProcessScriptOutput( s );
+            emit AddLineToOutput(sResult);
         }
     }
 }

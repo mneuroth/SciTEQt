@@ -37,7 +37,6 @@ private slots:
     void sltFinishedScript(int exitValue, QProcess::ExitStatus status);
     void sltStateChanged(QProcess::ProcessState state);
     void sltReadyReadStandardErrorScript();
-    void sltProcessScriptOutput( const QString & sText );
     void sltReadyReadStandardOutputScript();
 
 signals:

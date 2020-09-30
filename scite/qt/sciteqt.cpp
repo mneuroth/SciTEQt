@@ -14,6 +14,9 @@
 #include <QPrinter>
 #include <QPrintDialog>
 #include <QPageSetupDialog>
+#include <QGuiApplication>
+#include <QDesktopWidget>
+#include <QScreen>
 
 #include <QJsonObject>
 #include <QJsonArray>
@@ -32,7 +35,8 @@
 #endif
 
 enum {
-    WORK_EXECUTE = WORK_PLATFORM + 1
+    WORK_EXECUTE = WORK_PLATFORM + 1,
+	TRIGGER_GOTOPOS = WORK_PLATFORM + 2
 };
 
 QString ConvertGuiCharToQString(const GUI::gui_char * s)
@@ -166,6 +170,7 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
       m_bShowToolBar(false),
       m_bShowStatusBar(false),
       m_bShowTabBar(true),
+      m_bStatusBarTextTimerRunning(false),
       m_left(0),
       m_top(0),
       m_width(0),
@@ -218,6 +223,7 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
     }
 
     connect(&m_aFindInFiles,SIGNAL(addToOutput(QString)),this,SLOT(OnAddToOutput(QString)));
+    connect(&m_aFindInFiles,SIGNAL(currentItemChanged(QString)),this,SLOT(OnCurrentFindInFilesItemChanged(QString)));
     connect(&m_aFindInFiles,SIGNAL(searchFinished()),this,SLOT(OnFileSearchFinished()));
     connect(&m_aScriptExecution,SIGNAL(AddLineToOutput(QString)),this,SLOT(OnAddLineToOutput(QString)));
 
@@ -928,6 +934,7 @@ void SciTEQt::CopyAsRTF()
 
 void SciTEQt::SetStatusBarText(const char *s)
 {
+    m_sSciteStatusBarText = s;
     setStatusBarText(s);
 }
 
@@ -1314,9 +1321,14 @@ void SciTEQt::setAboutScite(QObject * obj)
     wAboutScite.SetID(base->sqt);
 }
 
+// TODO: use for debugging
+//extern QString g_sDebugMsg;
+
 void SciTEQt::setMainWindow(QObject * obj)
 {
     wSciTE.SetID(obj);
+
+    //OnAddToOutput(g_sDebugMsg);
 
     connect(obj,SIGNAL(stripFindVisible(bool)),this,SLOT(OnStripFindVisible(bool)));
 }
@@ -2139,6 +2151,7 @@ QString SciTEQt::cmdDirectoryUp(const QString & directoryPath)
 {
     QDir aDirInfo(directoryPath);
     aDirInfo.cdUp();
+    qDebug() << "dir up " << directoryPath << " --> " << QDir::toNativeSeparators(aDirInfo.absolutePath()) << endl;
     return QDir::toNativeSeparators(aDirInfo.absolutePath());
 }
 
@@ -2198,9 +2211,10 @@ void SciTEQt::ProcessExecute()
     // to first error of this run.
     // scroll and return only if output.scroll equals
     // one in the properties file
-    if ((cmdWorker.outputScroll == 1) && returnOutputToCommand)
-        wOutput.Send(SCI_GOTOPOS, cmdWorker.originalEnd);
-    returnOutputToCommand = true;
+//    if ((cmdWorker.outputScroll == 1) && returnOutputToCommand)
+//        wOutput.Send(SCI_GOTOPOS, cmdWorker.originalEnd);
+//    returnOutputToCommand = true;
+	PostOnMainThread(TRIGGER_GOTOPOS, &cmdWorker);
     PostOnMainThread(WORK_EXECUTE, &cmdWorker);
 }
 
@@ -2266,7 +2280,8 @@ void SciTEQt::Execute()
         ExecuteNext();
     } else {
         // Execute other jobs asynchronously on a new thread
-        PerformOnNewThread(&cmdWorker);
+		PerformOnNewThread(&cmdWorker);
+		//cmdWorker.Execute();
     }
 }
 
@@ -2275,6 +2290,11 @@ void SciTEQt::WorkerCommand(int cmd, Worker *pWorker)
     if (cmd < WORK_PLATFORM) {
         SciTEBase::WorkerCommand(cmd, pWorker);
     } else {
+		if (cmd == TRIGGER_GOTOPOS) {
+			if ((cmdWorker.outputScroll == 1) && returnOutputToCommand)
+				wOutput.Send(SCI_GOTOPOS, cmdWorker.originalEnd);
+			returnOutputToCommand = true;
+		}
         if (cmd == WORK_EXECUTE) {
             // Move to next command
             ExecuteNext();
@@ -2535,6 +2555,69 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     }
 }
 
+// returns: <false, givenPosAndSize> --> no change needed
+// returns: <true, newPosAndSize>    --> change needed --> use new pos and size
+static QPair<bool, QRect> CheckWindowPosAndSize(const QRect & windowPosAndSize)
+{
+    QList<QScreen *> allScreens = QGuiApplication::screens();
+
+    QRect availableScreenGeometry = allScreens.first()->availableVirtualGeometry();
+
+//    for( QScreen * pScreen : allScreens)
+//    {
+//        QRect aRectX = pScreen->availableGeometry();
+//        qDebug() << "screen: " << aRectX         << endl;
+//    }
+
+//    qDebug() << "CheckWindowPosAndSize " << windowPosAndSize << " --> " << availableScreenGeometry << endl;
+
+    if(!availableScreenGeometry.contains(windowPosAndSize))
+    {
+        QRect newPosAndSize(windowPosAndSize);
+
+        // top left position visible ?
+        if(!availableScreenGeometry.contains(newPosAndSize.topLeft()))
+        {
+            // no --> set top left point to top left point of available screen coodinates
+            newPosAndSize = QRect(availableScreenGeometry.x(), availableScreenGeometry.y(), newPosAndSize.width(), newPosAndSize.height());
+//            qDebug() << "point 2 " << newPosAndSize         << endl;
+        }
+        // is size of window to big?
+        if(!availableScreenGeometry.contains(newPosAndSize))
+        {
+            // make window smaller
+            if(newPosAndSize.width()>availableScreenGeometry.width())
+            {
+                newPosAndSize.setWidth(availableScreenGeometry.width());
+            }
+            if(newPosAndSize.height()>availableScreenGeometry.height())
+            {
+                newPosAndSize.setHeight(availableScreenGeometry.height());
+            }
+//            qDebug() << "point 3 " << newPosAndSize         << endl;
+        }
+
+        return QPair<bool, QRect>(true, newPosAndSize);
+    }
+
+    return QPair<bool, QRect>(false, windowPosAndSize);
+}
+
+void SciTEQt::UpdateWindowPosAndSizeIfNeeded(const QRect & rect, bool maximize)
+{
+    QPair<bool, QRect> checkValues = CheckWindowPosAndSize(rect);
+
+    if(checkValues.first)
+    {
+        QRect & newRect(checkValues.second);
+        emit setWindowPosAndSize(newRect.left(), newRect.top(), newRect.width(), newRect.height(), maximize);
+    }
+    else
+    {
+        emit setWindowPosAndSize(rect.left(), rect.top(), rect.width(), rect.height(), maximize);
+    }
+}
+
 void SciTEQt::RestorePosition()
 {
     // for android platform the size of the main window must not change !!! --> ignore RestorePosition call
@@ -2545,7 +2628,8 @@ void SciTEQt::RestorePosition()
     const int height = propsSession.GetInt("position.height", 800);
     bool maximize = propsSession.GetInt("position.maximize", 0)==1;
 
-    emit setWindowPosAndSize(left, top, width, height, maximize);
+    // move and resize window to visible position and size (if needed)
+    UpdateWindowPosAndSizeIfNeeded(QRect(left, top, width, height), maximize);
 #endif
 }
 
@@ -2676,6 +2760,18 @@ void SciTEQt::OnAddToOutput(const QString & text)
 {
     OutputAppendStringSynchronised(text.toStdString().c_str());
     ShowOutputOnMainThread();
+	//QCoreApplication::processEvents();
+}
+
+void SciTEQt::OnCurrentFindInFilesItemChanged(const QString & currentItem)
+{
+    setStatusBarText(currentItem);
+
+    if(!m_bStatusBarTextTimerRunning)
+    {
+        m_bStatusBarTextTimerRunning = true;
+        QTimer::singleShot(2000, [this]() { this->setStatusBarText(m_sSciteStatusBarText); m_bStatusBarTextTimerRunning = false; });
+    }
 }
 
 void SciTEQt::OnFileSearchFinished()
@@ -2691,6 +2787,64 @@ void SciTEQt::OnAddLineToOutput(const QString & text)
 void SciTEQt::OnStripFindVisible(bool val)
 {
     m_bStripFindVisible = val;
+}
+
+void DumpScreens()
+{
+    QList<QScreen *> allScreens = QGuiApplication::screens();
+
+    for(QScreen * pScreen : allScreens)
+    {
+        qDebug() << "Screen: " << endl;
+        qDebug() << "name= " << pScreen->name() << endl;
+        qDebug() << "manufactor= "<< pScreen->manufacturer() << endl;
+        qDebug() << "model= "<< pScreen->model() << endl;
+        qDebug() << "size= "<< pScreen->size() << endl;
+        qDebug() << "virtualsize= "<< pScreen->virtualSize() << endl;
+        qDebug() << "availablesize= "<< pScreen->availableSize() << endl;
+        qDebug() << "availablevirtualsize= "<< pScreen->availableVirtualSize() << endl;
+        qDebug() << "pyhsicalsize(in mm)= "<< pScreen->physicalSize() << endl;
+        qDebug() << "geometry= "<< pScreen->geometry() << endl;
+        qDebug() << "virtualgeometry= "<< pScreen->virtualGeometry() << endl;
+        qDebug() << "availablegeometry= "<< pScreen->availableGeometry() << endl;
+        qDebug() << "availablevirtualgeometry= "<< pScreen->availableVirtualGeometry() << endl;
+        qDebug() << "logicalDotsPerInch= "<< pScreen->logicalDotsPerInch() << endl;
+        qDebug() << "physicalDotsPerInch= "<< pScreen->physicalDotsPerInch() << endl;
+        qDebug() << "devicePixelRatio= "<< pScreen->devicePixelRatio() << endl;
+    }
+}
+
+void SciTEQt::OnScreenAdded(QScreen * pScreen)
+{
+    qDebug() << "OnScreenAdded()" << endl;
+
+    // nothing to do, new screen does not affect visible sciteqt window
+
+    //DumpScreens();
+}
+
+void SciTEQt::OnScreenRemoved(QScreen * pScreen)
+{
+    qDebug() << "OnScreenRemoved()" << endl;
+
+    // removing a screen might make sciteqt window invisible (if it was visible on the removed screen)
+    int left;
+    int top;
+    int width;
+    int height;
+    int maximize;
+    GetWindowPosition(&left, &top, &width, &height, &maximize);
+
+    UpdateWindowPosAndSizeIfNeeded(QRect(left, top, width, height), maximize);
+
+    //DumpScreens();
+}
+
+void SciTEQt::OnPrimaryScreenChanged(QScreen * pScreen)
+{
+    qDebug() << "OnPrimaryScreenChanged()" << endl;
+
+    DumpScreens();
 }
 
 QtCommandWorker::QtCommandWorker() noexcept {

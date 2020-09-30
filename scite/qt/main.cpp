@@ -82,6 +82,8 @@ void PrivateMessageHandler(QtMsgType type, const QMessageLogContext & context, c
 }
 #endif
 
+//QString g_sDebugMsg;
+
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -108,13 +110,15 @@ int main(int argc, char *argv[])
     qputenv(SCITE_HOME, FILES_DIR);
 #endif
 #ifdef Q_OS_WIN
+    bool ok = false;
     // copy SciTEUser.properties from sciteqt installation directory to user directory (if not existing)
-    QString sInstallationFullPath = QCoreApplication::applicationDirPath() + QDir::separator() + "SciTEUser.properties";
-    QString sTargetFullPath = QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first();
+    QString sInstallationFullPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath()) + QDir::separator() + "SciTEUser.properties";
+    QString sTargetFullPath = QDir::toNativeSeparators(QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first()) + QDir::separator() + "SciTEUser.properties";
     if( QFile::exists(sInstallationFullPath) && !QFile::exists(sTargetFullPath) )
     {
-        bool ok = QFile::copy(sInstallationFullPath, sTargetFullPath);
+        ok = QFile::copy(sInstallationFullPath, sTargetFullPath);
     }
+    //g_sDebugMsg += "copy " + sInstallationFullPath + " --> " + sTargetFullPath + " ret=" + QString("%1").arg(ok);
 #endif
 
     QString sLanguage = QLocale::system().name().mid(0,2).toLower();

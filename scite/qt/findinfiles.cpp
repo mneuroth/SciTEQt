@@ -445,8 +445,7 @@ void FindInFilesAsync::customEvent(QEvent * pEvent)
     else if( pEvent && pEvent->type()==_USER_EVENT_SEARCH_IN_MSG )
     {
         QString sFileName = ((SearchInFileMsgEvent *)pEvent)->GetFileName();
-        // TODO: maybe show current processed file in status bar ? --> send notification to main window ?
-        //emit addToStatus(tr("Searching in: ") + sFileName);
+        emit currentItemChanged(tr("Searching in: ") + sFileName);
         pEvent->accept();
     }
     else

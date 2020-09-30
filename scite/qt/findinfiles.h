@@ -29,6 +29,7 @@ public slots:
 
 signals:
     void addToOutput(const QString & text);
+    void currentItemChanged(const QString & currentItem);
     void searchFinished();
 
 protected:
