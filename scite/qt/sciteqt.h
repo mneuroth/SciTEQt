@@ -369,6 +369,7 @@ public:
     Q_INVOKABLE void cmdSelectBuffer(int index);
     Q_INVOKABLE void cmdSelectLanguage(int index);
     Q_INVOKABLE void cmdCallTool(int index);
+    Q_INVOKABLE void cmdCallImport(int index);
     Q_INVOKABLE void cmdLastOpenedFiles(int index);
     Q_INVOKABLE void cmdHelp();
     Q_INVOKABLE void cmdSciteHelp();
@@ -473,6 +474,9 @@ signals:
     void setInLastOpenedFilesModel(int index, const QString & txt, bool checked, const QString & shortcut);
     void removeInLastOpenedFilesModel(int index);
     void checkStateInLastOpenedFilesModel(int index, bool checked);
+    void setInImportModel(int index, const QString & txt, bool checked, const QString & shortcut);
+    void removeInImportModel(int index);
+    void checkStateInImportModel(int index, bool checked);
 
     void startFileDialog(const QString & sDirectory, const QString & sFilter, const QString & sTitle, bool bAsOpenDialog = true);
     void showInfoDialog(const QString & sInfoText, int style);

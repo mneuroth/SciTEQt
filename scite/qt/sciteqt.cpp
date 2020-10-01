@@ -1011,7 +1011,13 @@ void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
             emit setInLanguagesModel(posForThisItem, ConvertGuiCharToQString(text), false, ConvertGuiCharToQString(mnemonic));
         }
     }
-	else if (menuNumber == 4)
+    else if (menuNumber == 5)
+    {
+        int posForThisItem = itemID - IDM_IMPORT;
+
+        emit setInImportModel(posForThisItem, ConvertGuiCharToQString(text), false, ConvertGuiCharToQString(mnemonic));
+    }
+    else if (menuNumber == 4)
 	{
         int posForThisItem = itemID - IDM_TOOLS;
 		
@@ -1026,7 +1032,7 @@ void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
 
         if(posForThisItem>=0)   // ignore MenuSeperator Id
         {
-            emit setInLastOpenedFilesModel(posForThisItem, ConvertGuiCharToQString(text), false, ConvertGuiCharToQString(mnemonic)/*sMn/*"Ctrl+0"*/);
+            emit setInLastOpenedFilesModel(posForThisItem, ConvertGuiCharToQString(text), false, ConvertGuiCharToQString(mnemonic));
         }
     }
     else
@@ -1047,6 +1053,14 @@ void SciTEQt::DestroyMenuItem(int menuNumber, int itemID)
     {
         int posForThisItem = itemID - IDM_LANGUAGE;
         emit removeInLanguagesModel(posForThisItem);
+    }
+    else if(menuNumber == 5)
+    {
+        int posForThisItem = itemID - IDM_IMPORT;
+        if( posForThisItem>=0 )
+        {
+            emit removeInImportModel(posForThisItem);
+        }
     }
     else if(menuNumber == 4)
     {
@@ -1969,6 +1983,11 @@ void SciTEQt::cmdSelectLanguage(int index)
 void SciTEQt::cmdCallTool(int index)
 {
     MenuCommand(IDM_TOOLS+index);
+}
+
+void SciTEQt::cmdCallImport(int index)
+{
+    MenuCommand(IDM_IMPORT+index);
 }
 
 void SciTEQt::cmdLastOpenedFiles(int index)

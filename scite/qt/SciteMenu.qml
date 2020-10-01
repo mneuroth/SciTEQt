@@ -150,7 +150,7 @@ MenuBar {
             model: lastOpenedFilesModel
             delegate: MenuItem {
                 action: Action {
-                    text: model.display+(model.shortcut.length>0 ? (" ("+model.shortcut+")") : "")
+                    text: model.display
                     shortcut: model.shortcut
                     onTriggered: sciteQt.cmdLastOpenedFiles(index)
                 }
@@ -159,7 +159,9 @@ MenuBar {
             onObjectAdded: fileMenu.insertItem(index+18, object)
             onObjectRemoved: fileMenu.removeItem(object)
         }
-        MenuSeparator {}
+        MenuSeparator {
+            visible: lastOpenedFilesModel.count>0
+        }
         MenuItem {
             id: actionExit
             text: processMenuItem2(sciteActions.actionExit.text, actionExit)
@@ -628,7 +630,23 @@ MenuBar {
             text: processMenuItem2(sciteActions.actionOpenLuaStartupScript.text, actionOpenLuaStartupScript)
             action: sciteActions.actionOpenLuaStartupScript
         }
-        MenuSeparator {}
+        MenuSeparator {
+            visible: importModel.count>0
+        }
+        Instantiator {
+            id: additionalImportItems
+            model: importModel
+            delegate: MenuItem {
+                action: Action {
+                    text: model.display
+                    shortcut: model.shortcut
+                    onTriggered: sciteQt.cmdCallImport(index)
+                }
+            }
+
+            onObjectAdded: optionsMenu.insertItem(index+21, object)
+            onObjectRemoved: optionsMenu.removeItem(object)
+        }
     }
 
     Menu {
@@ -831,6 +849,11 @@ MenuBar {
         objectName: "toolsMenu"
     }
 
+    ListModel {
+        id: importModel
+        objectName: "importMenu"
+    }
+
     function clearBuffersModel(model) {
         model.clear()
     }
@@ -1000,5 +1023,9 @@ MenuBar {
         onSetInLastOpenedFilesModel:         writeInMenuModel(lastOpenedFilesModel, index, txt, checked, shortcut)
         onRemoveInLastOpenedFilesModel:      removeInMenuModel(lastOpenedFilesModel, index)
         onCheckStateInLastOpenedFilesModel:  setCheckStateInMenuModel(lastOpenedFilesModel, index, checked)
+
+        onSetInImportModel:            writeInMenuModel(importModel, index, txt, checked, shortcut)
+        onRemoveInImportModel:         removeInMenuModel(importModel, index)
+        onCheckStateInImportModel:     setCheckStateInMenuModel(importModel, index, checked)
     }
 }
