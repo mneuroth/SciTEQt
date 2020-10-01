@@ -1162,6 +1162,11 @@ ApplicationWindow {
         onClicked: sciteQt.wholeWord = !sciteQt.wholeWord
         Keys.onEscapePressed: hideFindRow()
         Keys.onBackPressed: hideFindRow()
+
+        ToolTip.delay: toolTipDelay
+        ToolTip.timeout: toolTipTimeout
+        ToolTip.visible: hovered
+        ToolTip.text: sciteQt.getLocalisedText(qsTr("Find only whole words"))
     }
 
     Button {
@@ -1185,6 +1190,11 @@ ApplicationWindow {
         onClicked: sciteQt.caseSensitive = !sciteQt.caseSensitive
         Keys.onEscapePressed: hideFindRow()
         Keys.onBackPressed: hideFindRow()
+
+        ToolTip.delay: toolTipDelay
+        ToolTip.timeout: toolTipTimeout
+        ToolTip.visible: hovered
+        ToolTip.text: sciteQt.getLocalisedText(qsTr("Case sensitive search"))
     }
 
     Button {
@@ -1208,6 +1218,11 @@ ApplicationWindow {
         onClicked: sciteQt.regularExpression = !sciteQt.regularExpression
         Keys.onEscapePressed: hideFindRow()
         Keys.onBackPressed: hideFindRow()
+
+        ToolTip.delay: toolTipDelay
+        ToolTip.timeout: toolTipTimeout
+        ToolTip.visible: hovered
+        ToolTip.text: sciteQt.getLocalisedText(qsTr("Use regular expression for search"))
     }
 
     Button {
@@ -1231,6 +1246,11 @@ ApplicationWindow {
         onClicked: sciteQt.transformBackslash = !sciteQt.transformBackslash
         Keys.onEscapePressed: hideFindRow()
         Keys.onBackPressed: hideFindRow()
+
+        ToolTip.delay: toolTipDelay
+        ToolTip.timeout: toolTipTimeout
+        ToolTip.visible: hovered
+        ToolTip.text: sciteQt.getLocalisedText(qsTr("Transform backslashes"))
     }
 
     ToolButton {
@@ -1256,6 +1276,11 @@ ApplicationWindow {
         onClicked: sciteQt.wrapAround = !sciteQt.wrapAround
         Keys.onEscapePressed: hideFindRow()
         Keys.onBackPressed: hideFindRow()
+
+        ToolTip.delay: toolTipDelay
+        ToolTip.timeout: toolTipTimeout
+        ToolTip.visible: hovered
+        ToolTip.text: sciteQt.getLocalisedText(qsTr("Wrapp around search"))
     }
 
     ToolButton {
@@ -1281,6 +1306,11 @@ ApplicationWindow {
         onClicked: sciteQt.searchUp = !sciteQt.searchUp
         Keys.onEscapePressed: hideFindRow()
         Keys.onBackPressed: hideFindRow()
+
+        ToolTip.delay: toolTipDelay
+        ToolTip.timeout: toolTipTimeout
+        ToolTip.visible: hovered
+        ToolTip.text: sciteQt.getLocalisedText(qsTr("Seach upward"))
     }
 
     Button {
