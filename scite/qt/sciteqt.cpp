@@ -1020,7 +1020,16 @@ void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
         //QString sMn("Ctrl+0");
         emit setInToolsModel(posForThisItem, ConvertGuiCharToQString(text), false, ConvertGuiCharToQString(mnemonic)/*sMn/*"Ctrl+0"*/);
 	}
-	else
+    else if (menuNumber == 0)
+    {
+        int posForThisItem = itemID - IDM_MRUFILE;
+
+        if(posForThisItem>=0)   // ignore MenuSeperator Id
+        {
+            emit setInLastOpenedFilesModel(posForThisItem, ConvertGuiCharToQString(text), false, ConvertGuiCharToQString(mnemonic)/*sMn/*"Ctrl+0"*/);
+        }
+    }
+    else
     {
         qDebug() << "==> UN_HANDLED: Set Menu Item " << menuNumber << " pos=" << position << " " << itemID << " " << (text != 0 ? ConvertGuiStringToQString (text) : "") << endl; //QString::fromWCharArray(text) << " " << QString::fromWCharArray(mnemonic) << endl;
     }
@@ -1046,6 +1055,14 @@ void SciTEQt::DestroyMenuItem(int menuNumber, int itemID)
         if( posForThisItem>=0 )
         {
             emit removeInToolsModel(posForThisItem);
+        }
+    }
+    else if(menuNumber == 0)
+    {
+        int posForThisItem = itemID - IDM_MRUFILE;
+        if( posForThisItem>=0 )
+        {
+            emit removeInLastOpenedFilesModel(posForThisItem);
         }
     }
     else
@@ -1083,7 +1100,7 @@ void SciTEQt::EnableAMenuItem(int wIDCheckItem, bool val)
 
 void SciTEQt::AddToPopUp(const char *label, int cmd, bool enabled)
 {
-// see: SciTEBase::ContextMenu(
+    // see: SciTEBase::ContextMenu()
 
     // TODO implement ! --> not needed, because implemented in qml / quick
     qDebug() << "AddToPopup " << label << " " << cmd << " " << enabled << endl;
@@ -1349,7 +1366,7 @@ void SciTEQt::setContent(QObject * obj)
 QString SciTEQt::getLocalisedText(const QString & textInput, bool filterShortcuts)
 {
     QString s = textInput;
-    if( filterShortcuts )
+    if( filterShortcuts || isMobilePlatform() )
     {
         s.remove("&");
     }
@@ -1954,6 +1971,11 @@ void SciTEQt::cmdCallTool(int index)
     MenuCommand(IDM_TOOLS+index);
 }
 
+void SciTEQt::cmdLastOpenedFiles(int index)
+{
+    MenuCommand(IDM_MRUFILE+index);
+}
+
 void SciTEQt::cmdHelp()
 {
     MenuCommand(IDM_HELP);
@@ -2002,6 +2024,13 @@ void SciTEQt::cmdAboutSciteQt()
     New();
     QString aboutSciteQt = simpleReadFileContent(":/about_sciteqt.txt");
     emit setTextToCurrent(aboutSciteQt);
+}
+
+void SciTEQt::cmdAboutCurrentFile()
+{
+    QString sMsg = QString(tr("Current file name=%1 lexer=%2")).arg(filePath.AsUTF8().c_str()).arg(wEditor.LexerLanguage().c_str());
+
+    OnAddLineToOutput(sMsg);
 }
 
 void SciTEQt::cmdShare()
@@ -2702,6 +2731,12 @@ void SciTEQt::updateCurrentSelectedFileUrl(const QString & fileUrl)
 void SciTEQt::logToDebug(const QString & text)
 {
     qDebug() << text << endl;
+}
+
+void SciTEQt::testFunction(const QString & text)
+{
+    std::string languageCurrent = wEditor.LexerLanguage();
+    qDebug() << "TestFunction: " << text << ":" << ExtensionFileName().c_str() << " " << languageCurrent.c_str() <<endl;
 }
 
 void SciTEQt::UpdateStatusbarView()

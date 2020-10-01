@@ -145,6 +145,21 @@ MenuBar {
             action: sciteActions.actionSaveSession
         }
         MenuSeparator {}
+        Instantiator {
+            id: lastOpenedFilesItems
+            model: lastOpenedFilesModel
+            delegate: MenuItem {
+                action: Action {
+                    text: model.display+(model.shortcut.length>0 ? (" ("+model.shortcut+")") : "")
+                    shortcut: model.shortcut
+                    onTriggered: sciteQt.cmdLastOpenedFiles(index)
+                }
+            }
+
+            onObjectAdded: fileMenu.insertItem(index+18, object)
+            onObjectRemoved: fileMenu.removeItem(object)
+        }
+        MenuSeparator {}
         MenuItem {
             id: actionExit
             text: processMenuItem2(sciteActions.actionExit.text, actionExit)
@@ -727,6 +742,14 @@ MenuBar {
         MenuSeparator {}
 
         MenuItem {
+            id: actionAboutCurrentFile
+            text: processMenuItem2(sciteActions.actionAboutCurrentFile.text, actionAboutCurrentFile)
+            action: sciteActions.actionAboutCurrentFile
+        }
+
+        MenuSeparator {}
+
+        MenuItem {
             id: actionTestFunction
             text: processMenuItem2(sciteActions.actionTestFunction.text, actionTestFunction)
             action: sciteActions.actionTestFunction
@@ -761,6 +784,7 @@ MenuBar {
                 //myModel.append({"display":"blub blub"})
                 //console.log("dbg: "+myModel+" "+myModel.count+" "+myModel.get(0))
                 //removeInMenuModel(0)
+                sciteQt.testFunction("extension?");
             }
         }
 /*
@@ -790,6 +814,11 @@ MenuBar {
             checkState: true
         }
         */
+    }
+
+    ListModel {
+        id: lastOpenedFilesModel
+        objectName: "lastOpenedFilesModel"
     }
 
     ListModel {
@@ -967,6 +996,9 @@ MenuBar {
         onSetInToolsModel:            writeInMenuModel(toolsModel, index, txt, checked, shortcut)
         onRemoveInToolsModel:         removeInMenuModel(toolsModel, index)
         onCheckStateInToolsModel:     setCheckStateInMenuModel(toolsModel, index, checked)
-    }
 
+        onSetInLastOpenedFilesModel:         writeInMenuModel(lastOpenedFilesModel, index, txt, checked, shortcut)
+        onRemoveInLastOpenedFilesModel:      removeInMenuModel(lastOpenedFilesModel, index)
+        onCheckStateInLastOpenedFilesModel:  setCheckStateInMenuModel(lastOpenedFilesModel, index, checked)
+    }
 }

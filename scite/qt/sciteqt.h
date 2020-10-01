@@ -369,10 +369,12 @@ public:
     Q_INVOKABLE void cmdSelectBuffer(int index);
     Q_INVOKABLE void cmdSelectLanguage(int index);
     Q_INVOKABLE void cmdCallTool(int index);
+    Q_INVOKABLE void cmdLastOpenedFiles(int index);
     Q_INVOKABLE void cmdHelp();
     Q_INVOKABLE void cmdSciteHelp();
     Q_INVOKABLE void cmdAboutScite();
     Q_INVOKABLE void cmdAboutSciteQt();
+    Q_INVOKABLE void cmdAboutCurrentFile();
     Q_INVOKABLE void cmdShare();
 
     Q_INVOKABLE void cmdMarkAll();
@@ -411,6 +413,8 @@ public:
     Q_INVOKABLE void updateCurrentSelectedFileUrl(const QString & fileUrl);
 
     Q_INVOKABLE void logToDebug(const QString & text);
+
+    Q_INVOKABLE void testFunction(const QString & text);
 
     void UpdateStatusbarView();
 
@@ -466,6 +470,9 @@ signals:
     void setInToolsModel(int index, const QString & txt, bool checked, const QString & shortcut);
     void removeInToolsModel(int index);
     void checkStateInToolsModel(int index, bool checked);
+    void setInLastOpenedFilesModel(int index, const QString & txt, bool checked, const QString & shortcut);
+    void removeInLastOpenedFilesModel(int index);
+    void checkStateInLastOpenedFilesModel(int index, bool checked);
 
     void startFileDialog(const QString & sDirectory, const QString & sFilter, const QString & sTitle, bool bAsOpenDialog = true);
     void showInfoDialog(const QString & sInfoText, int style);
