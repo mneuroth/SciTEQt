@@ -36,9 +36,9 @@ Window {
 
     property var fcnLocalisation: undefined
 
-    function localiseText(text) {
+    function localiseText(text,filterShortcuts=true) {
         if(fcnLocalisation !== undefined) {
-            return fcnLocalisation(text)
+            return fcnLocalisation(text,filterShortcuts)
         }
         return text
     }
@@ -84,7 +84,7 @@ Window {
 
             Button {
                 id: findButton
-                text: qsTr("Find")
+                text: localiseText(qsTr("&Find"),false)
                 highlighted: true
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
@@ -114,7 +114,7 @@ Window {
 
             Button {
                 id: cancelButton
-                text: localiseText(qsTr("Cancel"))
+                text: localiseText(qsTr("Cancel"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
@@ -143,14 +143,14 @@ Window {
             Button {
                 id: upButton
                 implicitWidth: browseButton.width / 4
-                text: localiseText(qsTr(".."))
+                text: localiseText(qsTr("&.."),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
 
             Button {
                 id: browseButton
-                text: localiseText(qsTr("Browse..."))
+                text: localiseText(qsTr("&Browse..."),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
@@ -162,7 +162,7 @@ Window {
                 CheckBox {
                     id: wholeWordCheckBox
                     width: 150
-                    text: localiseText(qsTr("Match whole word only"))
+                    text: localiseText(qsTr("Match &whole word only"))
                     Keys.onEscapePressed: cancelButton.clicked()
                     Keys.onBackPressed: cancelButton.clicked()
                 }
@@ -170,7 +170,7 @@ Window {
                 CheckBox {
                     id: caseSensitiveCheckBox
                     width: wholeWordCheckBox.width
-                    text: localiseText(qsTr("Case sensitive"))
+                    text: localiseText(qsTr("Case sensiti&ve"))
                     Keys.onEscapePressed: cancelButton.clicked()
                     Keys.onBackPressed: cancelButton.clicked()
                 }
@@ -178,7 +178,7 @@ Window {
                 CheckBox {
                     id: regularExpressionCheckBox
                     width: wholeWordCheckBox.width
-                    text: localiseText(qsTr("Regular expression"))
+                    text: localiseText(qsTr("&Regular expression"))
                     Keys.onEscapePressed: cancelButton.clicked()
                     Keys.onBackPressed: cancelButton.clicked()
                 }

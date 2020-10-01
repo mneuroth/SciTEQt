@@ -31,9 +31,9 @@ Window {
 
     property var fcnLocalisation: undefined
 
-    function localiseText(text) {
+    function localiseText(text,filterShortcuts=true) {
         if(fcnLocalisation !== undefined) {
-            return fcnLocalisation(text)
+            return fcnLocalisation(text,filterShortcuts)
         }
         return text
     }
@@ -130,7 +130,7 @@ Window {
                 id: setButton
                 Layout.columnSpan: 2
                 highlighted: true
-                text: localiseText(qsTr("Set"))
+                text: localiseText(qsTr("&Set"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
@@ -138,7 +138,7 @@ Window {
             Button {
                 id: cancelButton
                 Layout.columnSpan: 2
-                text: localiseText(qsTr("Cancel"))
+                text: localiseText(qsTr("Cancel"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }

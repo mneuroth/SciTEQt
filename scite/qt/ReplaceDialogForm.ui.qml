@@ -39,9 +39,9 @@ Window {
 
     property var fcnLocalisation: undefined
 
-    function localiseText(text) {
+    function localiseText(text,filterShortcuts=true) {
         if(fcnLocalisation !== undefined) {
-            return fcnLocalisation(text)
+            return fcnLocalisation(text,filterShortcuts)
         }
         return text
     }
@@ -88,7 +88,7 @@ Window {
             Button {
                 id: findNextButton
                 Layout.columnSpan: 2
-                text: qsTr("&Find Next")
+                text: localiseText(qsTr("&Find Next"),false)
                 highlighted: true
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
@@ -121,7 +121,7 @@ Window {
             Button {
                 id: replaceButton
                 Layout.columnSpan: 2
-                text: qsTr("&Replace")
+                text: localiseText(qsTr("&Replace"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
@@ -139,7 +139,7 @@ Window {
             Button {
                 id: replaceAllButton
                 Layout.columnSpan: 2
-                text: localiseText(qsTr("Replace &All"))
+                text: localiseText(qsTr("Replace &All"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
@@ -157,7 +157,7 @@ Window {
             Button {
                 id: replaceInSectionButton
                 Layout.columnSpan: 2
-                text: localiseText(qsTr("Replace in &Section"))
+                text: localiseText(qsTr("Replace in &Section"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
@@ -175,7 +175,7 @@ Window {
             Button {
                 id: cancelButton
                 Layout.columnSpan: 2
-                text: localiseText(qsTr("Close"))
+                text: localiseText(qsTr("Close"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }

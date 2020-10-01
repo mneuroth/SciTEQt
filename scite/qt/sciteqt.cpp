@@ -1346,9 +1346,14 @@ void SciTEQt::setContent(QObject * obj)
 }
 
 // copy file with translations "locale.properties" into directory of the executable
-QString SciTEQt::getLocalisedText(const QString & textInput)
+QString SciTEQt::getLocalisedText(const QString & textInput, bool filterShortcuts)
 {
-    auto localisedText = localiser.Text(textInput.toUtf8()/*textInput.toStdString().c_str()*/,true);
+    QString s = textInput;
+    if( filterShortcuts )
+    {
+        s.remove("&");
+    }
+    auto localisedText = localiser.Text(s.toUtf8()/*textInput.toStdString().c_str()*/,true);
     return ConvertGuiStringToQString(localisedText);
 }
 

@@ -1107,7 +1107,7 @@ ApplicationWindow {
         anchors.topMargin: 5
         anchors.bottomMargin: 5
 
-        text: sciteQt.getLocalisedText(qsTr("&Find Next"))
+        text: sciteQt.getLocalisedText(qsTr("&Find Next"),false)
         onClicked: {
             sciteQt.setFindText(getCurrentFindText(), isIncrementalSearch)
             sciteQt.cmdFindNext()
@@ -1131,7 +1131,7 @@ ApplicationWindow {
         anchors.topMargin: 5
         anchors.bottomMargin: 5
 
-        text: sciteQt.getLocalisedText(qsTr("Mark &All"))
+        text: sciteQt.getLocalisedText(qsTr("Mark &All"),false)
         onClicked: {
             sciteQt.setFindText(getCurrentFindText(), isIncrementalSearch)
             sciteQt.cmdMarkAll()
@@ -1336,6 +1336,11 @@ ApplicationWindow {
         onClicked: hideFindRow()
         Keys.onEscapePressed: hideFindRow()
         Keys.onBackPressed: hideFindRow()
+
+        ToolTip.delay: toolTipDelay
+        ToolTip.timeout: toolTipTimeout
+        ToolTip.visible: hovered
+        ToolTip.text: sciteQt.getLocalisedText(qsTr("Close"))
     }
 
     // Find/replace Dialog above status bar:
@@ -1410,7 +1415,7 @@ ApplicationWindow {
         anchors.topMargin: 5
         anchors.bottomMargin: 5
 
-        text: sciteQt.getLocalisedText(qsTr("&Replace"))
+        text: sciteQt.getLocalisedText(qsTr("&Replace"),false)
         onClicked: sciteQt.cmdTriggerReplace(getCurrentFindText(), getCurrentReplaceText(), false)
         Keys.onEscapePressed: hideFindRow()
         Keys.onBackPressed: hideFindRow()
@@ -1430,7 +1435,7 @@ ApplicationWindow {
         anchors.topMargin: 5
         anchors.bottomMargin: 5
 
-        text: sciteQt.getLocalisedText(qsTr("In &Section"))
+        text: sciteQt.getLocalisedText(qsTr("In &Section"),false)
         onClicked: sciteQt.cmdTriggerReplace(getCurrentFindText(), getCurrentReplaceText(), true)
         Keys.onEscapePressed: hideFindRow()
         Keys.onBackPressed: hideFindRow()
