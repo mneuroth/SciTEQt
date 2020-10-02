@@ -40,7 +40,7 @@ private slots:
     void sltReadyReadStandardOutputScript();
 
 signals:
-    void AddLineToOutput( const QString & sText );
+    void AddToOutput( const QString & sText );
 
 private:
     void ConnectScriptProcessSignals();

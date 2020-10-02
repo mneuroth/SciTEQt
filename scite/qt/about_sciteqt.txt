@@ -13,10 +13,21 @@ SciteQt ist still under development, therefore it has most probably
 some bugs and not all the features of the SciTE editor are implemented 
 yet.
 
+Added freatueres (compared to original SciTE):
+- updated Icons for toolbar (using: https://material.io/resources/icons/?icon=build&style=baseline)
+- show current file in statusbar in find in files
+- show tooltip help for buttons in toolbar
+- show full path of file as tooltip for tabbar buttons
+- switch between two last activated tab pages ("Switch to last activated Tab" --> Ctrl+Tab)
+- added Accelerator Key for "Selection &Add Each" --> Ctrl+Shift+A
+- added menu item "About Current File"
+- added menu item "Open Containing Folder"
+- Find in files implementation supports regular expressions
+- Support connect/disconnect of monitors
+
 Missing features are:
 
-  * Detect monitor change/removement and move position if needed --> QScreen, QDesktopWidget, QApplication::desktop(), void QDesktopWidget::screenCountChanged()
-  * Support list of last opened files --> use global property: save.recent=1, --> RestoreRecentMenu()
+  * Open containing folder
   * Cleanup source qt source code
   * switch to Scite v4.4.5
   * Improve splitter handling
@@ -53,7 +64,22 @@ Now already implemented:
   * Find/Replace extended dialogs --> find.use.strip=0 / replace.use.strip=1 / find.replace.advanced=1
   * History for find/replace items in strip find --> use combo boxes ?
   * Extension: History for find in files items persistent machen ? --> SciTEBase::RestoreSession() --> use: save.find=1 in global properties
+  * Detect monitor change/removement and move position if needed --> QScreen, QDesktopWidget, QApplication::desktop(), void QDesktopWidget::screenCountChanged() ==>  QGuiApplication::screenAdded and QGuiApplication::screenRemoved()
+  * Support list of last opened files --> use global property: save.recent=1, --> RestoreRecentMenu()
 
 //TODO: use: command.go.*.py=*$(python.command) -u "$(FileNameExt)"  $(1)
-TODO: Accelerator Key funktioniert, obwohl Action disabled ist !!!???
+TODO: Accelerator Key funktioniert, obwohl Action disabled ist !!!??? Bug? Beispiel F5
+TODO: Sporadische Abstürze bei F5 und Skripts mit langen Ausgaben
+TODO: Absturz Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019 und gcc/mingw funktionieren !
+TODO: Find In Files Button Up funktioniert manchmal nicht korrekt
+//TODO: Shortcut Keys in Dialogen zeigen &
+//TODO: ToolTips für Dialoge und Strip Dialoge
+//TODO: Detektierten Lexer für aktuellen Buffer anzeigen ? --> wEditor.LexerLanguage() --> new menu item "About Current File"
 
+//TODO: ggf. Script Extension für neue Dateieendungen permanent merken, z. B. yaml --> xml ==> ggf. modify: file.patterns.py=*.py;*.pyw;*.pyx;*.pxd;*.pxi
+//        file.patterns.lisp=*.lsp;*.lisp --> fuel
+//TODO: alle Vorkommen des selektierten Bereiches markieren (Box) --> Selection &Add Each --> Ctrl+Shift+A
+//TODO: Strg+Tab switcht zwischen den beiden letzten Fenstern/Buffern
+//TODO: SciTEUser.properties muessen abliegen unter: C:\Users\micha  --> sie liegen jedoch unter: C:\Users\micha\SciteQt
+//TODO: falls python nicht installiert: keine Fehlermeldung nach >pyw -u "test.py" !!! ==> sollte: kann datei nicht finden
+//TODO: F5 Go Menu Item wird nicht geschlossen nach Aktivierung

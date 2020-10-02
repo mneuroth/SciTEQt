@@ -87,6 +87,9 @@ class SciTEQt;
 
 #define POST_TO_MAIN (QEvent::User + 1)
 
+// some SciTEQt specific menu items:
+#define IDM_OPEN_CONTAINING_FOLDER	181
+
 // ************************************************************************
 
 class QSciTEQtEvent : public QEvent
@@ -267,6 +270,7 @@ public:
     Q_INVOKABLE void cmdSaveAs();
     Q_INVOKABLE void cmdSaveACopy();
     Q_INVOKABLE void cmdCopyPath();
+    Q_INVOKABLE void cmdOpenContainingFolder();
     Q_INVOKABLE void cmdCodePageProperty();
     Q_INVOKABLE void cmdUtf16BigEndian();
     Q_INVOKABLE void cmdUtf16LittleEndian();
@@ -377,6 +381,7 @@ public:
     Q_INVOKABLE void cmdAboutSciteQt();
     Q_INVOKABLE void cmdAboutCurrentFile();
     Q_INVOKABLE void cmdShare();
+    Q_INVOKABLE void cmdUpdateApplicationActive(bool active);
 
     Q_INVOKABLE void cmdMarkAll();
     Q_INVOKABLE void cmdTriggerReplace(const QString & find, const QString & replace, bool inSection);
@@ -418,6 +423,8 @@ public:
     Q_INVOKABLE void testFunction(const QString & text);
 
     void UpdateStatusbarView();
+
+    void MenuCommand(int cmdID, int source = 0);
 
 public slots:
     void OnAcceptedClicked();
@@ -530,6 +537,7 @@ private:
     bool                    m_bStripFindVisible;
     int                     m_iLastTabIndex;
     int                     m_iCurrentTabIndex;
+    bool                    m_bIsInUpdateAppActive;
 
     bool                    m_bShowToolBar;
     bool                    m_bShowStatusBar;

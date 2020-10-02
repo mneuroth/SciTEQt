@@ -126,6 +126,8 @@ int main(int argc, char *argv[])
     {
         sLanguage = "pt_PT";
     }
+    // this environment variable is used to replace the language macro in SciTEGlobal.properties:
+    // locale.properties=locale.$(SciteQtLanguage).properties
     qputenv(SCITE_QT_LANGUAGE, sLanguage.toLocal8Bit());
 
     qRegisterMetaType<SCNotification>("SCNotification");

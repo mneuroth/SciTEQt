@@ -11,6 +11,7 @@ Item {
     property alias actionSaveAs: actionSaveAs
     property alias actionSaveACopy: actionSaveACopy
     property alias actionCopyPath: actionCopyPath
+    property alias actionOpenContainingFolder: actionOpenContainingFolder
 
     Action {
         id: actionNew
@@ -64,6 +65,11 @@ Item {
         id: actionCopyPath
         text: qsTr("Copy Pat&h")
         onTriggered: sciteQt.cmdCopyPath()
+    }
+    Action {
+        id: actionOpenContainingFolder
+        text: qsTr("Open Containing Folder")
+        onTriggered: sciteQt.cmdOpenContainingFolder()
     }
 
     property alias actionCodePageProperty: actionCodePageProperty

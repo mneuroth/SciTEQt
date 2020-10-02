@@ -169,6 +169,7 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
       m_bStripFindVisible(false),
       m_iLastTabIndex(-1),
       m_iCurrentTabIndex(-1),
+      m_bIsInUpdateAppActive(false),
       m_bShowToolBar(false),
       m_bShowStatusBar(false),
       m_bShowTabBar(true),
@@ -227,7 +228,7 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
     connect(&m_aFindInFiles,SIGNAL(addToOutput(QString)),this,SLOT(OnAddToOutput(QString)));
     connect(&m_aFindInFiles,SIGNAL(currentItemChanged(QString)),this,SLOT(OnCurrentFindInFilesItemChanged(QString)));
     connect(&m_aFindInFiles,SIGNAL(searchFinished()),this,SLOT(OnFileSearchFinished()));
-    connect(&m_aScriptExecution,SIGNAL(AddLineToOutput(QString)),this,SLOT(OnAddLineToOutput(QString)));
+    connect(&m_aScriptExecution,SIGNAL(AddToOutput(QString)),this,SLOT(OnAddToOutput(QString)));
 
     cmdWorker.pSciTE = this;
 }
@@ -976,23 +977,12 @@ void SciTEQt::SizeContentWindows()
 
 void SciTEQt::SizeSubWindows()
 {
-//    qDebug() << "SizeSubWindows " << heightOutput << " " << splitVertical << endl;
-
     SizeContentWindows();
 }
 
 void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
              const GUI::gui_char *text, const GUI::gui_char *mnemonic)
 {
-    // 0 18 1000    // buffers
-    // MenuID  7  pos= 5   1200
-    // Menu 7 == Buffers --> create
-
-    // TODO: dynamisches menu handling implementieren
-
-    // 6 0 1400
-    // 6 1 1401
-
     if(menuNumber == 7)
     {
         if( itemID >= IDM_BUFFER && itemID < IDM_IMPORT)
@@ -1021,11 +1011,10 @@ void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
 	{
         int posForThisItem = itemID - IDM_TOOLS;
 		
-        // TODO: analyze, msc debug has problems with this ?
-        //QString sMn(ConvertGuiCharToQString(mnemonic));
-        //QString sMn("Ctrl+0");
+        // TODO: analyze, msc 2017 debug has problems with this ?
+        //QString sMn;
         emit setInToolsModel(posForThisItem, ConvertGuiCharToQString(text), false, ConvertGuiCharToQString(mnemonic)/*sMn/*"Ctrl+0"*/);
-	}
+    }
     else if (menuNumber == 0)
     {
         int posForThisItem = itemID - IDM_MRUFILE;
@@ -1037,13 +1026,12 @@ void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
     }
     else
     {
-        qDebug() << "==> UN_HANDLED: Set Menu Item " << menuNumber << " pos=" << position << " " << itemID << " " << (text != 0 ? ConvertGuiStringToQString (text) : "") << endl; //QString::fromWCharArray(text) << " " << QString::fromWCharArray(mnemonic) << endl;
+        //qDebug() << "==> UN_HANDLED: Set Menu Item " << menuNumber << " pos=" << position << " " << itemID << " " << (text != 0 ? ConvertGuiStringToQString (text) : "") << endl; //QString::fromWCharArray(text) << " " << QString::fromWCharArray(mnemonic) << endl;
     }
 }
 
 void SciTEQt::DestroyMenuItem(int menuNumber, int itemID)
 {
-//    qDebug() << "DestroyMenuItem" << menuNumber << " " << itemID << endl;
     if(menuNumber == 7)
     {
         int posForThisItem = itemID - IDM_BUFFER;
@@ -1081,7 +1069,7 @@ void SciTEQt::DestroyMenuItem(int menuNumber, int itemID)
     }
     else
     {
-//        qDebug() << "NOT HANDLED Destroy Menu Item " << menuNumber << " item=" << itemID << endl;
+        //qDebug() << "NOT HANDLED Destroy Menu Item " << menuNumber << " item=" << itemID << endl;
     }
 }
 
@@ -1530,6 +1518,38 @@ void SciTEQt::cmdSaveACopy()
 void SciTEQt::cmdCopyPath()
 {
     MenuCommand(IDM_COPYPATH);
+}
+
+// taken from the visiscript project
+static void OpenContainingFolder( const QString & sFullFileName )
+{
+    QString sFileNamePath = QFileInfo( sFullFileName ).absolutePath();
+    QString sCommand;
+    QStringList args;
+#ifdef Q_OS_MAC
+    sCommand = "open";
+    args << "-R";
+    args << QDir::toNativeSeparators(sFileNamePath);
+#endif
+#ifdef Q_OS_WIN
+    sCommand = "explorer";
+    args << QDir::toNativeSeparators(sFileNamePath);
+#endif
+#ifdef Q_OS_LINUX
+    sCommand = "nautilus";      // xdg-open ?
+    args << QDir::toNativeSeparators(sFileNamePath);
+#endif
+
+    // see also:
+    // http://stackoverflow.com/questions/3569749/qt-open-default-file-explorer-on-nix
+    // http://stackoverflow.com/questions/3490336/how-to-reveal-in-finder-or-show-in-explorer-with-qt
+
+    QProcess::startDetached( sCommand, args );
+}
+
+void SciTEQt::cmdOpenContainingFolder()
+{
+    OpenContainingFolder(filePath.AsUTF8().c_str());
 }
 
 void SciTEQt::cmdExit()
@@ -2057,6 +2077,17 @@ void SciTEQt::cmdShare()
     // TODO
 }
 
+void SciTEQt::cmdUpdateApplicationActive(bool active)
+{
+    // protect against recursive calls...
+    if(!m_bIsInUpdateAppActive)
+    {
+        m_bIsInUpdateAppActive = true;
+        Activate(active);
+        m_bIsInUpdateAppActive = false;
+    }
+}
+
 void SciTEQt::cmdMarkAll()
 {
     MarkAll(markWithBookMarks);
@@ -2429,8 +2460,21 @@ QVariant SciTEQt::fillTabContextMenu()
 
     AddToMenu(menu, "Print", IDM_PRINT, true);
     AddToMenu(menu, "Copy Path", IDM_COPYPATH, true);
+    AddToMenu(menu, "Open Containing Folder", IDM_OPEN_CONTAINING_FOLDER, true);
 
     return QVariant(menu);
+}
+
+void SciTEQt::MenuCommand(int cmdID, int source)
+{
+    switch(cmdID)
+    {
+        case IDM_OPEN_CONTAINING_FOLDER:
+            cmdOpenContainingFolder();
+            break;
+        default:
+            SciTEBase::MenuCommand(cmdID, source);
+    }
 }
 
 QVariant SciTEQt::fillToLength(const QString & text, const QString & shortcut)

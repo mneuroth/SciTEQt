@@ -173,10 +173,10 @@ int ScriptExecution::DoScriptExecution(const QString & sScriptCmd, const QString
 
     if( m_bMeasureExecutionTime )
     {
-        emit AddLineToOutput(tr(">Measure execution time"));
+        emit AddToOutput(tr(">Measure execution time"));
     }
 
-    emit AddLineToOutput(QString(">")+sScriptCmd+" "+sScriptArguments);
+    emit AddToOutput(QString(">")+sScriptCmd+" "+sScriptArguments);
 
     QStringList scriptArgs = SplitString(sScriptArguments);
     foreach( const QString & s, scriptArgs )
@@ -219,7 +219,7 @@ int ScriptExecution::DoScriptExecution(const QString & sScriptCmd, const QString
             sOutput += QString(tr(">Error starting process: Id=%1 Message=%2")).arg(m_aScriptProcess.error()).arg(m_aScriptProcess.errorString());
         }
         else
-        {            
+        {
             ok = m_aScriptProcess.waitForFinished(-1);
             if(!ok)
             {
@@ -239,7 +239,7 @@ int ScriptExecution::DoScriptExecution(const QString & sScriptCmd, const QString
     // show the output of the script in any case
     if( sOutput.length()>0 )
     {
-        emit AddLineToOutput( sOutput );
+        emit AddToOutput( sOutput );
     }
 
     return m_aScriptProcess.exitCode();
@@ -247,14 +247,14 @@ int ScriptExecution::DoScriptExecution(const QString & sScriptCmd, const QString
 
 void ScriptExecution::TerminateExecution()
 {
-    emit AddLineToOutput(tr(">Process failed to respond; forcing abrupt termination..."));
+    emit AddToOutput(tr(">Process failed to respond; forcing abrupt termination..."));
 
     m_aScriptProcess.terminate();
 }
 
 void ScriptExecution::KillExecution()
 {
-    emit AddLineToOutput(tr(">Process failed to respond; forcing abrupt termination..."));
+    emit AddToOutput(tr(">Process failed to respond; forcing abrupt termination..."));
 
     m_aScriptProcess.kill();
 }
@@ -264,7 +264,7 @@ void ScriptExecution::sltErrorScript(QProcess::ProcessError error)
     QString errText = m_aScriptProcess.readAllStandardError();
     if( errText.length()>0 )
     {
-        emit AddLineToOutput(errText);
+        emit AddToOutput(errText);
     }
     errText = "";
     switch( error )
@@ -284,12 +284,12 @@ void ScriptExecution::sltErrorScript(QProcess::ProcessError error)
     }
     if( errText.length()>0 )
     {
-        emit AddLineToOutput(errText);
+        emit AddToOutput(errText);
     }
     m_iElapsedTime = g_aScriptTimer.elapsed();
     if( m_bMeasureExecutionTime )
     {
-        emit AddLineToOutput( GetExecutionTimeStrg() );
+        emit AddToOutput( GetExecutionTimeStrg() );
     }
     ProcessScriptFinished();
 }
@@ -303,11 +303,11 @@ void ScriptExecution::sltFinishedScript(int exitValue, QProcess::ExitStatus stat
         QString errText = m_aScriptProcess.readAllStandardError();
         if( sResult.length()>0 )
         {
-            emit AddLineToOutput(sResult);
+            emit AddToOutput(sResult);
         }
         if( errText.length()>0 )
         {
-            emit AddLineToOutput(errText);
+            emit AddToOutput(errText);
         }
     }
     // set current directory back, if needed
@@ -316,12 +316,12 @@ void ScriptExecution::sltFinishedScript(int exitValue, QProcess::ExitStatus stat
         QDir::setCurrent(m_sLastCurrentDir);
     }
 
-    emit AddLineToOutput(tr(">Exit code: ")+QString("%1").arg(exitValue));
+    emit AddToOutput(tr(">Exit code: ")+QString("%1").arg(exitValue));
 
     m_iElapsedTime = g_aScriptTimer.elapsed();
     if( m_bMeasureExecutionTime )
     {
-        emit AddLineToOutput(GetExecutionTimeStrg());
+        emit AddToOutput(GetExecutionTimeStrg());
     }
     m_aScriptProcess.closeWriteChannel();
     m_aScriptProcess.closeReadChannel(QProcess::StandardOutput);
@@ -342,7 +342,7 @@ void ScriptExecution::sltReadyReadStandardErrorScript()
         QString sResult = /*QString::fromLocal8Bit?*/(m_aScriptProcess.readAllStandardError());
         if( sResult.length()>0 )
         {
-            emit AddLineToOutput(sResult);
+            emit AddToOutput(sResult);
         }
     }
 }
@@ -354,7 +354,7 @@ void ScriptExecution::sltReadyReadStandardOutputScript()
         QString sResult = m_aScriptProcess.readAllStandardOutput();
         if( sResult.length()>0 )
         {
-            emit AddLineToOutput(sResult);
+            emit AddToOutput(sResult);
         }
     }
 }

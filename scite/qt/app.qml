@@ -28,6 +28,10 @@ ApplicationWindow {
     property int toolTipDelay: 1000
     property int toolTipTimeout: 5000
 
+    onActiveChanged: {
+        sciteQt.cmdUpdateApplicationActive(active)
+    }
+
     onClosing: {
         sciteQt.cmdExit()
         close.accepted = false

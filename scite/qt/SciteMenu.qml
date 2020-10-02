@@ -62,6 +62,11 @@ MenuBar {
             text: processMenuItem2(sciteActions.actionCopyPath.text, actionCopyPath)
             action: sciteActions.actionCopyPath
         }
+        MenuItem {
+            id: actionOpenContainingFolder
+            text: processMenuItem2(sciteActions.actionOpenContainingFolder.text, actionOpenContainingFolder)
+            action: sciteActions.actionOpenContainingFolder
+        }
         Menu {
             id: actionEncoding
             title: processMenuItem(qsTr("Encodin&g"), actionEncoding)
