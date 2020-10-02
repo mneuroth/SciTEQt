@@ -5,6 +5,14 @@ import QtQml.Models 2.14
 MenuBar {
     id: menuBar
 
+    signal readOnlyChanged(bool value)
+    signal runningChanged(bool value)
+    signal buildChanged(bool value)
+    signal copyCutChanged(bool value)
+    signal pasteChanged(bool value)
+    signal undoChanged(bool value)
+    signal redoChanged(bool value)
+
     AutoSizingMenu {
         id: fileMenu
         title: processMenuItem(qsTr("&File"),null)
@@ -53,6 +61,11 @@ MenuBar {
             id: actionCopyPath
             text: processMenuItem2(sciteActions.actionCopyPath.text, actionCopyPath)
             action: sciteActions.actionCopyPath
+        }
+        MenuItem {
+            id: actionOpenContainingFolder
+            text: processMenuItem2(sciteActions.actionOpenContainingFolder.text, actionOpenContainingFolder)
+            action: sciteActions.actionOpenContainingFolder
         }
         Menu {
             id: actionEncoding
@@ -137,6 +150,23 @@ MenuBar {
             action: sciteActions.actionSaveSession
         }
         MenuSeparator {}
+        Instantiator {
+            id: lastOpenedFilesItems
+            model: lastOpenedFilesModel
+            delegate: MenuItem {
+                action: Action {
+                    text: model.display
+                    shortcut: model.shortcut
+                    onTriggered: sciteQt.cmdLastOpenedFiles(index)
+                }
+            }
+
+            onObjectAdded: fileMenu.insertItem(index+18, object)
+            onObjectRemoved: fileMenu.removeItem(object)
+        }
+        MenuSeparator {
+            visible: lastOpenedFilesModel.count>0
+        }
         MenuItem {
             id: actionExit
             text: processMenuItem2(sciteActions.actionExit.text, actionExit)
@@ -569,6 +599,11 @@ MenuBar {
             text: processMenuItem2(sciteActions.actionUseMonospacedFont.text, actionUseMonospacedFont)
             action: sciteActions.actionUseMonospacedFont
         }
+        MenuItem {
+            id: actionSwitchToLastActivatedTab
+            text: processMenuItem2(sciteActions.actionSwitchToLastActivatedTab.text, actionSwitchToLastActivatedTab)
+            action: sciteActions.actionSwitchToLastActivatedTab
+        }
         MenuSeparator {}
         MenuItem {
             id: actionOpenLocalOptionsFile
@@ -600,9 +635,25 @@ MenuBar {
             text: processMenuItem2(sciteActions.actionOpenLuaStartupScript.text, actionOpenLuaStartupScript)
             action: sciteActions.actionOpenLuaStartupScript
         }
-        MenuSeparator {}
+        MenuSeparator {
+            visible: importModel.count>0
+        }
+        Instantiator {
+            id: additionalImportItems
+            model: importModel
+            delegate: MenuItem {
+                action: Action {
+                    text: model.display
+                    shortcut: model.shortcut
+                    onTriggered: sciteQt.cmdCallImport(index)
+                }
+            }
+
+            onObjectAdded: optionsMenu.insertItem(index+21, object)
+            onObjectRemoved: optionsMenu.removeItem(object)
+        }
     }
-/*
+
     Menu {
         id: languageMenu
         title: processMenuItem(qsTr("&Language"),null)
@@ -624,7 +675,7 @@ MenuBar {
             onObjectRemoved: languageMenu.removeItem(object)
         }
     }
-*/
+
     AutoSizingMenu {
         id: buffersMenu
         title: processMenuItem(qsTr("&Buffers"),null)
@@ -673,7 +724,23 @@ MenuBar {
     AutoSizingMenu {
         id: helpMenu
         title: processMenuItem(qsTr("&Help"),null)
+/*
+        Menu {
+            id: helpMenu2
+            title: processMenuItem(qsTr("&Help 2"),null)
 
+            MenuItem {
+                id: actionHelp2
+                text: processMenuItem2(sciteActions.actionHelp.text, actionHelp2)
+                action: sciteActions.actionHelp
+            }
+            MenuItem {
+                id: actionSciteHelp2
+                text: processMenuItem2(sciteActions.actionSciteHelp.text, actionSciteHelp2)
+                action: sciteActions.actionSciteHelp
+            }
+        }
+*/
         MenuItem {
             id: actionHelp
             text: processMenuItem2(sciteActions.actionHelp.text, actionHelp)
@@ -693,6 +760,14 @@ MenuBar {
             id: actionAboutSciteQt
             text: processMenuItem2(sciteActions.actionAboutSciteQt.text, actionAboutSciteQt)
             action: sciteActions.actionAboutSciteQt
+        }
+
+        MenuSeparator {}
+
+        MenuItem {
+            id: actionAboutCurrentFile
+            text: processMenuItem2(sciteActions.actionAboutCurrentFile.text, actionAboutCurrentFile)
+            action: sciteActions.actionAboutCurrentFile
         }
 
         MenuSeparator {}
@@ -732,6 +807,7 @@ MenuBar {
                 //myModel.append({"display":"blub blub"})
                 //console.log("dbg: "+myModel+" "+myModel.count+" "+myModel.get(0))
                 //removeInMenuModel(0)
+                sciteQt.testFunction("extension?");
             }
         }
 /*
@@ -764,6 +840,11 @@ MenuBar {
     }
 
     ListModel {
+        id: lastOpenedFilesModel
+        objectName: "lastOpenedFilesModel"
+    }
+
+    ListModel {
         id: languagesModel
         objectName: "languagesMenu"
     }
@@ -771,6 +852,11 @@ MenuBar {
     ListModel {
         id: toolsModel
         objectName: "toolsMenu"
+    }
+
+    ListModel {
+        id: importModel
+        objectName: "importMenu"
     }
 
     function clearBuffersModel(model) {
@@ -839,6 +925,7 @@ MenuBar {
                 break;
             case 416:  //IDM_READONLY
                 actionReadOnly.checked = val
+                readOnlyChanged(val)
                 break;
             case 430:  //IDM_EOL_CRLF
                 actionCrLf.checked = val
@@ -861,18 +948,23 @@ MenuBar {
 //#define IDM_COMPLETE		233
             case 201:   //IDM_UNDO
                 actionUndo.enabled = val
+                undoChanged(!val)
                 break;
             case 202:   //IDM_REDO
                 actionRedo.enabled = val
+                redoChanged(!val)
                 break;
             case 203:   //IDM_CUT
                 actionCut.enabled = val
+                copyCutChanged(!val)
                 break;
             case 204:   //IDM_COPY
                 actionCopy.enabled = val
+                copyCutChanged(!val)
                 break;
             case 205:   //IDM_PASTE
                 actionPaste.enabled = val
+                pasteChanged(!val)
                 break;
             case 206:  //IDM_CLEAR
                 actionDelete.enabled = val
@@ -888,12 +980,17 @@ MenuBar {
                 break;
             case 302:  //IDM_BUILD
                 actionBuild.enabled = val
+                buildChanged(!val)
                 break;
             case 303:  //IDM_GO
-                actionGo.enabled = val
+                // Bug: prevents menu item from being closed after trigger...
+                // see: https://bugreports.qt.io/browse/QTBUG-69682
+                Qt.callLater(function() { actionGo.enabled = val })
+                runningChanged(!val)
                 break;
             case 304:  //IDM_STOPEXECUTE
                 actionStopExecuting.enabled = val
+                runningChanged(val)
                 break;
             case 308:  //IDM_CLEAN
                 actionClean.enabled = val
@@ -927,6 +1024,13 @@ MenuBar {
         onSetInToolsModel:            writeInMenuModel(toolsModel, index, txt, checked, shortcut)
         onRemoveInToolsModel:         removeInMenuModel(toolsModel, index)
         onCheckStateInToolsModel:     setCheckStateInMenuModel(toolsModel, index, checked)
-    }
 
+        onSetInLastOpenedFilesModel:         writeInMenuModel(lastOpenedFilesModel, index, txt, checked, shortcut)
+        onRemoveInLastOpenedFilesModel:      removeInMenuModel(lastOpenedFilesModel, index)
+        onCheckStateInLastOpenedFilesModel:  setCheckStateInMenuModel(lastOpenedFilesModel, index, checked)
+
+        onSetInImportModel:            writeInMenuModel(importModel, index, txt, checked, shortcut)
+        onRemoveInImportModel:         removeInMenuModel(importModel, index)
+        onCheckStateInImportModel:     setCheckStateInMenuModel(importModel, index, checked)
+    }
 }

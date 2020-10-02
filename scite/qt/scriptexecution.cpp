@@ -173,10 +173,10 @@ int ScriptExecution::DoScriptExecution(const QString & sScriptCmd, const QString
 
     if( m_bMeasureExecutionTime )
     {
-        emit AddToOutput(tr(">Measure execution time"));
+        emit AddToOutput(tr(">Measure execution time\n"));
     }
 
-    emit AddToOutput(QString(">")+sScriptCmd+" "+sScriptArguments);
+    emit AddToOutput(QString(">")+sScriptCmd+" "+sScriptArguments+"\n");
 
     QStringList scriptArgs = SplitString(sScriptArguments);
     foreach( const QString & s, scriptArgs )
@@ -247,14 +247,14 @@ int ScriptExecution::DoScriptExecution(const QString & sScriptCmd, const QString
 
 void ScriptExecution::TerminateExecution()
 {
-    emit AddToOutput(tr(">Process failed to respond; forcing abrupt termination..."));
+    emit AddToOutput(tr(">Process failed to respond; forcing abrupt termination...\n"));
 
     m_aScriptProcess.terminate();
 }
 
 void ScriptExecution::KillExecution()
 {
-    emit AddToOutput(tr(">Process failed to respond; forcing abrupt termination..."));
+    emit AddToOutput(tr(">Process failed to respond; forcing abrupt termination...\n"));
 
     m_aScriptProcess.kill();
 }
@@ -270,16 +270,16 @@ void ScriptExecution::sltErrorScript(QProcess::ProcessError error)
     switch( error )
     {
         case QProcess::FailedToStart:
-            errText = tr(">Error: failed to start script.");
+            errText = tr(">Error: failed to start script.\n");
             break;
         case QProcess::Crashed:
-            errText = tr(">Error: script crashed.");
+            errText = tr(">Error: script crashed.\n");
             break;
         case QProcess::Timedout:
-            errText = tr(">Error: script timeout.");
+            errText = tr(">Error: script timeout.\n");
             break;
         default:
-            errText = tr(">Error: Unknown error.");
+            errText = tr(">Error: Unknown error.\n");
             break;
     }
     if( errText.length()>0 )
@@ -316,7 +316,7 @@ void ScriptExecution::sltFinishedScript(int exitValue, QProcess::ExitStatus stat
         QDir::setCurrent(m_sLastCurrentDir);
     }
 
-    emit AddToOutput(tr(">Exit code: ")+QString("%1").arg(exitValue));
+    emit AddToOutput(tr(">Exit code: %1\n").arg(exitValue));
 
     m_iElapsedTime = g_aScriptTimer.elapsed();
     if( m_bMeasureExecutionTime )
