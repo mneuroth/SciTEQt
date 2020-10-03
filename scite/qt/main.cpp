@@ -84,6 +84,18 @@ void PrivateMessageHandler(QtMsgType type, const QMessageLogContext & context, c
 
 //QString g_sDebugMsg;
 
+QString CheckForOverrideLanguage(const QStringList & args, const QString & currentLanguage)
+{
+    for(const QString & arg : args)
+    {
+        if(arg.toLower().startsWith("--language="))
+        {
+            return arg.toLower().mid(11);
+        }
+    }
+    return currentLanguage;
+}
+
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -128,6 +140,7 @@ int main(int argc, char *argv[])
     }
     // this environment variable is used to replace the language macro in SciTEGlobal.properties:
     // locale.properties=locale.$(SciteQtLanguage).properties
+    sLanguage = CheckForOverrideLanguage(app.arguments(), sLanguage);
     qputenv(SCITE_QT_LANGUAGE, sLanguage.toLocal8Bit());
 
     qRegisterMetaType<SCNotification>("SCNotification");
