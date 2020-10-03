@@ -414,6 +414,7 @@ public:
     Q_INVOKABLE void setSpliterPos(int currentPosX, int currentPosY);
     Q_INVOKABLE void startDragSpliterPos(int currentPosX, int currentPosY);
 
+    Q_INVOKABLE bool useSimpleMenus() const;
     Q_INVOKABLE bool isMobilePlatform() const;
     Q_INVOKABLE bool isWebassemblyPlatform() const;
 

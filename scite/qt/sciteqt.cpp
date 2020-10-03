@@ -2782,6 +2782,11 @@ void SciTEQt::startDragSpliterPos(int currentPosX, int currentPosY)
     ptStartDrag = pt;
 }
 
+bool SciTEQt::useSimpleMenus() const
+{
+    return true; // isMobilePlatform();
+}
+
 bool SciTEQt::isMobilePlatform() const
 {
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)

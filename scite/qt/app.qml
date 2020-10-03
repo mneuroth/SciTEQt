@@ -439,6 +439,7 @@ ApplicationWindow {
     SciteMenu {
         id: sciteMenu
         visible: true
+        useSimpleMenu: sciteQt.useSimpleMenus()
     }
 
     Connections {

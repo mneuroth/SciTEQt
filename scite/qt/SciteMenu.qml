@@ -13,6 +13,9 @@ MenuBar {
     signal undoChanged(bool value)
     signal redoChanged(bool value)
 
+    // use simpler menu for mobile platforms with less menu items
+    property bool useSimpleMenu: false
+
     AutoSizingMenu {
         id: fileMenu
         title: processMenuItem(qsTr("&File"),null)
@@ -223,6 +226,8 @@ MenuBar {
             id: actionCopyAsRtf
             text: processMenuItem2(sciteActions.actionCopyAsRtf.text, actionCopyAsRtf)
             action: sciteActions.actionCopyAsRtf
+            visible: !useSimpleMenu
+            height: useSimpleMenu ? 0 : actionCopy.height
         }
         MenuSeparator {}
         MenuItem {
@@ -239,6 +244,8 @@ MenuBar {
             id: actionShowCalltip
             text: processMenuItem2(sciteActions.actionShowCalltip.text, actionShowCalltip)
             action: sciteActions.actionShowCalltip
+            visible: !useSimpleMenu
+            height: useSimpleMenu ? 0 : actionCopy.height
         }
         MenuItem {
             id: actionCompleteSymbol
@@ -269,11 +276,15 @@ MenuBar {
             id: actionBoxComment
             text: processMenuItem(sciteActions.actionBoxComment.text, actionBoxComment)
             action: sciteActions.actionBoxComment
+            visible: !useSimpleMenu
+            height: useSimpleMenu ? 0 : actionCopy.height
         }
         MenuItem {
             id: actionStreamComment
             text: processMenuItem(sciteActions.actionStreamComment.text, actionStreamComment)
             action: sciteActions.actionStreamComment
+            visible: !useSimpleMenu
+            height: useSimpleMenu ? 0 : actionCopy.height
         }
         MenuItem {
             id: actionMakeSelectionUppercase
@@ -293,16 +304,22 @@ MenuBar {
         Menu {
             id: menuParagraph
             title: processMenuItem(qsTr("Para&graph"), menuParagraph)
+            visible: !useSimpleMenu
+            height: useSimpleMenu ? 0 : actionCopy.height
 
             MenuItem {
                 id: actionJoin
                 text: processMenuItem2(sciteActions.actionJoin.text, actionJoin)
                 action: sciteActions.actionJoin
+                visible: !useSimpleMenu
+                height: useSimpleMenu ? 0 : actionCopy.height
             }
             MenuItem {
                 id: actionSplit
                 text: processMenuItem2(sciteActions.actionSplit.text, actionSplit)
                 action: sciteActions.actionSplit
+                visible: !useSimpleMenu
+                height: useSimpleMenu ? 0 : actionCopy.height
             }
         }
     }
@@ -460,6 +477,8 @@ MenuBar {
             text: processMenuItem2(sciteActions.actionParameters.text, actionParameters)
             action: sciteActions.actionParameters
         }
+// TODO --> add Fenster here !!!
+// TODO --> Extras & Help --> Diverses ?
     }
 
     AutoSizingMenu {
@@ -589,6 +608,28 @@ MenuBar {
             action: sciteActions.actionConvertLineEndChar
         }
         MenuSeparator {}
+        Menu {
+            id: languagesSubMenu
+            title: processMenuItem(qsTr("Language"), languagesSubMenu)
+
+            Instantiator {
+                id: currentLanguagesItems
+                model: languagesModel
+                delegate: MenuItem {
+                    //checkable: true
+                    //checked: model !== null ? model.checkState : false
+                    action: Action {
+                        text: model.display+(model.shortcut.length>0 ? (" ("+model.shortcut+")") : "")
+                        shortcut: model.shortcut
+                        onTriggered: sciteQt.cmdSelectLanguage(index)
+                    }
+                }
+
+                onObjectAdded: languagesSubMenu.insertItem(index, object)
+                onObjectRemoved: languagesSubMenu.removeItem(object)
+            }
+        }
+        MenuSeparator {}
         MenuItem {
             id: actionChangeIndentationSettings
             text: processMenuItem2(sciteActions.actionChangeIndentationSettings.text, actionChangeIndentationSettings)
@@ -653,7 +694,7 @@ MenuBar {
             onObjectRemoved: optionsMenu.removeItem(object)
         }
     }
-
+/*
     Menu {
         id: languageMenu
         title: processMenuItem(qsTr("&Language"),null)
@@ -675,7 +716,7 @@ MenuBar {
             onObjectRemoved: languageMenu.removeItem(object)
         }
     }
-
+*/
     AutoSizingMenu {
         id: buffersMenu
         title: processMenuItem(qsTr("&Buffers"),null)
