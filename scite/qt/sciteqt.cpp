@@ -17,6 +17,7 @@
 #include <QGuiApplication>
 #include <QDesktopWidget>
 #include <QScreen>
+#include <QApplication>
 
 #include <QJsonObject>
 #include <QJsonArray>
@@ -2257,6 +2258,11 @@ QString SciTEQt::cmdDirectoryUp(const QString & directoryPath)
 QString SciTEQt::cmdUrlToLocalPath(const QString & url)
 {
     return QDir::toNativeSeparators(QUrl(url).toLocalFile());
+}
+
+void SciTEQt::cmdAboutQt()
+{
+    QApplication::aboutQt();
 }
 
 void SciTEQt::ReadEmbeddedProperties()

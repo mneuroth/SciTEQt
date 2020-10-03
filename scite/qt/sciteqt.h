@@ -398,6 +398,8 @@ public:
     Q_INVOKABLE QString cmdDirectoryUp(const QString & directoryPath);
     Q_INVOKABLE QString cmdUrlToLocalPath(const QString & url);
 
+    Q_INVOKABLE void cmdAboutQt();
+
     Q_INVOKABLE QVariant fillTabContextMenu();
 
     Q_INVOKABLE QVariant fillToLength(const QString & text, const QString & shortcut);
@@ -420,7 +422,7 @@ public:
 
     Q_INVOKABLE void logToDebug(const QString & text);
 
-    Q_INVOKABLE void testFunction(const QString & text);
+    Q_INVOKABLE void testFunction(const QString & text);    
 
     void UpdateStatusbarView();
 
