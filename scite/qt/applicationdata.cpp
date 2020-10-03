@@ -86,22 +86,22 @@ void UnpackFiles()
     sOutput = QString(FILES_DIR)+QString(SCITE_SCITE_DOC_HTML);
     extractAssetFile(sAsset,sOutput,false);
     sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_DE_PROPERTIES);
-    sOutput = QString(FILES_DIR)+QString(SCITE_LOCALE_DE_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_DE_PROPERTIES);
     extractAssetFile(sAsset,sOutput,false);
     sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_NL_PROPERTIES);
-    sOutput = QString(FILES_DIR)+QString(SCITE_LOCALE_NL_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_NL_PROPERTIES);
     extractAssetFile(sAsset,sOutput,false);
     sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_FR_PROPERTIES);
-    sOutput = QString(FILES_DIR)+QString(SCITE_LOCALE_FR_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_FR_PROPERTIES);
     extractAssetFile(sAsset,sOutput,false);
     sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_ES_PROPERTIES);
-    sOutput = QString(FILES_DIR)+QString(SCITE_LOCALE_ES_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_ES_PROPERTIES);
     extractAssetFile(sAsset,sOutput,false);
     sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_PT_PROPERTIES);
-    sOutput = QString(FILES_DIR)+QString(SCITE_LOCALE_PT_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_PT_PROPERTIES);
     extractAssetFile(sAsset,sOutput,false);
     sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_IT_PROPERTIES);
-    sOutput = QString(FILES_DIR)+QString(SCITE_LOCALE_IT_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_IT_PROPERTIES);
     extractAssetFile(sAsset,sOutput,false);
 }
 
