@@ -13,6 +13,7 @@
 
 #define ASSETS_DIR                  "assets:/files/"
 #define FILES_DIR                   "/data/data/org.scintilla.sciteqt/files/"
+#define LOCALISATIONS_DIR           "/data/data/org.scintilla.sciteqt/files/localisations/"
 #define SCRIPTS_DIR                 "/data/data/org.scintilla.sciteqt/files/scripts/"
 #define SDCARD_DIRECTORY            "/sdcard"
 
