@@ -1522,35 +1522,52 @@ void SciTEQt::cmdCopyPath()
 }
 
 // taken from the visiscript project
-static void OpenContainingFolder( const QString & sFullFileName )
+static bool OpenContainingFolder( const QString & sFullFileName )
 {
     QString sFileNamePath = QFileInfo( sFullFileName ).absolutePath();
     QString sCommand;
     QStringList args;
-#ifdef Q_OS_MAC
+    bool bNotSupported = false;
+#if defined(Q_OS_MAC)
     sCommand = "open";
     args << "-R";
     args << QDir::toNativeSeparators(sFileNamePath);
-#endif
-#ifdef Q_OS_WIN
+#elif defined(Q_OS_WIN)
     sCommand = "explorer";
     args << QDir::toNativeSeparators(sFileNamePath);
-#endif
-#ifdef Q_OS_LINUX
+#elif defined(Q_OS_ANDROID)
+    bNotSupported = true;
+#elif defined(Q_OS_IOS)
+    bNotSupported = true;
+#elif defined(Q_OS_WASM)
+    bNotSupported = true;
+#elif defined(Q_OS_LINUX)
     sCommand = "nautilus";      // xdg-open ?
     args << QDir::toNativeSeparators(sFileNamePath);
+#else
+    bNotSupported = true;
 #endif
 
     // see also:
     // http://stackoverflow.com/questions/3569749/qt-open-default-file-explorer-on-nix
     // http://stackoverflow.com/questions/3490336/how-to-reveal-in-finder-or-show-in-explorer-with-qt
 
-    QProcess::startDetached( sCommand, args );
+    if( sCommand.length()>0 )
+    {
+        return QProcess::startDetached( sCommand, args );
+    }
+
+    return !bNotSupported;
 }
 
 void SciTEQt::cmdOpenContainingFolder()
 {
-    OpenContainingFolder(filePath.AsUTF8().c_str());
+    bool ok = OpenContainingFolder(filePath.AsUTF8().c_str());
+
+    if( !ok )
+    {
+        showInfoDialog(tr("Warning: this function is not supported on this platform!"), 0);
+    }
 }
 
 void SciTEQt::cmdExit()
