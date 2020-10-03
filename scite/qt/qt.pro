@@ -154,7 +154,7 @@ win32 {
     QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\..\\qt\\SciTEGlobal.properties\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
     QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\..\\src\\abbrev.properties\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
     QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\SciTEUser.properties\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
-    QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_MKDIR} \"$${PWD}/dist/packages/org.scintilla.sciteqt/data/localisations\")
+    QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)( if not exist \"$${PWD}/dist/packages/org.scintilla.sciteqt/data/localisations\" $${QMAKE_MKDIR} \"$${PWD}/dist/packages/org.scintilla.sciteqt/data/localisations\") )
     QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\translations\\*.*\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data/localisations\")
     QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\..\\doc\\*.*\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
 }
