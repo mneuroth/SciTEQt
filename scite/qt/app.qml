@@ -486,8 +486,8 @@ ApplicationWindow {
         contentHeight: toolBarButtonContainer.implicitHeight
         visible: sciteQt.showToolBar
 
-        property int iconWidth: 24
-        property int iconHeight: 24
+        property int iconWidth: 18  /* org: 24 */
+        property int iconHeight: 18
         /*
           code see: static BarButton bbs[] or void SciTEGTK::AddToolBar()
           icons see: https://material.io/resources/icons/?style=baseline
