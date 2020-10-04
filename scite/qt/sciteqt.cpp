@@ -171,6 +171,11 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
       m_iLastTabIndex(-1),
       m_iCurrentTabIndex(-1),
       m_bIsInUpdateAppActive(false),
+#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
+      m_bIsMobilePlatfrom(true),
+#else
+      m_bIsMobilePlatfrom(false),
+#endif
       m_bShowToolBar(false),
       m_bShowStatusBar(false),
       m_bShowTabBar(true),
@@ -2784,16 +2789,21 @@ void SciTEQt::startDragSpliterPos(int currentPosX, int currentPosY)
 
 bool SciTEQt::useSimpleMenus() const
 {
-    return true; // isMobilePlatform();
+    return isMobilePlatform();
+}
+
+void SciTEQt::setMobilePlatform(bool val)
+{
+    if(val != m_bIsMobilePlatfrom)
+    {
+        m_bIsMobilePlatfrom = val;
+        emit mobilePlatformChanged();
+    }
 }
 
 bool SciTEQt::isMobilePlatform() const
 {
-#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
-    return true;
-#else
-    return false;
-#endif
+    return m_bIsMobilePlatfrom;
 }
 
 bool SciTEQt::isWebassemblyPlatform() const

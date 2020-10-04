@@ -834,6 +834,7 @@ Item {
     property alias actionAboutSciteQt: actionAboutSciteQt
     property alias actionAboutQt: actionAboutQt
     property alias actionAboutCurrentFile: actionAboutCurrentFile
+    property alias actionIsMobilePlatfrom: actionIsMobilePlatfrom
     property alias actionTestFunction: actionTestFunction
     property alias actionTest2Function: actionTest2Function
     property alias actionTest3Function: actionTest3Function
@@ -870,6 +871,13 @@ Item {
         id: actionAboutCurrentFile
         text: qsTr("About &Current File")
         onTriggered: sciteQt.cmdAboutCurrentFile()
+    }
+    Action {
+        id: actionIsMobilePlatfrom
+        text: qsTr("Mobile Platform UI")
+        checkable: true
+        checked: sciteQt.mobilePlatform
+        onTriggered: sciteQt.mobilePlatform = !sciteQt.mobilePlatform
     }
     Action {
         id: actionTestFunction

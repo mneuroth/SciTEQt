@@ -3,7 +3,7 @@ import QtQuick.Controls 2.9
 import QtQml.Models 2.14
 
 MenuBar {
-    id: menuBar
+    id: root
 
     signal readOnlyChanged(bool value)
     signal runningChanged(bool value)
@@ -15,6 +15,14 @@ MenuBar {
 
     // use simpler menu for mobile platforms with less menu items
     property bool useSimpleMenu: false
+
+    function fillPopupMenu(menu) {
+        for(var i=0; i<root.count; i++)
+        {
+            menu.addMenu(root.menuAt(i)) // takeMenu(i) menuAt(i)
+        }
+        return menu
+    }
 
     AutoSizingMenu {
         id: fileMenu
@@ -814,6 +822,11 @@ MenuBar {
             id: actionAboutCurrentFile
             text: processMenuItem2(sciteActions.actionAboutCurrentFile.text, actionAboutCurrentFile)
             action: sciteActions.actionAboutCurrentFile
+        }
+        MenuItem {
+            id: actionIsMobilePlatfrom
+            text: processMenuItem2(sciteActions.actionIsMobilePlatfrom.text, actionIsMobilePlatfrom)
+            action: sciteActions.actionIsMobilePlatfrom
         }
 
         MenuSeparator {}

@@ -55,6 +55,11 @@ ApplicationWindow {
         //splitView.restoreState(settings.splitView)
         //sciteQt.showToolBar = true
          sciteQt.logToDebug("=============== APPLICATION START ==========================")
+
+        if(sciteQt.mobilePlatform) {
+// TODO --> copy popup menu ? to switch between the two modes...
+            sciteMenuBar.fillPopupMenu(mobilePopupMenu)
+        }
     }
     Component.onDestruction: {
         //settings.splitView = splitView.saveState()
@@ -347,7 +352,7 @@ ApplicationWindow {
 // TODO: via font die breite fuer den text bestimmen und passende anzahl leerzeichen dafuer...
         //console.log("FONT: "+menuText+" "+ (menuItem!==undefined ? menuItem.font : "?")+" action="+menuItem.action) //+" shortcut="+menuItem.action.shortcut+ " "+menuItem.parent)
         var s = sciteQt.getLocalisedText(menuText)
-        if( !sciteQt.isMobilePlatform() && menuItem !== null && menuItem.action !== null && menuItem.action.shortcut !== undefined)
+        if( !sciteQt.mobilePlatform && menuItem !== null && menuItem.action !== null && menuItem.action.shortcut !== undefined)
         {
             //s += " \t" + menuItem.shortcut
             return sciteQt.fillToLengthWithFont(s, ""+menuItem.action.shortcut, menuItem.font)
@@ -437,13 +442,19 @@ ApplicationWindow {
     }
 
     SciteMenu {
-        id: sciteMenu
-        visible: true
+        id: sciteMenuBar
+        visible: !sciteQt.mobilePlatform
         useSimpleMenu: sciteQt.useSimpleMenus()
     }
 
+    // Popup menu for mobile platforms
+    Menu {
+        id: mobilePopupMenu
+        visible: false;
+    }
+
     Connections {
-        target: sciteMenu
+        target: sciteMenuBar
 
         onReadOnlyChanged: {
             toolButtonReadonly.checked = value
@@ -480,324 +491,76 @@ ApplicationWindow {
         }
     }
 
-    menuBar: sciteMenu
+    menuBar: sciteQt.mobilePlatform ? null : sciteMenuBar
 
-    header: ToolBar {
-        id: toolBar
-        contentHeight: toolBarButtonContainer.implicitHeight
-        visible: sciteQt.showToolBar
+    header: sciteQt.mobilePlatform ? mobileToolBar : null
 
-        property int iconWidth: 18  /* org: 24 */
-        property int iconHeight: 18
+    ToolBar {
+        id: mobileToolBar
+        contentHeight: 50 //iconHeight
+        visible: sciteQt.mobilePlatform
+
+        //property int iconWidth: 24  /* org: 24 */
+        //property int iconHeight: 24
         /*
           code see: static BarButton bbs[] or void SciTEGTK::AddToolBar()
           icons see: https://material.io/resources/icons/?style=baseline
         */
-        Flow {
-            id: toolBarButtonContainer
+
+        /*GridLayout*/Item {
+            id: grid
 
             anchors.fill: parent
-            ToolButton {
-                id: toolButtonNew
-                icon.source: "icons/create.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "New"
-                visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdNew()
+            anchors.rightMargin: 5
+            anchors.leftMargin: 5
+            anchors.topMargin: 5
+            anchors.bottomMargin: 5
 
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Create a new document"))
-            }
-            ToolButton {
-                id: toolButtonOpen
-                icon.source: "icons/open_in_new.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "Open"
-                visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdOpen()
+            //columns: 3
+            //rows: 1
 
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Open an existing document"))
-            }
             ToolButton {
-                id: toolButtonSave
-                icon.source: "icons/save.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "Save"
-                visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdSave()
-
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Save current document"))
-            }
-            ToolButton {
-                id: toolButtonClose
-                icon.source: "icons/clear.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "Close"
-                visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdClose()
-
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Close current document"))
-            }
-            ToolButton {
-                id: toolButtonReadonly
-                icon.source: "icons/do_not_touch.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "Readonly"
-                visible: sciteQt.showToolBar
-                checkable: true
+                id: toolButton
+                text: "\u2261"  //stackView.depth > 1 ? "\u25C0" : "\u2261"  // original: "\u2630" for second entry, does not work on Android
+                //icon.source: stackView.depth > 1 ? "back" : "menu_bars"
+                //font.pixelSize: Qt.application.font.pixelSize * 1.6
+                anchors.left: parent.left
+                anchors.leftMargin: 5
+                /*
                 onClicked: {
-                    //quickScintillaEditor.readonly = toolButtonReadonly.checked
-                    //quickScintillaOutput.readonly = toolButtonReadonly.checked
-                    //focusToEditor()
-                    sciteQt.cmdReadOnly()
+                    if (stackView.depth > 1) {
+                        stackView.pop()
+                    } else {
+                        drawer.open()
+                    }
                 }
-                // see: action: actionReadOnly
+                */
+            }
 
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Disable possibility to modify current document"))
+            Label {
+                id: labelTitel
+                text: qsTr("SciteQt")
+                //anchors.centerIn: parent
+                anchors.left: toolButton.right
+                anchors.right: menuButton.left
+                anchors.leftMargin: 5
+                anchors.rightMargin: 5
+                anchors.verticalCenter: parent.verticalCenter
+                horizontalAlignment: Text.AlignHCenter
             }
-            ToolSeparator {
-                visible:  sciteQt.showTabBar
-            }
+
             ToolButton {
-                id: toolButtonPrint
-                icon.source: "icons/print.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "Print"
-                visible: sciteQt.showToolBar && !sciteQt.isMobilePlatform()
-                onClicked: sciteQt.cmdPrint()
-
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Print current document"))
-            }
-            ToolButton {
-                id: toolButtonShare
-                icon.source: "icons/share.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "Share"
-                visible: sciteQt.showToolBar && sciteQt.isMobilePlatform()
-                onClicked: sciteQt.cmdShare()
-
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Share current document"))
-            }
-            ToolSeparator {
-                visible:  sciteQt.showTabBar
-            }
-            ToolButton {
-                id: toolButtonCut
-                icon.source: "icons/content_cut.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "Cut"
-                visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdCut()
-
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Cut current selected text to clipboard"))
-            }
-            ToolButton {
-                id: toolButtonCopy
-                icon.source: "icons/content_copy.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "Copy"
-                visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdCopy()
-
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Copy current selected text to clipboard"))
-            }
-            ToolButton {
-                id: toolButtonPaste
-                icon.source: "icons/content_paste.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "Paste"
-                visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdPaste()
-
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Paste text from clipboard"))
-            }
-            ToolButton {
-                id: toolButtonDelete
-                icon.source: "icons/delete.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "Delete"
-                visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdDelete()
-
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Delete current selected text"))
-            }
-            ToolSeparator {
-                visible:  sciteQt.showTabBar
-            }
-            ToolButton {
-                id: toolButtonUndo
-                icon.source: "icons/undo.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "Undo"
-                visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdUndo()
-
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Undo last modification"))
-            }
-            ToolButton {
-                id: toolButtonRedo
-                icon.source: "icons/redo.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "Redo"
-                visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdRedo()
-
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Redo last modification"))
-            }
-            ToolSeparator {
-                visible:  sciteQt.showTabBar
-            }
-            ToolButton {
-                id: toolButtonFind
-                icon.source: "icons/find_in_page.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "Find"
-                visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdFind()
-
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Search for text"))
-            }
-            ToolButton {
-                id: toolButtonReplace
-                icon.source: "icons/find_replace.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "Replace"
-                visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdReplace()
-
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Find and replace text"))
-            }
-            ToolButton {
-                id: toolButtonFindPrevious
-                icon.source: "icons/arrow_back_ios.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "Previous"
-                visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdFindPrevious()
-
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Search previous text"))
-            }
-            ToolButton {
-                id: toolButtonFindNext
-                icon.source: "icons/arrow_forward_ios.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "Next"
-                visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdFindNext()
-
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Search next text"))
-            }
-            ToolSeparator {
-                visible:  sciteQt.showTabBar
-            }
-            ToolButton {
-                id: toolButtonBuild
-                icon.source: "icons/build.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "Build"
-                visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdBuild()
-
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Trigger build"))
-            }
-            ToolButton {
-                id: toolButtonGo
-                icon.source: "icons/play_arrow.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: "Go"
-                visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdGo()
-
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Run script"))
-            }
-            ToolButton {
-                id: toolButtonStop
-                icon.source: "icons/stop.svg"
-                icon.height: toolBar.iconHeight
-                icon.width: toolBar.iconWidth
-                //text: Stop"
-                visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdStopExecuting()
-
-                ToolTip.delay: toolTipDelay
-                ToolTip.timeout: toolTipTimeout
-                ToolTip.visible: hovered
-                ToolTip.text: sciteQt.getLocalisedText(qsTr("Stop script execution"))
+                id: menuButton
+                text: "\u22EE"
+                //icon.source: "menu.svg"
+                //font.pixelSize: Qt.application.font.pixelSize * 1.6
+                anchors.right: parent.right
+                anchors.leftMargin: 5
+                onClicked: {
+                    mobilePopupMenu.x = menuButton.x
+                    mobilePopupMenu.y = menuButton.y
+                    mobilePopupMenu.open()
+                }
             }
         }
     }
@@ -824,9 +587,330 @@ ApplicationWindow {
         //anchors.verticalCenter: btnShowText.verticalCenter
         anchors.leftMargin: 5
         anchors.rightMargin: 5
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
+        anchors.topMargin: visible ? 5 : 0
+        anchors.bottomMargin: visible ? 5 : 0
         text: "?"
+    }
+
+    // use Flow for creating a Toolbar
+    Flow {
+        id: toolBarButtonContainer
+        visible: sciteQt.showToolBar
+        height: visible ? implicitHeight : 0
+
+        property int iconWidth: 12  /* org: 24 */
+        property int iconHeight: 12
+
+        anchors.top: lblFileName.bottom
+        anchors.right: parent.right
+        anchors.left: parent.left
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: visible ? 5 : 0
+        anchors.bottomMargin: visible ? 5 : 0
+
+        ToolButton {
+            id: toolButtonNew
+            icon.source: "icons/create.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "New"
+            visible: sciteQt.showToolBar
+            onClicked: sciteQt.cmdNew()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Create a new document"))
+        }
+        ToolButton {
+            id: toolButtonOpen
+            icon.source: "icons/open_in_new.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "Open"
+            visible: sciteQt.showToolBar
+            onClicked: sciteQt.cmdOpen()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Open an existing document"))
+        }
+        ToolButton {
+            id: toolButtonSave
+            icon.source: "icons/save.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "Save"
+            visible: sciteQt.showToolBar
+            onClicked: sciteQt.cmdSave()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Save current document"))
+        }
+        ToolButton {
+            id: toolButtonClose
+            icon.source: "icons/clear.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "Close"
+            visible: sciteQt.showToolBar
+            onClicked: sciteQt.cmdClose()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Close current document"))
+        }
+        ToolButton {
+            id: toolButtonReadonly
+            icon.source: "icons/do_not_touch.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "Readonly"
+            visible: sciteQt.showToolBar
+            checkable: true
+            onClicked: {
+                //quickScintillaEditor.readonly = toolButtonReadonly.checked
+                //quickScintillaOutput.readonly = toolButtonReadonly.checked
+                //focusToEditor()
+                sciteQt.cmdReadOnly()
+            }
+            // see: action: actionReadOnly
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Disable possibility to modify current document"))
+        }
+        ToolSeparator {
+            visible:  sciteQt.showTabBar
+        }
+        ToolButton {
+            id: toolButtonPrint
+            icon.source: "icons/print.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "Print"
+            visible: sciteQt.showToolBar && !sciteQt.mobilePlatform
+            onClicked: sciteQt.cmdPrint()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Print current document"))
+        }
+        ToolButton {
+            id: toolButtonShare
+            icon.source: "icons/share.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "Share"
+            visible: sciteQt.showToolBar && sciteQt.mobilePlatform
+            onClicked: sciteQt.cmdShare()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Share current document"))
+        }
+        ToolSeparator {
+            visible:  sciteQt.showTabBar
+        }
+        ToolButton {
+            id: toolButtonCut
+            icon.source: "icons/content_cut.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "Cut"
+            visible: sciteQt.showToolBar
+            onClicked: sciteQt.cmdCut()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Cut current selected text to clipboard"))
+        }
+        ToolButton {
+            id: toolButtonCopy
+            icon.source: "icons/content_copy.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "Copy"
+            visible: sciteQt.showToolBar
+            onClicked: sciteQt.cmdCopy()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Copy current selected text to clipboard"))
+        }
+        ToolButton {
+            id: toolButtonPaste
+            icon.source: "icons/content_paste.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "Paste"
+            visible: sciteQt.showToolBar
+            onClicked: sciteQt.cmdPaste()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Paste text from clipboard"))
+        }
+        ToolButton {
+            id: toolButtonDelete
+            icon.source: "icons/delete.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "Delete"
+            visible: sciteQt.showToolBar
+            onClicked: sciteQt.cmdDelete()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Delete current selected text"))
+        }
+        ToolSeparator {
+            visible:  sciteQt.showTabBar
+        }
+        ToolButton {
+            id: toolButtonUndo
+            icon.source: "icons/undo.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "Undo"
+            visible: sciteQt.showToolBar
+            onClicked: sciteQt.cmdUndo()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Undo last modification"))
+        }
+        ToolButton {
+            id: toolButtonRedo
+            icon.source: "icons/redo.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "Redo"
+            visible: sciteQt.showToolBar
+            onClicked: sciteQt.cmdRedo()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Redo last modification"))
+        }
+        ToolSeparator {
+            visible:  sciteQt.showTabBar
+        }
+        ToolButton {
+            id: toolButtonFind
+            icon.source: "icons/find_in_page.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "Find"
+            visible: sciteQt.showToolBar
+            onClicked: sciteQt.cmdFind()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Search for text"))
+        }
+        ToolButton {
+            id: toolButtonReplace
+            icon.source: "icons/find_replace.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "Replace"
+            visible: sciteQt.showToolBar
+            onClicked: sciteQt.cmdReplace()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Find and replace text"))
+        }
+        ToolButton {
+            id: toolButtonFindPrevious
+            icon.source: "icons/arrow_back_ios.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "Previous"
+            visible: sciteQt.showToolBar
+            onClicked: sciteQt.cmdFindPrevious()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Search previous text"))
+        }
+        ToolButton {
+            id: toolButtonFindNext
+            icon.source: "icons/arrow_forward_ios.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "Next"
+            visible: sciteQt.showToolBar
+            onClicked: sciteQt.cmdFindNext()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Search next text"))
+        }
+        ToolSeparator {
+            visible:  sciteQt.showTabBar
+        }
+        ToolButton {
+            id: toolButtonBuild
+            icon.source: "icons/build.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "Build"
+            visible: sciteQt.showToolBar
+            onClicked: sciteQt.cmdBuild()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Trigger build"))
+        }
+        ToolButton {
+            id: toolButtonGo
+            icon.source: "icons/play_arrow.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: "Go"
+            visible: sciteQt.showToolBar
+            onClicked: sciteQt.cmdGo()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Run script"))
+        }
+        ToolButton {
+            id: toolButtonStop
+            icon.source: "icons/stop.svg"
+            icon.height: parent.iconHeight
+            icon.width: parent.iconWidth
+            //text: Stop"
+            visible: sciteQt.showToolBar
+            onClicked: sciteQt.cmdStopExecuting()
+
+            ToolTip.delay: toolTipDelay
+            ToolTip.timeout: toolTipTimeout
+            ToolTip.visible: hovered
+            ToolTip.text: sciteQt.getLocalisedText(qsTr("Stop script execution"))
+        }
     }
 
     TabBar {
@@ -836,7 +920,7 @@ ApplicationWindow {
         height: sciteQt.showTabBar ? implicitHeight : 0
         //focusPolicy: Qt.NoFocus
 
-        anchors.top: lblFileName.bottom
+        anchors.top: toolBarButtonContainer.bottom
         anchors.right: parent.right
         anchors.left: parent.left
         anchors.rightMargin: 5
@@ -1613,7 +1697,7 @@ ApplicationWindow {
     FindDialog {
         id: findDialog
         objectName: "findDialog"
-        modality: sciteQt.isMobilePlatform() || sciteQt.isWebassemblyPlatform() ? Qt.ApplicationModal : Qt.NonModal
+        modality: sciteQt.mobilePlatform || sciteQt.isWebassemblyPlatform() ? Qt.ApplicationModal : Qt.NonModal
         title: sciteQt.getLocalisedText(qsTr("Find"))
 
         fcnLocalisation: sciteQt.getLocalisedText
@@ -1632,7 +1716,7 @@ ApplicationWindow {
     ReplaceDialog {
         id: replaceDialog
         objectName: "replaceDialog"
-        modality: sciteQt.isMobilePlatform() || sciteQt.isWebassemblyPlatform() ? Qt.ApplicationModal : Qt.NonModal
+        modality: sciteQt.mobilePlatform || sciteQt.isWebassemblyPlatform() ? Qt.ApplicationModal : Qt.NonModal
         title: sciteQt.getLocalisedText(qsTr("Replace"))
 
         fcnLocalisation: sciteQt.getLocalisedText
@@ -1661,7 +1745,7 @@ ApplicationWindow {
     FindInFilesDialog {
         id: findInFilesDialog
         objectName: "findInFilesDialog"
-        modality: sciteQt.isMobilePlatform() || sciteQt.isWebassemblyPlatform() ? Qt.ApplicationModal : Qt.NonModal
+        modality: sciteQt.mobilePlatform || sciteQt.isWebassemblyPlatform() ? Qt.ApplicationModal : Qt.NonModal
         title: sciteQt.getLocalisedText(qsTr("Find in Files"))
 
         fcnLocalisation: sciteQt.getLocalisedText
