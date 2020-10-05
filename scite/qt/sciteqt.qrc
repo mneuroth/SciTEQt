@@ -49,6 +49,9 @@
         <file alias="icons/loop.svg">icons/loop-black-24dp.svg</file>
         <file alias="icons/arrow_upward.svg">icons/arrow_upward-black-24dp.svg</file>
         <file alias="icons/arrow_downward.svg">icons/arrow_downward-black-24dp.svg</file>
+        <file alias="icons/menu-black.svg">icons/menu-black-24dp.svg</file>
+        <file alias="icons/more_vert-black.svg">icons/more_vert-black-24dp.svg</file>
+        <file alias="icons/more_horiz-black.svg">icons/more_horiz-black-24dp.svg</file>
         <file>+android/SciteMenu.qml</file>
         <file>MobileFileDialog.qml</file>
         <file>MobileFileDialogForm.ui.qml</file>

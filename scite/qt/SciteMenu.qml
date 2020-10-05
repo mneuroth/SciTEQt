@@ -15,11 +15,13 @@ MenuBar {
 
     // use simpler menu for mobile platforms with less menu items
     property bool useSimpleMenu: false
+    property var actions: null
 
     function fillPopupMenu(menu) {
+        menu.removeItem(0, menu.count)
         for(var i=0; i<root.count; i++)
         {
-            menu.addMenu(root.menuAt(i)) // takeMenu(i) menuAt(i)
+            menu.addMenu(root.menuAt(i)) // takeMenu(i) ?
         }
         return menu
     }
@@ -30,53 +32,53 @@ MenuBar {
 // see: https://forum.qt.io/topic/104010/menubar-display-shortcut-in-quickcontrols2/4
         MenuItem {
             id: actionNew
-            text: processMenuItem2(sciteActions.actionNew.text, actionNew)
-            action: sciteActions.actionNew
+            text: processMenuItem2(actions.actionNew.text, actionNew)
+            action: actions.actionNew
         }
         MenuItem {
             id: actionOpen
-            text: processMenuItem2(sciteActions.actionOpen.text, actionOpen)
-            action: sciteActions.actionOpen
+            text: processMenuItem2(actions.actionOpen.text, actionOpen)
+            action: actions.actionOpen
         }
         MenuItem {
             id: actionOpenSelectedFilename
-            text: processMenuItem2(sciteActions.actionOpenSelectedFilename.text, actionOpenSelectedFilename)
-            action: sciteActions.actionOpenSelectedFilename
+            text: processMenuItem2(actions.actionOpenSelectedFilename.text, actionOpenSelectedFilename)
+            action: actions.actionOpenSelectedFilename
         }
         MenuItem {
             id: actionRevert
-            text: processMenuItem2(sciteActions.actionRevert.text, actionRevert)
-            action: sciteActions.actionRevert
+            text: processMenuItem2(actions.actionRevert.text, actionRevert)
+            action: actions.actionRevert
         }
         MenuItem {
             id: actionClose
-            text: processMenuItem2(sciteActions.actionClose.text, actionClose)
-            action: sciteActions.actionClose
+            text: processMenuItem2(actions.actionClose.text, actionClose)
+            action: actions.actionClose
         }
         MenuItem {
             id: actionSave
-            text: processMenuItem2(sciteActions.actionSave.text, actionSave)
-            action: sciteActions.actionSave
+            text: processMenuItem2(actions.actionSave.text, actionSave)
+            action: actions.actionSave
         }
         MenuItem {
             id: actionSaveAs
-            text: processMenuItem2(sciteActions.actionSaveAs.text, actionSaveAs)
-            action: sciteActions.actionSaveAs
+            text: processMenuItem2(actions.actionSaveAs.text, actionSaveAs)
+            action: actions.actionSaveAs
         }
         MenuItem {
             id: actionSaveACopy
-            text: processMenuItem2(sciteActions.actionSaveACopy.text, actionSaveACopy)
-            action: sciteActions.actionSaveACopy
+            text: processMenuItem2(actions.actionSaveACopy.text, actionSaveACopy)
+            action: actions.actionSaveACopy
         }
         MenuItem {
             id: actionCopyPath
-            text: processMenuItem2(sciteActions.actionCopyPath.text, actionCopyPath)
-            action: sciteActions.actionCopyPath
+            text: processMenuItem2(actions.actionCopyPath.text, actionCopyPath)
+            action: actions.actionCopyPath
         }
         MenuItem {
             id: actionOpenContainingFolder
-            text: processMenuItem2(sciteActions.actionOpenContainingFolder.text, actionOpenContainingFolder)
-            action: sciteActions.actionOpenContainingFolder
+            text: processMenuItem2(actions.actionOpenContainingFolder.text, actionOpenContainingFolder)
+            action: actions.actionOpenContainingFolder
         }
         Menu {
             id: actionEncoding
@@ -84,28 +86,28 @@ MenuBar {
 
             MenuItem {
                 id: actionCodePageProperty
-                text: processMenuItem2(sciteActions.actionCodePageProperty.text, actionCodePageProperty)
-                action: sciteActions.actionCodePageProperty
+                text: processMenuItem2(actions.actionCodePageProperty.text, actionCodePageProperty)
+                action: actions.actionCodePageProperty
             }
             MenuItem {
                 id: actionUtf16BigEndian
-                text: processMenuItem2(sciteActions.actionUtf16BigEndian.text, actionUtf16BigEndian)
-                action: sciteActions.actionUtf16BigEndian
+                text: processMenuItem2(actions.actionUtf16BigEndian.text, actionUtf16BigEndian)
+                action: actions.actionUtf16BigEndian
             }
             MenuItem {
                 id: actionUtf16LittleEndian
-                text: processMenuItem2(sciteActions.actionUtf16LittleEndian.text, actionUtf16LittleEndian)
-                action: sciteActions.actionUtf16LittleEndian
+                text: processMenuItem2(actions.actionUtf16LittleEndian.text, actionUtf16LittleEndian)
+                action: actions.actionUtf16LittleEndian
             }
             MenuItem {
                 id: actionUtf8WithBOM
-                text: processMenuItem2(sciteActions.actionUtf8WithBOM.text, actionUtf8WithBOM)
-                action: sciteActions.actionUtf8WithBOM
+                text: processMenuItem2(actions.actionUtf8WithBOM.text, actionUtf8WithBOM)
+                action: actions.actionUtf8WithBOM
             }
             MenuItem {
                 id: actionUtf8
-                text: processMenuItem2(sciteActions.actionUtf8.text, actionUtf8)
-                action: sciteActions.actionUtf8
+                text: processMenuItem2(actions.actionUtf8.text, actionUtf8)
+                action: actions.actionUtf8
             }
         }
         Menu {
@@ -114,51 +116,51 @@ MenuBar {
 
             MenuItem {
                 id: actionAsHtml
-                text: processMenuItem2(sciteActions.actionAsHtml.text, actionAsHtml)
-                action: sciteActions.actionAsHtml
+                text: processMenuItem2(actions.actionAsHtml.text, actionAsHtml)
+                action: actions.actionAsHtml
             }
             MenuItem {
                 id: actionAsRtf
-                text: processMenuItem2(sciteActions.actionAsRtf.text, actionAsRtf)
-                action: sciteActions.actionAsRtf
+                text: processMenuItem2(actions.actionAsRtf.text, actionAsRtf)
+                action: actions.actionAsRtf
             }
             MenuItem {
                 id: actionAsPdf
-                text: processMenuItem2(sciteActions.actionAsPdf.text, actionAsPdf)
-                action: sciteActions.actionAsPdf
+                text: processMenuItem2(actions.actionAsPdf.text, actionAsPdf)
+                action: actions.actionAsPdf
             }
             MenuItem {
                 id: actionAsLatex
-                text: processMenuItem2(sciteActions.actionAsLatex.text, actionAsLatex)
-                action: sciteActions.actionAsLatex
+                text: processMenuItem2(actions.actionAsLatex.text, actionAsLatex)
+                action: actions.actionAsLatex
             }
             MenuItem {
                 id: actionAsXml
-                text: processMenuItem2(sciteActions.actionAsXml.text, actionAsXml)
-                action: sciteActions.actionAsXml
+                text: processMenuItem2(actions.actionAsXml.text, actionAsXml)
+                action: actions.actionAsXml
             }
         }
         MenuSeparator {}
         MenuItem {
             id: actionPageSetup
-            text: processMenuItem2(sciteActions.actionPageSetup.text, actionPageSetup)
-            action: sciteActions.actionPageSetup
+            text: processMenuItem2(actions.actionPageSetup.text, actionPageSetup)
+            action: actions.actionPageSetup
         }
         MenuItem {
             id: actionPrint
-            text: processMenuItem2(sciteActions.actionPrint.text, actionPrint)
-            action: sciteActions.actionPrint
+            text: processMenuItem2(actions.actionPrint.text, actionPrint)
+            action: actions.actionPrint
         }
         MenuSeparator {}
         MenuItem {
             id: actionLoadSession
-            text: processMenuItem2(sciteActions.actionLoadSession.text, actionLoadSession)
-            action: sciteActions.actionLoadSession
+            text: processMenuItem2(actions.actionLoadSession.text, actionLoadSession)
+            action: actions.actionLoadSession
         }
         MenuItem {
             id: actionSaveSession
-            text: processMenuItem2(sciteActions.actionSaveSession.text, actionSaveSession)
-            action: sciteActions.actionSaveSession
+            text: processMenuItem2(actions.actionSaveSession.text, actionSaveSession)
+            action: actions.actionSaveSession
         }
         MenuSeparator {}
         Instantiator {
@@ -180,8 +182,8 @@ MenuBar {
         }
         MenuItem {
             id: actionExit
-            text: processMenuItem2(sciteActions.actionExit.text, actionExit)
-            action: sciteActions.actionExit
+            text: processMenuItem2(actions.actionExit.text, actionExit)
+            action: actions.actionExit
         }
     }
 
@@ -191,123 +193,123 @@ MenuBar {
 
         MenuItem {
             id: actionUndo
-            text: processMenuItem2(sciteActions.actionUndo.text, actionUndo)
-            action: sciteActions.actionUndo
+            text: processMenuItem2(actions.actionUndo.text, actionUndo)
+            action: actions.actionUndo
         }
         MenuItem {
             id: actionRedo
-            text: processMenuItem2(sciteActions.actionRedo.text, actionRedo)
-            action: sciteActions.actionRedo
+            text: processMenuItem2(actions.actionRedo.text, actionRedo)
+            action: actions.actionRedo
         }
         MenuSeparator {}
         MenuItem {
             id: actionCut
-            text: processMenuItem2(sciteActions.actionCut.text, actionCut)
-            action: sciteActions.actionCut
+            text: processMenuItem2(actions.actionCut.text, actionCut)
+            action: actions.actionCut
         }
         MenuItem {
             id: actionCopy
-            text: processMenuItem2(sciteActions.actionCopy.text, actionCopy)
-            action: sciteActions.actionCopy
+            text: processMenuItem2(actions.actionCopy.text, actionCopy)
+            action: actions.actionCopy
         }
         MenuItem {
             id: actionPaste
-            text: processMenuItem2(sciteActions.actionPaste.text, actionPaste)
-            action: sciteActions.actionPaste
+            text: processMenuItem2(actions.actionPaste.text, actionPaste)
+            action: actions.actionPaste
         }
         MenuItem {
             id: actionDuplicate
-            text: processMenuItem2(sciteActions.actionDuplicate.text, actionDuplicate)
-            action: sciteActions.actionDuplicate
+            text: processMenuItem2(actions.actionDuplicate.text, actionDuplicate)
+            action: actions.actionDuplicate
         }
         MenuItem {
             id: actionDelete
-            text: processMenuItem2(sciteActions.actionDelete.text, actionDelete)
-            action: sciteActions.actionDelete
+            text: processMenuItem2(actions.actionDelete.text, actionDelete)
+            action: actions.actionDelete
         }
         MenuItem {
             id: actionSelectAll
-            text: processMenuItem2(sciteActions.actionSelectAll.text, actionSelectAll)
-            action: sciteActions.actionSelectAll
+            text: processMenuItem2(actions.actionSelectAll.text, actionSelectAll)
+            action: actions.actionSelectAll
         }
         MenuItem {
             id: actionCopyAsRtf
-            text: processMenuItem2(sciteActions.actionCopyAsRtf.text, actionCopyAsRtf)
-            action: sciteActions.actionCopyAsRtf
+            text: processMenuItem2(actions.actionCopyAsRtf.text, actionCopyAsRtf)
+            action: actions.actionCopyAsRtf
             visible: !useSimpleMenu
             height: useSimpleMenu ? 0 : actionCopy.height
         }
         MenuSeparator {}
         MenuItem {
             id: actionMatchBrace
-            text: processMenuItem2(sciteActions.actionMatchBrace.text, actionMatchBrace)
-            action: sciteActions.actionMatchBrace
+            text: processMenuItem2(actions.actionMatchBrace.text, actionMatchBrace)
+            action: actions.actionMatchBrace
         }
         MenuItem {
             id: actionSelectToBrace
-            text: processMenuItem2(sciteActions.actionSelectToBrace.text, actionSelectToBrace)
-            action: sciteActions.actionSelectToBrace
+            text: processMenuItem2(actions.actionSelectToBrace.text, actionSelectToBrace)
+            action: actions.actionSelectToBrace
         }
         MenuItem {
             id: actionShowCalltip
-            text: processMenuItem2(sciteActions.actionShowCalltip.text, actionShowCalltip)
-            action: sciteActions.actionShowCalltip
+            text: processMenuItem2(actions.actionShowCalltip.text, actionShowCalltip)
+            action: actions.actionShowCalltip
             visible: !useSimpleMenu
             height: useSimpleMenu ? 0 : actionCopy.height
         }
         MenuItem {
             id: actionCompleteSymbol
-            text: processMenuItem2(sciteActions.actionCompleteSymbol.text, actionCompleteSymbol)
-            action: sciteActions.actionCompleteSymbol
+            text: processMenuItem2(actions.actionCompleteSymbol.text, actionCompleteSymbol)
+            action: actions.actionCompleteSymbol
         }
         MenuItem {
             id: actionCompleteWord
-            text: processMenuItem2(sciteActions.actionCompleteWord.text, actionCompleteWord)
-            action: sciteActions.actionCompleteWord
+            text: processMenuItem2(actions.actionCompleteWord.text, actionCompleteWord)
+            action: actions.actionCompleteWord
         }
         MenuItem {
             id: actionExpandAbbreviation
-            text: processMenuItem2(sciteActions.actionExpandAbbreviation.text, actionExpandAbbreviation)
-            action: sciteActions.actionExpandAbbreviation
+            text: processMenuItem2(actions.actionExpandAbbreviation.text, actionExpandAbbreviation)
+            action: actions.actionExpandAbbreviation
         }
         MenuItem {
             id: actionInsertAbbreviation
-            text: processMenuItem(sciteActions.actionInsertAbbreviation.text, actionInsertAbbreviation)
-            action: sciteActions.actionInsertAbbreviation
+            text: processMenuItem(actions.actionInsertAbbreviation.text, actionInsertAbbreviation)
+            action: actions.actionInsertAbbreviation
        }
         MenuItem {
             id: actionBlockComment
-            text: processMenuItem(sciteActions.actionBlockComment.text, actionBlockComment)
-            action: sciteActions.actionBlockComment
+            text: processMenuItem(actions.actionBlockComment.text, actionBlockComment)
+            action: actions.actionBlockComment
         }
         MenuItem {
             id: actionBoxComment
-            text: processMenuItem(sciteActions.actionBoxComment.text, actionBoxComment)
-            action: sciteActions.actionBoxComment
+            text: processMenuItem(actions.actionBoxComment.text, actionBoxComment)
+            action: actions.actionBoxComment
             visible: !useSimpleMenu
             height: useSimpleMenu ? 0 : actionCopy.height
         }
         MenuItem {
             id: actionStreamComment
-            text: processMenuItem(sciteActions.actionStreamComment.text, actionStreamComment)
-            action: sciteActions.actionStreamComment
+            text: processMenuItem(actions.actionStreamComment.text, actionStreamComment)
+            action: actions.actionStreamComment
             visible: !useSimpleMenu
             height: useSimpleMenu ? 0 : actionCopy.height
         }
         MenuItem {
             id: actionMakeSelectionUppercase
-            text: processMenuItem(sciteActions.actionMakeSelectionUppercase.text, actionMakeSelectionUppercase)
-            action: sciteActions.actionMakeSelectionUppercase
+            text: processMenuItem(actions.actionMakeSelectionUppercase.text, actionMakeSelectionUppercase)
+            action: actions.actionMakeSelectionUppercase
         }
         MenuItem {
             id: actionMakeSelectionLowercase
-            text: processMenuItem(sciteActions.actionMakeSelectionLowercase.text, actionMakeSelectionLowercase)
-            action: sciteActions.actionMakeSelectionLowercase
+            text: processMenuItem(actions.actionMakeSelectionLowercase.text, actionMakeSelectionLowercase)
+            action: actions.actionMakeSelectionLowercase
         }
         MenuItem {
             id: actionReverseSelectedLines
-            text: processMenuItem(sciteActions.actionReverseSelectedLines.text, actionReverseSelectedLines)
-            action: sciteActions.actionReverseSelectedLines
+            text: processMenuItem(actions.actionReverseSelectedLines.text, actionReverseSelectedLines)
+            action: actions.actionReverseSelectedLines
         }
         Menu {
             id: menuParagraph
@@ -317,15 +319,15 @@ MenuBar {
 
             MenuItem {
                 id: actionJoin
-                text: processMenuItem2(sciteActions.actionJoin.text, actionJoin)
-                action: sciteActions.actionJoin
+                text: processMenuItem2(actions.actionJoin.text, actionJoin)
+                action: actions.actionJoin
                 visible: !useSimpleMenu
                 height: useSimpleMenu ? 0 : actionCopy.height
             }
             MenuItem {
                 id: actionSplit
-                text: processMenuItem2(sciteActions.actionSplit.text, actionSplit)
-                action: sciteActions.actionSplit
+                text: processMenuItem2(actions.actionSplit.text, actionSplit)
+                action: actions.actionSplit
                 visible: !useSimpleMenu
                 height: useSimpleMenu ? 0 : actionCopy.height
             }
@@ -338,74 +340,74 @@ MenuBar {
 
         MenuItem {
             id: actionFind
-            text: processMenuItem2(sciteActions.actionFind.text, actionFind)
-            action: sciteActions.actionFind
+            text: processMenuItem2(actions.actionFind.text, actionFind)
+            action: actions.actionFind
         }
         MenuItem {
             id: actionFindNext
-            text: processMenuItem2(sciteActions.actionFindNext.text, actionFindNext)
-            action: sciteActions.actionFindNext
+            text: processMenuItem2(actions.actionFindNext.text, actionFindNext)
+            action: actions.actionFindNext
         }
         MenuItem {
             id: actionFindPrevious
-            text: processMenuItem2(sciteActions.actionFindPrevious.text, actionFindPrevious)
-            action: sciteActions.actionFindPrevious
+            text: processMenuItem2(actions.actionFindPrevious.text, actionFindPrevious)
+            action: actions.actionFindPrevious
         }
         MenuItem {
             id: actionFindInFiles
-            text: processMenuItem2(sciteActions.actionFindInFiles.text, actionFindInFiles)
-            action: sciteActions.actionFindInFiles
+            text: processMenuItem2(actions.actionFindInFiles.text, actionFindInFiles)
+            action: actions.actionFindInFiles
         }
         MenuItem {
             id: actionReplace
-            text: processMenuItem2(sciteActions.actionReplace.text, actionReplace)
-            action: sciteActions.actionReplace
+            text: processMenuItem2(actions.actionReplace.text, actionReplace)
+            action: actions.actionReplace
         }
         MenuItem {
             id: actionIncrementalSearch
-            text: processMenuItem2(sciteActions.actionIncrementalSearch.text, actionIncrementalSearch)
-            action: sciteActions.actionIncrementalSearch
+            text: processMenuItem2(actions.actionIncrementalSearch.text, actionIncrementalSearch)
+            action: actions.actionIncrementalSearch
         }
         MenuItem {
             id: actionSelectionAddNext
-            text: processMenuItem2(sciteActions.actionSelectionAddNext.text, actionSelectionAddNext)
-            action: sciteActions.actionSelectionAddNext
+            text: processMenuItem2(actions.actionSelectionAddNext.text, actionSelectionAddNext)
+            action: actions.actionSelectionAddNext
         }
         MenuItem {
             id: actionSelectionAddEach
-            text: processMenuItem2(sciteActions.actionSelectionAddEach.text, actionSelectionAddEach)
-            action: sciteActions.actionSelectionAddEach
+            text: processMenuItem2(actions.actionSelectionAddEach.text, actionSelectionAddEach)
+            action: actions.actionSelectionAddEach
         }
         MenuSeparator {}
         MenuItem {
             id: actionGoto
-            text: processMenuItem2(sciteActions.actionGoto.text, actionGoto)
-            action: sciteActions.actionGoto
+            text: processMenuItem2(actions.actionGoto.text, actionGoto)
+            action: actions.actionGoto
         }
         MenuItem {
             id: actionNextBookmark
-            text: processMenuItem2(sciteActions.actionNextBookmark.text, actionNextBookmark)
-            action: sciteActions.actionNextBookmark
+            text: processMenuItem2(actions.actionNextBookmark.text, actionNextBookmark)
+            action: actions.actionNextBookmark
         }
         MenuItem {
             id: actionPreviousBookmark
-            text: processMenuItem2(sciteActions.actionPreviousBookmark.text, actionPreviousBookmark)
-            action: sciteActions.actionPreviousBookmark
+            text: processMenuItem2(actions.actionPreviousBookmark.text, actionPreviousBookmark)
+            action: actions.actionPreviousBookmark
         }
         MenuItem {
             id: actionToggleBookmark
-            text: processMenuItem2(sciteActions.actionToggleBookmark.text, actionToggleBookmark)
-            action: sciteActions.actionToggleBookmark
+            text: processMenuItem2(actions.actionToggleBookmark.text, actionToggleBookmark)
+            action: actions.actionToggleBookmark
         }
         MenuItem {
             id: actionClearAllBookmarks
-            text: processMenuItem2(sciteActions.actionClearAllBookmarks.text, actionClearAllBookmarks)
-            action: sciteActions.actionClearAllBookmarks
+            text: processMenuItem2(actions.actionClearAllBookmarks.text, actionClearAllBookmarks)
+            action: actions.actionClearAllBookmarks
         }
         MenuItem {
             id: actionSelectAllBookmarks
-            text: processMenuItem2(sciteActions.actionSelectAllBookmarks.text, actionSelectAllBookmarks)
-            action: sciteActions.actionSelectAllBookmarks
+            text: processMenuItem2(actions.actionSelectAllBookmarks.text, actionSelectAllBookmarks)
+            action: actions.actionSelectAllBookmarks
         }
     }
 
@@ -415,75 +417,75 @@ MenuBar {
 
         MenuItem {
             id: actionToggleCurrentFold
-            text: processMenuItem2(sciteActions.actionToggleCurrentFold.text, actionToggleCurrentFold)
-            action: sciteActions.actionToggleCurrentFold
+            text: processMenuItem2(actions.actionToggleCurrentFold.text, actionToggleCurrentFold)
+            action: actions.actionToggleCurrentFold
         }
         MenuItem {
             id: actionToggleAllFolds
-            text: processMenuItem2(sciteActions.actionToggleAllFolds.text, actionToggleAllFolds)
-            action: sciteActions.actionToggleAllFolds
+            text: processMenuItem2(actions.actionToggleAllFolds.text, actionToggleAllFolds)
+            action: actions.actionToggleAllFolds
         }
         MenuSeparator {}
         MenuItem {
             id: actionFullScreen
-            text: processMenuItem2(sciteActions.actionFullScreen.text, actionFullScreen)
-            action: sciteActions.actionFullScreen
+            text: processMenuItem2(actions.actionFullScreen.text, actionFullScreen)
+            action: actions.actionFullScreen
         }
         MenuItem {
             id: actionShowToolBar
-            text: processMenuItem2(sciteActions.actionShowToolBar.text, actionShowToolBar)
-            action: sciteActions.actionShowToolBar
+            text: processMenuItem2(actions.actionShowToolBar.text, actionShowToolBar)
+            action: actions.actionShowToolBar
         }
         MenuItem {
             id: actionShowTabBar
-            text: processMenuItem2(sciteActions.actionShowTabBar.text, actionShowTabBar)
-            action: sciteActions.actionShowTabBar
+            text: processMenuItem2(actions.actionShowTabBar.text, actionShowTabBar)
+            action: actions.actionShowTabBar
         }
         MenuItem {
             id: actionShowStatusBar
-            text: processMenuItem2(sciteActions.actionShowStatusBar.text, actionShowStatusBar)
-            action: sciteActions.actionShowStatusBar
+            text: processMenuItem2(actions.actionShowStatusBar.text, actionShowStatusBar)
+            action: actions.actionShowStatusBar
         }
         MenuSeparator {}
         MenuItem {
             id: actionShowWhitespace
-            text: processMenuItem2(sciteActions.actionShowWhitespace.text, actionShowWhitespace)
-            action: sciteActions.actionShowWhitespace
+            text: processMenuItem2(actions.actionShowWhitespace.text, actionShowWhitespace)
+            action: actions.actionShowWhitespace
         }
         MenuItem {
             id: actionShowEndOfLine
-            text: processMenuItem2(sciteActions.actionShowEndOfLine.text, actionShowEndOfLine)
-            action: sciteActions.actionShowEndOfLine
+            text: processMenuItem2(actions.actionShowEndOfLine.text, actionShowEndOfLine)
+            action: actions.actionShowEndOfLine
         }
         MenuItem {
             id: actionIndentaionGuides
-            text: processMenuItem2(sciteActions.actionIndentaionGuides.text, actionIndentaionGuides)
-            action: sciteActions.actionIndentaionGuides
+            text: processMenuItem2(actions.actionIndentaionGuides.text, actionIndentaionGuides)
+            action: actions.actionIndentaionGuides
         }
         MenuItem {
             id: actionLineNumbers
-            text: processMenuItem2(sciteActions.actionLineNumbers.text, actionLineNumbers)
-            action: sciteActions.actionLineNumbers
+            text: processMenuItem2(actions.actionLineNumbers.text, actionLineNumbers)
+            action: actions.actionLineNumbers
         }
         MenuItem {
             id: actionMargin
-            text: processMenuItem2(sciteActions.actionMargin.text, actionMargin)
-            action: sciteActions.actionMargin
+            text: processMenuItem2(actions.actionMargin.text, actionMargin)
+            action: actions.actionMargin
         }
         MenuItem {
             id: actionFoldMargin
-            text: processMenuItem2(sciteActions.actionFoldMargin.text, actionFoldMargin)
-            action: sciteActions.actionFoldMargin
+            text: processMenuItem2(actions.actionFoldMargin.text, actionFoldMargin)
+            action: actions.actionFoldMargin
         }
         MenuItem {
             id: actionToggleOutput
-            text: processMenuItem2(sciteActions.actionToggleOutput.text, actionToggleOutput)
-            action: sciteActions.actionToggleOutput
+            text: processMenuItem2(actions.actionToggleOutput.text, actionToggleOutput)
+            action: actions.actionToggleOutput
         }
         MenuItem {
             id: actionParameters
-            text: processMenuItem2(sciteActions.actionParameters.text, actionParameters)
-            action: sciteActions.actionParameters
+            text: processMenuItem2(actions.actionParameters.text, actionParameters)
+            action: actions.actionParameters
         }
 // TODO --> add Fenster here !!!
 // TODO --> Extras & Help --> Diverses ?
@@ -495,23 +497,23 @@ MenuBar {
 
         MenuItem {
             id: actionCompile
-            text: processMenuItem2(sciteActions.actionCompile.text, actionCompile)
-            action: sciteActions.actionCompile
+            text: processMenuItem2(actions.actionCompile.text, actionCompile)
+            action: actions.actionCompile
         }
         MenuItem {
             id: actionBuild
-            text: processMenuItem2(sciteActions.actionBuild.text, actionBuild)
-            action: sciteActions.actionBuild
+            text: processMenuItem2(actions.actionBuild.text, actionBuild)
+            action: actions.actionBuild
         }
         MenuItem {
             id: actionClean
-            text: processMenuItem2(sciteActions.actionClean.text, actionClean)
-            action: sciteActions.actionClean
+            text: processMenuItem2(actions.actionClean.text, actionClean)
+            action: actions.actionClean
         }
         MenuItem {
             id: actionGo
-            text: processMenuItem2(sciteActions.actionGo.text, actionGo)
-            action: sciteActions.actionGo
+            text: processMenuItem2(actions.actionGo.text, actionGo)
+            action: actions.actionGo
         }
         Instantiator {
             id: currentToolsItems
@@ -529,29 +531,29 @@ MenuBar {
         }
         MenuItem {
             id: actionStopExecuting
-            text: processMenuItem2(sciteActions.actionStopExecuting.text, actionStopExecuting)
-            action: sciteActions.actionStopExecuting
+            text: processMenuItem2(actions.actionStopExecuting.text, actionStopExecuting)
+            action: actions.actionStopExecuting
         }
         MenuSeparator {}
         MenuItem {
             id: actionNextMessage
-            text: processMenuItem2(sciteActions.actionNextMessage.text, actionNextMessage)
-            action: sciteActions.actionNextMessage
+            text: processMenuItem2(actions.actionNextMessage.text, actionNextMessage)
+            action: actions.actionNextMessage
         }
         MenuItem {
             id: actionPreviousMessage
-            text: processMenuItem2(sciteActions.actionPreviousMessage.text, actionPreviousMessage)
-            action: sciteActions.actionPreviousMessage
+            text: processMenuItem2(actions.actionPreviousMessage.text, actionPreviousMessage)
+            action: actions.actionPreviousMessage
         }
         MenuItem {
             id: actionClearOutput
-            text: processMenuItem2(sciteActions.actionClearOutput.text, actionClearOutput)
-            action: sciteActions.actionClearOutput
+            text: processMenuItem2(actions.actionClearOutput.text, actionClearOutput)
+            action: actions.actionClearOutput
         }
         MenuItem {
             id: actionSwitchPane
-            text: processMenuItem2(sciteActions.actionSwitchPane.text, actionSwitchPane)
-            action: sciteActions.actionSwitchPane
+            text: processMenuItem2(actions.actionSwitchPane.text, actionSwitchPane)
+            action: actions.actionSwitchPane
         }
     }
 
@@ -561,33 +563,33 @@ MenuBar {
 
         MenuItem {
             id: actionAlwaysOnTop
-            text: processMenuItem2(sciteActions.actionAlwaysOnTop.text, actionAlwaysOnTop)
-            action: sciteActions.actionAlwaysOnTop
+            text: processMenuItem2(actions.actionAlwaysOnTop.text, actionAlwaysOnTop)
+            action: actions.actionAlwaysOnTop
         }
         MenuItem {
             id: actionOpenFilesHere
-            text: processMenuItem2(sciteActions.actionOpenFilesHere.text, actionOpenFilesHere)
-            action: sciteActions.actionOpenFilesHere
+            text: processMenuItem2(actions.actionOpenFilesHere.text, actionOpenFilesHere)
+            action: actions.actionOpenFilesHere
         }
         MenuItem {
             id: actionVerticalSplit
-            text: processMenuItem2(sciteActions.actionVerticalSplit.text, actionVerticalSplit)
-            action: sciteActions.actionVerticalSplit
+            text: processMenuItem2(actions.actionVerticalSplit.text, actionVerticalSplit)
+            action: actions.actionVerticalSplit
         }
         MenuItem {
             id: actionWrap
-            text: processMenuItem2(sciteActions.actionWrap.text, actionWrap)
-            action: sciteActions.actionWrap
+            text: processMenuItem2(actions.actionWrap.text, actionWrap)
+            action: actions.actionWrap
         }
         MenuItem {
             id: actionWrapOutput
-            text: processMenuItem2(sciteActions.actionWrapOutput.text, actionWrapOutput)
-            action: sciteActions.actionWrapOutput
+            text: processMenuItem2(actions.actionWrapOutput.text, actionWrapOutput)
+            action: actions.actionWrapOutput
         }
         MenuItem {
             id: actionReadOnly
-            text: processMenuItem2(sciteActions.actionReadOnly.text, actionReadOnly)
-            action: sciteActions.actionReadOnly
+            text: processMenuItem2(actions.actionReadOnly.text, actionReadOnly)
+            action: actions.actionReadOnly
         }
         MenuSeparator {}
         Menu {
@@ -596,26 +598,27 @@ MenuBar {
 
             MenuItem {
                 id: actionCrLf
-                text: processMenuItem2(sciteActions.actionCrLf.text, actionCrLf)
-                action: sciteActions.actionCrLf
+                text: processMenuItem2(actions.actionCrLf.text, actionCrLf)
+                action: actions.actionCrLf
             }
             MenuItem {
                 id: actionCr
-                text: processMenuItem2(sciteActions.actionCr.text, actionCr)
-                action: sciteActions.actionCr
+                text: processMenuItem2(actions.actionCr.text, actionCr)
+                action: actions.actionCr
             }
             MenuItem {
                 id: actionLf
-                text: processMenuItem2(sciteActions.actionLf.text, actionLf)
-                action: sciteActions.actionLf
+                text: processMenuItem2(actions.actionLf.text, actionLf)
+                action: actions.actionLf
             }
         }
         MenuItem {
             id: actionConvertLineEndChar
-            text: processMenuItem2(sciteActions.actionConvertLineEndChar.text, actionConvertLineEndChar)
-            action: sciteActions.actionConvertLineEndChar
+            text: processMenuItem2(actions.actionConvertLineEndChar.text, actionConvertLineEndChar)
+            action: actions.actionConvertLineEndChar
         }
         MenuSeparator {}
+/*
         Menu {
             id: languagesSubMenu
             title: processMenuItem(qsTr("Language"), languagesSubMenu)
@@ -638,51 +641,52 @@ MenuBar {
             }
         }
         MenuSeparator {}
+*/
         MenuItem {
             id: actionChangeIndentationSettings
-            text: processMenuItem2(sciteActions.actionChangeIndentationSettings.text, actionChangeIndentationSettings)
-            action: sciteActions.actionChangeIndentationSettings
+            text: processMenuItem2(actions.actionChangeIndentationSettings.text, actionChangeIndentationSettings)
+            action: actions.actionChangeIndentationSettings
         }
         MenuItem {
             id: actionUseMonospacedFont
-            text: processMenuItem2(sciteActions.actionUseMonospacedFont.text, actionUseMonospacedFont)
-            action: sciteActions.actionUseMonospacedFont
+            text: processMenuItem2(actions.actionUseMonospacedFont.text, actionUseMonospacedFont)
+            action: actions.actionUseMonospacedFont
         }
         MenuItem {
             id: actionSwitchToLastActivatedTab
-            text: processMenuItem2(sciteActions.actionSwitchToLastActivatedTab.text, actionSwitchToLastActivatedTab)
-            action: sciteActions.actionSwitchToLastActivatedTab
+            text: processMenuItem2(actions.actionSwitchToLastActivatedTab.text, actionSwitchToLastActivatedTab)
+            action: actions.actionSwitchToLastActivatedTab
         }
         MenuSeparator {}
         MenuItem {
             id: actionOpenLocalOptionsFile
-            text: processMenuItem2(sciteActions.actionOpenLocalOptionsFile.text, actionOpenLocalOptionsFile)
-            action: sciteActions.actionOpenLocalOptionsFile
+            text: processMenuItem2(actions.actionOpenLocalOptionsFile.text, actionOpenLocalOptionsFile)
+            action: actions.actionOpenLocalOptionsFile
         }
         MenuItem {
             id: actionOpenDirectoryOptionsFile
-            text: processMenuItem2(sciteActions.actionOpenDirectoryOptionsFile.text, actionOpenDirectoryOptionsFile)
-            action: sciteActions.actionOpenDirectoryOptionsFile
+            text: processMenuItem2(actions.actionOpenDirectoryOptionsFile.text, actionOpenDirectoryOptionsFile)
+            action: actions.actionOpenDirectoryOptionsFile
         }
         MenuItem {
             id: actionOpenUserOptionsFile
-            text: processMenuItem2(sciteActions.actionOpenUserOptionsFile.text, actionOpenUserOptionsFile)
-            action: sciteActions.actionOpenUserOptionsFile
+            text: processMenuItem2(actions.actionOpenUserOptionsFile.text, actionOpenUserOptionsFile)
+            action: actions.actionOpenUserOptionsFile
         }
         MenuItem {
             id: actionOpenGlobalOptionsFile
-            text: processMenuItem2(sciteActions.actionOpenGlobalOptionsFile.text, actionOpenGlobalOptionsFile)
-            action: sciteActions.actionOpenGlobalOptionsFile
+            text: processMenuItem2(actions.actionOpenGlobalOptionsFile.text, actionOpenGlobalOptionsFile)
+            action: actions.actionOpenGlobalOptionsFile
         }
         MenuItem {
             id: actionOpenAbbreviationsFile
-            text: processMenuItem2(sciteActions.actionOpenAbbreviationsFile.text, actionOpenAbbreviationsFile)
-            action: sciteActions.actionOpenAbbreviationsFile
+            text: processMenuItem2(actions.actionOpenAbbreviationsFile.text, actionOpenAbbreviationsFile)
+            action: actions.actionOpenAbbreviationsFile
         }
         MenuItem {
             id: actionOpenLuaStartupScript
-            text: processMenuItem2(sciteActions.actionOpenLuaStartupScript.text, actionOpenLuaStartupScript)
-            action: sciteActions.actionOpenLuaStartupScript
+            text: processMenuItem2(actions.actionOpenLuaStartupScript.text, actionOpenLuaStartupScript)
+            action: actions.actionOpenLuaStartupScript
         }
         MenuSeparator {
             visible: importModel.count>0
@@ -702,7 +706,7 @@ MenuBar {
             onObjectRemoved: optionsMenu.removeItem(object)
         }
     }
-/*
+
     Menu {
         id: languageMenu
         title: processMenuItem(qsTr("&Language"),null)
@@ -724,30 +728,30 @@ MenuBar {
             onObjectRemoved: languageMenu.removeItem(object)
         }
     }
-*/
+
     AutoSizingMenu {
         id: buffersMenu
         title: processMenuItem(qsTr("&Buffers"),null)
 
         MenuItem {
             id: actionBuffersPrevious
-            text: processMenuItem2(sciteActions.actionBuffersPrevious.text, actionBuffersPrevious)
-            action: sciteActions.actionBuffersPrevious
+            text: processMenuItem2(actions.actionBuffersPrevious.text, actionBuffersPrevious)
+            action: actions.actionBuffersPrevious
         }
         MenuItem {
             id: actionBuffersNext
-            text: processMenuItem2(sciteActions.actionBuffersNext.text, actionBuffersNext)
-            action: sciteActions.actionBuffersNext
+            text: processMenuItem2(actions.actionBuffersNext.text, actionBuffersNext)
+            action: actions.actionBuffersNext
         }
         MenuItem {
             id: actionBuffersCloseAll
-            text: processMenuItem2(sciteActions.actionBuffersCloseAll.text, actionBuffersCloseAll)
-            action: sciteActions.actionBuffersCloseAll
+            text: processMenuItem2(actions.actionBuffersCloseAll.text, actionBuffersCloseAll)
+            action: actions.actionBuffersCloseAll
         }
         MenuItem {
             id: actionBuffersSaveAll
-            text: processMenuItem2(sciteActions.actionBuffersSaveAll.text, actionBuffersSaveAll)
-            action: sciteActions.actionBuffersSaveAll
+            text: processMenuItem2(actions.actionBuffersSaveAll.text, actionBuffersSaveAll)
+            action: actions.actionBuffersSaveAll
         }
 
         MenuSeparator {}
@@ -780,81 +784,81 @@ MenuBar {
 
             MenuItem {
                 id: actionHelp2
-                text: processMenuItem2(sciteActions.actionHelp.text, actionHelp2)
-                action: sciteActions.actionHelp
+                text: processMenuItem2(actions.actionHelp.text, actionHelp2)
+                action: actions.actionHelp
             }
             MenuItem {
                 id: actionSciteHelp2
-                text: processMenuItem2(sciteActions.actionSciteHelp.text, actionSciteHelp2)
-                action: sciteActions.actionSciteHelp
+                text: processMenuItem2(actions.actionSciteHelp.text, actionSciteHelp2)
+                action: actions.actionSciteHelp
             }
         }
 */
         MenuItem {
             id: actionHelp
-            text: processMenuItem2(sciteActions.actionHelp.text, actionHelp)
-            action: sciteActions.actionHelp
+            text: processMenuItem2(actions.actionHelp.text, actionHelp)
+            action: actions.actionHelp
         }
         MenuItem {
             id: actionSciteHelp
-            text: processMenuItem2(sciteActions.actionSciteHelp.text, actionSciteHelp)
-            action: sciteActions.actionSciteHelp
+            text: processMenuItem2(actions.actionSciteHelp.text, actionSciteHelp)
+            action: actions.actionSciteHelp
         }
         MenuItem {
             id: actionAboutScite
-            text: processMenuItem2(sciteActions.actionAboutScite.text, actionAboutScite)
-            action: sciteActions.actionAboutScite
+            text: processMenuItem2(actions.actionAboutScite.text, actionAboutScite)
+            action: actions.actionAboutScite
         }
         MenuItem {
             id: actionAboutSciteQt
-            text: processMenuItem2(sciteActions.actionAboutSciteQt.text, actionAboutSciteQt)
-            action: sciteActions.actionAboutSciteQt
+            text: processMenuItem2(actions.actionAboutSciteQt.text, actionAboutSciteQt)
+            action: actions.actionAboutSciteQt
         }
         MenuItem {
             id: actionAboutQt
-            text: processMenuItem2(sciteActions.actionAboutQt.text, actionAboutQt)
-            action: sciteActions.actionAboutQt
+            text: processMenuItem2(actions.actionAboutQt.text, actionAboutQt)
+            action: actions.actionAboutQt
         }
 
         MenuSeparator {}
 
         MenuItem {
             id: actionAboutCurrentFile
-            text: processMenuItem2(sciteActions.actionAboutCurrentFile.text, actionAboutCurrentFile)
-            action: sciteActions.actionAboutCurrentFile
+            text: processMenuItem2(actions.actionAboutCurrentFile.text, actionAboutCurrentFile)
+            action: actions.actionAboutCurrentFile
         }
         MenuItem {
             id: actionIsMobilePlatfrom
-            text: processMenuItem2(sciteActions.actionIsMobilePlatfrom.text, actionIsMobilePlatfrom)
-            action: sciteActions.actionIsMobilePlatfrom
+            text: processMenuItem2(actions.actionIsMobilePlatfrom.text, actionIsMobilePlatfrom)
+            action: actions.actionIsMobilePlatfrom
         }
 
         MenuSeparator {}
 
         MenuItem {
             id: actionTestFunction
-            text: processMenuItem2(sciteActions.actionTestFunction.text, actionTestFunction)
-            action: sciteActions.actionTestFunction
+            text: processMenuItem2(actions.actionTestFunction.text, actionTestFunction)
+            action: actions.actionTestFunction
         }
         MenuItem {
             id: actionTest2Function
-            text: processMenuItem2(sciteActions.actionTest2Function.text, actionTest2Function)
-            action: sciteActions.actionTest2Function
+            text: processMenuItem2(actions.actionTest2Function.text, actionTest2Function)
+            action: actions.actionTest2Function
         }
         MenuItem {
             id: actionTest3Function
-            text: processMenuItem2(sciteActions.actionTest3Function.text, actionTest3Function)
-            action: sciteActions.actionTest3Function
+            text: processMenuItem2(actions.actionTest3Function.text, actionTest3Function)
+            action: actions.actionTest3Function
         }
         MenuItem {
             id: actionTest4Function
-            text: processMenuItem2(sciteActions.actionTest4Function.text, actionTest4Function)
-            action: sciteActions.actionTest4Function
+            text: processMenuItem2(actions.actionTest4Function.text, actionTest4Function)
+            action: actions.actionTest4Function
         }
         MenuItem {
             id: actionTest5Function
-            text: processMenuItem2(sciteActions.actionTest5Function.text, actionTest5Function)
-            action: sciteActions.actionTest5Function
+            text: processMenuItem2(actions.actionTest5Function.text, actionTest5Function)
+            action: actions.actionTest5Function
         }
         MenuItem {
             id: actionDebugInfo
