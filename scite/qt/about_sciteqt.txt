@@ -28,6 +28,7 @@ Added freatures (compared to original SciTE):
 
 Missing features are:
 
+  * save and restore extensions and directories for find in files
   * Context menu for Scintilla Control can not be overwritten/updated by SciTE
   * Cleanup source qt source code
   * switch to Scite v4.4.5
@@ -47,6 +48,10 @@ Missing features are:
   * Webassembly: processing of modal dialogs (FileDialog, MessageBox)
   * Webassembly: click on Buttons (i. e. Cancel) in Dialogs creates crash ! BUT: setting focus via Keyboard and return on button works sometimes !!!???
   * github ci: windows build is green, but compile step was failing !!!???
+
+New open features might be:
+  * Navigate in file via "Goto Symbol under Cursor"
+  * Autocomplete symbols/functions/variables inside the file
 
 Known and open Bugs are:
 

@@ -7,8 +7,8 @@
 #ifdef Q_OS_WIN
 #define LOG_NAME "c:\\tmp\\mgv_quick_qdebug.log"
 #else
-//#define LOG_NAME "/sdcard/Texte/mgv_quick_qdebug.log"
-#define LOG_NAME "mgv_quick_qdebug.log"
+#define LOG_NAME "/sdcard/Texte/sciteqt_quick_qdebug.log"
+//#define LOG_NAME "mgv_quick_qdebug.log"
 #endif
 
 #define ASSETS_DIR                  "assets:/files/"

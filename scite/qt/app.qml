@@ -446,8 +446,8 @@ ApplicationWindow {
 
     SciteMenu {
         id: sciteMenuBar
-        actions: sciteActions
         visible: !sciteQt.mobilePlatform
+        actions: sciteActions
         useSimpleMenu: false //sciteQt.useSimpleMenus()
     }
 
@@ -459,15 +459,9 @@ ApplicationWindow {
 
     SciteMenu {
         id: sciteMobileMenuBar
-        actions: sciteMobileActions
         visible: false
+        actions: sciteMobileActions
         useSimpleMenu: false //sciteQt.useSimpleMenus()
-    }
-
-    // Popup menu for mobile platforms
-    Menu {
-        id: mobilePopupMenu
-        visible: false;
     }
 
     Connections {
@@ -514,70 +508,58 @@ ApplicationWindow {
 
     ToolBar {
         id: mobileMenuBar
-        contentHeight: 40 //iconHeight
+        contentHeight: 40
+        //contentHeight: toolButton.implicitHeight
         visible: sciteQt.mobilePlatform
 
-        //property int iconWidth: 24  /* org: 24 */
-        //property int iconHeight: 24
-        /*
-          code see: static BarButton bbs[] or void SciTEGTK::AddToolBar()
-          icons see: https://material.io/resources/icons/?style=baseline
-        */
-
-        /*GridLayout*/Item {
-            id: grid
-
-            anchors.fill: parent
-            anchors.rightMargin: 5
+        ToolButton {
+            id: toolButton
+            //text: "\u2261"  //stackView.depth > 1 ? "\u25C0" : "\u2261"  // original: "\u2630" for second entry, does not work on Android
+            icon.source:  "icons/menu-black.svg" //stackView.depth > 1 ? "back" : "menu_bars"
+            icon.width: mobileMenuBar.contentHeight-12
+            icon.height: mobileMenuBar.contentHeight-12
+            //font.pixelSize: Qt.application.font.pixelSize * 1.6
+            anchors.left: parent.left
             anchors.leftMargin: 5
-            anchors.topMargin: 5
-            anchors.bottomMargin: 5
-
-            //columns: 3
-            //rows: 1
-
-            ToolButton {
-                id: toolButton
-                //text: "\u2261"  //stackView.depth > 1 ? "\u25C0" : "\u2261"  // original: "\u2630" for second entry, does not work on Android
-                icon.source: "icons/more_vert-black.svg" //stackView.depth > 1 ? "back" : "menu_bars"
-                //font.pixelSize: Qt.application.font.pixelSize * 1.6
-                anchors.left: parent.left
-                anchors.leftMargin: 5
-                /*
-                onClicked: {
-                    if (stackView.depth > 1) {
-                        stackView.pop()
-                    } else {
-                        drawer.open()
-                    }
+            /*
+            onClicked: {
+                if (stackView.depth > 1) {
+                    stackView.pop()
+                } else {
+                    drawer.open()
                 }
-                */
             }
+            */
+        }
 
-            Label {
-                id: labelTitel
-                text: qsTr("SciteQt")
-                //anchors.centerIn: parent
-                anchors.left: toolButton.right
-                anchors.right: menuButton.left
-                anchors.leftMargin: 5
-                anchors.rightMargin: 5
-                anchors.verticalCenter: parent.verticalCenter
-                horizontalAlignment: Text.AlignHCenter
-            }
+        Label {
+            id: labelTitel
+            text: qsTr("SciteQt")
+            //anchors.centerIn: parent
+            anchors.left: toolButton.right
+            anchors.right: menuButton.left
+            anchors.leftMargin: 5
+            anchors.rightMargin: 5
+            anchors.verticalCenter: parent.verticalCenter
+            horizontalAlignment: Text.AlignHCenter
+        }
 
-            ToolButton {
-                id: menuButton
-                //text: "\u22EE"
-                icon.source: "icons/menu-black.svg"
-                //font.pixelSize: Qt.application.font.pixelSize * 1.6
-                anchors.right: parent.right
-                anchors.leftMargin: 5
-                onClicked: {
-                    mobilePopupMenu.x = menuButton.x
-                    mobilePopupMenu.y = menuButton.y
-                    mobilePopupMenu.open()
-                }
+        ToolButton {
+            id: menuButton
+            //text: "\u22EE"
+            icon.source: "icons/more_vert-black.svg"
+            icon.width: mobileMenuBar.contentHeight-12
+            icon.height: mobileMenuBar.contentHeight-12
+            //font.pixelSize: Qt.application.font.pixelSize * 1.6
+            anchors.right: parent.right
+            anchors.leftMargin: 5
+            onClicked: mobilePopupMenu.open()
+
+            // Popup menu for mobile platforms
+            Menu {
+                id: mobilePopupMenu
+                y: menuButton.height
+                visible: false
             }
         }
     }
@@ -588,11 +570,12 @@ ApplicationWindow {
         visible: sciteQt.showToolBar
         height: visible ? implicitHeight : 0
 
-        property int iconWidth: 12  /* org: 24 */
-        property int iconHeight: 12
+        property int iconWidth: 16  /* org: 24 */
+        property int iconHeight: 16
 
         Flow {
             id: flow
+            anchors.fill: parent
 
             ToolButton {
                 id: toolButtonNew
