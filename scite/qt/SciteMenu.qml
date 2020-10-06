@@ -174,7 +174,7 @@ MenuBar {
                 }
             }
 
-            onObjectAdded: fileMenu.insertItem(index+18, object)
+            onObjectAdded: fileMenu.insertItem(index+19, object)
             onObjectRemoved: fileMenu.removeItem(object)
         }
         MenuSeparator {
@@ -314,22 +314,22 @@ MenuBar {
         Menu {
             id: menuParagraph
             title: processMenuItem(qsTr("Para&graph"), menuParagraph)
-            visible: !useSimpleMenu
-            height: useSimpleMenu ? 0 : actionCopy.height
+            //visible: !useSimpleMenu
+            //height: useSimpleMenu ? 0 : actionCopy.height
 
             MenuItem {
                 id: actionJoin
                 text: processMenuItem2(actions.actionJoin.text, actionJoin)
                 action: actions.actionJoin
-                visible: !useSimpleMenu
-                height: useSimpleMenu ? 0 : actionCopy.height
+                //visible: !useSimpleMenu
+                //height: useSimpleMenu ? 0 : actionCopy.height
             }
             MenuItem {
                 id: actionSplit
                 text: processMenuItem2(actions.actionSplit.text, actionSplit)
                 action: actions.actionSplit
-                visible: !useSimpleMenu
-                height: useSimpleMenu ? 0 : actionCopy.height
+                //visible: !useSimpleMenu
+                //height: useSimpleMenu ? 0 : actionCopy.height
             }
         }
     }
