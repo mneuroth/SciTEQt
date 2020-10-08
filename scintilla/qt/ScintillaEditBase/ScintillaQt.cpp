@@ -772,6 +772,7 @@ sptr_t ScintillaQt::WndProc(unsigned int iMessage, uptr_t wParam, sptr_t lParam)
 
 		case SCI_GRABFOCUS:
 			scrollArea->setFocus(Qt::OtherFocusReason);
+            scrollArea->forceActiveFocus();
 			break;
 
 		case SCI_GETDIRECTFUNCTION:
