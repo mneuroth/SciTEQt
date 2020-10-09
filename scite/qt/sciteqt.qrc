@@ -52,7 +52,6 @@
         <file alias="icons/menu-black.svg">icons/menu-black-24dp.svg</file>
         <file alias="icons/more_vert-black.svg">icons/more_vert-black-24dp.svg</file>
         <file alias="icons/more_horiz-black.svg">icons/more_horiz-black-24dp.svg</file>
-        <file>+android/SciteMenu.qml</file>
         <file>MobileFileDialog.qml</file>
         <file>MobileFileDialogForm.ui.qml</file>
     </qresource>
