@@ -93,19 +93,30 @@ ApplicationWindow {
     }
 
     function startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog) {
-        //fileDialog.selectExisting = bAsOpenDialog
-        fileDialog.openMode = bAsOpenDialog
-        fileDialog.folder = sDirectory
-        if( sTitle !== undefined && sTitle.length > 0 ) {
-            fileDialog.title = sciteQt.getLocalisedText(sTitle)
+        if(sciteQt.mobilePlatform)
+        {
+            if(bAsOpenDialog) {
+                openViaMobileFileDialog(sDirectory)
+            } else {
+                saveViaMobileFileDialog(sDirectory)
+            }
         }
-        if( sFilter.length > 0) {
-            fileDialog.nameFilters = [sFilter]
+        else
+        {
+            //fileDialog.selectExisting = bAsOpenDialog
+            fileDialog.openMode = bAsOpenDialog
+            fileDialog.folder = sDirectory
+            if( sTitle !== undefined && sTitle.length > 0 ) {
+                fileDialog.title = sciteQt.getLocalisedText(sTitle)
+            }
+            if( sFilter.length > 0) {
+                fileDialog.nameFilters = [sFilter]
+            }
+            else {
+                fileDialog.nameFilters = ["*"]
+            }
+            fileDialog.open()
         }
-        else {
-            fileDialog.nameFilters = ["*"]
-        }
-        fileDialog.open()
     }
 
     function buildValidUrl(path) {
@@ -138,6 +149,17 @@ ApplicationWindow {
         lblFileName.text = urlFileName
         sciteQt.doOpen(url)
         //quickScintillaEditor.text = applicationData.readFileContent(urlFileName)
+    }
+
+    function openViaMobileFileDialog(directory) {
+        mobileFileDialog.setDirectory(directory)
+        mobileFileDialog.setOpenModus()
+        mobileFileDialog.show()
+    }
+    function saveViaMobileFileDialog(directory) {
+        mobileFileDialog.setDirectory(directory/*mobileFileDialog.currentDirectory*/)
+        mobileFileDialog.setSaveAsModus()
+        mobileFileDialog.show()
     }
 
     function showInfoDialog(infoText,style) {
@@ -465,7 +487,7 @@ ApplicationWindow {
     }
 
     Connections {
-        target: sciteMenuBar
+        target: sciteQt.mobilePlatform ? sciteMobileMenuBar : sciteMenuBar
 
         onReadOnlyChanged: {
             toolButtonReadonly.checked = value
@@ -1116,6 +1138,7 @@ ApplicationWindow {
 
     property bool isIncrementalSearch: false
     property bool isCloseOnFind: true
+    property int stripAreaMargin: findInput.visible ? 5 : 0
 
     Label {
         id: findLabel
@@ -1130,8 +1153,8 @@ ApplicationWindow {
         anchors.left: parent.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
+        anchors.topMargin: stripAreaMargin
+        anchors.bottomMargin: stripAreaMargin
 
         text: sciteQt.getLocalisedText(qsTr("Find:"))
     }
@@ -1150,8 +1173,8 @@ ApplicationWindow {
         anchors.left: findLabel.right
         anchors.rightMargin: 5
         anchors.leftMargin: 5
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
+        anchors.topMargin: stripAreaMargin
+        anchors.bottomMargin: stripAreaMargin
 
         onAccepted: {
             sciteQt.setFindText(getCurrentFindText(), isIncrementalSearch)
@@ -1189,8 +1212,8 @@ ApplicationWindow {
         anchors.right: findMarkAllButton.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
+        anchors.topMargin: stripAreaMargin
+        anchors.bottomMargin: stripAreaMargin
 
         text: sciteQt.getLocalisedText(qsTr("&Find Next"),false)
         onClicked: {
@@ -1213,8 +1236,8 @@ ApplicationWindow {
         anchors.right: findWordOnlyButton.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
+        anchors.topMargin: stripAreaMargin
+        anchors.bottomMargin: stripAreaMargin
 
         text: sciteQt.getLocalisedText(qsTr("Mark &All"),false)
         onClicked: {
@@ -1239,8 +1262,8 @@ ApplicationWindow {
         anchors.right: findCaseSensitiveButton.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
+        anchors.topMargin: stripAreaMargin
+        anchors.bottomMargin: stripAreaMargin
 
         text: sciteQt.getLocalisedText(qsTr("word"))
         checked: sciteQt.wholeWord
@@ -1267,8 +1290,8 @@ ApplicationWindow {
         anchors.right: findRegExprButton.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
+        anchors.topMargin: stripAreaMargin
+        anchors.bottomMargin: stripAreaMargin
 
         text: sciteQt.getLocalisedText(qsTr("Cc"))
         checked: sciteQt.caseSensitive
@@ -1295,8 +1318,8 @@ ApplicationWindow {
         anchors.right: findTransformBackslashButton.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
+        anchors.topMargin: stripAreaMargin
+        anchors.bottomMargin: stripAreaMargin
 
         text: sciteQt.getLocalisedText(qsTr("^.*"))
         checked: sciteQt.regularExpression
@@ -1323,8 +1346,8 @@ ApplicationWindow {
         anchors.right: findWrapAroundButton.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
+        anchors.topMargin: stripAreaMargin
+        anchors.bottomMargin: stripAreaMargin
 
         text: sciteQt.getLocalisedText(qsTr("\\r\\t"))
         checked: sciteQt.transformBackslash
@@ -1353,8 +1376,8 @@ ApplicationWindow {
         anchors.right: findUpButton.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
+        anchors.topMargin: stripAreaMargin
+        anchors.bottomMargin: stripAreaMargin
 
         text: sciteQt.getLocalisedText(qsTr("wrap"))
         checked: sciteQt.wrapAround
@@ -1383,8 +1406,8 @@ ApplicationWindow {
         anchors.right: findCloseButton.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
+        anchors.topMargin: stripAreaMargin
+        anchors.bottomMargin: stripAreaMargin
 
         text: sciteQt.getLocalisedText(qsTr("Up"))
         checked: sciteQt.searchUp
@@ -1413,8 +1436,8 @@ ApplicationWindow {
         anchors.right: parent.right
         anchors.rightMargin: 5
         anchors.leftMargin: 5
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
+        anchors.topMargin: stripAreaMargin
+        anchors.bottomMargin: stripAreaMargin
 
         text: sciteQt.getLocalisedText(qsTr("X"))   // close
 
@@ -1443,8 +1466,8 @@ ApplicationWindow {
         anchors.left: parent.left
         anchors.rightMargin: 5
         anchors.leftMargin: 5
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
+        anchors.topMargin: stripAreaMargin
+        anchors.bottomMargin: stripAreaMargin
 
         text: sciteQt.getLocalisedText(qsTr("Replace:"))
     }
@@ -1464,8 +1487,8 @@ ApplicationWindow {
         anchors.left: replaceLabel.right
         anchors.rightMargin: 5
         anchors.leftMargin: 5
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
+        anchors.topMargin: stripAreaMargin
+        anchors.bottomMargin: stripAreaMargin
 
         onAccepted: {
             sciteQt.setFindText(getCurrentFindText(), isIncrementalSearch)
@@ -1497,8 +1520,8 @@ ApplicationWindow {
         anchors.left: replaceInput.right
         anchors.rightMargin: 5
         anchors.leftMargin: 5
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
+        anchors.topMargin: stripAreaMargin
+        anchors.bottomMargin: stripAreaMargin
 
         text: sciteQt.getLocalisedText(qsTr("&Replace"),false)
         onClicked: sciteQt.cmdTriggerReplace(getCurrentFindText(), getCurrentReplaceText(), false)
@@ -1517,8 +1540,8 @@ ApplicationWindow {
         anchors.left: replaceButton.right
         anchors.rightMargin: 5
         anchors.leftMargin: 5
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
+        anchors.topMargin: stripAreaMargin
+        anchors.bottomMargin: stripAreaMargin
 
         text: sciteQt.getLocalisedText(qsTr("In &Section"),false)
         onClicked: sciteQt.cmdTriggerReplace(getCurrentFindText(), getCurrentReplaceText(), true)
@@ -1537,8 +1560,8 @@ ApplicationWindow {
         anchors.left: inSectionButton.right
         anchors.rightMargin: 5
         anchors.leftMargin: 5
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
+        anchors.topMargin: stripAreaMargin
+        anchors.bottomMargin: stripAreaMargin
     }
 /*
     Settings {
@@ -1628,6 +1651,31 @@ ApplicationWindow {
             fileDialog.close()
             focusToEditor()
         }
+    }
+
+    MobileFileDialog {
+        id: mobileFileDialog
+        objectName: "mobileFileDialog"
+
+        fcnLocalisation: sciteQt.getLocalisedText
+    }
+
+    Connections {
+        target: mobileFileDialog
+
+        onOpenSelectedFile: {
+            //console.log("OPEN file "+fileName+ " "+buildValidUrl(fileName))
+            //readCurrentDoc(fileName)
+            sciteQt.updateCurrentSelectedFileUrl(buildValidUrl(fileName))
+        }
+        onSaveSelectedFile: {
+            //console.log("SAVE file "+fileName+ " "+buildValidUrl(fileName))
+            //writeCurrentDoc(buildValidUrl(fileName))
+            sciteQt.updateCurrentSelectedFileUrl(buildValidUrl(fileName))
+        }
+
+        onRejected: focusToEditor()
+        onAccepted: focusToEditor()
     }
 
     MessageDialog {
@@ -1863,35 +1911,6 @@ ApplicationWindow {
             sciteQt.cmdParametersDialogClosed()
             focusToEditor()
         }
-    }
-
-    MobileFileDialog {
-        id: mobileFileDialog
-
-        fcnLocalisation: sciteQt.getLocalisedText
-    }
-
-    Connections {
-        target: mobileFileDialog
-
-        onOpenSelectedFile: {
-            console.log("OPEN file "+fileName)
-            readCurrentDoc(fileName)
-        }
-        onSaveSelectedFile: {
-            console.log("SAVE file "+fileName)
-            writeCurrentDoc(buildValidUrl(fileName))
-        }
-    }
-
-    function openViaMobileFileDialog() {
-        mobileFileDialog.setOpenModus()
-        mobileFileDialog.show()
-    }
-    function saveViaMobileFileDialog() {
-        mobileFileDialog.setDirectory(mobileFileDialog.currentDirectory)
-        mobileFileDialog.setSaveAsModus()
-        mobileFileDialog.show()
     }
 
     Connections {

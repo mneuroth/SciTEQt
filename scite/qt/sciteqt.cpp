@@ -2559,7 +2559,7 @@ QObject * SciTEQt::getCurrentInfoDialog()
 
 QObject * SciTEQt::getCurrentFileDialog()
 {
-    return getDialog("fileDialog");
+    return isMobilePlatform() ? getDialog("mobileFileDialog") : getDialog("fileDialog");
 }
 
 void SciTEQt::setApplicationData(ApplicationData * pApplicationData)

@@ -28,6 +28,9 @@ MobileFileDialogForm {
     signal openSelectedFile(string fileName)
     signal saveSelectedFile(string fileName)
 
+    signal accepted()
+    signal rejected()
+
     listView {
         // https://stackoverflow.com/questions/9400002/qml-listview-selected-item-highlight-on-click
         currentIndex: -1
@@ -83,7 +86,6 @@ MobileFileDialogForm {
     }
 
     function setDirectory(newPath) {
-        console.log("SET DIR "+newPath)
         newPath = applicationData.getNormalizedPath(newPath)
         listView.model.folder = buildValidUrl(newPath)
         listView.currentIndex = -1
@@ -111,11 +113,13 @@ MobileFileDialogForm {
         var fullPath = currentDirectory + "/" + currentFileName
         root.close()
         openSelectedFile(fullPath)
+        accepted()
     }
 
     function saveAsCurrentFileNow(fullPath) {
         root.close()
         saveSelectedFile(fullPath)
+        accepted()
     }
 
     function navigateToDirectory(sdCardPath) {
@@ -215,12 +219,14 @@ MobileFileDialogForm {
                     mobileFileDialog.openCurrentFileNow()
                 }
             }
-
         }
     }
 
     btnCancel {
-        onClicked: root.close()
+        onClicked: {
+            root.close()
+            rejected()
+        }
     }
 
     btnUp {
