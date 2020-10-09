@@ -36,14 +36,13 @@ Missing features are:
   * Printing (partly)
   * ((Android: focus lost problem after closing dialog, need to touch on tabbar
   * Android: improve selection of text
-  * Android: improve Menu/Toolbar layout
+  * Android: use mobile file dialog to open and save files
   * Android: implement file access
   * Android: implement sharing
   * Android: improve deployment
-  * Android: after new document the input focus is lost
-  * Android: does Qt FileDialog interfere with MobileFileDialog ? --> Qt FileDialog does not run good with MobileFileDialog enabled
+  ((* Android: after new document the input focus is lost
+  ((* Android: does Qt FileDialog interfere with MobileFileDialog ? --> Qt FileDialog does not run good with MobileFileDialog enabled
   * Android: add grantAccess to FileSystem for StorageAccess
-  * Android: add new document --> focus lost
   * ((Webassembly: after closing dialog (FileDialog) app needs mouse click to update view
   * Webassembly: processing of modal dialogs (FileDialog, MessageBox)
   * Webassembly: click on Buttons (i. e. Cancel) in Dialogs creates crash ! BUT: setting focus via Keyboard and return on button works sometimes !!!???
@@ -52,13 +51,22 @@ Missing features are:
 New open features might be:
   * Navigate in file via "Goto Symbol under Cursor"
   * Autocomplete symbols/functions/variables inside the file
+  * Close buttons in tabpage buttons
 
 Known and open Bugs are:
 
-  * Accelerator Key funktioniert, obwohl Action disabled ist !!!??? Bug? Beispiel F5
+  * Accelerator Key funktioniert, obwohl Action disabled ist !!!??? Bug? Beispiel F5 --> Dialog sind dann beim oeffnen kleiner !?
+     Find in Files hat Offset von 32 ?? --> tritt Problem nach Find In Files Ausfuehrung auf?
   * Sporadische Abstürze bei F5 und Skripts mit langen Ausgaben
   * Absturz Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? und gcc/mingw funktionieren !
   * Find In Files Button Up funktioniert manchmal nicht korrekt
+  ((* New Document --> no focus in new created document tab
+  * After some time the accelerator keys have to be pressed twice?
+  * Memory leak when switching between tab pages?
+  * Crash when closing the application?
+  * Selection disappears if mouse wheel is used and selection goes out of scope
+  //* optimize height of statusbar
+  * Found 18 in files: 37, total files: 20214 --> offset of 32 ???
 
 Now already implemented:
 
@@ -80,6 +88,7 @@ Now already implemented:
   * Detect monitor change/removement and move position if needed --> QScreen, QDesktopWidget, QApplication::desktop(), void QDesktopWidget::screenCountChanged() ==>  QGuiApplication::screenAdded and QGuiApplication::screenRemoved()
   * Support list of last opened files --> use global property: save.recent=1, --> RestoreRecentMenu()
   * Open containing folder
+  * Android: improve Menu/Toolbar layout
 
 //TODO: use: command.go.*.py=*$(python.command) -u "$(FileNameExt)"  $(1)
 //TODO: Shortcut Keys in Dialogen zeigen &

@@ -330,7 +330,7 @@ public:
                                     m_sLineTag,
                                     m_pObserver,
                                     m_pStopFlag );
-        QString strLastMsg = ""+QObject::tr(">Found: ")+QString::number(*m_pFoundCount)+QObject::tr(" in files: ")+QString::number(*m_pFindFileCount)+QObject::tr(", total files: ")+QString::number(*m_pTotalCount)+"\n";
+        QString strLastMsg = ""+QObject::tr(">Found ")+QString::number(*m_pFoundCount)+QObject::tr(" occurences in ")+QString::number(*m_pFindFileCount)+QObject::tr(" files, searched in total files: ")+QString::number(*m_pTotalCount)+"\n";
         if( m_pObserver )
         {
             QString strResult;
