@@ -23,6 +23,12 @@ MenuBar {
         {
             menu.addMenu(root.menuAt(i)) // takeMenu(i) ?
         }
+/*
+        for(var i=root.count-1; i>=0; i--)
+        {
+            menu.insertMenu(i, root.takeMenu(i)) // takeMenu(i) ?
+        }
+*/
         return menu
     }
 

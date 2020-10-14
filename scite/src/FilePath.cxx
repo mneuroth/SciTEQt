@@ -70,9 +70,9 @@ const GUI::gui_char parentDirectory[] = GUI_TEXT("..");
 
 FilePath::FilePath() noexcept = default;
 
-FilePath::FilePath(const GUI::gui_char *fileName_) : fileName(fileName_ ? fileName_ : GUI_TEXT("")) {}
+FilePath::FilePath(const GUI::gui_char *fileName_, const GUI::gui_char *nonLocalFileName_) : fileName(fileName_ ? fileName_ : GUI_TEXT("")), nonLocalFileName(nonLocalFileName_ ? nonLocalFileName_ : GUI_TEXT("")) {}
 
-FilePath::FilePath(const GUI::gui_string &fileName_) : fileName(fileName_) {}
+FilePath::FilePath(const GUI::gui_string &fileName_, const GUI::gui_string &nonLocalFileName_) : fileName(fileName_), nonLocalFileName(nonLocalFileName_) {}
 
 FilePath::FilePath(FilePath const &directory, FilePath const &name) {
 	Set(directory, name);
@@ -80,16 +80,19 @@ FilePath::FilePath(FilePath const &directory, FilePath const &name) {
 
 void FilePath::Set(const GUI::gui_char *fileName_) {
 	fileName = fileName_;
+    nonLocalFileName = GUI::gui_string();
 }
 
 void FilePath::Set(FilePath const &other) {
 	fileName = other.fileName;
+    nonLocalFileName = other.nonLocalFileName;
 }
 
 void FilePath::Set(FilePath const &directory, FilePath const &name) {
-	if (name.IsAbsolute()) {
+    nonLocalFileName = GUI::gui_string();
+    if (name.IsAbsolute()) {
 		fileName = name.fileName;
-	} else {
+    } else {
 		fileName = directory.fileName;
 		if (fileName.size() && (fileName[fileName.size()-1] != pathSepChar))
 			fileName += pathSepString;
@@ -104,6 +107,7 @@ void FilePath::SetDirectory(FilePath const &directory) {
 
 void FilePath::Init() noexcept {
 	fileName.clear();
+    nonLocalFileName.clear();
 }
 
 bool FilePath::operator==(const FilePath &other) const noexcept {
@@ -161,6 +165,15 @@ bool FilePath::IsRoot() const {
 #endif
 }
 
+bool FilePath::IsNotLocal() const
+{
+    if(fileName.find(GUI_TEXT("content://"))==0)
+    {
+        return true;
+    }
+    return false;
+}
+
 int FilePath::RootLength() noexcept {
 #ifdef WIN32
 	return 3;
@@ -172,6 +185,11 @@ int FilePath::RootLength() noexcept {
 const GUI::gui_char *FilePath::AsInternal() const noexcept {
 	return fileName.c_str();
 }
+
+const GUI::gui_char *FilePath::AsNonLocalInternal() const noexcept {
+    return nonLocalFileName.c_str();
+}
+
 
 std::string FilePath::AsUTF8() const {
 	return GUI::UTF8FromString(fileName);

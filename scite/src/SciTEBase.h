@@ -675,7 +675,7 @@ protected:
 	SaveResult SaveIfUnsureForBuilt();
 	bool SaveIfNotOpen(const FilePath &destFile, bool fixCase);
 	void AbandonAutomaticSave();
-	bool Save(SaveFlags sf = sfProgressVisible);
+	virtual bool Save(SaveFlags sf = sfProgressVisible);
 	void SaveAs(const GUI::gui_char *file, bool fixCase);
 	virtual void SaveACopy() = 0;
 	void SaveToHTML(const FilePath &saveName);

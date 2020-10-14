@@ -36,6 +36,7 @@ class Extension;
 class ShareUtils;
 class StorageAccess;
 
+// class for this app to communicate between C++ and QML
 class ApplicationData : public QObject
 {
     Q_OBJECT
@@ -71,19 +72,46 @@ public:
     bool isAppStoreSupported() const;
     bool isShareSupported() const;
 
+    static QString simpleReadFileContent(const QString & fileName);
+    static bool simpleWriteFileContent(const QString & fileName, const QString & content);
+
     QQmlApplicationEngine & GetQmlApplicationEngine();
     Extension * GetExtension();
+
+    bool shareSimpleText(const QString & text);
+    bool shareText(const QString & tempFileName, const QString & text);
+
+    bool writeAndSendSharedFile(const QString & fileName, const QString & fileExtension, const QString & fileMimeType, std::function<bool(QString)> saveFunc, bool bSendFile = true);
+    void removeAllFilesForShare();
+
+    bool loadAndShowFileContent(const QString & sFileName);
+    bool loadTextFile(const QString & sFileName, QString & sText);
+    bool saveTextFile(const QString & sFileName, const QString & sText);
 
 public slots:
 #if defined(Q_OS_ANDROID)
      void sltApplicationStateChanged(Qt::ApplicationState applicationState);
 #endif
+    void sltFileUrlReceived(const QString & sUrl);
+    void sltFileReceivedAndSaved(const QString & sUrl);
+    void sltShareError(int requestCode, const QString & message);
+    void sltShareEditDone(int requestCode, const QString & urlTxt);
+    void sltShareFinished(int requestCode);
+    void sltShareNoAppAvailable(int requestCode);
+
+    void sltErrorText(const QString & msg);
 
 signals:
     void isAppStoreSupportedChanged();
     void isShareSupportedChanged();
+    void sendErrorText(const QString & msg);
+    void fileLoaded(const QString & sFileUri, const QString & sDecodedFileUri, const QString & sContent, bool bNewCreated);
 
 private:
+#if defined(Q_OS_ANDROID)
+    QStringList                 m_aSharedFilesList;
+#endif
+
     StorageAccess &             m_aStorageAccess;
     ShareUtils *                m_pShareUtils;      // not an owner !
 

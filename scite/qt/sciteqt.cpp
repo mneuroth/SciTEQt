@@ -58,6 +58,15 @@ QString ConvertGuiStringToQString(const GUI::gui_string & s)
 #endif
 }
 
+GUI::gui_string ConvertQStringToGuiString(const QString & s)
+{
+#ifdef Q_OS_WINDOWS
+    return s.toStdWString();
+#else
+    return s.toStdString();
+#endif
+}
+
 // see: https://stackoverflow.com/questions/14791360/qt5-syntax-highlighting-in-qml
 template <class T> T childObject(QQmlApplicationEngine& engine,
                                  const QString& objectName,
@@ -420,7 +429,16 @@ void SciTEQt::SaveACopy()
 
     if(ProcessCurrentFileDialog())
     {
-        SaveBuffer(GetPathFromUrl(m_sCurrentFileUrl), sfNone);
+        FilePath aFileName(GetPathFromUrl(m_sCurrentFileUrl));
+
+        if(aFileName.IsNotLocal())
+        {
+// TODO gulp --> this should never happen !!! handled via OnAddFileContent() call from Android Storage Framework
+            QString text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1));
+            m_pApplicationData->writeFileContent(ConvertGuiCharToQString(aFileName.AsInternal()), text);
+        }
+
+        SaveBuffer(aFileName, sfNone);
     }
 }
 
@@ -2064,27 +2082,10 @@ void SciTEQt::cmdAboutScite()
     MenuCommand(IDM_ABOUT);
 }
 
-QString simpleReadFileContent(const QString & fileName)
-{
-    QFile file(fileName);
-
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        return QString(QObject::tr("Error reading ") + fileName);
-    }
-
-    QTextStream stream(&file);
-    auto text = stream.readAll();
-
-    file.close();
-
-    return text;
-}
-
 void SciTEQt::cmdAboutSciteQt()
 {
     New();
-    QString aboutSciteQt = simpleReadFileContent(":/about_sciteqt.txt");
+    QString aboutSciteQt = ApplicationData::simpleReadFileContent(":/about_sciteqt.txt");
     emit setTextToCurrent(aboutSciteQt);
 }
 
@@ -2097,7 +2098,10 @@ void SciTEQt::cmdAboutCurrentFile()
 
 void SciTEQt::cmdShare()
 {
-    // TODO
+    QString text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1));
+    //QString tempFileName(filePath.Name().AsUTF8().c_str());
+    ///*bool ok =*/ m_pApplicationData->writeAndSendSharedFile(tempFileName, "", "text/plain", [this, text](QString name) -> bool { return this->m_pApplicationData->saveTextFile(name, text); });
+    m_pApplicationData->shareSimpleText(text);
 }
 
 void SciTEQt::cmdUpdateApplicationActive(bool active)
@@ -2444,6 +2448,31 @@ bool SciTEQt::event(QEvent *e)
     }
 }
 
+bool SciTEQt::Save(SaveFlags sf)
+{
+    if(filePath.IsNotLocal())
+    {
+        QString text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1));
+        bool ok = m_pApplicationData->writeFileContent(ConvertGuiCharToQString(filePath.AsNonLocalInternal()), text);
+        if(!ok)
+        {
+// TODO --> error Message !
+        }
+        else
+        {
+// TODO --> code copy !!! in OnAddFileCon
+            wEditor.SetSavePoint();
+            wEditor.ClearDocumentStyle();
+            wEditor.Colourise(0, wEditor.LineStart(1));
+            Redraw();
+            SetWindowName();
+            BuffersMenu();
+        }
+        return ok;
+    }
+    return SciTEBase::Save(sf);
+}
+
 void SciTEQt::onStatusbarClicked()
 {
     UpdateStatusbarView();
@@ -2567,6 +2596,9 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     m_pApplicationData = pApplicationData;
     if(m_pApplicationData!=0)
     {
+        connect(m_pApplicationData,SIGNAL(sendErrorText(QString)),this,SLOT(OnAddToOutput(QString)));
+        connect(m_pApplicationData,SIGNAL(fileLoaded(QString,QString,QString,bool)),this,SLOT(OnAddFileContent(QString,QString,QString,bool)));
+
 // TODO implement ! improve !!!
         extender = pApplicationData->GetExtension();
 
@@ -2933,6 +2965,44 @@ void SciTEQt::OnCurrentFindInFilesItemChanged(const QString & currentItem)
 void SciTEQt::OnFileSearchFinished()
 {
     setFindInFilesRunning(false);
+}
+
+void SciTEQt::OnAddFileContent(const QString & sFileUri, const QString & sDecodedFileUri, const QString & sContent, bool bNewCreated)
+{
+    // process receiving new content from android storage framework:
+    // - create new document
+    // - set name
+    // - set content
+
+    if(!bNewCreated)
+    {
+        // open modus
+        New();
+        emit setTextToCurrent(sContent);
+    }
+    else
+    {
+        // save as modus --> create new document
+        QString text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1));
+        bool ok = m_pApplicationData->writeFileContent(sFileUri, text);
+// TODO --> fehlerbehandlung !
+    }
+
+    // nearly the code from SaveAs()...
+    ReadProperties();
+// TODO hier gibt es ein Problem !!! sFileName ist ok --> content://com.android.externalstorage.documents/... ==> hier meta filename fuer android storage framework behandeln !
+    //SetFileName(ConvertQStringToGuiString(sFileName).c_str(), /*fixCase*/true);
+    FilePath newFileName(ConvertQStringToGuiString(sDecodedFileUri), ConvertQStringToGuiString(sFileUri));
+    SetFileName(newFileName, /*fixCase*/true);
+    //Save();
+    wEditor.SetSavePoint();
+    wEditor.ClearDocumentStyle();
+    wEditor.Colourise(0, wEditor.LineStart(1));
+    Redraw();
+    SetWindowName();
+    BuffersMenu();
+    if (extender)
+        extender->OnSave(filePath.AsUTF8().c_str());
 }
 
 void SciTEQt::OnAddLineToOutput(const QString & text)

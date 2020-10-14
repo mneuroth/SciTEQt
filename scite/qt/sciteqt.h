@@ -220,6 +220,8 @@ public:
 
     virtual bool event(QEvent *e) override;
 
+    virtual bool Save(SaveFlags sf = sfProgressVisible) override;
+
     void ExecuteNext();
     void ResetExecution();
     void ProcessExecute();
@@ -449,6 +451,7 @@ public slots:
     void OnCurrentFindInFilesItemChanged(const QString & currentItem);
     void OnAddToOutput(const QString & text);
     void OnAddLineToOutput(const QString & text);
+    Q_INVOKABLE void OnAddFileContent(const QString & sFileUri, const QString & sDecodedFileUri, const QString & sContent, bool bNewCreated);
 
     void OnStripFindVisible(bool val);
 

@@ -21,10 +21,11 @@ typedef std::vector<FilePath> FilePathSet;
 
 class FilePath {
 	GUI::gui_string fileName;
+    GUI::gui_string nonLocalFileName;
 public:
 	FilePath() noexcept;
-	FilePath(const GUI::gui_char *fileName_);
-	FilePath(const GUI::gui_string &fileName_);
+    FilePath(const GUI::gui_char *fileName_, const GUI::gui_char *nonLocalFileName_ = 0);
+    FilePath(const GUI::gui_string &fileName_, const GUI::gui_string &nonLocalFileName_ = GUI::gui_string());
 	FilePath(FilePath const &directory, FilePath const &name);
 	FilePath(FilePath const &) = default;
 	FilePath(FilePath &&) noexcept = default;
@@ -45,9 +46,11 @@ public:
 	bool IsUntitled() const;
 	bool IsAbsolute() const;
 	bool IsRoot() const;
+    bool IsNotLocal() const;
 	static int RootLength() noexcept;
 	const GUI::gui_char *AsInternal() const noexcept;
-	std::string AsUTF8() const;
+    const GUI::gui_char *AsNonLocalInternal() const noexcept;
+    std::string AsUTF8() const;
 	FilePath Name() const;
 	FilePath BaseName() const;
 	FilePath Extension() const;

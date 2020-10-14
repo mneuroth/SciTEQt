@@ -74,7 +74,7 @@ void SciTEBase::SetFileName(const FilePath &openName, bool fixCase) {
 	}
 
 	// Break fullPath into directory and file name using working directory for relative paths
-	if (!filePath.IsAbsolute()) {
+	if (!filePath.IsAbsolute() && !filePath.IsNotLocal()) {
 		// Relative path. Since we ran AbsolutePath, we probably are here because fullPath is empty.
 		filePath.SetDirectory(filePath.Directory());
 	}

@@ -1,4 +1,5 @@
 #include "applicationdata.h"
+#include "storageaccess.h"
 
 #include "sciteqt.h"
 
@@ -139,6 +140,15 @@ ApplicationData::ApplicationData(QObject *parent, ShareUtils * pShareUtils, Stor
       m_aEngine(aEngine),
       m_pExtension(pExtension)
 {
+#if defined(Q_OS_ANDROID)
+    QMetaObject::Connection result;
+    result = connect(m_pShareUtils, SIGNAL(fileUrlReceived(QString)), this, SLOT(sltFileUrlReceived(QString)));
+    result = connect(m_pShareUtils, SIGNAL(fileReceivedAndSaved(QString)), this, SLOT(sltFileReceivedAndSaved(QString)));
+    result = connect(m_pShareUtils, SIGNAL(shareError(int, QString)), this, SLOT(sltShareError(int, QString)));
+    connect(m_pShareUtils, SIGNAL(shareFinished(int)), this, SLOT(sltShareFinished(int)));
+    connect(m_pShareUtils, SIGNAL(shareEditDone(int, QString)), this, SLOT(sltShareEditDone(int, QString)));
+    connect(m_pShareUtils, SIGNAL(shareNoAppAvailable(int)), this, SLOT(sltShareNoAppAvailable(int)));
+#endif
 }
 
 ApplicationData::~ApplicationData()
@@ -175,11 +185,10 @@ QString ApplicationData::getNormalizedPath(const QString & path) const
     return aInfo.canonicalPath();
 }
 
-QString ApplicationData::readFileContent(const QString & fileName) const
-{
-    QString translatedFileName = GetTranslatedFileName(fileName);
 
-    QFile file(translatedFileName);
+QString ApplicationData::simpleReadFileContent(const QString & fileName)
+{
+    QFile file(fileName);
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -194,11 +203,9 @@ QString ApplicationData::readFileContent(const QString & fileName) const
     return text;
 }
 
-bool ApplicationData::writeFileContent(const QString & fileName, const QString & content)
+bool ApplicationData::simpleWriteFileContent(const QString & fileName, const QString & content)
 {
-    QString translatedFileName = GetTranslatedFileName(fileName);
-
-    QFile file(translatedFileName);
+    QFile file(fileName);
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -211,6 +218,44 @@ bool ApplicationData::writeFileContent(const QString & fileName, const QString &
     file.close();
 
     return true;
+}
+
+QString ApplicationData::readFileContent(const QString & fileName) const
+{
+    QString translatedFileName = GetTranslatedFileName(fileName);
+
+    if( IsAndroidStorageFileUrl(translatedFileName) )
+    {
+        QByteArray data;
+        bool ok = m_aStorageAccess.readFile(translatedFileName, data);
+        if( ok )
+        {
+            return QString(data);
+        }
+        else
+        {
+            return QString(tr("Error reading ") + fileName);
+        }
+    }
+    else
+    {
+        return simpleReadFileContent(translatedFileName);
+    }
+}
+
+bool ApplicationData::writeFileContent(const QString & fileName, const QString & content)
+{
+    QString translatedFileName = GetTranslatedFileName(fileName);
+
+    if( IsAndroidStorageFileUrl(translatedFileName) )
+    {
+        bool ok = m_aStorageAccess.updateFile(translatedFileName, content.toUtf8());
+        return ok;
+    }
+    else
+    {
+        return simpleWriteFileContent(translatedFileName, content);
+    }
 }
 
 bool ApplicationData::deleteFile(const QString & fileName)
@@ -435,4 +480,218 @@ void ApplicationData::sltApplicationStateChanged(Qt::ApplicationState applicatio
     }
 }
 #endif
+
+bool ApplicationData::writeAndSendSharedFile(const QString & fileName, const QString & fileExtension, const QString & fileMimeType, std::function<bool(QString)> saveFunc, bool bSendFile)
+{
+#if defined(Q_OS_ANDROID)
+    QString fileNameIn = fileName;
+    if(fileNameIn.isNull() || fileNameIn.isEmpty())
+    {
+        fileNameIn = "default.txt";
+    }
+    QStringList paths = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+    QString targetPath = paths[0]+QDir::separator()+"temp_shared_files";
+    QString targetPathX = paths[0]+QDir::separator()+"sciteqt_shared_files";
+    QString tempTarget = targetPath+QDir::separator()+fileNameIn+fileExtension;
+    QString tempTargetX = targetPathX+QDir::separator()+fileNameIn+fileExtension;
+    if( !QDir(targetPath).exists() )
+    {
+        if( !QDir("").mkpath(targetPath) )
+        {
+            return false;
+        }
+    }
+    QFile::remove(tempTarget);
+    // write temporary file with current script content
+    if( !saveFunc(tempTarget) )
+    {
+        return false;
+    }
+
+    QFile::remove(tempTargetX);
+    if( !QFile::copy(tempTarget, tempTargetX) )
+    {
+        return false;
+    }
+
+    m_aSharedFilesList.append(tempTarget);
+    m_aSharedFilesList.append(tempTargetX);
+
+    /*bool permissionsSet =*/ QFile(tempTargetX).setPermissions(QFileDevice::ReadUser | QFileDevice::WriteUser);
+    int requestId = 24;
+    bool altImpl = false;
+    if( bSendFile )
+    {
+        m_pShareUtils->sendFile(tempTargetX, tr("Send file"), fileMimeType, requestId, altImpl);
+    }
+    else
+    {
+        m_pShareUtils->viewFile(tempTargetX, tr("View file"), fileMimeType, requestId, altImpl);
+    }
+
+    // remark: remove temporary files in slot:  sltShareFinished() / sltShareError()
+    return true;
+#else
+    Q_UNUSED(fileName)
+    Q_UNUSED(fileExtension)
+    Q_UNUSED(fileMimeType)
+    Q_UNUSED(saveFunc)
+    Q_UNUSED(bSendFile)
+    return false;
+#endif
+}
+
+bool ApplicationData::shareSimpleText(const QString & text)
+{
+#if defined(Q_OS_ANDROID)
+	if( m_pShareUtils != 0 )
+    {
+        m_pShareUtils->share(text, QUrl());
+        return true;
+    }
+#endif
+    return false;
+}
+
+bool ApplicationData::shareText(const QString & tempFileName, const QString & text)
+{
+    return writeAndSendSharedFile(tempFileName, "", "text/plain", [this, text](QString name) -> bool { return this->saveTextFile(name, text); });
+}
+
+void ApplicationData::removeAllFilesForShare()
+{
+#if defined(Q_OS_ANDROID)
+    // remove temporary copied file for sendFile ==> maybe erase the whole directory for data exchange ?
+    foreach(const QString & name, m_aSharedFilesList)
+    {
+        QFile::remove(name);
+    }
+
+    m_aSharedFilesList.clear();
+#endif
+}
+
+bool ApplicationData::loadAndShowFileContent(const QString & sFileName)
+{
+    bool ok = false;
+
+    if( !sFileName.isEmpty() )
+    {
+        // load script and show it
+        QFileInfo aFileInfo(sFileName);
+        QString sScript;
+        ok = loadTextFile(sFileName, sScript);
+        if( !ok )
+        {
+            sltErrorText(tr("Can not load file %1").arg(sFileName));
+        }
+        else
+        {
+            emit fileLoaded(sFileName, sFileName, sScript, false);
+        }
+    }
+    else
+    {
+        sltErrorText(tr("File name is empty!"));
+    }
+
+    return ok;
+}
+
+bool ApplicationData::saveTextFile(const QString & sFileName, const QString & sText)
+{
+    bool ok = false;
+    QFile aFile(sFileName.toUtf8());            // workaround
+    if( aFile.open(QIODevice::WriteOnly) )
+    {
+        qint64 iCount = aFile.write(sText.toUtf8());    // write text as utf8 encoded text
+        aFile.close();
+        ok = iCount>=0;
+    }
+    if( !ok )
+    {
+        sltErrorText(tr("Error writing file: ")+sFileName);
+    }
+    return ok;
+}
+
+bool ApplicationData::loadTextFile(const QString & sFileName, QString & sText)
+{
+    // TODO Maybe: hier muss ggf. der Zugriff auf die Datei sichergestellt werden !!! --> Intent.FLAG_GRANT_READ_URI_PERMISSION
+    // WORKAROUND: einmalig auf SD-Karten-Speicher / Externen-Speicher zugreifen
+    bool ok = false;
+    QFile aFile(sFileName);
+    if( aFile.open(QIODevice::ReadOnly) )
+    {
+        QByteArray aContent = aFile.readAll();
+        aFile.close();
+        sText = QString::fromUtf8(aContent);    // interpret file as utf8 encoded text
+        ok = sText.length()>0;
+    }
+    return ok;
+}
+
+void ApplicationData::sltFileUrlReceived(const QString & sUrl)
+{
+    // <== share from file manager
+    // --> /storage/0000-0000/Texte/xyz.txt     --> SD-Card
+    // --> /storage/emulated/0/Texte/xyz.txt    --> internal Memory
+
+    // output:
+    // /data/user/0/org.scintilla.sciteqt/files
+    // /storage/emulated/0/Android/data/org.scintilla.sciteqt/files
+
+    qDebug() << "URL received " << sUrl << endl;
+
+    /*bool ok =*/ loadAndShowFileContent(sUrl);
+}
+
+void ApplicationData::sltFileReceivedAndSaved(const QString & sUrl)
+{
+    // <== share from google documents
+    // --> /data/user/0/org.scintilla.sciteqt/files/sciteqt_shared_files/Test.txt.txt
+
+    qDebug() << "URL file received " << sUrl << endl;
+
+    /*bool ok =*/ loadAndShowFileContent(sUrl);
+}
+
+void ApplicationData::sltShareError(int requestCode, const QString & message)
+{
+    Q_UNUSED(requestCode);
+    Q_UNUSED(message);
+
+    sltErrorText("Error sharing: received "+message);
+
+    removeAllFilesForShare();
+}
+
+void ApplicationData::sltShareNoAppAvailable(int requestCode)
+{
+    Q_UNUSED(requestCode);
+
+    sltErrorText("Error sharing: no app available");
+
+    removeAllFilesForShare();
+}
+
+void ApplicationData::sltShareEditDone(int requestCode, const QString & urlTxt)
+{
+    Q_UNUSED(requestCode);
+    Q_UNUSED(urlTxt);
+
+    removeAllFilesForShare();
+}
+
+void ApplicationData::sltShareFinished(int requestCode)
+{
+    Q_UNUSED(requestCode);
+
+    removeAllFilesForShare();
+}
+
+void ApplicationData::sltErrorText(const QString & msg)
+{
+    emit sendErrorText(msg);
+}
 

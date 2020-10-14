@@ -1,4 +1,5 @@
 // (c) 2017 Ekkehard Gentz (ekke)
+// take from: https://github.com/ekke/ekkesSHAREexample
 // this project is based on ideas from
 // http://blog.lasconic.com/share-on-ios-and-android-using-qml/
 // see github project https://github.com/lasconic/ShareUtils-QML

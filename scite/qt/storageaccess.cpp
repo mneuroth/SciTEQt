@@ -30,7 +30,7 @@ StorageAccess * StorageAccess::getInstance()
 
 void StorageAccess::onFileOpenActivityResult(int resultCode, const QString & fileUri, const QString & decodedFileUri, const QByteArray & fileContent)
 {
-qDebug() << "*** onFileOpenActivityResult() " << resultCode << " " << fileUri << " len=" << fileContent.size() << endl;
+//qDebug() << "*** onFileOpenActivityResult() " << resultCode << " " << fileUri << " decodedUri=" << decodedFileUri << " len=" << fileContent.size() << endl;
     if(resultCode == RESULT_OK)
     {
         emit openFileContentReceived(fileUri, decodedFileUri, fileContent);
