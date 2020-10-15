@@ -94,6 +94,7 @@ public slots:
 #endif
     void sltFileUrlReceived(const QString & sUrl);
     void sltFileReceivedAndSaved(const QString & sUrl);
+    void sltTextReceived(const QString &sContent);
     void sltShareError(int requestCode, const QString & message);
     void sltShareEditDone(int requestCode, const QString & urlTxt);
     void sltShareFinished(int requestCode);

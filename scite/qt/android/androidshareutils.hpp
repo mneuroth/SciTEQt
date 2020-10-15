@@ -35,6 +35,8 @@ public:
 public slots:
     void setFileUrlReceived(const QString &url);
     void setFileReceivedAndSaved(const QString &url);
+    void setTextContentReceived(const QString &text);
+    void setUnknownContentReceived(const QString &errMsg);
     bool checkFileExits(const QString &url);
     void qDebugOutput(const QString &txt);
 

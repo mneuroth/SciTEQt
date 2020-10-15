@@ -47,6 +47,10 @@ public class QShareActivity extends QtActivity
     // InputStream from 'content' scheme:
     public static native void setFileReceivedAndSaved(String url);
     //
+    public static native void setTextContentReceived(String text);
+    //
+    public static native void setUnknownContentReceived(String errorMsg);
+    //
     public static native void fireActivityResult(int requestCode, int resultCode, String uriTxt);
     //
     public static native void fireFileOpenActivityResult(int resultCode, String fileUri, String decodedFileUri, byte[] fileContent);
@@ -248,11 +252,17 @@ private byte[] readBinaryFileFromUri(Uri uri) throws IOException {
 //qDebugOutput("--> PROCESS_INTENT UNKNOWN");
 //qDebugOutput(intent.getAction().toString());
               //Log.d("ekkescorner Intent unknown action:", intent.getAction());
+              setUnknownContentReceived("Warning: Intent unknown action:"+intent.getAction());
               return;
       }
       //Log.d("ekkescorner action:", intentAction);
       if (intentUri == null){
-//qDebugOutput("--> PROCESS_INTENT URI is NULL");
+//qDebugOutput("--> PROCESS_INTENT URI is NULL");         // this is the branch when selected text is shared with sciteqt --> empty uri --> https://developer.android.com/reference/android/content/Intent --> Intent.EXTRA_TEXT
+            Bundle bundle = intent.getExtras();
+            String txt = bundle.getCharSequence(Intent.EXTRA_TEXT).toString();
+//qDebugOutput("TXT=");
+//qDebugOutput(txt);
+            setTextContentReceived(txt);
             //Log.d("ekkescorner Intent URI:", "is null");
             return;
       }
@@ -264,9 +274,11 @@ private byte[] readBinaryFileFromUri(Uri uri) throws IOException {
       if (intentScheme == null){
 //qDebugOutput("--> PROCESS_INTENT URI is NULL (2)");
             //Log.d("ekkescorner Intent URI Scheme:", "is null");
+            setUnknownContentReceived("Warning: Intent URI Scheme is null");
             return;
       }
       if(intentScheme.equals("file")){
+//qDebugOutput("--> PROCESS_INTENT file ok (2)");
             // URI as encoded string
             //Log.d("ekkescorner Intent File URI: ", intentUri.toString());
             setFileUrlReceived(intentUri.toString());
@@ -276,6 +288,7 @@ private byte[] readBinaryFileFromUri(Uri uri) throws IOException {
       if(!intentScheme.equals("content")){
 //qDebugOutput("--> PROCESS_INTENT no CONTENT");
               //Log.d("ekkescorner Intent URI unknown scheme: ", intentScheme);
+              setUnknownContentReceived("Warning: Intent URI Scheme is "+intentScheme.toString());
               return;
       }
       // ok - it's a content scheme URI
@@ -320,6 +333,7 @@ private byte[] readBinaryFileFromUri(Uri uri) throws IOException {
       if(filePath == null) {
 //qDebugOutput("--> PROCESS_INTENT URI is NULL (3)");
            //Log.d("ekkescorner Intent FilePath:", "is NULL");
+           setUnknownContentReceived("Warning: Intent URI Scheme is really null");
            return;
       }
 //qDebugOutput("--> PROCESS_INTENT NORMAL EXIT "+filePath);

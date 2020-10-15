@@ -41,6 +41,9 @@ ShareUtils::ShareUtils(QObject *parent)
     connectResult = connect(mPlatformShareUtils, &PlatformShareUtils::fileReceivedAndSaved, this, &ShareUtils::onFileReceivedAndSaved);
     Q_ASSERT(connectResult);
 
+    connectResult = connect(mPlatformShareUtils, &PlatformShareUtils::textReceived, this, &ShareUtils::onTextReceived);
+    Q_ASSERT(connectResult);
+
     Q_UNUSED(connectResult);
 }
 
@@ -116,22 +119,20 @@ void ShareUtils::onShareNoAppAvailable(int requestCode)
 
 void ShareUtils::onShareError(int requestCode, QString message)
 {
-//AddToLog(QString("==> ShareUtils this=").arg((unsigned long)this));
-//AddToLog(QString("==> onShareError emit ")+message);
     emit shareError(requestCode, message);
 }
 
 void ShareUtils::onFileUrlReceived(QString url)
 {
-//AddToLog(QString("==> ShareUtils this=").arg((unsigned long)this));
-//AddToLog(QString("==> onFileUrlReceived emit ")+url);
     emit fileUrlReceived(url);
 }
 
 void ShareUtils::onFileReceivedAndSaved(QString url)
 {
-//AddToLog(QString("==> ShareUtils this=").arg((unsigned long)this));
-//AddToLog(QString("==> onFileReceivedAndSaved emit ")+url);
     emit fileReceivedAndSaved(url);
 }
 
+void ShareUtils::onTextReceived(QString text)
+{
+    emit textReceived(text);
+}

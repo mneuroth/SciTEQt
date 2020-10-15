@@ -144,6 +144,7 @@ ApplicationData::ApplicationData(QObject *parent, ShareUtils * pShareUtils, Stor
     QMetaObject::Connection result;
     result = connect(m_pShareUtils, SIGNAL(fileUrlReceived(QString)), this, SLOT(sltFileUrlReceived(QString)));
     result = connect(m_pShareUtils, SIGNAL(fileReceivedAndSaved(QString)), this, SLOT(sltFileReceivedAndSaved(QString)));
+    result = connect(m_pShareUtils, SIGNAL(textReceived(QString)), this, SLOT(sltTextReceived(QString)));
     result = connect(m_pShareUtils, SIGNAL(shareError(int, QString)), this, SLOT(sltShareError(int, QString)));
     connect(m_pShareUtils, SIGNAL(shareFinished(int)), this, SLOT(sltShareFinished(int)));
     connect(m_pShareUtils, SIGNAL(shareEditDone(int, QString)), this, SLOT(sltShareEditDone(int, QString)));
@@ -641,8 +642,6 @@ void ApplicationData::sltFileUrlReceived(const QString & sUrl)
     // /data/user/0/org.scintilla.sciteqt/files
     // /storage/emulated/0/Android/data/org.scintilla.sciteqt/files
 
-    qDebug() << "URL received " << sUrl << endl;
-
     /*bool ok =*/ loadAndShowFileContent(sUrl);
 }
 
@@ -651,15 +650,18 @@ void ApplicationData::sltFileReceivedAndSaved(const QString & sUrl)
     // <== share from google documents
     // --> /data/user/0/org.scintilla.sciteqt/files/sciteqt_shared_files/Test.txt.txt
 
-    qDebug() << "URL file received " << sUrl << endl;
-
     /*bool ok =*/ loadAndShowFileContent(sUrl);
+}
+
+void ApplicationData::sltTextReceived(const QString &sContent)
+{
+    QString sTempFileName = "./shared_text.txt";
+    emit fileLoaded(sTempFileName, sTempFileName, sContent, false);
 }
 
 void ApplicationData::sltShareError(int requestCode, const QString & message)
 {
     Q_UNUSED(requestCode);
-    Q_UNUSED(message);
 
     sltErrorText("Error sharing: received "+message);
 

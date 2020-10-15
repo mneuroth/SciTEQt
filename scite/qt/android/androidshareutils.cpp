@@ -560,6 +560,16 @@ void AndroidShareUtils::setFileReceivedAndSaved(const QString &url)
     }
 }
 
+void AndroidShareUtils::setTextContentReceived(const QString &text)
+{
+    emit textReceived(text);
+}
+
+void AndroidShareUtils::setUnknownContentReceived(const QString &errMsg)
+{
+    emit shareError(0, errMsg);
+}
+
 // to be safe we check if a File Url from java really exists for Qt
 // if not on the Java side we'll try to read the content as Stream
 bool AndroidShareUtils::checkFileExits(const QString &url)
@@ -625,6 +635,30 @@ JNIEXPORT void JNICALL
     Q_UNUSED (obj)
     AndroidShareUtils::getInstance()->setFileReceivedAndSaved(urlStr);
     env->ReleaseStringUTFChars(url, urlStr);
+    return;
+}
+
+JNIEXPORT void JNICALL
+  Java_org_scintilla_activity_sharex_QShareActivity_setTextContentReceived(JNIEnv *env,
+                                        jobject obj,
+                                        jstring text)
+{
+    const char *textStr = env->GetStringUTFChars(text, NULL);
+    Q_UNUSED (obj)
+    AndroidShareUtils::getInstance()->setTextContentReceived(textStr);
+    env->ReleaseStringUTFChars(text, textStr);
+    return;
+}
+
+JNIEXPORT void JNICALL
+  Java_org_scintilla_activity_sharex_QShareActivity_setUnknownContentReceived(JNIEnv *env,
+                                        jobject obj,
+                                        jstring errMsg)
+{
+    const char *errMsgStr = env->GetStringUTFChars(errMsg, NULL);
+    Q_UNUSED (obj)
+    AndroidShareUtils::getInstance()->setUnknownContentReceived(errMsgStr);
+    env->ReleaseStringUTFChars(errMsg, errMsgStr);
     return;
 }
 

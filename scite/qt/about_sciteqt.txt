@@ -80,7 +80,7 @@ Known and open Bugs are:
   * SetFocus nach Teilen und SaveAs? verloren
   * Receive Share of selected Text does not work --> processIntent()
   * bei SaveAs Vorbelegung des Dateinamens mit aktuellem Dateiname
-
+  * Files from android storage access framework will not be restored at application startup
 
 Now already implemented:
 

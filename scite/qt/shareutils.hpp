@@ -34,6 +34,7 @@ signals:
 //    void openError(int requestCode, QString message);
     void fileUrlReceived(QString url);
     void fileReceivedAndSaved(QString url);
+    void textReceived(QString content);
 
 public:
     PlatformShareUtils(QObject *parent = 0) : QObject(parent){}
@@ -111,6 +112,7 @@ signals:
 //    void openError(int requestCode, QString message);
     void fileUrlReceived(QString url);
     void fileReceivedAndSaved(QString url);
+    void textReceived(QString content);
 
 public slots:
     void onShareEditDone(int requestCode, const QString & urlTxt);
@@ -119,6 +121,7 @@ public slots:
     void onShareError(int requestCode, QString message);
     void onFileUrlReceived(QString url);
     void onFileReceivedAndSaved(QString url);
+    void onTextReceived(QString text);
 
 public:
     explicit ShareUtils(QObject *parent = 0);
