@@ -419,7 +419,7 @@ public:
 
     Q_INVOKABLE bool useSimpleMenus() const;
     Q_INVOKABLE bool isWebassemblyPlatform() const;
-    Q_INVOKABLE bool isMobilePlatform() const;
+    bool isMobilePlatform() const;
     void setMobilePlatform(bool val);
 
     Q_INVOKABLE void updateCurrentWindowPosAndSize(int left, int top, int width, int height, bool maximize);

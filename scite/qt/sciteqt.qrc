@@ -20,7 +20,15 @@
         <file>ParametersDialog.qml</file>
         <file>ParametersDialogForm.ui.qml</file>
         <file>SciteMenuActions.qml</file>
-        <file>SciteMenu.qml</file>
+        <file>FileMenu.qml</file>
+        <file>EditMenu.qml</file>
+        <file>SearchMenu.qml</file>
+        <file>ViewMenu.qml</file>
+        <file>ToolsMenu.qml</file>
+        <file>OptionsMenu.qml</file>
+        <file>LanguageMenu.qml</file>
+        <file>BuffersMenu.qml</file>
+        <file>HelpMenu.qml</file>
         <file alias="about_sciteqt.txt">about_sciteqt.txt</file>
         <file>AboutSciteDialog.qml</file>
         <file alias="icons/clear.svg">icons/clear-black-24dp.svg</file>

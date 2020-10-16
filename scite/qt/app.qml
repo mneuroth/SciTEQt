@@ -57,10 +57,11 @@ ApplicationWindow {
          sciteQt.logToDebug("=============== APPLICATION START ==========================")
 
         // fill the mobile popup menu (without shortcuts)
-        sciteMobileMenuBar.fillPopupMenu(mobilePopupMenu)
+        //sciteMobileMenuBar.fillPopupMenu(mobilePopupMenu)   // This causes the crash at the end of the application !
     }
     Component.onDestruction: {
         //settings.splitView = splitView.saveState()
+        //sciteMobileMenuBar.fillMenuBar(mobilePopupMenu)
     }
 
     onTitleChanged: {
@@ -463,31 +464,282 @@ ApplicationWindow {
     SciteMenuActions {
         id: sciteActions
         visible: false
-        useShortCuts: true
+        useShortCuts: !sciteQt.mobilePlatform
+
+        Component.onCompleted: {
+            // Workaround: update state of menus for desktop modus
+            sciteQt.mobilePlatform = !sciteQt.mobilePlatform
+            sciteQt.mobilePlatform = !sciteQt.mobilePlatform
+        }
     }
 
-    SciteMenu {
-        id: sciteMenuBar
-        visible: !sciteQt.mobilePlatform
-        actions: sciteActions
-        useSimpleMenu: false //sciteQt.useSimpleMenus()
+    ListModel {
+        id: buffersModel
+        objectName: "buffersMenu"
+        /*
+        ListElement {
+            display: "hello"
+            checkState: true
+        }
+        */
     }
 
-    SciteMenuActions {
-        id: sciteMobileActions
-        visible: false
-        useShortCuts: false
+    ListModel {
+        id: lastOpenedFilesModel
+        objectName: "lastOpenedFilesModel"
     }
 
-    SciteMenu {
-        id: sciteMobileMenuBar
-        visible: false
-        actions: sciteMobileActions
-        useSimpleMenu: false //sciteQt.useSimpleMenus()
+    ListModel {
+        id: languagesModel
+        objectName: "languagesMenu"
+    }
+
+    ListModel {
+        id: toolsModel
+        objectName: "toolsMenu"
+    }
+
+    ListModel {
+        id: importModel
+        objectName: "importMenu"
+    }
+
+    function clearBuffersModel(model) {
+        model.clear()
+    }
+
+    function writeInMenuModel(model, index, name, checked, shortcut) {
+        model.set(index, {"display":name, "checkState":checked, "shortcut":shortcut})
+    }
+
+    function removeInMenuModel(model,index) {
+        if(index < model.count) {
+            model.remove(index)
+        }
+    }
+
+    function setCheckStateInMenuModel(model,index, checked) {
+        if(index < model.count) {
+            model.setProperty(index,"checkState",checked)
+        }
+    }
+
+    function handleMenuChecked(menuId, val) {
+        switch(menuId) {
+            case 450:  //IDM_MONOFONT
+                sciteActions.actionUseMonospacedFont.checked = val
+                break;
+            case 411:  //IDM_VIEWSTATUSBAR
+                sciteActions.actionShowStatusBar.checked = val
+                break;
+            case 410:  //IDM_VIEWTABBAR
+                sciteActions.actionShowTabBar.checked = val
+                break;
+            case 409:  //IDM_TOGGLEOUTPUT
+                sciteActions.actionToggleOutput.checked = val
+                break;
+            case 408:  //IDM_VIEWTOOLBAR
+                sciteActions.actionShowToolBar.checked = val
+                break;
+            case 407:  //IDM_LINENUMBERMARGIN
+                sciteActions.actionLineNumbers.checked = val
+                break;
+            case 406:  //IDM_FOLDMARGIN
+                sciteActions.actionFoldMargin.checked = val
+                break;
+            case 405:  //IDM_SELMARGIN
+                sciteActions.actionMargin.checked = val
+                break;
+            case 404:  //IDM_VIEWGUIDES
+                sciteActions.actionIndentaionGuides.checked = val
+                break;
+            case 403:  //IDM_VIEWEOL
+                sciteActions.actionShowEndOfLine.checked = val
+                break;
+            case 402:  //IDM_VIEWSPACE
+                sciteActions.actionShowWhitespace.checked = val
+                break;
+            case 401:  //IDM_SPLITVERTICAL
+                sciteActions.actionVerticalSplit.checked = val
+                break;
+            case 414:  //IDM_WRAP
+                sciteActions.actionWrap.checked = val
+                break;
+            case 415:  //IDM_WRAPOUTPUT
+                sciteActions.actionWrapOutput.checked = val
+                break;
+            case 416:  //IDM_READONLY
+                sciteActions.actionReadOnly.checked = val
+                readOnlyChanged(val)
+                break;
+            case 430:  //IDM_EOL_CRLF
+                sciteActions.actionCrLf.checked = val
+                break;
+            case 431:  //IDM_EOL_CR
+                sciteActions.actionCr.checked = val
+                break;
+            case 432:  //IDM_EOL_LF
+                sciteActions.actionLf.checked = val
+                break;
+            default:
+//                console.log("unhandled menu checked "+menuId)
+        }
+    }
+
+    signal readOnlyChanged(bool value)
+    signal runningChanged(bool value)
+    signal buildChanged(bool value)
+    signal copyCutChanged(bool value)
+    signal pasteChanged(bool value)
+    signal undoChanged(bool value)
+    signal redoChanged(bool value)
+
+    function handleMenuEnable(menuId, val) {
+        //console.log("menu enable "+menuId+" "+val)
+        switch(menuId) {
+//#define IDM_SHOWCALLTIP		232
+//#define IDM_COMPLETE		233
+            case 201:   //IDM_UNDO
+                sciteActions.actionUndo.enabled = val
+                undoChanged(!val)
+                break;
+            case 202:   //IDM_REDO
+                sciteActions.actionRedo.enabled = val
+                redoChanged(!val)
+                break;
+            case 203:   //IDM_CUT
+                sciteActions.actionCut.enabled = val
+                copyCutChanged(!val)
+                break;
+            case 204:   //IDM_COPY
+                sciteActions.actionCopy.enabled = val
+                copyCutChanged(!val)
+                break;
+            case 205:   //IDM_PASTE
+                sciteActions.actionPaste.enabled = val
+                pasteChanged(!val)
+                break;
+            case 206:  //IDM_CLEAR
+                sciteActions.actionDelete.enabled = val
+                break;
+            case 232:  //IDM_SHOWCALLTIP
+                sciteActions.actionShowCalltip.enabled = val
+                break;
+            case 233:  //IDM_COMPLETE
+                sciteActions.actionCompleteSymbol.enabled = val
+                break;
+            case 301:  //IDM_COMPILE
+                sciteActions.actionCompile.enabled = val
+                break;
+            case 302:  //IDM_BUILD
+                sciteActions.actionBuild.enabled = val
+                buildChanged(!val)
+                break;
+            case 303:  //IDM_GO
+                // Bug: prevents menu item from being closed after trigger...
+                // see: https://bugreports.qt.io/browse/QTBUG-69682
+                Qt.callLater(function() { sciteActions.actionGo.enabled = val })
+                runningChanged(!val)
+                break;
+            case 304:  //IDM_STOPEXECUTE
+                sciteActions.actionStopExecuting.enabled = val
+                runningChanged(val)
+                break;
+            case 308:  //IDM_CLEAN
+                sciteActions.actionClean.enabled = val
+                break;
+            case 413:  //IDM_OPENFILESHERE
+                sciteActions.actionOpenFilesHere.enabled = val
+                break;
+            case 465:  //IDM_OPENDIRECTORYPROPERTIES
+                sciteActions.actionOpenDirectoryOptionsFile.enabled = val
+                break;
+// TODO: 313, 311, 312 (for macros)
+            default:
+                //console.log("unhandled menu enable "+menuId)
+        }
     }
 
     Connections {
-        target: sciteQt.mobilePlatform ? sciteMobileMenuBar : sciteMenuBar
+        target: sciteQt
+
+        onSetMenuChecked:             handleMenuChecked(menuID, val)
+        onSetMenuEnable:              handleMenuEnable(menuID, val)
+
+        onSetInBuffersModel:          writeInMenuModel(buffersModel, index, txt, checked, shortcut)
+        onRemoveInBuffersModel:       removeInMenuModel(buffersModel, index)
+        onCheckStateInBuffersModel:   setCheckStateInMenuModel(buffersModel, index, checked)
+
+        onSetInLanguagesModel:        writeInMenuModel(languagesModel, index, txt, checked, shortcut)
+        onRemoveInLanguagesModel:     removeInMenuModel(languagesModel, index)
+        onCheckStateInLanguagesModel: setCheckStateInMenuModel(languagesModel, index, checked)
+
+        onSetInToolsModel:            writeInMenuModel(toolsModel, index, txt, checked, shortcut)
+        onRemoveInToolsModel:         removeInMenuModel(toolsModel, index)
+        onCheckStateInToolsModel:     setCheckStateInMenuModel(toolsModel, index, checked)
+
+        onSetInLastOpenedFilesModel:         writeInMenuModel(lastOpenedFilesModel, index, txt, checked, shortcut)
+        onRemoveInLastOpenedFilesModel:      removeInMenuModel(lastOpenedFilesModel, index)
+        onCheckStateInLastOpenedFilesModel:  setCheckStateInMenuModel(lastOpenedFilesModel, index, checked)
+
+        onSetInImportModel:            writeInMenuModel(importModel, index, txt, checked, shortcut)
+        onRemoveInImportModel:         removeInMenuModel(importModel, index)
+        onCheckStateInImportModel:     setCheckStateInMenuModel(importModel, index, checked)
+    }
+
+    // desktop modus menu bar
+    MenuBar {
+        id: sciteMenuBar
+
+        FileMenu {
+            id: fileMenuX
+            actions: sciteActions
+            useSimpleMenu: false //sciteQt.useSimpleMenus()
+        }
+        EditMenu {
+            id: editMenuX
+            actions: sciteActions
+            useSimpleMenu: false //sciteQt.useSimpleMenus()
+        }
+        SearchMenu {
+            id: searchMenuX
+            actions: sciteActions
+            useSimpleMenu: false //sciteQt.useSimpleMenus()
+        }
+        ViewMenu {
+            id: viewMenuX
+            actions: sciteActions
+            useSimpleMenu: false //sciteQt.useSimpleMenus()
+        }
+        ToolsMenu {
+            id: toolsMenuX
+            actions: sciteActions
+            useSimpleMenu: false //sciteQt.useSimpleMenus()
+        }
+        OptionsMenu {
+            id: optionsMenuX
+            actions: sciteActions
+            useSimpleMenu: false //sciteQt.useSimpleMenus()
+        }
+        LanguageMenu {
+            id: languageMenuX
+            actions: sciteActions
+            useSimpleMenu: false //sciteQt.useSimpleMenus()
+        }
+        BuffersMenu {
+            id: buffersMenuX
+            actions: sciteActions
+            useSimpleMenu: false //sciteQt.useSimpleMenus()
+        }
+        HelpMenu {
+            id: helpsMenuX
+            actions: sciteActions
+            useSimpleMenu: false //sciteQt.useSimpleMenus()
+        }
+    }
+
+    Connections {
+        target: applicationWindow
 
         onReadOnlyChanged: {
             toolButtonReadonly.checked = value
@@ -582,6 +834,53 @@ ApplicationWindow {
                 id: mobilePopupMenu
                 y: menuButton.height
                 visible: false
+
+                FileMenu {
+                    id: fileMenuXX
+                    actions: sciteActions
+                    useSimpleMenu: false //sciteQt.useSimpleMenus()
+                }
+                EditMenu {
+                    id: editMenuXX
+                    actions: sciteActions
+                    useSimpleMenu: false //sciteQt.useSimpleMenus()
+                }
+                SearchMenu {
+                    id: searchMenuXX
+                    actions: sciteActions
+                    useSimpleMenu: false //sciteQt.useSimpleMenus()
+                }
+                ViewMenu {
+                    id: viewMenuXX
+                    actions: sciteActions
+                    useSimpleMenu: false //sciteQt.useSimpleMenus()
+                }
+                ToolsMenu {
+                    id: toolsMenuXX
+                    actions: sciteActions
+                    useSimpleMenu: false //sciteQt.useSimpleMenus()
+                }
+                OptionsMenu {
+                    id: optionsMenuXX
+                    actions: sciteActions
+                    useSimpleMenu: false //sciteQt.useSimpleMenus()
+                }
+                LanguageMenu {
+                    id: languageMenuXX
+                    actions: sciteActions
+                    useSimpleMenu: false //sciteQt.useSimpleMenus()
+                }
+                BuffersMenu {
+                    id: buffersMenuXX
+                    actions: sciteActions
+                    useSimpleMenu: false //sciteQt.useSimpleMenus()
+                }
+                HelpMenu {
+                    id: helpsMenuXX
+                    actions: sciteActions
+                    useSimpleMenu: false //sciteQt.useSimpleMenus()
+                }
+
             }
         }
     }
