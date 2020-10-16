@@ -2,6 +2,8 @@ import QtQuick 2.0
 import QtQuick.Controls 2.9
 
 Item {
+    id: root
+
     property bool useShortCuts: true
 
     property alias actionNew: actionNew
@@ -125,36 +127,26 @@ Item {
     Action {
         id: actionAsHtml
         text: qsTr("As &HTML...")
-        checkable: true
-        checked: false
         onTriggered: sciteQt.cmdAsHtml()
     }
     Action {
         id: actionAsRtf
         text: qsTr("As &RTF...")
-        checkable: true
-        checked: false
         onTriggered: sciteQt.cmdAsRtf()
     }
     Action {
         id: actionAsPdf
         text: qsTr("As &PDF...")
-        checkable: true
-        checked: false
         onTriggered: sciteQt.cmdAsPdf()
     }
     Action {
         id: actionAsLatex
         text: qsTr("As &LaTeX...")
-        checkable: true
-        checked: false
         onTriggered: sciteQt.cmdAsLatex()
     }
     Action {
         id: actionAsXml
         text: qsTr("As &XML...")
-        checkable: true
-        checked: false
         onTriggered: sciteQt.cmdAsXml()
     }
 
@@ -934,6 +926,7 @@ Item {
         actionUtf16LittleEndian.checked = false
         actionUtf8WithBOM.checked = false
         actionUtf8.checked = false
+        //console.log("handleEncodingMenus: "+enumEncoding+" "+root)
         switch(enumEncoding) {  // see: enum UniMode in Cookie.h
             // 	uni8Bit = 0, uni16BE = 1, uni16LE = 2, uniUTF8 = 3,
             // uniCookie = 4

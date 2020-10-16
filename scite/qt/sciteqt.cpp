@@ -2035,6 +2035,7 @@ void SciTEQt::cmdShare()
 {
     QString text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1));
     m_pApplicationData->shareSimpleText(text);
+    WindowSetFocus(wEditor);
 }
 
 void SciTEQt::cmdUpdateApplicationActive(bool active)
