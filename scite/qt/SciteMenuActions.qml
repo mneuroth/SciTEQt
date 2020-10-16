@@ -947,10 +947,10 @@ Item {
                 actionUtf16LittleEndian.checked = true
                 break;
             case 3:
-                actionUtf8.checked = true
+                actionUtf8WithBOM.checked = true
                 break;
             case 4:
-                actionUtf8WithBOM.checked = true
+                actionUtf8.checked = true
                 break;
         }
     }
