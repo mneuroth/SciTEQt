@@ -494,7 +494,7 @@ signals:
     void removeInImportModel(int index);
     void checkStateInImportModel(int index, bool checked);
 
-    void startFileDialog(const QString & sDirectory, const QString & sFilter, const QString & sTitle, bool bAsOpenDialog = true);
+    void startFileDialog(const QString & sDirectory, const QString & sFilter, const QString & sTitle, bool bAsOpenDialog, const QString & sDefaultSaveAsName = "unknown.txt");
     void showInfoDialog(const QString & sInfoText, int style);
     void showAboutSciteDialog();
 

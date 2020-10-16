@@ -336,7 +336,7 @@ bool SciTEQt::OpenDialog(const FilePath &directory, const GUI::gui_char *filesFi
 
 bool SciTEQt::SaveAsDialog()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save File", false);
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save File", false, QString::fromStdString(filePath.Name().AsUTF8()));
 
     if(ProcessCurrentFileDialog())
     {
@@ -358,7 +358,7 @@ void SciTEQt::LoadSessionDialog()
 
 void SciTEQt::SaveSessionDialog()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.session", "Save Session File", false);
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.session", "Save Session File", false, "current.session");
 
     if(ProcessCurrentFileDialog())
     {
@@ -368,7 +368,7 @@ void SciTEQt::SaveSessionDialog()
 
 void SciTEQt::SaveACopy()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save a Copy", false);
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save a Copy", false, QString::fromStdString(filePath.Name().AsUTF8()));
 
     if(ProcessCurrentFileDialog())
     {
@@ -388,7 +388,7 @@ void SciTEQt::SaveACopy()
 
 void SciTEQt::SaveAsRTF()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.rtf", "Export File As RTF", false);
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.rtf", "Export File As RTF", false, QString::fromStdString(filePath.Name().AsUTF8())+".rtf");
 
     if(ProcessCurrentFileDialog())
     {
@@ -398,7 +398,7 @@ void SciTEQt::SaveAsRTF()
 
 void SciTEQt::SaveAsPDF()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.pdf", "Export File As PDF", false);
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.pdf", "Export File As PDF", false, QString::fromStdString(filePath.Name().AsUTF8())+".pdf");
 
     if(ProcessCurrentFileDialog())
     {
@@ -408,7 +408,7 @@ void SciTEQt::SaveAsPDF()
 
 void SciTEQt::SaveAsTEX()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.tex", "Export File As LaTeX", false);
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.tex", "Export File As LaTeX", false, QString::fromStdString(filePath.Name().AsUTF8())+".tex");
 
     if(ProcessCurrentFileDialog())
     {
@@ -418,7 +418,7 @@ void SciTEQt::SaveAsTEX()
 
 void SciTEQt::SaveAsXML()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.xml", "Export File As XML", false);
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.xml", "Export File As XML", false, QString::fromStdString(filePath.Name().AsUTF8())+".xml");
 
     if(ProcessCurrentFileDialog())
     {
@@ -428,7 +428,7 @@ void SciTEQt::SaveAsXML()
 
 void SciTEQt::SaveAsHTML()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.html", "Export File As HTML", false);
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.html", "Export File As HTML", false, QString::fromStdString(filePath.Name().AsUTF8())+".html");
 
     if(ProcessCurrentFileDialog())
     {

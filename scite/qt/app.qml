@@ -55,13 +55,9 @@ ApplicationWindow {
         //splitView.restoreState(settings.splitView)
         //sciteQt.showToolBar = true
          sciteQt.logToDebug("=============== APPLICATION START ==========================")
-
-        // fill the mobile popup menu (without shortcuts)
-        //sciteMobileMenuBar.fillPopupMenu(mobilePopupMenu)   // This causes the crash at the end of the application !
     }
     Component.onDestruction: {
         //settings.splitView = splitView.saveState()
-        //sciteMobileMenuBar.fillMenuBar(mobilePopupMenu)
     }
 
     onTitleChanged: {
@@ -93,13 +89,13 @@ ApplicationWindow {
         quickScintillaOutput.text += text
     }
 
-    function startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog) {
+    function startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog, sDefaultSaveAsName) {
         if(sciteQt.mobilePlatform)
         {
             if(bAsOpenDialog) {
                 openViaMobileFileDialog(sDirectory)
             } else {
-                saveViaMobileFileDialog(sDirectory)
+                saveViaMobileFileDialog(sDirectory,sDefaultSaveAsName)
             }
         }
         else
@@ -157,9 +153,9 @@ ApplicationWindow {
         mobileFileDialog.setOpenModus()
         mobileFileDialog.show()
     }
-    function saveViaMobileFileDialog(directory) {
+    function saveViaMobileFileDialog(directory,sDefaultSaveAsName) {
         mobileFileDialog.setDirectory(directory/*mobileFileDialog.currentDirectory*/)
-        mobileFileDialog.setSaveAsModus()
+        mobileFileDialog.setSaveAsModus(sDefaultSaveAsName)
         mobileFileDialog.show()
     }
 
@@ -999,7 +995,10 @@ ApplicationWindow {
                 icon.width: toolBarButtonContainer.iconWidth
                 //text: "Share"
                 visible: sciteQt.showToolBar && sciteQt.mobilePlatform
-                onClicked: sciteQt.cmdShare()
+                onClicked: {
+                    sciteQt.cmdShare()
+                    focusToEditor()
+                }
 
                 ToolTip.delay: toolTipDelay
                 ToolTip.timeout: toolTipTimeout
@@ -1880,7 +1879,7 @@ ApplicationWindow {
         onSetTextToCurrent:                     setTextToCurrent(text)
         onAddTextToOutput:                      addTextToOutput(text)
 
-        onStartFileDialog:            startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog)
+        onStartFileDialog:            startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog, sDefaultSaveAsName)
         onShowInfoDialog:             showInfoDialog(sInfoText, style)
         onShowAboutSciteDialog:       showAboutSciteDialog()
 

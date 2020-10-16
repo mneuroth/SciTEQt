@@ -63,22 +63,22 @@ Known and open Bugs are:
   * After some time the accelerator keys have to be pressed twice? --> Dialog sind dann beim oeffnen kleiner !?
      Find in Files hat Offset von 32 ?? --> tritt Problem nach Find In Files Ausfuehrung auf?
   * Memory leak when switching between tab pages?
-  * Crash when closing the application?
+  //* Crash when closing the application? --> was problem with multiple menus and moving menu items from menubar into popup menu for mobile menus
   * Selection disappears if mouse wheel is used and selection goes out of scope
   //* optimize height of statusbar
   ((* Found 18 in files: 37, total files: 20214 --> offset of 32 ???
   //* Speichern auf SD Karte unter Android funktioniert nicht --> storrage access framework verwenden !
-  * Zugriff via StorageAccess Framework funktioniert nicht
-  * Zeichensatzcodierung seltsam --> mehrfach Aktivierung moeglich ?
-  * Teilen von QuickMemo+ oder markiertem Text aus Chrome does not work
-    reason?: share can only receive files and not text ? --> check: private void processIntent(){
-        void fileUrlReceived(QString url);
-        void fileReceivedAndSaved(QString url);
-  * implement save for items on andriod storage access framework --> see: ApplicationData::writeFileContent()
-  * SaveAs and Save As Copy support for Android Storage Access Framework
+  //* Zugriff via StorageAccess Framework funktioniert nicht
+  //* Zeichensatzcodierung seltsam --> mehrfach Aktivierung moeglich ?
+  //* Teilen von QuickMemo+ oder markiertem Text aus Chrome does not work
+  //  reason?: share can only receive files and not text ? --> check: private void processIntent(){
+  //      void fileUrlReceived(QString url);
+  //      void fileReceivedAndSaved(QString url);
+  //* implement save for items on andriod storage access framework --> see: ApplicationData::writeFileContent()
+  ((* SaveAs and Save As Copy support for Android Storage Access Framework
   * Scite Logo als linker Button in Titelzeile oder Einstellungsdialog/SuchDialog etc. ? (Fast Access Menu Items?)
   * SetFocus nach Teilen und SaveAs? verloren
-  * Receive Share of selected Text does not work --> processIntent()
+  //* Receive Share of selected Text does not work --> processIntent()
   * bei SaveAs Vorbelegung des Dateinamens mit aktuellem Dateiname
   * Files from android storage access framework will not be restored at application startup
 

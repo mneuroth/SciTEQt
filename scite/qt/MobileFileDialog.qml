@@ -56,11 +56,11 @@ MobileFileDialogForm {
         }
     }
 
-    function setSaveAsModus() {
+    function setSaveAsModus(sDefaultSaveAsName) {
         mobileFileDialog.isSaveAsModus = true
         mobileFileDialog.isDeleteModus = false
         mobileFileDialog.lblMFDInput.text = localiseText(qsTr("new file name:"))
-        mobileFileDialog.txtMFDInput.text = localiseText(qsTr("unknown.txt"))
+        mobileFileDialog.txtMFDInput.text = (sDefaultSaveAsName === null || sDefaultSaveAsName.length==0) ? localiseText(qsTr("unknown.txt")) : sDefaultSaveAsName
         mobileFileDialog.txtMFDInput.readOnly = false
         mobileFileDialog.btnOpen.text = localiseText(qsTr("Save as"))
         mobileFileDialog.btnOpen.enabled = true
