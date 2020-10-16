@@ -529,11 +529,13 @@ private:
     QObject * getCurrentFileDialog();
     bool ProcessCurrentFileDialog();
     void RestorePosition();
+    void ProcessSave(bool bSetSavePoint);
     void UpdateWindowPosAndSizeIfNeeded(const QRect & rect, bool maximize);
     MessageBoxChoice ProcessModalWindowSynchronious(const QString & objectName);
+    MessageBoxChoice ShowWindowMessageBox(const QString & msg, MessageBoxStyle style = mbsIconWarning);
 
     ApplicationData *       m_pApplicationData;     // not an owner !
-    QQmlApplicationEngine * m_pEngine;
+    QQmlApplicationEngine * m_pEngine;              // not an owner !
 
     FindInFilesAsync        m_aFindInFiles;
     ScriptExecution         m_aScriptExecution;

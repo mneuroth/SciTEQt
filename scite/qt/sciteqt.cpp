@@ -35,10 +35,14 @@
 #include <emscripten.h>
 #endif
 
+//*************************************************************************
+
 enum {
     WORK_EXECUTE = WORK_PLATFORM + 1,
 	TRIGGER_GOTOPOS = WORK_PLATFORM + 2
 };
+
+//*************************************************************************
 
 QString ConvertGuiCharToQString(const GUI::gui_char * s)
 {
@@ -104,68 +108,7 @@ template <class T> T childObject(QQmlApplicationEngine& engine,
     return (T) 0;
 }
 
-/*
-void SciTEGTK::Run(int argc, char *argv[]) {
-    // Load the default session file
-    if (props.GetInt("save.session") || props.GetInt("save.position") || props.GetInt("save.recent")) {
-        LoadSessionFile("");
-    }
-
-    // Find the SciTE executable, first trying to use argv[0] and converting
-    // to an absolute path and if that fails, searching the path.
-    sciteExecutable = FilePath(argv[0]).AbsolutePath();
-    if (!sciteExecutable.Exists()) {
-        gchar *progPath = g_find_program_in_path(argv[0]);
-        sciteExecutable = FilePath(progPath);
-        g_free(progPath);
-    }
-
-    // Collect the argv into one string with each argument separated by '\n'
-    GUI::gui_string args;
-    for (int arg = 1; arg < argc; arg++) {
-        if (arg > 1)
-            args += '\n';
-        args += argv[arg];
-    }
-
-    // Process any initial switches
-    ProcessCommandLine(args, 0);
-
-    // Check if SciTE is already running.
-    if ((props.GetString("ipc.director.name").size() == 0) && props.GetInt ("check.if.already.open")) {
-        if (CheckForRunningInstance (argc, argv)) {
-            // Returning from this function exits the program.
-            return;
-        }
-    }
-
-    CreateUI();
-    if ((props.GetString("ipc.director.name").size() == 0) && props.GetInt ("check.if.already.open"))
-        unlink(uniqueInstance.c_str()); // Unlock.
-
-    // Process remaining switches and files
-#ifndef GDK_VERSION_3_6
-    gdk_threads_enter();
-#endif
-    ProcessCommandLine(args, 1);
-#ifndef GDK_VERSION_3_6
-    gdk_threads_leave();
-#endif
-
-    CheckMenus();
-    SizeSubWindows();
-    SetFocus(wEditor);
-    gtk_widget_grab_focus(GTK_WIDGET(PWidget(wSciTE)));
-
-#ifndef GDK_VERSION_3_6
-    gdk_threads_enter();
-#endif
-    gtk_main();
-#ifndef GDK_VERSION_3_6
-    gdk_threads_leave();
-#endif
-}
-*/
+//*************************************************************************
 
 SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
     : QObject(parent),
@@ -433,7 +376,8 @@ void SciTEQt::SaveACopy()
 
         if(aFileName.IsNotLocal())
         {
-// TODO gulp --> this should never happen !!! handled via OnAddFileContent() call from Android Storage Framework
+            // this should never happen !!! handled via OnAddFileContent() call from Android Storage Framework
+            Q_ASSERT(false);
             QString text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1));
             m_pApplicationData->writeFileContent(ConvertGuiCharToQString(aFileName.AsInternal()), text);
         }
@@ -662,11 +606,16 @@ SciTEQt::MessageBoxChoice SciTEQt::ProcessModalWindowSynchronious(const QString 
     return SciTEQt::MessageBoxChoice::mbCancel;
 }
 
-SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::gui_string &msg, MessageBoxStyle style)
+SciTEQt::MessageBoxChoice SciTEQt::ShowWindowMessageBox(const QString & msg, MessageBoxStyle style)
 {
-    emit showInfoDialog(ConvertGuiStringToQString(msg), style);
+    emit showInfoDialog(msg, style);
 
     return ProcessModalWindowSynchronious("infoDialog");
+}
+
+SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::gui_string &msg, MessageBoxStyle style)
+{
+    return ShowWindowMessageBox(ConvertGuiStringToQString(msg), style);
 }
 
 void SciTEQt::FindMessageBox(const std::string &msg, const std::string *findItem)
@@ -962,6 +911,7 @@ void SciTEQt::CopyPath()
 void SciTEQt::CopyAsRTF()
 {
     // TODO implement !
+    emit showInfoDialog("Sorry: CopyAsRTF() is not implemented yet!", 0);
 }
 
 void SciTEQt::SetStatusBarText(const char *s)
@@ -993,8 +943,6 @@ void SciTEQt::ActivateWindow(const char *timestamp)
 
 void SciTEQt::SizeContentWindows()
 {
-//    qDebug() << "SizeContentWindows " << heightOutput << " " << splitVertical << endl;
-
     emit setVerticalSplit(splitVertical);
     emit setOutputHeight(heightOutput);
 }
@@ -1099,7 +1047,6 @@ void SciTEQt::DestroyMenuItem(int menuNumber, int itemID)
 
 void SciTEQt::CheckAMenuItem(int wIDCheckItem, bool val)
 {
-//qDebug() << "CheckAMenuItem" << wIDCheckItem << " " << val << endl;
     if( wIDCheckItem >= IDM_BUFFER && wIDCheckItem < IDM_IMPORT )
     {
         emit checkStateInBuffersModel(wIDCheckItem-IDM_BUFFER, val);
@@ -1120,7 +1067,6 @@ void SciTEQt::CheckAMenuItem(int wIDCheckItem, bool val)
 
 void SciTEQt::EnableAMenuItem(int wIDCheckItem, bool val)
 {
-    //qDebug() << "EnableAMenuItem" << wIDCheckItem << " " << val << endl;
     emit setMenuEnable(wIDCheckItem, val);
 }
 
@@ -1129,7 +1075,7 @@ void SciTEQt::AddToPopUp(const char *label, int cmd, bool enabled)
     // see: SciTEBase::ContextMenu()
 
     // TODO implement ! --> not needed, because implemented in qml / quick
-    qDebug() << "AddToPopup " << label << " " << cmd << " " << enabled << endl;
+    //qDebug() << "AddToPopup " << label << " " << cmd << " " << enabled << endl;
 }
 
 void SciTEQt::PostOnMainThread(int cmd, Worker *pWorker)
@@ -1309,14 +1255,6 @@ bool SciTEQt::doOpen(const QString & sFileName)
 #endif
     FilePath path(buf); // StdString().c_str()
 #ifdef Q_OS_ANDROID
-// TODO implement for android
-    // temporary workaround for qt fileopen dialog on android if url contains content://
-    // a) read real file via QFile and write local temporary file
-    // b) read local temporary file via Open(path)
-    // or:
-    // a) read dummy file via Open("dummy-path")
-    // b) read real file via QFile
-    // c) set file content at buffer/document
     return Open(path);
 #else
     OpenFlags openFlags = ofNone;
@@ -1405,7 +1343,6 @@ bool SciTEQt::saveCurrentAs(const QString & sFileName)
     bool ret = false;
     QUrl aUrl(sFileName);
     QString sLocalFileName = aUrl.toLocalFile();
-qDebug() << "save Current As " << sFileName << " " << sLocalFileName << endl;
 #ifdef Q_OS_WINDOWS
     wchar_t * buf = new wchar_t[sLocalFileName.length()+1];
     sLocalFileName.toWCharArray(buf);
@@ -1758,13 +1695,11 @@ void SciTEQt::cmdIncrementalSearch()
 
 void SciTEQt::cmdSelectionAddNext()
 {
-// TODO implement...    ???
     MenuCommand(IDM_SELECTIONADDNEXT);
 }
 
 void SciTEQt::cmdSelectionAddEach()
 {
-// TODO implement...    ???
     MenuCommand(IDM_SELECTIONADDEACH);
 }
 
@@ -2099,8 +2034,6 @@ void SciTEQt::cmdAboutCurrentFile()
 void SciTEQt::cmdShare()
 {
     QString text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1));
-    //QString tempFileName(filePath.Name().AsUTF8().c_str());
-    ///*bool ok =*/ m_pApplicationData->writeAndSendSharedFile(tempFileName, "", "text/plain", [this, text](QString name) -> bool { return this->m_pApplicationData->saveTextFile(name, text); });
     m_pApplicationData->shareSimpleText(text);
 }
 
@@ -2277,7 +2210,6 @@ QString SciTEQt::cmdDirectoryUp(const QString & directoryPath)
 {
     QDir aDirInfo(directoryPath);
     aDirInfo.cdUp();
-    qDebug() << "dir up " << directoryPath << " --> " << QDir::toNativeSeparators(aDirInfo.absolutePath()) << endl;
     return QDir::toNativeSeparators(aDirInfo.absolutePath());
 }
 
@@ -2435,7 +2367,6 @@ void SciTEQt::WorkerCommand(int cmd, Worker *pWorker)
 
 bool SciTEQt::event(QEvent *e)
 {
-    //qDebug() << "EVENT " << e->type() << endl;
     if(e->type() == POST_TO_MAIN)
     {
         QSciTEQtEvent * pSciteEvent = (QSciTEQtEvent *)e;
@@ -2448,25 +2379,33 @@ bool SciTEQt::event(QEvent *e)
     }
 }
 
+void SciTEQt::ProcessSave(bool bSetSavePoint)
+{
+    if(bSetSavePoint)
+    {
+        wEditor.SetSavePoint();
+    }
+    wEditor.ClearDocumentStyle();
+    wEditor.Colourise(0, wEditor.LineStart(1));
+    Redraw();
+    SetWindowName();
+    BuffersMenu();
+}
+
 bool SciTEQt::Save(SaveFlags sf)
 {
     if(filePath.IsNotLocal())
     {
         QString text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1));
-        bool ok = m_pApplicationData->writeFileContent(ConvertGuiCharToQString(filePath.AsNonLocalInternal()), text);
+        QString sFileName = ConvertGuiCharToQString(filePath.AsNonLocalInternal());
+        bool ok = m_pApplicationData->writeFileContent(sFileName, text);
         if(!ok)
         {
-// TODO --> error Message !
+            ShowWindowMessageBox(QString(tr("Can not write file %1")).arg(sFileName));
         }
         else
         {
-// TODO --> code copy !!! in OnAddFileCon
-            wEditor.SetSavePoint();
-            wEditor.ClearDocumentStyle();
-            wEditor.Colourise(0, wEditor.LineStart(1));
-            Redraw();
-            SetWindowName();
-            BuffersMenu();
+            ProcessSave(true);
         }
         return ok;
     }
@@ -2550,10 +2489,8 @@ QVariant SciTEQt::fillToLengthWithFont(const QString & text, const QString & sho
     double lenTab = metrics.boundingRect("\t").width();
 
     QString fill(" ");
-    //fill = fill.leftJustified((180-lenText)/lenTab,'\t');
     fill = fill.leftJustified((180-lenText)/lenSpace,' ');
 
-    //qDebug() << "WITH FONT x " << font << " " << lenText << " " << lenShortcut << " " << lenSpace << " " << lenTab << " --> " << text.length() << " " << fill.length() << " total=" << metrics.boundingRect(text + fill).width() << endl;
     return QVariant(text + fill + shortcut);
 }
 
@@ -2735,14 +2672,6 @@ static QPair<bool, QRect> CheckWindowPosAndSize(const QRect & windowPosAndSize)
 
     QRect availableScreenGeometry = allScreens.first()->availableVirtualGeometry();
 
-//    for( QScreen * pScreen : allScreens)
-//    {
-//        QRect aRectX = pScreen->availableGeometry();
-//        qDebug() << "screen: " << aRectX         << endl;
-//    }
-
-//    qDebug() << "CheckWindowPosAndSize " << windowPosAndSize << " --> " << availableScreenGeometry << endl;
-
     if(!availableScreenGeometry.contains(windowPosAndSize))
     {
         QRect newPosAndSize(windowPosAndSize);
@@ -2752,7 +2681,6 @@ static QPair<bool, QRect> CheckWindowPosAndSize(const QRect & windowPosAndSize)
         {
             // no --> set top left point to top left point of available screen coodinates
             newPosAndSize = QRect(availableScreenGeometry.x(), availableScreenGeometry.y(), newPosAndSize.width(), newPosAndSize.height());
-//            qDebug() << "point 2 " << newPosAndSize         << endl;
         }
         // is size of window to big?
         if(!availableScreenGeometry.contains(newPosAndSize))
@@ -2766,7 +2694,6 @@ static QPair<bool, QRect> CheckWindowPosAndSize(const QRect & windowPosAndSize)
             {
                 newPosAndSize.setHeight(availableScreenGeometry.height());
             }
-//            qDebug() << "point 3 " << newPosAndSize         << endl;
         }
 
         return QPair<bool, QRect>(true, newPosAndSize);
@@ -2974,6 +2901,7 @@ void SciTEQt::OnAddFileContent(const QString & sFileUri, const QString & sDecode
     // - set name
     // - set content
 
+    bool ok = true;
     if(!bNewCreated)
     {
         // open modus
@@ -2984,23 +2912,19 @@ void SciTEQt::OnAddFileContent(const QString & sFileUri, const QString & sDecode
     {
         // save as modus --> create new document
         QString text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1));
-        bool ok = m_pApplicationData->writeFileContent(sFileUri, text);
-// TODO --> fehlerbehandlung !
+        ok = m_pApplicationData->writeFileContent(sFileUri, text);
+        if(!ok)
+        {
+            ShowWindowMessageBox(QString(tr("Can not write file %1")).arg(sDecodedFileUri));
+        }
     }
 
     // nearly the code from SaveAs()...
     ReadProperties();
-// TODO hier gibt es ein Problem !!! sFileName ist ok --> content://com.android.externalstorage.documents/... ==> hier meta filename fuer android storage framework behandeln !
-    //SetFileName(ConvertQStringToGuiString(sFileName).c_str(), /*fixCase*/true);
     FilePath newFileName(ConvertQStringToGuiString(sDecodedFileUri), ConvertQStringToGuiString(sFileUri));
     SetFileName(newFileName, /*fixCase*/true);
     //Save();
-    wEditor.SetSavePoint();
-    wEditor.ClearDocumentStyle();
-    wEditor.Colourise(0, wEditor.LineStart(1));
-    Redraw();
-    SetWindowName();
-    BuffersMenu();
+    ProcessSave(ok);
     if (extender)
         extender->OnSave(filePath.AsUTF8().c_str());
 }
@@ -3015,7 +2939,8 @@ void SciTEQt::OnStripFindVisible(bool val)
     m_bStripFindVisible = val;
 }
 
-void DumpScreens()
+/*
+static void DumpScreens()
 {
     QList<QScreen *> allScreens = QGuiApplication::screens();
 
@@ -3039,11 +2964,10 @@ void DumpScreens()
         qDebug() << "devicePixelRatio= "<< pScreen->devicePixelRatio() << endl;
     }
 }
+*/
 
 void SciTEQt::OnScreenAdded(QScreen * pScreen)
 {
-    qDebug() << "OnScreenAdded()" << endl;
-
     // nothing to do, new screen does not affect visible sciteqt window
 
     //DumpScreens();
@@ -3051,8 +2975,6 @@ void SciTEQt::OnScreenAdded(QScreen * pScreen)
 
 void SciTEQt::OnScreenRemoved(QScreen * pScreen)
 {
-    qDebug() << "OnScreenRemoved()" << endl;
-
     // removing a screen might make sciteqt window invisible (if it was visible on the removed screen)
     int left;
     int top;
@@ -3068,10 +2990,10 @@ void SciTEQt::OnScreenRemoved(QScreen * pScreen)
 
 void SciTEQt::OnPrimaryScreenChanged(QScreen * pScreen)
 {
-    qDebug() << "OnPrimaryScreenChanged()" << endl;
-
-    DumpScreens();
+    //DumpScreens();
 }
+
+//*************************************************************************
 
 QtCommandWorker::QtCommandWorker() noexcept {
     Initialise(true);
