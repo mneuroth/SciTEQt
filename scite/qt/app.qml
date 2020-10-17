@@ -373,10 +373,11 @@ ApplicationWindow {
 // TODO: via font die breite fuer den text bestimmen und passende anzahl leerzeichen dafuer...
         //console.log("FONT: "+menuText+" "+ (menuItem!==undefined ? menuItem.font : "?")+" action="+menuItem.action) //+" shortcut="+menuItem.action.shortcut+ " "+menuItem.parent)
         var s = sciteQt.getLocalisedText(menuText)
-        if( /*!sciteQt.mobilePlatform &&*/ menuItem !== null && menuItem.action !== null && menuItem.action.shortcut !== undefined)
+        if( menuItem !== null && menuItem.action !== null && menuItem.action.shortcut !== undefined)
         {
             //s += " \t" + menuItem.shortcut
-            return sciteQt.fillToLengthWithFont(s, ""+menuItem.action.shortcut, menuItem.font)
+            var sc = sciteQt.mobilePlatform ? "" : ""+menuItem.action.shortcut
+            return sciteQt.fillToLengthWithFont(s, sc, menuItem.font)
         }
         return s
     }
@@ -460,12 +461,11 @@ ApplicationWindow {
     SciteMenuActions {
         id: sciteActions
         visible: false
-        useShortCuts: !sciteQt.mobilePlatform
 
         Component.onCompleted: {
             // Workaround: update state of menus for desktop modus
-            sciteQt.mobilePlatform = !sciteQt.mobilePlatform
-            sciteQt.mobilePlatform = !sciteQt.mobilePlatform
+//            sciteQt.mobilePlatform = !sciteQt.mobilePlatform
+//            sciteQt.mobilePlatform = !sciteQt.mobilePlatform
         }
     }
 

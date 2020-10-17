@@ -4,8 +4,6 @@ import QtQuick.Controls 2.9
 Item {
     id: root
 
-    property bool useShortCuts: true
-
     property alias actionNew: actionNew
     property alias actionOpen: actionOpen
     property alias actionOpenSelectedFilename: actionOpenSelectedFilename
@@ -21,38 +19,38 @@ Item {
         id: actionNew
         text: qsTr("&New")
         //icon.source: "share.svg"
-        shortcut: useShortCuts ? "Ctrl+N" : ""
+        shortcut: "Ctrl+N"
         onTriggered: sciteQt.cmdNew()
     }
     Action {
         id: actionOpen
         text: qsTr("&Open...")
         //icon.source: "share.svg"
-        shortcut: useShortCuts ? "Ctrl+O" : ""
+        shortcut: "Ctrl+O"
         onTriggered: sciteQt.cmdOpen()
     }
     Action {
         id: actionOpenSelectedFilename
         text: qsTr("Open Selected &Filename")
-        shortcut: useShortCuts ? "Ctrl+Shift+O" : ""
+        shortcut: "Ctrl+Shift+O"
         onTriggered: sciteQt.cmdOpenSelectedFileName()
     }
     Action {
         id: actionRevert
         text: qsTr("&Revert")
-        shortcut: useShortCuts ? "Ctrl+R" : ""
+        shortcut: "Ctrl+R"
         onTriggered: sciteQt.cmdRevert()
     }
     Action {
         id: actionClose
         text: qsTr("&Close")
-        shortcut: useShortCuts ? "Ctrl+W" : ""
+        shortcut: "Ctrl+W"
         onTriggered: sciteQt.cmdClose()
     }
     Action {
         id: actionSave
         text: qsTr("&Save")
-        shortcut: useShortCuts ? "Ctrl+S" : ""
+        shortcut: "Ctrl+S"
         onTriggered: sciteQt.cmdSave()
     }
     Action {
@@ -164,7 +162,7 @@ Item {
     Action {
         id: actionPrint
         text: qsTr("&Print...")
-        shortcut: useShortCuts ? "Ctrl+P" : ""
+        shortcut: "Ctrl+P"
         onTriggered: sciteQt.cmdPrint()
     }
     Action {
@@ -211,49 +209,49 @@ Item {
     Action {
         id: actionUndo
         text: qsTr("&Undo")
-        shortcut: useShortCuts ? "Ctrl+Z" : ""
+        shortcut: "Ctrl+Z"
         onTriggered: sciteQt.cmdUndo()
     }
     Action {
         id: actionRedo
         text: qsTr("&Redo")
-        shortcut: useShortCuts ? "Ctrl+Y" : ""
+        shortcut: "Ctrl+Y"
         onTriggered: sciteQt.cmdRedo()
     }
     Action {
         id: actionCut
         text: qsTr("Cu&t")
-        shortcut: useShortCuts ? "Ctrl+X" : ""
+        shortcut: "Ctrl+X"
         onTriggered: sciteQt.cmdCut()
     }
     Action {
         id: actionCopy
         text: qsTr("&Copy")
-        shortcut: useShortCuts ? "Ctrl+C" : ""
+        shortcut: "Ctrl+C"
         onTriggered: sciteQt.cmdCopy()
     }
     Action {
         id: actionPaste
         text: qsTr("&Paste")
-        shortcut: useShortCuts ? "Ctrl+V" : ""
+        shortcut: "Ctrl+V"
         onTriggered: sciteQt.cmdPaste()
     }
     Action {
         id: actionDuplicate
         text: qsTr("Duplicat&e")
-        shortcut: useShortCuts ? "Ctrl+D" : ""
+        shortcut: "Ctrl+D"
         onTriggered: sciteQt.cmdDuplicate()
     }
     Action {
         id: actionDelete
         text: qsTr("&Delete")
-        shortcut: useShortCuts ? "Del" : ""
+        shortcut: "Del"
         onTriggered: sciteQt.cmdDelete()
     }
     Action {
         id: actionSelectAll
         text: qsTr("Select &All")
-        shortcut: useShortCuts ? "Ctrl+A" : ""
+        shortcut: "Ctrl+A"
         onTriggered: sciteQt.cmdSelectAll()
     }
     Action {
@@ -264,73 +262,73 @@ Item {
     Action {
         id: actionMatchBrace
         text: qsTr("Match &Brace")
-        shortcut: useShortCuts ? "Ctrl+E" : ""
+        shortcut: "Ctrl+E"
         onTriggered: sciteQt.cmdMatchBrace()
     }
     Action {
         id: actionSelectToBrace
         text: qsTr("Select t&o Brace")
-        shortcut: useShortCuts ? "Ctrl+Shift+E" : ""
+        shortcut: "Ctrl+Shift+E"
         onTriggered: sciteQt.cmdSelectToBrace()
     }
     Action {
         id: actionShowCalltip
         text: qsTr("S&how Calltip")
-        shortcut: useShortCuts ? "Ctrl+Shift+Space" : ""
+        shortcut: "Ctrl+Shift+Space"
         onTriggered: sciteQt.cmdShowCalltip()
     }
     Action {
         id: actionCompleteSymbol
         text: qsTr("Complete S&ymbol")
-        shortcut: useShortCuts ? "Ctrl+I" : ""
+        shortcut: "Ctrl+I"
         onTriggered: sciteQt.cmdCompleteSymbol()
     }
     Action {
         id: actionCompleteWord
         text: qsTr("Complete &Word")
-        shortcut: useShortCuts ? "Ctrl+Enter" : ""
+        shortcut: "Ctrl+Enter"
         onTriggered: sciteQt.cmdCompleteWord()
     }
     Action {
         id: actionExpandAbbreviation
         text: qsTr("Expand Abbre&viation")
-        shortcut: useShortCuts ? "Ctrl+B" : ""
+        shortcut: "Ctrl+B"
         onTriggered: sciteQt.cmdExpandAbbreviation()
     }
     Action {
         id: actionInsertAbbreviation
         text: qsTr("&Insert Abbreviation")
-        shortcut: useShortCuts ? "Ctrl+Shift+R" : ""
+        shortcut: "Ctrl+Shift+R"
         onTriggered: sciteQt.cmdInsertAbbreviation()
     }
     Action {
         id: actionBlockComment
         text: qsTr("Block Co&mment or Uncomment")
-        shortcut: useShortCuts ? "Ctrl+Q" : ""
+        shortcut: "Ctrl+Q"
         onTriggered: sciteQt.cmdBlockComment()
     }
     Action {
         id: actionBoxComment
         text: qsTr("Bo&x Comment")
-        shortcut: useShortCuts ? "Ctrl+Shift+B" : ""
+        shortcut: "Ctrl+Shift+B"
         onTriggered: sciteQt.cmdBoxComment()
     }
     Action {
         id: actionStreamComment
         text: qsTr("Stream Comme&nt")
-        shortcut: useShortCuts ? "Ctrl+Shift+Q" : ""
+        shortcut: "Ctrl+Shift+Q"
         onTriggered: sciteQt.cmdStreamComment()
     }
     Action {
         id: actionMakeSelectionUppercase
         text: qsTr("Make &Selection Uppercase")
-        shortcut: useShortCuts ? "Ctrl+Shift+U" : ""
+        shortcut: "Ctrl+Shift+U"
         onTriggered: sciteQt.cmdMakeSelectionUppercase()
     }
     Action {
         id: actionMakeSelectionLowercase
         text: qsTr("Make Selection &Lowercase")
-        shortcut: useShortCuts ? "Ctrl+U" : ""
+        shortcut: "Ctrl+U"
         onTriggered: sciteQt.cmdMakeSelectionLowercase()
     }
     Action {
@@ -368,73 +366,73 @@ Item {
     Action {
         id: actionFind
         text: qsTr("&Find...")
-        shortcut: useShortCuts ? "Ctrl+F" : ""
+        shortcut: "Ctrl+F"
         onTriggered: sciteQt.cmdFind()
     }
     Action {
         id: actionFindNext
         text: qsTr("Find &Next")
-        shortcut: useShortCuts ? "F3" : ""
+        shortcut: "F3"
         onTriggered: sciteQt.cmdFindNext()
     }
     Action {
         id: actionFindPrevious
         text: qsTr("Find Previou&s")
-        shortcut: useShortCuts ? "Shift+F3" : ""
+        shortcut: "Shift+F3"
         onTriggered: sciteQt.cmdFindPrevious()
     }
     Action {
         id: actionFindInFiles
         text: sciteQt.findInFilesRunning ? qsTr("Stop F&ind in Files") : qsTr("F&ind in Files...")
-        shortcut: useShortCuts ? "Ctrl+Shift+F" : ""
+        shortcut: "Ctrl+Shift+F"
         onTriggered: sciteQt.cmdFindInFiles()
     }
     Action {
         id: actionReplace
         text: qsTr("R&eplace...")
-        shortcut: useShortCuts ? "Ctrl+H" : ""
+        shortcut: "Ctrl+H"
         onTriggered: sciteQt.cmdReplace()
     }
     Action {
         id: actionIncrementalSearch
         text: qsTr("Incrementa&l Search...")
-        shortcut: useShortCuts ? "Ctrl+Alt+I" : ""
+        shortcut: "Ctrl+Alt+I"
         onTriggered: sciteQt.cmdIncrementalSearch()
     }
     Action {
         id: actionSelectionAddNext
         text: qsTr("Selection A&dd Next")
-        shortcut: useShortCuts ? "Ctrl+Shift+D" : ""
+        shortcut: "Ctrl+Shift+D"
         onTriggered: sciteQt.cmdSelectionAddNext()
     }
     Action {
         id: actionSelectionAddEach
         text: qsTr("Selection &Add Each")
-        shortcut: useShortCuts ? "Ctrl+Shift+A" : ""
+        shortcut: "Ctrl+Shift+A"
         onTriggered: sciteQt.cmdSelectionAddEach()
     }
     Action {
         id: actionGoto
         text: qsTr("&Go to...")
-        shortcut: useShortCuts ? "Ctrl+G" : ""
+        shortcut: "Ctrl+G"
         onTriggered: sciteQt.cmdGoto()
     }
     Action {
         id: actionNextBookmark
         text: qsTr("Next Book&mark")
-        shortcut: useShortCuts ? "F2" : ""
+        shortcut: "F2"
         onTriggered: sciteQt.cmdNextBookmark()
     }
     Action {
         id: actionPreviousBookmark
         text: qsTr("Pre&vious Bookmark")
-        shortcut: useShortCuts ? "Shift+F2" : ""
+        shortcut: "Shift+F2"
         onTriggered: sciteQt.cmdPreviousBookmark()
     }
     Action {
         id: actionToggleBookmark
         text: qsTr("Toggle Bookmar&k")
-        shortcut: useShortCuts ? "Ctrl+F2" : ""
+        shortcut: "Ctrl+F2"
         onTriggered: sciteQt.cmdToggleBookmark()
     }
     Action {
@@ -480,7 +478,7 @@ Item {
     Action {
         id: actionFullScreen
         text: qsTr("Full Scree&n")
-        shortcut: useShortCuts ? "F11" : ""
+        shortcut: "F11"
         enabled: false
         checkable: true
         checked: false
@@ -510,7 +508,7 @@ Item {
     Action {
         id: actionShowWhitespace
         text: qsTr("&Whitespace")
-        shortcut: useShortCuts ? "Ctrl+Shift+8" : ""
+        shortcut: "Ctrl+Shift+8"
         checkable: true
         checked: false
         onTriggered: sciteQt.cmdShowWhitespace()
@@ -518,7 +516,7 @@ Item {
     Action {
         id: actionShowEndOfLine
         text: qsTr("&End of Line")
-        shortcut: useShortCuts ? "Ctrl+Shift+9" : ""
+        shortcut: "Ctrl+Shift+9"
         checkable: true
         checked: false
         onTriggered: sciteQt.cmdShowEndOfLine()
@@ -554,7 +552,7 @@ Item {
     Action {
         id: actionToggleOutput
         text: qsTr("&Output")
-        shortcut: useShortCuts ? "F8" : ""
+        shortcut: "F8"
         checkable: true
         checked: false
         onTriggered: sciteQt.cmdToggleOutput()
@@ -562,7 +560,7 @@ Item {
     Action {
         id: actionParameters
         text: qsTr("&Parameters")
-        shortcut: useShortCuts ? "Shift+F8" : ""
+        shortcut: "Shift+F8"
         //checkable: true
         //checked: false
         onTriggered: sciteQt.cmdParameters()
@@ -581,7 +579,7 @@ Item {
     Action {
         id: actionCompile
         text: qsTr("&Compile")
-        shortcut: useShortCuts ? "Ctrl+F7" : ""
+        shortcut: "Ctrl+F7"
         //checkable: true
         //checked: false
         onTriggered: sciteQt.cmdCompile()
@@ -589,7 +587,7 @@ Item {
     Action {
         id: actionBuild
         text: qsTr("&Build")
-        shortcut: useShortCuts ? "F7" : ""
+        shortcut: "F7"
         //checkable: true
         //checked: false
         onTriggered: sciteQt.cmdBuild()
@@ -597,7 +595,7 @@ Item {
     Action {
         id: actionClean
         text: qsTr("&Clean")
-        shortcut: useShortCuts ? "Shift+F7" : ""
+        shortcut: "Shift+F7"
         //checkable: true
         //checked: false
         onTriggered: sciteQt.cmdClean()
@@ -605,7 +603,7 @@ Item {
     Action {
         id: actionGo
         text: qsTr("&Go")
-        shortcut: useShortCuts ? "F5" : ""
+        shortcut: "F5"
         //checkable: true
         //checked: false
         onTriggered: sciteQt.cmdGo()
@@ -613,7 +611,7 @@ Item {
     Action {
         id: actionStopExecuting
         text: qsTr("&Stop Executing")
-        shortcut: useShortCuts ? "Ctrl+Break" : ""
+        shortcut: "Ctrl+Break"
         //checkable: true
         //checked: false
         onTriggered: sciteQt.cmdStopExecuting()
@@ -622,7 +620,7 @@ Item {
     Action {
         id: actionNextMessage
         text: qsTr("&Next Message")
-        shortcut: useShortCuts ? "F4" : ""
+        shortcut: "F4"
         //checkable: true
         //checked: false
         onTriggered: sciteQt.cmdNextMessage()
@@ -630,7 +628,7 @@ Item {
     Action {
         id: actionPreviousMessage
         text: qsTr("&Previous Message")
-        shortcut: useShortCuts ? "Shift+F4" : ""
+        shortcut: "Shift+F4"
         //checkable: true
         //checked: false
         onTriggered: sciteQt.cmdPreviousMessage()
@@ -638,7 +636,7 @@ Item {
     Action {
         id: actionClearOutput
         text: qsTr("Clear &Output")
-        shortcut: useShortCuts ? "Shift+F5" : ""
+        shortcut: "Shift+F5"
         //checkable: true
         //checked: false
         onTriggered: sciteQt.cmdClearOutput()
@@ -646,7 +644,7 @@ Item {
     Action {
         id: actionSwitchPane
         text: qsTr("&Switch Pane")
-        shortcut: useShortCuts ? "Ctrl+F6" : ""
+        shortcut: "Ctrl+F6"
         //checkable: true
         //checked: false
         onTriggered: sciteQt.cmdSwitchPane()
@@ -746,13 +744,13 @@ Item {
     Action {
         id: actionChangeIndentationSettings
         text: qsTr("Change Inden&tation Settings")
-        shortcut: useShortCuts ? "Ctrl+Shift+I" : ""
+        shortcut: "Ctrl+Shift+I"
         onTriggered: sciteQt.cmdChangeIndentationSettings()
     }
     Action {
         id: actionUseMonospacedFont
         text: qsTr("Use &Monospaced Font")
-        shortcut: useShortCuts ? "Ctrl+F11" : ""
+        shortcut: "Ctrl+F11"
         checkable: true
         checked: false
         onTriggered: sciteQt.cmdUseMonospacedFont()
@@ -760,7 +758,7 @@ Item {
     Action {
         id: actionSwitchToLastActivatedTab
         text: qsTr("Switch to last acti&vated tab")
-        shortcut: useShortCuts ? "Ctrl+Tab" : ""
+        shortcut: "Ctrl+Tab"
         onTriggered: sciteQt.cmdSwitchToLastActivatedTab()
     }
     Action {
@@ -802,13 +800,13 @@ Item {
     Action {
         id: actionBuffersPrevious
         text: qsTr("&Previous")
-        shortcut: useShortCuts ? "Shift+F6" : ""
+        shortcut: "Shift+F6"
         onTriggered: sciteQt.cmdBuffersPrevious()
     }
     Action {
         id: actionBuffersNext
         text: qsTr("&Next")
-        shortcut: useShortCuts ? "F6" : ""
+        shortcut: "F6"
         onTriggered: sciteQt.cmdBuffersNext()
     }
     Action {
@@ -837,7 +835,7 @@ Item {
 
     Action {
         id: actionHelp
-        shortcut: useShortCuts ? "F1" : ""
+        shortcut: "F1"
         text: qsTr("&Help")
         onTriggered: sciteQt.cmdHelp()
     }
