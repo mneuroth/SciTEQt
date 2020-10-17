@@ -85,35 +85,55 @@ Item {
         text: qsTr("&Code Page Property")
         checkable: true
         checked: false
-        onTriggered: sciteQt.cmdCodePageProperty()
+        onTriggered: {
+            clearEncodingMenus()
+            sciteQt.cmdCodePageProperty()
+            actionCodePageProperty.checked = true
+        }
     }
     Action {
         id: actionUtf16BigEndian
         text: qsTr("UTF-16 &Big Endian")
         checkable: true
         checked: false
-        onTriggered: sciteQt.cmdUtf16BigEndian()
+        onTriggered: {
+            clearEncodingMenus()
+            sciteQt.cmdUtf16BigEndian()
+            actionUtf16BigEndian.checked = true
+        }
     }
     Action {
         id: actionUtf16LittleEndian
         text: qsTr("UTF-16 &Little Endian")
         checkable: true
         checked: false
-        onTriggered: sciteQt.cmdUtf16LittleEndian()
+        onTriggered: {
+            clearEncodingMenus()
+            sciteQt.cmdUtf16LittleEndian()
+            actionUtf16LittleEndian.checked = true
+        }
     }
     Action {
         id: actionUtf8WithBOM
         text: qsTr("UTF-8 &with BOM")
         checkable: true
         checked: false
-        onTriggered: sciteQt.cmdUtf8WithBOM()
+        onTriggered: {
+            clearEncodingMenus()
+            sciteQt.cmdUtf8WithBOM()
+            actionUtf8WithBOM.checked = true
+        }
     }
     Action {
         id: actionUtf8
         text: qsTr("&UTF-8")
         checkable: true
         checked: false
-        onTriggered: sciteQt.cmdUtf8()
+        onTriggered: {
+            clearEncodingMenus()
+            sciteQt.cmdUtf8()
+            actionUtf8.checked = true
+        }
     }
 
     property alias actionAsHtml: actionAsHtml
@@ -918,12 +938,16 @@ Item {
         }
     }
 
-    function handleEncodingMenus(enumEncoding) {
+    function clearEncodingMenus() {
         actionCodePageProperty.checked = false
         actionUtf16BigEndian.checked = false
         actionUtf16LittleEndian.checked = false
         actionUtf8WithBOM.checked = false
         actionUtf8.checked = false
+    }
+
+    function handleEncodingMenus(enumEncoding) {
+        clearEncodingMenus()
         //console.log("handleEncodingMenus: "+enumEncoding+" "+root)
         switch(enumEncoding) {  // see: enum UniMode in Cookie.h
             // 	uni8Bit = 0, uni16BE = 1, uni16LE = 2, uniUTF8 = 3,

@@ -114,6 +114,7 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
     : QObject(parent),
       m_pApplicationData(0),
       m_pEngine(pEngine),
+      m_pCurrentScriptExecution(0),
       m_bWaitDoneFlag(false),
       m_iMessageDialogAccepted(MSGBOX_RESULT_EMPTY),
       m_bFileDialogWaitDoneFlag(false),
@@ -186,7 +187,6 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
     connect(&m_aFindInFiles,SIGNAL(addToOutput(QString)),this,SLOT(OnAddToOutput(QString)));
     connect(&m_aFindInFiles,SIGNAL(currentItemChanged(QString)),this,SLOT(OnCurrentFindInFilesItemChanged(QString)));
     connect(&m_aFindInFiles,SIGNAL(searchFinished()),this,SLOT(OnFileSearchFinished()));
-    connect(&m_aScriptExecution,SIGNAL(AddToOutput(QString)),this,SLOT(OnAddToOutput(QString)));
 
     cmdWorker.pSciTE = this;
 }
@@ -846,7 +846,10 @@ void SciTEQt::FindReplace(bool replace)
 
 void SciTEQt::StopExecute()
 {
-    m_aScriptExecution.KillExecution();
+    if(m_pCurrentScriptExecution!=0)
+    {
+        m_pCurrentScriptExecution->KillExecution();
+    }
 }
 
 void SciTEQt::SetFileProperties(PropSetFile &ps)
@@ -2284,18 +2287,26 @@ void SciTEQt::ProcessExecute()
 
 int SciTEQt::ExecuteOne(const Job &jobToRun)
 {
-    QString cmd;
-    QString args;
-    QString workingDirectory = QString::fromStdString(jobToRun.directory.AsUTF8());
-    QString s = QString::fromStdString(jobToRun.command);
-    int iFirstSpace = s.indexOf(" ");
-    if( iFirstSpace>=0 )
-    {
-        cmd = s.mid(0, iFirstSpace);
-        args = s.mid(iFirstSpace);
-    }
+	QString cmd;
+	QString args;
+	QString workingDirectory = QString::fromStdString(jobToRun.directory.AsUTF8());
+	QString s = QString::fromStdString(jobToRun.command);
+	int iFirstSpace = s.indexOf(" ");
+	if (iFirstSpace >= 0)
+	{
+		cmd = s.mid(0, iFirstSpace);
+		args = s.mid(iFirstSpace);
+	}
 
-    return m_aScriptExecution.DoScriptExecution(cmd, args, workingDirectory);
+	//return m_aScriptExecution.DoScriptExecution(cmd, args, workingDirectory);
+
+	ScriptExecution tempScriptExecution;
+    m_pCurrentScriptExecution = &tempScriptExecution;
+    connect(&tempScriptExecution,SIGNAL(AddToOutput(QString)),this,SLOT(OnAddToOutput(QString)));
+    int ret = tempScriptExecution.DoScriptExecution(cmd, args, workingDirectory);
+    m_pCurrentScriptExecution = 0;
+    disconnect(&tempScriptExecution,SIGNAL(AddToOutput(QString)),this,SLOT(OnAddToOutput(QString)));    
+    return ret;
 }
 
 void SciTEQt::ExecuteNext()

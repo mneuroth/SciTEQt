@@ -55,32 +55,35 @@ New open features might be:
 
 Known and open Bugs are:
 
-  * Accelerator Key funktioniert, obwohl Action disabled ist !!!??? Bug? Beispiel F5
+  ((* Keyboard Handling Problem?: After some time the accelerator keys have to be pressed twice? --> Dialog sind dann beim oeffnen kleiner !? ==> Focus Problem, vielleicht hat Fenster keinen Input Focus !!!???
+  //* Zeichensatzcodierung seltsam --> mehrfach Aktivierung moeglich ? --> nur Android ? --> MobilePlatform Menu !!!???
+  * Manchmal: Find in Files hat Offset von 32 ?? --> tritt Problem nach Find In Files Ausfuehrung auf?
+  * Memory leak when switching between tab pages?
+  * SaveAsCopy auf Android Storage Access Framework aendert Dateinamen
+
+  ((* Accelerator Key funktioniert, obwohl Action disabled ist !!!??? Bug? Beispiel F5 --> haengt ggf. mit zweitem Menu zusammen ?
   * Sporadische Abstürze bei F5 und Skripts mit langen Ausgaben
   * Absturz Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? und gcc/mingw funktionieren !
   * Find In Files Button Up funktioniert manchmal nicht korrekt
-  ((* New Document --> no focus in new created document tab
-  * After some time the accelerator keys have to be pressed twice? --> Dialog sind dann beim oeffnen kleiner !?
-     Find in Files hat Offset von 32 ?? --> tritt Problem nach Find In Files Ausfuehrung auf?
-  * Memory leak when switching between tab pages?
-  //* Crash when closing the application? --> was problem with multiple menus and moving menu items from menubar into popup menu for mobile menus
   * Selection disappears if mouse wheel is used and selection goes out of scope
+  * Files from android storage access framework will not be restored at application startup
+  * Scite Logo als linker Button in Titelzeile oder Einstellungsdialog/SuchDialog etc. ? (Fast Access Menu Items?)
+
+  ((* New Document --> no focus in new created document tab
+  //* Crash when closing the application? --> was problem with multiple menus and moving menu items from menubar into popup menu for mobile menus
   //* optimize height of statusbar
   ((* Found 18 in files: 37, total files: 20214 --> offset of 32 ???
   //* Speichern auf SD Karte unter Android funktioniert nicht --> storrage access framework verwenden !
   //* Zugriff via StorageAccess Framework funktioniert nicht
-  //* Zeichensatzcodierung seltsam --> mehrfach Aktivierung moeglich ?
   //* Teilen von QuickMemo+ oder markiertem Text aus Chrome does not work
   //  reason?: share can only receive files and not text ? --> check: private void processIntent(){
   //      void fileUrlReceived(QString url);
   //      void fileReceivedAndSaved(QString url);
   //* implement save for items on andriod storage access framework --> see: ApplicationData::writeFileContent()
   ((* SaveAs and Save As Copy support for Android Storage Access Framework
-  * Scite Logo als linker Button in Titelzeile oder Einstellungsdialog/SuchDialog etc. ? (Fast Access Menu Items?)
-  * SetFocus nach Teilen und SaveAs? verloren
+  //* SetFocus nach Teilen und SaveAs? verloren
   //* Receive Share of selected Text does not work --> processIntent()
-  * bei SaveAs Vorbelegung des Dateinamens mit aktuellem Dateiname
-  * Files from android storage access framework will not be restored at application startup
+  ((* bei SaveAs Vorbelegung des Dateinamens mit aktuellem Dateiname
 
 Now already implemented:
 

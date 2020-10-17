@@ -537,8 +537,9 @@ private:
     ApplicationData *       m_pApplicationData;     // not an owner !
     QQmlApplicationEngine * m_pEngine;              // not an owner !
 
+    ScriptExecution *       m_pCurrentScriptExecution;  // not an owner !
+
     FindInFilesAsync        m_aFindInFiles;
-    ScriptExecution         m_aScriptExecution;
 
     bool                    m_bWaitDoneFlag;
     int                     m_iMessageDialogAccepted;
