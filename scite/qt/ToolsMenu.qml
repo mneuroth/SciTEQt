@@ -35,7 +35,7 @@ AutoSizingMenu {
         model: toolsModel
         delegate: MenuItem {
             action: Action {
-                text: model.display+(model.shortcut.length>0 ? (" ("+model.shortcut+")") : "")
+                text: model.display+(model.shortcut.length>0 ? (sciteQt.mobilePlatform ? "" : (" ("+model.shortcut+")")) : "")
                 shortcut: model.shortcut
                 onTriggered: sciteQt.cmdCallTool(index)
             }
