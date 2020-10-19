@@ -151,7 +151,10 @@ AutoSizingMenu {
             action: Action {
                 text: model.display
                 shortcut: model.shortcut
-                onTriggered: sciteQt.cmdLastOpenedFiles(index)
+                onTriggered: {
+                    fileMenu.close()
+                    sciteQt.cmdLastOpenedFiles(index)
+                }
             }
         }
 
