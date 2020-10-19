@@ -12,8 +12,7 @@
 #include <QDir>
 #include <QTextStream>
 #include <QThread>
-
-//#include <QDebug>
+#include <QPair>
 
 #include "findinfiles.h"
 
@@ -94,7 +93,7 @@ static void inc_if( int * pValue )
     }
 }
 
-static QString SingleFileSearch( const QString & sFileName,
+static QPair<bool, QString> SingleFileSearch( const QString & sFileName,
                                  const QString & sSearch,
                                  bool bCaseSensitive=true,
                                  bool bRegExpr=true,
@@ -105,6 +104,7 @@ static QString SingleFileSearch( const QString & sFileName,
                                  QObject * pObserver = 0 )
 {
     QString sRet;
+    bool bFound = false;
 
     QFile aFile( sFileName );
     if( !aFile.open(QIODevice::ReadOnly | QIODevice::Text) )
@@ -142,11 +142,12 @@ static QString SingleFileSearch( const QString & sFileName,
             else
             {
                 iFoundPos = strLine.indexOf(sSearch, 0, bCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
-                //qDebug() << "--> " << iFoundPos << " " << bCaseSensitive << " " << strSearch << " " << strLine << endl;
             }
             if( iFoundPos >= 0 )
             {
                 // found !
+                bFound = true;
+
                 QString strTemp = sFileTag + QDir::toNativeSeparators(sFileName) + ":" + sLineTag + QString::number( iCount ) + ": " + strLine + "\n";
 
                 if( pObserver )
@@ -180,7 +181,7 @@ static QString SingleFileSearch( const QString & sFileName,
         }
     }
 
-    return sRet;
+    return QPair<bool, QString>(bFound, sRet);
 }
 
 static QString ProcessSingleFileFind(const QString & sPath,
@@ -198,18 +199,23 @@ static QString ProcessSingleFileFind(const QString & sPath,
 {
     QString sRet;
     QString sName = QFileInfo(sPath, sFile).absoluteFilePath();
-    QString sFound = SingleFileSearch(sName, sSearch, bCaseSensitive, bRegExpr, bWildcard, pFoundCount, sFileTag, sLineTag, pObserver);
-
-    inc_if( pTotalCount );
-
-    if( !sFound.isNull() && !sFound.isEmpty() )
+    QFileInfo aItemInfo(sName);
+    if(aItemInfo.isFile())
     {
-        sRet += sFound;
-        //sRet += "\n";
-        inc_if(pFindFileCount);
+        QPair<bool, QString> result = SingleFileSearch(sName, sSearch, bCaseSensitive, bRegExpr, bWildcard, pFoundCount, sFileTag, sLineTag, pObserver);
+
+        inc_if( pTotalCount );
+
+        sRet += result.second;
+        if( result.first )
+        {
+            inc_if(pFindFileCount);
+        }
+
+        return result.second;
     }
 
-    return sFound;
+    return "";
 }
 
 static std::pair<bool,QString> RecursiveFileSearch( const QString & sPath,
@@ -357,12 +363,12 @@ private:
     QString     m_sFiles;
     QString     m_sSearch;
     bool        m_bCaseSensitive;
-    bool		   m_bSerachInSubDirs;
-    bool		   m_bRegExpr;
-    bool		   m_bWildcard;
-    int *		   m_pFoundCount;
-    int *		   m_pFindFileCount;
-    int *		   m_pTotalCount;
+    bool        m_bSerachInSubDirs;
+    bool        m_bRegExpr;
+    bool        m_bWildcard;
+    int *       m_pFoundCount;      // total occurences
+    int *       m_pFindFileCount;   // found in this number of files
+    int *       m_pTotalCount;      // searched in total files
     QString     m_sFileTag;
     QString     m_sLineTag;
     QObject *   m_pObserver;
