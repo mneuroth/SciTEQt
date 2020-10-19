@@ -25,25 +25,29 @@ Added freatures (compared to original SciTE):
   * added menu item "Open Containing Folder"
   * Find in files implementation supports regular expressions
   * Support connect/disconnect of monitors
+  * Support of switch between menubar for desktop and mobile platforms
 
 Missing features are:
 
-  * save and restore extensions and directories for find in files
-  * Context menu for Scintilla Control can not be overwritten/updated by SciTE
-  * Cleanup source qt source code
-  * switch to Scite v4.4.5
+# * Cleanup source qt source code
+# * switch to Scite v4.4.5
+# * testen, testen, testen !
+# * fix known Bugs
+# * Github Releases erzeugen (Binary Setup für Windows & Mac)
+  * save and restore file extensions and directories for find in files
   * Improve splitter handling
-  * Printing (partly)
-  * ((Android: focus lost problem after closing dialog, need to touch on tabbar
-  * Android: improve selection of text
+  * Implement Printing (partly)
+  * Context menu for Scintilla Control can not be overwritten/updated by SciTE
+# * Android: improve selection of text --> improve/use QInputContext
+? * Android: improve deployment --> more languages?
+  ((* Android: focus lost problem after closing dialog, need to touch on tabbar
   ((* Android: use mobile file dialog to open and save files
   ((* Android: implement file access
   ((* Android: implement sharing
-  * Android: improve deployment
   ((* Android: after new document the input focus is lost
   ((* Android: does Qt FileDialog interfere with MobileFileDialog ? --> Qt FileDialog does not run good with MobileFileDialog enabled
   ((* Android: add grantAccess to FileSystem for StorageAccess
-  * ((Webassembly: after closing dialog (FileDialog) app needs mouse click to update view
+  ((* Webassembly: after closing dialog (FileDialog) app needs mouse click to update view
   * Webassembly: processing of modal dialogs (FileDialog, MessageBox)
   * Webassembly: click on Buttons (i. e. Cancel) in Dialogs creates crash ! BUT: setting focus via Keyboard and return on button works sometimes !!!???
   * github ci: windows build is green, but compile step was failing !!!???
@@ -52,27 +56,32 @@ New open features might be:
   * Navigate in file via "Goto Symbol under Cursor"
   * Autocomplete symbols/functions/variables inside the file
   * Close buttons in tabpage buttons
+  * Show all occurences of find in current file in outputarea
+  * ggf. save and restore text in outputarea?
+  * Scite Logo als linker Button in Titelzeile oder Einstellungsdialog/SuchDialog etc. ? (Fast Access Menu Items?)
 
 Known and open Bugs are:
 
-  ((* Keyboard Handling Problem?: After some time the accelerator keys have to be pressed twice? --> Dialog sind dann beim oeffnen kleiner !? ==> Focus Problem, vielleicht hat Fenster keinen Input Focus !!!???
-  //* Zeichensatzcodierung seltsam --> mehrfach Aktivierung moeglich ? --> nur Android ? --> MobilePlatform Menu !!!???
-  * Manchmal: Find in Files hat Offset von 32 ?? --> tritt Problem nach Find In Files Ausfuehrung auf?
-  * Memory leak when switching between tab pages?
-  * SaveAsCopy auf Android Storage Access Framework aendert Dateinamen
-
-  ((* Accelerator Key funktioniert, obwohl Action disabled ist !!!??? Bug? Beispiel F5 --> haengt ggf. mit zweitem Menu zusammen ?
-  * Sporadische Abstürze bei F5 und Skripts mit langen Ausgaben
-  * Absturz Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? und gcc/mingw funktionieren !
-  * Find In Files Button Up funktioniert manchmal nicht korrekt
   * Selection disappears if mouse wheel is used and selection goes out of scope
-  * Files from android storage access framework will not be restored at application startup
-  * Scite Logo als linker Button in Titelzeile oder Einstellungsdialog/SuchDialog etc. ? (Fast Access Menu Items?)
+  * Absturz Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? und gcc/mingw funktionieren !
+  * Anzeige der Schrift nach Monitor Wechsel teilweise durcheinander...
 
+  * SaveAsCopy auf Android Storage Access Framework aendert Dateinamen
+  * Files from android storage access framework will not be restored at application startup
+
+Beobachtung:
+  * Memory leak when switching between tab pages?
+  * Sporadische Abstürze bei F5 und Skripts mit langen Ausgaben --> scheint besser seit QProcess in anderem Thread erzeugt wird
+  * Find In Files Button Up funktioniert manchmal nicht korrekt
+
+Bugx fixed:
+  ((* Keyboard Handling Problem?: After some time the accelerator keys have to be pressed twice? --> Dialog sind dann beim oeffnen kleiner !? ==> Focus Problem, vielleicht hat Fenster keinen Input Focus !!!???
+  //* Menu Zeichensatzcodierung seltsam --> mehrfach Aktivierung moeglich ? --> nur Android ? --> MobilePlatform Menu !!!???
+  ((* Accelerator Key funktioniert, obwohl Action disabled ist !!!??? Bug? Beispiel F5 --> haengt ggf. mit zweitem Menu zusammen ?
   ((* New Document --> no focus in new created document tab
   //* Crash when closing the application? --> was problem with multiple menus and moving menu items from menubar into popup menu for mobile menus
   //* optimize height of statusbar
-  ((* Found 18 in files: 37, total files: 20214 --> offset of 32 ???
+  //* Found 18 in files: 37, total files: 20214 --> offset of 32 ???
   //* Speichern auf SD Karte unter Android funktioniert nicht --> storrage access framework verwenden !
   //* Zugriff via StorageAccess Framework funktioniert nicht
   //* Teilen von QuickMemo+ oder markiertem Text aus Chrome does not work
@@ -83,7 +92,9 @@ Known and open Bugs are:
   ((* SaveAs and Save As Copy support for Android Storage Access Framework
   //* SetFocus nach Teilen und SaveAs? verloren
   //* Receive Share of selected Text does not work --> processIntent()
-  ((* bei SaveAs Vorbelegung des Dateinamens mit aktuellem Dateiname
+  ((* bei SaveAs Vorbelegung des Dateinamens mit aktuellem Dateiname --> nur bei MobileFileDialog
+  //* Manchmal: Find in Files hat Offset von 32 ?? --> anscheindend Problem mit symbolischen links !!!???
+  //* Menu wird nicht geschlossen, wenn Datei aus Last Opened ausgewaehlt wird
 
 Now already implemented:
 
