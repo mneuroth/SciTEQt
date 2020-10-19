@@ -37,6 +37,8 @@
 
 //*************************************************************************
 
+#define __SCITE_QT_VERSION__   "0.99.1"
+
 enum {
     WORK_EXECUTE = WORK_PLATFORM + 1,
 	TRIGGER_GOTOPOS = WORK_PLATFORM + 2
@@ -2024,7 +2026,7 @@ void SciTEQt::cmdAboutSciteQt()
 {
     New();
     QString aboutSciteQt = ApplicationData::simpleReadFileContent(":/about_sciteqt.txt");
-    emit setTextToCurrent(aboutSciteQt);
+    emit setTextToCurrent(getSciteQtInfos()+"\n\n"+aboutSciteQt);
 }
 
 void SciTEQt::cmdAboutCurrentFile()
@@ -2798,6 +2800,11 @@ void SciTEQt::updateCurrentWindowPosAndSize(int left, int top, int width, int he
 void SciTEQt::updateCurrentSelectedFileUrl(const QString & fileUrl)
 {
     m_sCurrentFileUrl = fileUrl;
+}
+
+QString SciTEQt::getSciteQtInfos() const
+{
+    return QString("SciteQt Version %1 from %2").arg(__SCITE_QT_VERSION__).arg(__DATE__);
 }
 
 void SciTEQt::logToDebug(const QString & text)
