@@ -2,7 +2,6 @@ import QtQuick 2.9
 import QtQuick.Controls 2.9
 import QtQuick.Dialogs 1.2
 import QtQml.Models 2.9
-import Qt.labs.platform 1.1 as Platform
 import QtQuick.Controls 1.4 as Controls1
 import QtQuick.Layouts 1.0
 //import Qt.labs.settings 1.0
@@ -37,13 +36,12 @@ ApplicationWindow {
         close.accepted = false
     }
 
-    onFocusObjectChanged: {
-        //console.log("Focus obj changed "+object)
-        //logToOutput("Focus obj changed "+object)
-    }
+    //onFocusObjectChanged: {
+    //    //console.log("Focus obj changed "+object)
+    //    //logToOutput("Focus obj changed "+object)
+    //}
 
     Component.onCompleted: {
-        //console.log("ON Completed")
 // TODO: gibt es besseren weg scintilla controls bei sciteqt zu registrieren?
         sciteQt.setScintilla(quickScintillaEditor.scintilla)
         sciteQt.setOutput(quickScintillaOutput.scintilla)
@@ -51,14 +49,12 @@ ApplicationWindow {
         sciteQt.setContent(splitView)
         sciteQt.setMainWindow(applicationWindow)
         sciteQt.setApplicationData(applicationData)
-        //console.log("ON Completed done")
         //splitView.restoreState(settings.splitView)
-        //sciteQt.showToolBar = true
-         sciteQt.logToDebug("=============== APPLICATION START ==========================")
+        console.log("========== APP START ============")
     }
-    Component.onDestruction: {
-        //settings.splitView = splitView.saveState()
-    }
+    //Component.onDestruction: {
+    //    //settings.splitView = splitView.saveState()
+    //}
 
     onTitleChanged: {
         labelTitel.text = title
@@ -423,7 +419,6 @@ ApplicationWindow {
     // *** for webassembly platform ... ***
 
     function htmlOpen() {
-        console.log("htmlOpen");
         htmlFileAccess.loadFsFile("*.*", "/tmp");
     }
 
@@ -437,7 +432,6 @@ ApplicationWindow {
     }
 
     function htmlSave() {
-        console.log("htmlSave");
         var tmpFilePath = "/tmp/temp.txt"
         writeCurrentDoc("file://" + tmpFilePath)
         //project.saveAs("file://" + tmpFilePath)
@@ -1902,14 +1896,6 @@ ApplicationWindow {
     }
 
     // **********************************************************************
-
-    Platform.FolderDialog {
-        id: folderDialog
-        objectName: "folderDialog"
-        visible: false
-        modality: Qt.ApplicationModal
-        title: qsTr("Choose a directory")
-    }
 
     FileDialog {
         id: fileDialog

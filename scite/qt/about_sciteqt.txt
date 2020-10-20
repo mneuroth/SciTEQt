@@ -68,11 +68,11 @@ Known and open Bugs are:
 
   * SaveAsCopy auf Android Storage Access Framework aendert Dateinamen
   * Files from android storage access framework will not be restored at application startup
+  * Improve handling of last searches in find dialog --> update combobox inhalt direkt
 
 Beobachtung:
   * Memory leak when switching between tab pages?
   * Sporadische Abstürze bei F5 und Skripts mit langen Ausgaben --> scheint besser seit QProcess in anderem Thread erzeugt wird
-  * Find In Files Button Up funktioniert manchmal nicht korrekt
 
 Bugx fixed:
   ((* Keyboard Handling Problem?: After some time the accelerator keys have to be pressed twice? --> Dialog sind dann beim oeffnen kleiner !? ==> Focus Problem, vielleicht hat Fenster keinen Input Focus !!!???
@@ -95,6 +95,8 @@ Bugx fixed:
   ((* bei SaveAs Vorbelegung des Dateinamens mit aktuellem Dateiname --> nur bei MobileFileDialog
   //* Manchmal: Find in Files hat Offset von 32 ?? --> anscheindend Problem mit symbolischen links !!!???
   //* Menu wird nicht geschlossen, wenn Datei aus Last Opened ausgewaehlt wird
+  //* Find In Files Button Up funktioniert manchmal nicht korrekt
+  //* Find in Files Button Auswaehlen funktioniert manchmal nicht, ggf. wenn via Shortcut aktiviert? Oder wenn Text in Anzeigefeld selektiert ist? ==> problem ist anscheinend wenn Text im Textfeld selektiert wird !!!
 
 Now already implemented:
 

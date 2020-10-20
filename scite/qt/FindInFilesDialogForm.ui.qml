@@ -70,6 +70,7 @@ Window {
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
                 editable: true
+                //selectTextByMouse: true
                 model: findWhatModel
 
                 //font.pixelSize: 12
@@ -100,6 +101,7 @@ Window {
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
                 editable: true
+                //selectTextByMouse: true
                 model: filesExtensionsModel
 
                 //font.pixelSize: 12
@@ -127,7 +129,8 @@ Window {
             ComboBox {
                 id: directoryInput
                 Layout.fillWidth: true
-                editable: true
+                editable: false
+                //selectTextByMouse: true
                 model: directoryModel
 
                 //font.pixelSize: 12

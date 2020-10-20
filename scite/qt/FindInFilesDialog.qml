@@ -3,6 +3,8 @@ import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 
+import Qt.labs.platform 1.1 as Platform
+
 FindInFilesDialogForm {
     id: root
 
@@ -46,8 +48,20 @@ FindInFilesDialogForm {
     upButton {
         onClicked: {
             var currentDirectory = findInFilesDialog.directoryInput.editText.length > 0 ? findInFilesDialog.directoryInput.editText : findInFilesDialog.directoryInput.currentText
-            directoryInput.editText = sciteQt.cmdDirectoryUp(currentDirectory)
+            var newDirectory = sciteQt.cmdDirectoryUp(currentDirectory)
+            // process directory up: add new text to combobox (temporary) and select added item afterwards
+            findInFilesDialog.directoryModel.append({"text":newDirectory})
+            directoryInput.currentIndex = findInFilesDialog.directoryModel.count - 1
+            //directoryInput.editText = newDirectory
         }
+    }
+
+    Platform.FolderDialog {
+        id: folderDialog
+        objectName: "folderDialog"
+        visible: false
+        modality: Qt.ApplicationModal
+        title: qsTr("Choose a directory")
     }
 
     Connections {

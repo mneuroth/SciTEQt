@@ -208,7 +208,5 @@ int main(int argc, char *argv[])
 
     engine.load(url);
 
-    //qDebug() << "LOAD QML DONE" << endl;
-
     return app.exec();
 }
