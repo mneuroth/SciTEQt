@@ -30,9 +30,9 @@
         <file>qml/HelpMenu.qml</file>
         <file>qml/AboutSciteDialog.qml</file>
         <file alias="qml/ScintillaText.qml">../../scintilla/qt/ScintillaEditBase/ScintillaText.qml</file>
-        <file alias="qml/Embedded.properties">../src/Embedded.properties</file>
-        <file alias="qml/scite_logo.png">../gtk/Sci48M.png</file>
-        <file alias="qml/about_sciteqt.txt">about_sciteqt.txt</file>
+        <file alias="Embedded.properties">../src/Embedded.properties</file>
+        <file alias="scite_logo.png">../gtk/Sci48M.png</file>
+        <file alias="about_sciteqt.txt">about_sciteqt.txt</file>
         <file alias="qml/icons/clear.svg">icons/clear-black-24dp.svg</file>
         <file alias="qml/icons/content_copy.svg">icons/content_copy-black-24dp.svg</file>
         <file alias="qml/icons/content_cut.svg">icons/content_cut-black-24dp.svg</file>

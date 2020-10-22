@@ -498,9 +498,26 @@ ApplicationWindow {
         model.clear()
     }
 
+    function findInModel(model, displayName) {
+        for(var i=0; i<model.count; i++)
+        {
+            if(model.get(i)["display"]===displayName)
+            {
+                return true
+            }
+        }
+        return false
+    }
+
     function writeInMenuModel(model, index, name, checked, ashortcut) {
-        model.append({"display":name, "checkState":checked, "shortcut":ashortcut})
-        //model.set(index, {"display":name, "checkState":checked, "shortcut":ashortcut})
+        if(model.count>index) {
+            model.set(index, {"display":name, "checkState":checked, "shortcut":ashortcut, "index":index})
+        }
+        else {
+            if(!findInModel(model,name)) {
+                model.append({"display":name, "checkState":checked, "shortcut":ashortcut, "index":index})
+            }
+        }
     }
 
     function removeInMenuModel(model,index) {
