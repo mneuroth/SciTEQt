@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
     app.setWindowIcon(QIcon("scite_logo.png"));
 
     QQmlApplicationEngine engine;
-    const QUrl url(QStringLiteral("qrc:/app.qml"));
+    const QUrl url(QStringLiteral("qrc:/qml/app.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
         if (!obj && url == objUrl)

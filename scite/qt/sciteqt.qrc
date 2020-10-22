@@ -1,66 +1,66 @@
 <RCC>
     <qresource prefix="/">
-        <file>app.qml</file>
-        <file alias="Embedded.properties">../src/Embedded.properties</file>
-        <file alias="scite_logo.png">../gtk/Sci48M.png</file>
-        <file alias="ScintillaText.qml">../../scintilla/qt/ScintillaEditBase/ScintillaText.qml</file>
-        <file>AutoSizingMenu.qml</file>
-        <file>ReplaceDialog.qml</file>
-        <file>ReplaceDialogForm.ui.qml</file>
-        <file>FindDialog.qml</file>
-        <file>FindDialogForm.ui.qml</file>
-        <file>FindInFilesDialog.qml</file>
-        <file>FindInFilesDialogForm.ui.qml</file>
-        <file>GoToDialog.qml</file>
-        <file>GoToDialogForm.ui.qml</file>
-        <file>TabSizeDialog.qml</file>
-        <file>TabSizeDialogForm.ui.qml</file>
-        <file>AbbreviationDialog.qml</file>
-        <file>AbbreviationDialogForm.ui.qml</file>
-        <file>ParametersDialog.qml</file>
-        <file>ParametersDialogForm.ui.qml</file>
-        <file>SciteMenuActions.qml</file>
-        <file>FileMenu.qml</file>
-        <file>EditMenu.qml</file>
-        <file>SearchMenu.qml</file>
-        <file>ViewMenu.qml</file>
-        <file>ToolsMenu.qml</file>
-        <file>OptionsMenu.qml</file>
-        <file>LanguageMenu.qml</file>
-        <file>BuffersMenu.qml</file>
-        <file>HelpMenu.qml</file>
-        <file alias="about_sciteqt.txt">about_sciteqt.txt</file>
-        <file>AboutSciteDialog.qml</file>
-        <file alias="icons/clear.svg">icons/clear-black-24dp.svg</file>
-        <file alias="icons/content_copy.svg">icons/content_copy-black-24dp.svg</file>
-        <file alias="icons/content_cut.svg">icons/content_cut-black-24dp.svg</file>
-        <file alias="icons/content_paste.svg">icons/content_paste-black-24dp.svg</file>
-        <file alias="icons/create.svg">icons/create-black-24dp.svg</file>
-        <file alias="icons/delete.svg">icons/delete-black-24dp.svg</file>
-        <file alias="icons/find_in_page.svg">icons/find_in_page-black-24dp.svg</file>
-        <file alias="icons/find_replace.svg">icons/find_replace-black-24dp.svg</file>
-        <file alias="icons/open_in_new.svg">icons/open_in_new-black-24dp.svg</file>
-        <file alias="icons/print.svg">icons/print-black-24dp.svg</file>
-        <file alias="icons/redo.svg">icons/redo-black-24dp.svg</file>
-        <file alias="icons/save.svg">icons/save-black-24dp.svg</file>
-        <file alias="icons/undo.svg">icons/undo-black-24dp.svg</file>
-        <file alias="icons/play_arrow.svg">icons/play_arrow-black-24dp.svg</file>
-        <file alias="icons/stop.svg">icons/stop-black-24dp.svg</file>
-        <file alias="icons/build.svg">icons/build-black-24dp.svg</file>
-        <file alias="icons/arrow_forward_ios.svg">icons/arrow_forward_ios-black-24dp.svg</file>
-        <file alias="icons/arrow_back_ios.svg">icons/arrow_back_ios-black-24dp.svg</file>
-        <file alias="icons/do_not_touch.svg">icons/do_not_touch-black-24dp.svg</file>
-        <file alias="icons/share.svg">icons/share-black-24dp.svg</file>
-        <file alias="icons/directory.svg">icons/folder-black-24dp.svg</file>
-        <file alias="icons/document.svg">icons/insert_drive_file-black-24dp.svg</file>
-        <file alias="icons/file.svg">icons/text_snippet-black-24dp.svg</file>
-        <file alias="icons/loop.svg">icons/loop-black-24dp.svg</file>
-        <file alias="icons/arrow_upward.svg">icons/arrow_upward-black-24dp.svg</file>
-        <file alias="icons/arrow_downward.svg">icons/arrow_downward-black-24dp.svg</file>
-        <file alias="icons/menu-black.svg">icons/menu-black-24dp.svg</file>
-        <file alias="icons/more_vert-black.svg">icons/more_vert-black-24dp.svg</file>
-        <file alias="icons/more_horiz-black.svg">icons/more_horiz-black-24dp.svg</file>
-        <file>MobileFileDialog.qml</file>
-        <file>MobileFileDialogForm.ui.qml</file>
+        <file>qml/app.qml</file>
+        <file>qml/AutoSizingMenu.qml</file>
+        <file>qml/ReplaceDialog.qml</file>
+        <file>qml/ReplaceDialogForm.ui.qml</file>
+        <file>qml/FindDialog.qml</file>
+        <file>qml/FindDialogForm.ui.qml</file>
+        <file>qml/FindInFilesDialog.qml</file>
+        <file>qml/FindInFilesDialogForm.ui.qml</file>
+        <file>qml/GoToDialog.qml</file>
+        <file>qml/GoToDialogForm.ui.qml</file>
+        <file>qml/TabSizeDialog.qml</file>
+        <file>qml/TabSizeDialogForm.ui.qml</file>
+        <file>qml/AbbreviationDialog.qml</file>
+        <file>qml/AbbreviationDialogForm.ui.qml</file>
+        <file>qml/ParametersDialog.qml</file>
+        <file>qml/ParametersDialogForm.ui.qml</file>
+        <file>qml/MobileFileDialog.qml</file>
+        <file>qml/MobileFileDialogForm.ui.qml</file>
+        <file>qml/SciteMenuActions.qml</file>
+        <file>qml/FileMenu.qml</file>
+        <file>qml/EditMenu.qml</file>
+        <file>qml/SearchMenu.qml</file>
+        <file>qml/ViewMenu.qml</file>
+        <file>qml/ToolsMenu.qml</file>
+        <file>qml/OptionsMenu.qml</file>
+        <file>qml/LanguageMenu.qml</file>
+        <file>qml/BuffersMenu.qml</file>
+        <file>qml/HelpMenu.qml</file>
+        <file>qml/AboutSciteDialog.qml</file>
+        <file alias="qml/ScintillaText.qml">../../scintilla/qt/ScintillaEditBase/ScintillaText.qml</file>
+        <file alias="qml/Embedded.properties">../src/Embedded.properties</file>
+        <file alias="qml/scite_logo.png">../gtk/Sci48M.png</file>
+        <file alias="qml/about_sciteqt.txt">about_sciteqt.txt</file>
+        <file alias="qml/icons/clear.svg">icons/clear-black-24dp.svg</file>
+        <file alias="qml/icons/content_copy.svg">icons/content_copy-black-24dp.svg</file>
+        <file alias="qml/icons/content_cut.svg">icons/content_cut-black-24dp.svg</file>
+        <file alias="qml/icons/content_paste.svg">icons/content_paste-black-24dp.svg</file>
+        <file alias="qml/icons/create.svg">icons/create-black-24dp.svg</file>
+        <file alias="qml/icons/delete.svg">icons/delete-black-24dp.svg</file>
+        <file alias="qml/icons/find_in_page.svg">icons/find_in_page-black-24dp.svg</file>
+        <file alias="qml/icons/find_replace.svg">icons/find_replace-black-24dp.svg</file>
+        <file alias="qml/icons/open_in_new.svg">icons/open_in_new-black-24dp.svg</file>
+        <file alias="qml/icons/print.svg">icons/print-black-24dp.svg</file>
+        <file alias="qml/icons/redo.svg">icons/redo-black-24dp.svg</file>
+        <file alias="qml/icons/save.svg">icons/save-black-24dp.svg</file>
+        <file alias="qml/icons/undo.svg">icons/undo-black-24dp.svg</file>
+        <file alias="qml/icons/play_arrow.svg">icons/play_arrow-black-24dp.svg</file>
+        <file alias="qml/icons/stop.svg">icons/stop-black-24dp.svg</file>
+        <file alias="qml/icons/build.svg">icons/build-black-24dp.svg</file>
+        <file alias="qml/icons/arrow_forward_ios.svg">icons/arrow_forward_ios-black-24dp.svg</file>
+        <file alias="qml/icons/arrow_back_ios.svg">icons/arrow_back_ios-black-24dp.svg</file>
+        <file alias="qml/icons/do_not_touch.svg">icons/do_not_touch-black-24dp.svg</file>
+        <file alias="qml/icons/share.svg">icons/share-black-24dp.svg</file>
+        <file alias="qml/icons/directory.svg">icons/folder-black-24dp.svg</file>
+        <file alias="qml/icons/document.svg">icons/insert_drive_file-black-24dp.svg</file>
+        <file alias="qml/icons/file.svg">icons/text_snippet-black-24dp.svg</file>
+        <file alias="qml/icons/loop.svg">icons/loop-black-24dp.svg</file>
+        <file alias="qml/icons/arrow_upward.svg">icons/arrow_upward-black-24dp.svg</file>
+        <file alias="qml/icons/arrow_downward.svg">icons/arrow_downward-black-24dp.svg</file>
+        <file alias="qml/icons/menu-black.svg">icons/menu-black-24dp.svg</file>
+        <file alias="qml/icons/more_vert-black.svg">icons/more_vert-black-24dp.svg</file>
+        <file alias="qml/icons/more_horiz-black.svg">icons/more_horiz-black-24dp.svg</file>
     </qresource>
 </RCC>
