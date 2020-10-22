@@ -164,7 +164,7 @@ Window {
 
                 CheckBox {
                     id: wholeWordCheckBox
-                    width: 150
+                    //width: 150
                     text: localiseText(qsTr("Match &whole word only"))
                     Keys.onEscapePressed: cancelButton.clicked()
                     Keys.onBackPressed: cancelButton.clicked()
@@ -172,7 +172,7 @@ Window {
 
                 CheckBox {
                     id: caseSensitiveCheckBox
-                    width: wholeWordCheckBox.width
+                    //width: wholeWordCheckBox.width
                     text: localiseText(qsTr("Case sensiti&ve"))
                     Keys.onEscapePressed: cancelButton.clicked()
                     Keys.onBackPressed: cancelButton.clicked()
@@ -180,7 +180,7 @@ Window {
 
                 CheckBox {
                     id: regularExpressionCheckBox
-                    width: wholeWordCheckBox.width
+                    //width: wholeWordCheckBox.width
                     text: localiseText(qsTr("&Regular expression"))
                     Keys.onEscapePressed: cancelButton.clicked()
                     Keys.onBackPressed: cancelButton.clicked()

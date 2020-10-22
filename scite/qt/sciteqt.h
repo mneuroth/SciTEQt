@@ -480,19 +480,20 @@ signals:
 
     void updateReplacementCount(const QString & count);
 
-    void setInBuffersModel(int index, const QString & txt, bool checked, const QString & shortcut);
+    void setInBuffersModel(int index, const QString & txt, bool checked, const QString & ashortcut);
     void removeInBuffersModel(int index);
     void checkStateInBuffersModel(int index, bool checked);
-    void setInLanguagesModel(int index, const QString & txt, bool checked, const QString & shortcut);
+    void setInLanguagesModel(int index, const QString & txt, bool checked, const QString & ashortcut);
     void removeInLanguagesModel(int index);
     void checkStateInLanguagesModel(int index, bool checked);
-    void setInToolsModel(int index, const QString & txt, bool checked, const QString & shortcut);
+    void setInToolsModel(int index, const QString & txt, bool checked, const QString & ashortcut);
+    //void setInToolsModel(int index, QString txt, bool checked, QVariant ashortcut);
     void removeInToolsModel(int index);
     void checkStateInToolsModel(int index, bool checked);
-    void setInLastOpenedFilesModel(int index, const QString & txt, bool checked, const QString & shortcut);
+    void setInLastOpenedFilesModel(int index, const QString & txt, bool checked, const QString & ashortcut);
     void removeInLastOpenedFilesModel(int index);
     void checkStateInLastOpenedFilesModel(int index, bool checked);
-    void setInImportModel(int index, const QString & txt, bool checked, const QString & shortcut);
+    void setInImportModel(int index, const QString & txt, bool checked, const QString & ashortcut);
     void removeInImportModel(int index);
     void checkStateInImportModel(int index, bool checked);
 

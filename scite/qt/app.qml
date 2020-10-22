@@ -498,8 +498,8 @@ ApplicationWindow {
         model.clear()
     }
 
-    function writeInMenuModel(model, index, name, checked, shortcut) {
-        model.set(index, {"display":name, "checkState":checked, "shortcut":shortcut})
+    function writeInMenuModel(model, index, name, checked, ashortcut) {
+        model.set(index, {"display":name, "checkState":checked, "shortcut":ashortcut})
     }
 
     function removeInMenuModel(model,index) {
@@ -656,23 +656,23 @@ ApplicationWindow {
         onSetMenuChecked:             handleMenuChecked(menuID, val)
         onSetMenuEnable:              handleMenuEnable(menuID, val)
 
-        onSetInBuffersModel:          writeInMenuModel(buffersModel, index, txt, checked, shortcut)
+        onSetInBuffersModel:          writeInMenuModel(buffersModel, index, txt, checked, ashortcut)
         onRemoveInBuffersModel:       removeInMenuModel(buffersModel, index)
         onCheckStateInBuffersModel:   setCheckStateInMenuModel(buffersModel, index, checked)
 
-        onSetInLanguagesModel:        writeInMenuModel(languagesModel, index, txt, checked, shortcut)
+        onSetInLanguagesModel:        writeInMenuModel(languagesModel, index, txt, checked, ashortcut)
         onRemoveInLanguagesModel:     removeInMenuModel(languagesModel, index)
         onCheckStateInLanguagesModel: setCheckStateInMenuModel(languagesModel, index, checked)
 
-        onSetInToolsModel:            writeInMenuModel(toolsModel, index, txt, checked, shortcut)
+        onSetInToolsModel:            writeInMenuModel(toolsModel, index, txt, checked, ashortcut)
         onRemoveInToolsModel:         removeInMenuModel(toolsModel, index)
         onCheckStateInToolsModel:     setCheckStateInMenuModel(toolsModel, index, checked)
 
-        onSetInLastOpenedFilesModel:         writeInMenuModel(lastOpenedFilesModel, index, txt, checked, shortcut)
+        onSetInLastOpenedFilesModel:         writeInMenuModel(lastOpenedFilesModel, index, txt, checked, ashortcut)
         onRemoveInLastOpenedFilesModel:      removeInMenuModel(lastOpenedFilesModel, index)
         onCheckStateInLastOpenedFilesModel:  setCheckStateInMenuModel(lastOpenedFilesModel, index, checked)
 
-        onSetInImportModel:            writeInMenuModel(importModel, index, txt, checked, shortcut)
+        onSetInImportModel:            writeInMenuModel(importModel, index, txt, checked, ashortcut)
         onRemoveInImportModel:         removeInMenuModel(importModel, index)
         onCheckStateInImportModel:     setCheckStateInMenuModel(importModel, index, checked)
     }

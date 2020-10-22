@@ -59,13 +59,15 @@ New open features might be:
   * Show all occurences of find in current file in outputarea
   * ggf. save and restore text in outputarea?
   * Scite Logo als linker Button in Titelzeile oder Einstellungsdialog/SuchDialog etc. ? (Fast Access Menu Items?)
+  * Save and Restore for View-Parameters like: show line numbers
 
 Known and open Bugs are:
 
   * Selection disappears if mouse wheel is used and selection goes out of scope
-  * Absturz Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? und gcc/mingw funktionieren !
   * Anzeige der Schrift nach Monitor Wechsel teilweise durcheinander...
+  (* Absturz Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? und gcc/mingw funktionieren !
 
+  * Navigate directory in Find In Files Dialog does not work for android
   * SaveAsCopy auf Android Storage Access Framework aendert Dateinamen
   * Files from android storage access framework will not be restored at application startup
   * Improve handling of last searches in find dialog --> update combobox inhalt direkt

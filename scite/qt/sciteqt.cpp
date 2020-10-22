@@ -990,7 +990,12 @@ void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
 		
         // TODO: analyze, msc 2017 debug has problems with this ?
         //QString sMn;
-        emit setInToolsModel(posForThisItem, ConvertGuiCharToQString(text), false, ConvertGuiCharToQString(mnemonic)/*sMn/*"Ctrl+0"*/);
+
+#if defined(Q_CC_MSVC)
+        emit setInToolsModel(posForThisItem, ConvertGuiCharToQString(text), false, "");
+#else
+        emit setInToolsModel(posForThisItem, ConvertGuiCharToQString(text), false, /*g_aShortCuts[posForThisItem]*//*g_aShortCuts.at(posForThisItem)*/ConvertGuiCharToQString(mnemonic)/*sMn*//*"Ctrl+0"*/);
+#endif
     }
     else if (menuNumber == 0)
     {
