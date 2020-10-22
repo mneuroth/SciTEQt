@@ -499,7 +499,8 @@ ApplicationWindow {
     }
 
     function writeInMenuModel(model, index, name, checked, ashortcut) {
-        model.set(index, {"display":name, "checkState":checked, "shortcut":ashortcut})
+        model.append({"display":name, "checkState":checked, "shortcut":ashortcut})
+        //model.set(index, {"display":name, "checkState":checked, "shortcut":ashortcut})
     }
 
     function removeInMenuModel(model,index) {

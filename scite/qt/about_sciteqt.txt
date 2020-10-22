@@ -65,7 +65,6 @@ Known and open Bugs are:
 
   * Anzeige der Schrift nach Monitor Wechsel teilweise durcheinander...
   (* Absturz Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? und gcc/mingw funktionieren !
-  * does not work if command number is not start with 0 --> i. e. command.name.11.*=Load Lua
 
   * Navigate directory in Find In Files Dialog does not work for android
   * SaveAsCopy auf Android Storage Access Framework aendert Dateinamen
@@ -101,6 +100,7 @@ Bugs fixed:
   //* Find in Files Button Auswaehlen funktioniert manchmal nicht, ggf. wenn via Shortcut aktiviert? Oder wenn Text in Anzeigefeld selektiert ist? ==> problem ist anscheinend wenn Text im Textfeld selektiert wird !!!
   //* Scroll 3 lines with mouse wheel
   //* Selection disappears if mouse wheel is used and selection goes out of scope
+  //* does not work if command number is not start with 0 --> i. e. command.name.11.*=Load Lua ==> use append() instead of set in ListModel
 
 Now already implemented:
 
