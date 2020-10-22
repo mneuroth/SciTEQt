@@ -29,11 +29,11 @@ Added freatures (compared to original SciTE):
 
 Missing features are:
 
-# * Cleanup source qt source code
+# * Cleanup source qt source code, remove debug loggings
+# * Github Releases erzeugen (Binary Setup für Windows & Mac)
 # * switch to Scite v4.4.5
 # * testen, testen, testen !
 # * fix known Bugs
-# * Github Releases erzeugen (Binary Setup für Windows & Mac)
   * save and restore file extensions and directories for find in files
   * Improve splitter handling
   * Implement Printing (partly)
@@ -63,9 +63,9 @@ New open features might be:
 
 Known and open Bugs are:
 
-  * Selection disappears if mouse wheel is used and selection goes out of scope
   * Anzeige der Schrift nach Monitor Wechsel teilweise durcheinander...
   (* Absturz Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? und gcc/mingw funktionieren !
+  * does not work if command number is not start with 0 --> i. e. command.name.11.*=Load Lua
 
   * Navigate directory in Find In Files Dialog does not work for android
   * SaveAsCopy auf Android Storage Access Framework aendert Dateinamen
@@ -76,7 +76,7 @@ Beobachtung:
   * Memory leak when switching between tab pages?
   * Sporadische Abstürze bei F5 und Skripts mit langen Ausgaben --> scheint besser seit QProcess in anderem Thread erzeugt wird
 
-Bugx fixed:
+Bugs fixed:
   ((* Keyboard Handling Problem?: After some time the accelerator keys have to be pressed twice? --> Dialog sind dann beim oeffnen kleiner !? ==> Focus Problem, vielleicht hat Fenster keinen Input Focus !!!???
   //* Menu Zeichensatzcodierung seltsam --> mehrfach Aktivierung moeglich ? --> nur Android ? --> MobilePlatform Menu !!!???
   ((* Accelerator Key funktioniert, obwohl Action disabled ist !!!??? Bug? Beispiel F5 --> haengt ggf. mit zweitem Menu zusammen ?
@@ -99,6 +99,8 @@ Bugx fixed:
   //* Menu wird nicht geschlossen, wenn Datei aus Last Opened ausgewaehlt wird
   //* Find In Files Button Up funktioniert manchmal nicht korrekt
   //* Find in Files Button Auswaehlen funktioniert manchmal nicht, ggf. wenn via Shortcut aktiviert? Oder wenn Text in Anzeigefeld selektiert ist? ==> problem ist anscheinend wenn Text im Textfeld selektiert wird !!!
+  //* Scroll 3 lines with mouse wheel
+  //* Selection disappears if mouse wheel is used and selection goes out of scope
 
 Now already implemented:
 

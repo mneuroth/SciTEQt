@@ -299,13 +299,9 @@ void ScintillaEditBase::wheelEvent(QWheelEvent *event)
                 int linesToScroll = 3;
                 //QQuickPaintedItem::wheelEvent(event);
                 if (event->delta() > 0) {
-                    for(int i=0; i<linesToScroll; i++) {
-                    sqt->KeyCommand(SCI_LINESCROLLUP);
-                    }
+                    sqt->ScrollTo(sqt->topLine-linesToScroll);
                 } else {
-                    for(int i=0; i<linesToScroll; i++) {
-                    sqt->KeyCommand(SCI_LINESCROLLDOWN);
-                }
+                    sqt->ScrollTo(sqt->topLine+linesToScroll);
                 }
 #else
                 QAbstractScrollArea::wheelEvent(event);
