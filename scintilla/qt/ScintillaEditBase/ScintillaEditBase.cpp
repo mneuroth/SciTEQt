@@ -296,11 +296,16 @@ void ScintillaEditBase::wheelEvent(QWheelEvent *event)
 #endif
 #ifdef PLAT_QT_QML
                 // Scroll
+                int linesToScroll = 3;
                 //QQuickPaintedItem::wheelEvent(event);
                 if (event->delta() > 0) {
+                    for(int i=0; i<linesToScroll; i++) {
                     sqt->KeyCommand(SCI_LINESCROLLUP);
+                    }
                 } else {
+                    for(int i=0; i<linesToScroll; i++) {
                     sqt->KeyCommand(SCI_LINESCROLLDOWN);
+                }
                 }
 #else
                 QAbstractScrollArea::wheelEvent(event);
