@@ -1,6 +1,13 @@
+/*
+ * Code taken from MobileGnuplotViewer(Quick) project and addapted for sciteqt.
+ *
+ * (C) 2015-2020 by Michael Neuroth
+ *
+ */
+
 #include "storageaccess.h"
 
-#include <QDebug>
+//#include <QDebug>
 
 #if defined(Q_OS_ANDROID)
 #include <QtAndroidExtras>
@@ -30,7 +37,8 @@ StorageAccess * StorageAccess::getInstance()
 
 void StorageAccess::onFileOpenActivityResult(int resultCode, const QString & fileUri, const QString & decodedFileUri, const QByteArray & fileContent)
 {
-//qDebug() << "*** onFileOpenActivityResult() " << resultCode << " " << fileUri << " decodedUri=" << decodedFileUri << " len=" << fileContent.size() << endl;
+    //qDebug() << "*** onFileOpenActivityResult() " << resultCode << " " << fileUri << " decodedUri=" << decodedFileUri << " len=" << fileContent.size() << endl;
+
     if(resultCode == RESULT_OK)
     {
         emit openFileContentReceived(fileUri, decodedFileUri, fileContent);
@@ -152,27 +160,11 @@ bool StorageAccess::readFile(const QString & fileUri, QByteArray & fileContent)
                                               jniFileUri.object<jstring>());
 
     jbyteArray contentArray = content.object<jbyteArray>();
- /*
-    if (!contentArray) {
-        qDebug() << Q_FUNC_INFO << "No icon data";
 
-        return false;
-    }
-
-    jsize iconSize = env->GetArrayLength(contentArray);
-
-    if (iconSize > 0) {
-        jbyte *icon = env->GetByteArrayElements(iconDataArray, false);
-        image = QImage(QImage::fromData((uchar*) icon, iconSize,"PNG"));
-        env->ReleaseByteArrayElements(iconDataArray, icon, JNI_ABORT);
-    }
-*/
     QByteArray qContent = jbyteArray2QByteArray(contentArray);
     fileContent = qContent;
-//    env->ReleaseByteArrayElements(contentArray, icon, JNI_ABORT);
+//TODO gulp: check if release is needed   env->ReleaseByteArrayElements(contentArray, icon, JNI_ABORT);
     return qContent.length()>0;
-
-    //return false;
 #else
     Q_UNUSED(fileUri)
     Q_UNUSED(fileContent)

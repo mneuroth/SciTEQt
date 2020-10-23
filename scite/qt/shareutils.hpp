@@ -14,12 +14,14 @@
 // my blog about Qt for mobile: http://j.mp/qt-x
 // see also /COPYRIGHT and /LICENSE
 
+/*
+ * Code taken from MobileGnuplotViewer(Quick) project and addapted for sciteqt.
+ */
+
 #ifndef SHAREUTILS_H
 #define SHAREUTILS_H
 
 #include <QObject>
-
-//#include <QDebug>
 
 void AddToLog(const QString & msg);
 
@@ -31,7 +33,6 @@ signals:
     void shareFinished(int requestCode);
     void shareNoAppAvailable(int requestCode);
     void shareError(int requestCode, QString message);
-//    void openError(int requestCode, QString message);
     void fileUrlReceived(QString url);
     void fileReceivedAndSaved(QString url);
     void textReceived(QString content);
@@ -39,30 +40,24 @@ signals:
 public:
     PlatformShareUtils(QObject *parent = 0) : QObject(parent){}
     virtual ~PlatformShareUtils() {}
+
     virtual bool checkMimeTypeView(const QString &mimeType){
         Q_UNUSED(mimeType);
-        //qDebug() << "check view for " << mimeType;
         return true;}
     virtual bool checkMimeTypeEdit(const QString &mimeType){
         Q_UNUSED(mimeType);
-        //qDebug() << "check edit for " << mimeType;
         return true;}
     virtual void share(const QString &text, const QUrl &url){
         Q_UNUSED(text);
         Q_UNUSED(url);
-        //qDebug() << text << url;
     }
-//    virtual int sendFileNew(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId, const bool &altImpl){
-//        qDebug() << filePath << " - " << title << "requestId " << requestId << " - " << mimeType << "altImpl? " << altImpl;
-//        return -99;
-//    }
+
     virtual void sendFile(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId, const bool &altImpl){
         Q_UNUSED(filePath);
         Q_UNUSED(title);
         Q_UNUSED(mimeType);
         Q_UNUSED(requestId);
         Q_UNUSED(altImpl);
-        //qDebug() << filePath << " - " << title << "requestId " << requestId << " - " << mimeType << "altImpl? " << altImpl;
     }
     virtual void viewFile(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId, const bool &altImpl){
         Q_UNUSED(filePath);
@@ -70,7 +65,6 @@ public:
         Q_UNUSED(mimeType);
         Q_UNUSED(requestId);
         Q_UNUSED(altImpl);
-        //qDebug() << filePath << " - " << title << " requestId: " << requestId << " - " << mimeType << "altImpl? " << altImpl;
     }
     virtual void editFile(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId, const bool &altImpl){
         Q_UNUSED(filePath);
@@ -78,12 +72,10 @@ public:
         Q_UNUSED(mimeType);
         Q_UNUSED(requestId);
         Q_UNUSED(altImpl);
-        //qDebug() << filePath << " - " << title << " requestId: " << requestId << " - " << mimeType << "altImpl? " << altImpl;
     }
 
     virtual void checkPendingIntents(const QString workingDirPath){
         Q_UNUSED(workingDirPath);
-        //qDebug() << "checkPendingIntents " << workingDirPath;
     }
 
     virtual bool isSciteQtInstalled(){
@@ -94,9 +86,6 @@ public:
         Q_UNUSED(packageName);
         return false;
     }
-
-//    virtual void openFile(const int &requestId){
-//        qDebug() << "openFile " << requestId; }
 };
 
 class ShareUtils : public QObject
@@ -109,7 +98,6 @@ signals:
     void shareFinished(int requestCode);
     void shareNoAppAvailable(int requestCode);
     void shareError(int requestCode, QString message);
-//    void openError(int requestCode, QString message);
     void fileUrlReceived(QString url);
     void fileReceivedAndSaved(QString url);
     void textReceived(QString content);
@@ -128,7 +116,6 @@ public:
     Q_INVOKABLE bool checkMimeTypeView(const QString &mimeType);
     Q_INVOKABLE bool checkMimeTypeEdit(const QString &mimeType);
     Q_INVOKABLE void share(const QString &text, const QUrl &url);
-    //Q_INVOKABLE int  sendFileNew(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId, const bool &altImpl);
     Q_INVOKABLE void sendFile(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId, const bool &altImpl);
     Q_INVOKABLE void viewFile(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId, const bool &altImpl);
     Q_INVOKABLE void editFile(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId, const bool &altImpl);
@@ -137,11 +124,8 @@ public:
     Q_INVOKABLE bool isSciteQtInstalled();
     Q_INVOKABLE bool isAppInstalled(const QString &packageName);
 
-//    Q_INVOKABLE void openFile(const int &requestId);
-
 private:
     PlatformShareUtils* mPlatformShareUtils;
-
 };
 
 #endif //SHAREUTILS_H

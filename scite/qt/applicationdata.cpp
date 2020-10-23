@@ -1,3 +1,10 @@
+/*
+ * Code taken from MobileGnuplotViewer(Quick) project and addapted for sciteqt.
+ *
+ * (C) 2015-2020 by Michael Neuroth
+ *
+ */
+
 #include "applicationdata.h"
 #include "storageaccess.h"
 
@@ -18,10 +25,6 @@
 #include <QtAndroidExtras>
 #include "android/androidshareutils.hpp"
 #endif
-
-#include <QDebug>
-
-
 
 bool extractAssetFile(const QString & sAssetFileName, const QString & sOutputFileName, bool bExecuteFlags, QDateTime * pDateForReplace = 0)
 {
@@ -696,4 +699,3 @@ void ApplicationData::sltErrorText(const QString & msg)
 {
     emit sendErrorText(msg);
 }
-

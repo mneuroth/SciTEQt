@@ -60,6 +60,7 @@ New open features might be:
   * ggf. save and restore text in outputarea?
   * Scite Logo als linker Button in Titelzeile oder Einstellungsdialog/SuchDialog etc. ? (Fast Access Menu Items?)
   * Save and Restore for View-Parameters like: show line numbers
+  * Save and Restore user defined mapping of file extensions to (lexer-)languages
 
 Known and open Bugs are:
 

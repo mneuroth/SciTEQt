@@ -17,7 +17,7 @@
 #include "applicationui.hpp"
 #include "storageaccess.h"
 
-#ifndef Q_OS_WIN
+#ifdef Q_OS_ANDROID
 #define _WITH_QDEBUG_REDIRECT
 #define _WITH_ADD_TO_LOG
 #endif
@@ -32,29 +32,6 @@
 #include "LexillaLibrary.h"
 
 static qint64 g_iLastTimeStamp = 0;
-
-void AddToLog(const QString & msg)
-{
-#ifdef _WITH_ADD_TO_LOG
-    QString sFileName(LOG_NAME);
-    //if( !QDir("/sdcard/Texte").exists() )
-    //{
-    //    sFileName = "mgv_quick_qdebug.log";
-    //}
-    QFile outFile(sFileName);
-    outFile.open(QIODevice::WriteOnly | QIODevice::Append);
-    QTextStream ts(&outFile);
-    qint64 now = QDateTime::currentMSecsSinceEpoch();
-    qint64 delta = now - g_iLastTimeStamp;
-    g_iLastTimeStamp = now;
-    ts << delta << " ";
-    ts << msg << endl;
-    qDebug() << delta << " " << msg << endl;
-    outFile.flush();
-#else
-    Q_UNUSED(msg)
-#endif
-}
 
 #ifdef _WITH_QDEBUG_REDIRECT
 #include <QDebug>
@@ -81,6 +58,29 @@ void PrivateMessageHandler(QtMsgType type, const QMessageLogContext & context, c
     AddToLog(txt);
 }
 #endif
+
+void AddToLog(const QString & msg)
+{
+#ifdef _WITH_ADD_TO_LOG
+    QString sFileName(LOG_NAME);
+    //if( !QDir("/sdcard/Texte").exists() )
+    //{
+    //    sFileName = "mgv_quick_qdebug.log";
+    //}
+    QFile outFile(sFileName);
+    outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+    QTextStream ts(&outFile);
+    qint64 now = QDateTime::currentMSecsSinceEpoch();
+    qint64 delta = now - g_iLastTimeStamp;
+    g_iLastTimeStamp = now;
+    ts << delta << " ";
+    ts << msg << endl;
+    qDebug() << delta << " " << msg << endl;
+    outFile.flush();
+#else
+    Q_UNUSED(msg)
+#endif
+}
 
 //QString g_sDebugMsg;
 
@@ -130,7 +130,6 @@ int main(int argc, char *argv[])
     {
         ok = QFile::copy(sInstallationFullPath, sTargetFullPath);
     }
-    //g_sDebugMsg += "copy " + sInstallationFullPath + " --> " + sTargetFullPath + " ret=" + QString("%1").arg(ok);
 #endif
 
     QString sLanguage = QLocale::system().name().mid(0,2).toLower();

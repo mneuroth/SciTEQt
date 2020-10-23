@@ -2,6 +2,10 @@
 // my blog about Qt for mobile: http://j.mp/qt-x
 // see also /COPYRIGHT and /LICENSE
 
+/*
+ * Code taken from MobileGnuplotViewer(Quick) project and addapted for sciteqt.
+ */
+
 #include "shareutils.hpp"
 
 #ifdef Q_OS_IOS
@@ -62,11 +66,6 @@ void ShareUtils::share(const QString &text, const QUrl &url)
     mPlatformShareUtils->share(text, url);
 }
 
-//int ShareUtils::sendFileNew(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId, const bool &altImpl)
-//{
-//    return mPlatformShareUtils->sendFileNew(filePath, title, mimeType, requestId, altImpl);
-//}
-
 void ShareUtils::sendFile(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId, const bool &altImpl)
 {
     mPlatformShareUtils->sendFile(filePath, title, mimeType, requestId, altImpl);
@@ -96,12 +95,7 @@ bool ShareUtils::isAppInstalled(const QString &packageName)
 {
     return mPlatformShareUtils->isAppInstalled(packageName);
 }
-/*
-void ShareUtils::openFile(const int &requestId)
-{
-    mPlatformShareUtils->openFile(requestId);
-}
-*/
+
 void ShareUtils::onShareEditDone(int requestCode, const QString & urlTxt)
 {
     emit shareEditDone(requestCode, urlTxt);

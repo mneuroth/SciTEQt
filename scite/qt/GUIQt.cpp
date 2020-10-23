@@ -1,3 +1,9 @@
+/*
+ * Code for the sciteqt project.
+ *
+ * (C) 2020 by Michael Neuroth
+ *
+ */
 
 #include <cstddef>
 #include <cstdlib>
@@ -355,14 +361,12 @@ std::string LowerCaseUTF8(std::string_view sv) {
 
 void Window::Destroy()
 {
-    //qDebug() << "Window::Destroy()" << endl;
 	// nothing to do...
 }
 
 bool Window::HasFocus()
 {
     QQuickItem * window = GetQuickItem(GetQObject(GetID()));
-//qDebug() << "has focus " << window->objectName() << endl;
     if( window != 0 )
     {
         return window->hasFocus();
@@ -375,7 +379,6 @@ Rectangle Window::GetPosition()
     QQuickItem * window = GetQuickItem(GetQObject(GetID()));
     if( window != 0 )
     {
-//qDebug() << "Window::GetPosition() " << window->width() << " " << window->height() << endl;
         return Rectangle(window->x(), window->y(), window->x()+window->width(), window->y()+window->height());
     }
     return Rectangle();
@@ -386,7 +389,6 @@ void Window::SetPosition(Rectangle rc)
     QQuickItem * window = GetQuickItem(GetQObject(GetID()));
     if( window != 0 )
     {
-//qDebug() << "Window::SetPosition() " << rc.left << "," << rc.bottom << " / " << rc.right << "," << rc.top << endl;
         window->setX(rc.left);
         window->setY(rc.bottom);
         window->setWidth(rc.right-rc.left);
@@ -399,7 +401,6 @@ Rectangle Window::GetClientPosition()
     QQuickItem * window = GetQuickItem(GetQObject(GetID()));
     if( window != 0 )
     {
-//qDebug() << "Window::GetClientPosition() " << window->width() << " " << window->height() << endl;
         return Rectangle(window->x(), window->y(), window->x()+window->width(), window->y()+window->height());
     }
     return Rectangle();
@@ -434,17 +435,14 @@ void Window::SetTitle(const gui_char *s)
 
 void Menu::CreatePopUp()
 {
-    //qDebug() << "MENU::CreatePopUp()" << endl;
 }
 
 void Menu::Destroy()
 {
-    //qDebug() << "MENU::Destroy()" << endl;
 }
 
 void Menu::Show(Point pt, Window &w)
 {
-    //qDebug() << "MENU::Show()" << endl;
 }
 
 }   // namespace

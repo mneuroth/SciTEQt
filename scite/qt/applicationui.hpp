@@ -2,6 +2,10 @@
 // my blog about Qt for mobile: http://j.mp/qt-x
 // see also /COPYRIGHT and /LICENSE
 
+/*
+ * Code taken from MobileGnuplotViewer(Quick) project and addapted for sciteqt.
+ */
+
 #ifndef APPLICATIONUI_HPP
 #define APPLICATIONUI_HPP
 
@@ -17,8 +21,6 @@ class ApplicationUI : public QObject
 public:
      ApplicationUI(QObject *parent = 0);
      ~ApplicationUI();
-
-//     void addContextProperty(QQmlContext* context);
 
      Q_INVOKABLE
      void copyAssetsToAPPData();

@@ -2,6 +2,13 @@
 // my blog about Qt for mobile: http://j.mp/qt-x
 // see also /COPYRIGHT and /LICENSE
 
+/*
+ * Code taken from MobileGnuplotViewer(Quick) project and addapted for sciteqt.
+ *
+ * (C) 2015-2020 by Michael Neuroth
+ *
+ */
+
 #ifndef ANDROIDSHAREUTILS_H
 #define ANDROIDSHAREUTILS_H
 
@@ -17,7 +24,6 @@ public:
     virtual bool checkMimeTypeView(const QString &mimeType) override;
     virtual bool checkMimeTypeEdit(const QString &mimeType) override;
     virtual void share(const QString &text, const QUrl &url) override;
-    //int  sendFileNew(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId, const bool &altImpl) override;
     virtual void sendFile(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId, const bool &altImpl) override;
     virtual void viewFile(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId, const bool &altImpl) override;
     virtual void editFile(const QString &filePath, const QString &title, const QString &mimeType, const int &requestId, const bool &altImpl) override;
@@ -48,7 +54,6 @@ private:
     static AndroidShareUtils* mInstance;
 
     void processActivityResult(int requestCode, int resultCode, const QString & urlTxt);
-
 };
 
 

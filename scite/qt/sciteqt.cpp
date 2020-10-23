@@ -1,3 +1,10 @@
+/*
+ * Code for the sciteqt project.
+ *
+ * (C) 2020 by Michael Neuroth
+ *
+ */
+
 #include "sciteqt.h"
 
 #include <QUrl>

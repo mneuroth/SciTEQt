@@ -1,3 +1,10 @@
+/*
+ * Code taken from MobileGnuplotViewer(Quick) project and addapted for sciteqt.
+ *
+ * (C) 2015-2020 by Michael Neuroth
+ *
+ */
+
 #ifndef APPLICATIONDATA_H
 #define APPLICATIONDATA_H
 
@@ -5,10 +12,9 @@
 #include <QQmlApplicationEngine>
 
 #ifdef Q_OS_WIN
-#define LOG_NAME "c:\\tmp\\mgv_quick_qdebug.log"
+#define LOG_NAME "c:\\tmp\\sciteqt_quick_qdebug.log"
 #else
 #define LOG_NAME "/sdcard/Texte/sciteqt_quick_qdebug.log"
-//#define LOG_NAME "mgv_quick_qdebug.log"
 #endif
 
 #define ASSETS_DIR                  "assets:/files/"

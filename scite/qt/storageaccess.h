@@ -1,3 +1,10 @@
+/*
+ * Code taken from MobileGnuplotViewer(Quick) project and addapted for sciteqt.
+ *
+ * (C) 2015-2020 by Michael Neuroth
+ *
+ */
+
 #ifndef STORAGEACCESS_H
 #define STORAGEACCESS_H
 
