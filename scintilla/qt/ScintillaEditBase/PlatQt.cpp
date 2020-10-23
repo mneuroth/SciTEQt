@@ -737,7 +737,7 @@ void Window::SetPositionRelative(PRectangle rc, const Window *relativeTo)
 	ox += rc.left;
 	oy += rc.top;
 
-	QDesktopWidget *desktop = QApplication::desktop();
+    //QDesktopWidget *desktop = QApplication::desktop();
     //QRect rectDesk = desktop->availableGeometry(QPoint(ox, oy));
     const QRect rectDesk = ScreenRectangleForPoint(QPoint(ox, oy));
 	/* do some corrections to fit into screen */

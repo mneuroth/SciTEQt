@@ -190,8 +190,8 @@ signals:
     void visibleLinesChanged();
     void visibleColumnsChanged();
     void inputMethodHintsChanged();
-    void showContextMenu(const QPoint & pos);
     void enableScrollViewInteraction(bool value);
+    void showContextMenu(const QPoint & pos);
     void addToContextMenu(int menuId, const QString & txt, bool enabled);
     void clearContextMenu();
     //void readonlyChanged();

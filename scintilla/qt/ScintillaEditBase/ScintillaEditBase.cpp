@@ -351,6 +351,7 @@ void ScintillaEditBase::geometryChanged(const QRectF &newGeometry, const QRectF 
 void ScintillaEditBase::hoverMoveEvent(QHoverEvent *event)
 {
     //qDebug() << "hover move event " << event << endl;
+    Q_UNUSED(event);
 }
 
 #else
@@ -557,6 +558,7 @@ void ScintillaEditBase::mouseDoubleClickEvent(QMouseEvent *event)
 {
 	// Scintilla does its own double-click detection.
     //mousePressEvent(event);
+    Q_UNUSED(event);
 }
 
 void ScintillaEditBase::mouseMoveEvent(QMouseEvent *event)

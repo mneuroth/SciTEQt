@@ -196,6 +196,7 @@ static QString StringFromSelectedText(const SelectionText &selectedText)
 
 static void AddRectangularToMime(QMimeData *mimeData, [[maybe_unused]] QString su)
 {
+    Q_UNUSED(su);
 #if defined(Q_OS_WIN)
 	// Add an empty marker
 	mimeData->setData(sMSDEVColumnSelect, QByteArray());
@@ -213,6 +214,7 @@ static void AddRectangularToMime(QMimeData *mimeData, [[maybe_unused]] QString s
 
 static void AddLineCutCopyToMime([[maybe_unused]] QMimeData *mimeData)
 {
+    Q_UNUSED(mimeData);
 #if defined(Q_OS_WIN)
 	// Add an empty marker
 	mimeData->setData(sVSEditorLineCutCopy, QByteArray());
@@ -277,6 +279,8 @@ void ScintillaQt::ScrollText(Sci::Line linesToMove)
 #ifndef PLAT_QT_QML
     int dy = vs.lineHeight * (linesToMove);
     scrollArea->viewport()->scroll(0, dy);
+#else
+    Q_UNUSED(linesToMove);
 #endif
 }
 /*
@@ -321,7 +325,9 @@ bool ScintillaQt::ModifyScrollBars(Sci::Line nMax, Sci::Line nPage)
 
 	int hNewPage = GetTextRectangle().Width();
 	int hNewMax = (scrollWidth > hNewPage) ? scrollWidth - hNewPage : 0;
-	int charWidth = vs.styles[STYLE_DEFAULT].aveCharWidth;
+#ifndef PLAT_QT_QML
+    int charWidth = vs.styles[STYLE_DEFAULT].aveCharWidth;
+#endif
     if (hMax != hNewMax || hPage != hNewPage
 #ifndef PLAT_QT_QML
         || scrollArea->horizontalScrollBar()->singleStep() != charWidth
@@ -771,7 +777,7 @@ sptr_t ScintillaQt::WndProc(unsigned int iMessage, uptr_t wParam, sptr_t lParam)
 			break;
 
 		case SCI_GRABFOCUS:
-			scrollArea->setFocus(Qt::OtherFocusReason);
+            scrollArea->setFocus(true, Qt::OtherFocusReason);
             scrollArea->forceActiveFocus();
 			break;
 
