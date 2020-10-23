@@ -39,9 +39,9 @@
 #include "Lexilla.h"
 #include "LexillaLibrary.h"
 
+#ifdef _WITH_QDEBUG_REDIRECT
 static qint64 g_iLastTimeStamp = 0;
 
-#ifdef _WITH_QDEBUG_REDIRECT
 #include <QDebug>
 void PrivateMessageHandler(QtMsgType type, const QMessageLogContext & context, const QString & msg)
 {
@@ -130,13 +130,13 @@ int main(int argc, char *argv[])
     qputenv(SCITE_HOME, FILES_DIR);
 #endif
 #ifdef Q_OS_WIN
-    bool ok = false;
+    //bool ok = false;
     // copy SciTEUser.properties from sciteqt installation directory to user directory (if not existing)
     QString sInstallationFullPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath()) + QDir::separator() + "SciTEUser.properties";
     QString sTargetFullPath = QDir::toNativeSeparators(QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first()) + QDir::separator() + "SciTEUser.properties";
     if( QFile::exists(sInstallationFullPath) && !QFile::exists(sTargetFullPath) )
     {
-        ok = QFile::copy(sInstallationFullPath, sTargetFullPath);
+        /*ok =*/ QFile::copy(sInstallationFullPath, sTargetFullPath);
     }
 #endif
 

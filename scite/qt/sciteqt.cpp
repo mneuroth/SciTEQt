@@ -625,6 +625,7 @@ SciTEQt::MessageBoxChoice SciTEQt::ShowWindowMessageBox(const QString & msg, Mes
 
 SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::gui_string &msg, MessageBoxStyle style)
 {
+    Q_UNUSED(w);
     return ShowWindowMessageBox(ConvertGuiStringToQString(msg), style);
 }
 
@@ -951,6 +952,7 @@ void SciTEQt::ShowStatusBar()
 void SciTEQt::ActivateWindow(const char *timestamp)
 {
     // TODO implement !
+    Q_UNUSED(timestamp);
     emit showInfoDialog("Sorry: ActivateWindow() is not implemented yet!", 0);
 }
 
@@ -968,6 +970,7 @@ void SciTEQt::SizeSubWindows()
 void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
              const GUI::gui_char *text, const GUI::gui_char *mnemonic)
 {
+    Q_UNUSED(position);
     if(menuNumber == 7)
     {
         if( itemID >= IDM_BUFFER && itemID < IDM_IMPORT)
@@ -1091,6 +1094,9 @@ void SciTEQt::AddToPopUp(const char *label, int cmd, bool enabled)
     // see: SciTEBase::ContextMenu()
 
     // TODO implement ! --> not needed, because implemented in qml / quick
+    Q_UNUSED(label);
+    Q_UNUSED(cmd);
+    Q_UNUSED(enabled);
 }
 
 void SciTEQt::PostOnMainThread(int cmd, Worker *pWorker)
@@ -2456,7 +2462,7 @@ QVariant SciTEQt::fillTabContextMenu()
     AddToMenu(menu, "Save As", IDM_SAVEAS, true);
     //AddToMenu(menu, "");
 
-    bool bAddSeparator = false;
+    //bool bAddSeparator = false;
     for (int item = 0; item < toolMax; item++) {
         const int itemID = IDM_TOOLS + item;
         std::string prefix = "command.name.";
@@ -2465,7 +2471,7 @@ QVariant SciTEQt::fillTabContextMenu()
         std::string commandName = props.GetNewExpandString(prefix.c_str(), filePath.AsUTF8().c_str());
         if (commandName.length()) {
             AddToMenu(menu, commandName.c_str(), itemID, true);
-            bAddSeparator = true;
+            //bAddSeparator = true;
         }
     }
 
@@ -2502,9 +2508,9 @@ QVariant SciTEQt::fillToLengthWithFont(const QString & text, const QString & sho
 {
     QFontMetricsF metrics(font);
     double lenText = metrics.boundingRect(text).width();
-    double lenShortcut = metrics.boundingRect(shortcut).width();
+    //double lenShortcut = metrics.boundingRect(shortcut).width();
     double lenSpace = metrics.boundingRect("  ").width();
-    double lenTab = metrics.boundingRect("\t").width();
+    //double lenTab = metrics.boundingRect("\t").width();
 
     QString fill(" ");
     fill = fill.leftJustified((180-lenText)/lenSpace,' ');
@@ -2811,6 +2817,7 @@ void SciTEQt::logToDebug(const QString & text)
 void SciTEQt::testFunction(const QString & text)
 {
     // place for some debugging code...
+    Q_UNUSED(text);
 }
 
 void SciTEQt::UpdateStatusbarView()
@@ -2985,10 +2992,13 @@ void SciTEQt::OnScreenAdded(QScreen * pScreen)
     // nothing to do, new screen does not affect visible sciteqt window
 
     //DumpScreens();
+    Q_UNUSED(pScreen);
 }
 
 void SciTEQt::OnScreenRemoved(QScreen * pScreen)
 {
+    Q_UNUSED(pScreen);
+
     // removing a screen might make sciteqt window invisible (if it was visible on the removed screen)
     int left;
     int top;
@@ -3005,6 +3015,7 @@ void SciTEQt::OnScreenRemoved(QScreen * pScreen)
 void SciTEQt::OnPrimaryScreenChanged(QScreen * pScreen)
 {
     //DumpScreens();
+    Q_UNUSED(pScreen);
 }
 
 //*************************************************************************

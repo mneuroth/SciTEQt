@@ -560,6 +560,8 @@ bool ApplicationData::shareSimpleText(const QString & text)
         m_pShareUtils->share(text, QUrl());
         return true;
     }
+#else
+    Q_UNUSED(text);
 #endif
     return false;
 }

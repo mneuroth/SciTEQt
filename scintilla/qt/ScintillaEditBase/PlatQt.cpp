@@ -205,19 +205,23 @@ void SurfaceImpl::Clear()
 
 void SurfaceImpl::Init(WindowID wid, PainterID pid, bool flag)    // wid is QQuickPaintedItem here
 {
-	Release();
+    Q_UNUSED(flag);
+    Release();
 #ifdef PLAT_QT_QML
+    Q_UNUSED(wid);
     painter = static_cast<QPainter *>(pid);
 #else
-	device = static_cast<QWidget *>(wid);
+    Q_UNUSED(pid);
+    device = static_cast<QWidget *>(wid);
 #endif
 }
 
 void SurfaceImpl::Init(SurfaceID sid, WindowID /*wid*/)
 {
-	Release();
+    Release();
 #ifdef PLAT_QT_QML
     Q_ASSERT(false);     // not supported yet, is it really needed ?
+    Q_UNUSED(sid);
 #else
 	device = static_cast<QPaintDevice *>(sid);
 #endif
@@ -835,10 +839,11 @@ PRectangle Window::GetMonitorRect(Point pt)
     QPoint originGlobal = window(wid)->mapToGlobal(QPoint(0, 0));
     QPoint posGlobal = window(wid)->mapToGlobal(QPoint(pt.x, pt.y));
 #endif
-	QDesktopWidget *desktop = QApplication::desktop();
 #ifdef PLAT_QT_QML
-    QRect rectScreen = desktop->availableGeometry(QPoint(posGlobal.x(),posGlobal.y()));
+    //QRect rectScreen = desktop->availableGeometry(QPoint(posGlobal.x(),posGlobal.y()));
+    QRect rectScreen = QGuiApplication::screenAt(QPoint(posGlobal.x(),posGlobal.y()))->geometry();
 #else
+    QDesktopWidget *desktop = QApplication::desktop();
     QRect rectScreen = desktop->availableGeometry(posGlobal);
 #endif
 	rectScreen.translate(-originGlobal.x(), -originGlobal.y());

@@ -444,6 +444,8 @@ void Menu::Destroy()
 
 void Menu::Show(Point pt, Window &w)
 {
+    Q_UNUSED(pt);
+    Q_UNUSED(w);
 }
 
 }   // namespace
