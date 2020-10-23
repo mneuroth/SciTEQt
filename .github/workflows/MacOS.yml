@@ -57,11 +57,11 @@ jobs:
         ls -lrt scite/qt
 
         #make -j 4
-        #ls -lrt 
-        #ls -lrt scite
-        #ls -lrt scite/qt
-        #cd scite/qt
-        #which macdeployqt
-        #macdeployqt sciteqt.app -dmg -verbose=1
-        #ls -lrt
+        ls -lrt
+        ls -lrt scite
+        ls -lrt scite/qt
+        cd scite/qt
+        which macdeployqt
+        macdeployqt sciteqt.app -dmg -verbose=1
+        ls -lrt
         
