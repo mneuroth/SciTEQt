@@ -37,8 +37,9 @@ Missing features are:
   * save and restore file extensions and directories for find in files
   * Improve splitter handling
   * Implement Printing (partly)
-  * Context menu for Scintilla Control can not be overwritten/updated by SciTE
+  * Context menu for Scintilla Control can not be overwritten/updated by SciTE  
 # * Android: improve selection of text --> improve/use QInputContext
+# * Android: implement action for left menu button (three bars button) --> dialogs ?
 ? * Android: improve deployment --> more languages?
   ((* Android: focus lost problem after closing dialog, need to touch on tabbar
   ((* Android: use mobile file dialog to open and save files

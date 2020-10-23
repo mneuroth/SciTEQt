@@ -139,17 +139,14 @@ ApplicationWindow {
     }
 
     function writeCurrentDoc(url) {
-        console.log("write current... "+url)
         sciteQt.saveCurrentAs(url)
     }
 
     function readCurrentDoc(url) {
         // then read new document
-        console.log("read current doc "+url)
         var urlFileName = buildValidUrl(url)
         lblFileName.text = urlFileName
         sciteQt.doOpen(url)
-        //quickScintillaEditor.text = applicationData.readFileContent(urlFileName)
     }
 
     function openViaMobileFileDialog(directory) {
@@ -363,7 +360,6 @@ ApplicationWindow {
 
     function processMenuItem(menuText, menuItem) {
 // TODO: via font die breite fuer den text bestimmen und passende anzahl leerzeichen dafuer...
-        //console.log("FONT: "+menuText+" "+ (menuItem!==undefined ? menuItem.font : "?"))
         var s = sciteQt.getLocalisedText(menuText)
         if( menuItem !== null && menuItem.shortcut !== undefined)
         {
@@ -375,7 +371,6 @@ ApplicationWindow {
 
     function processMenuItem2(menuText, menuItem) {
 // TODO: via font die breite fuer den text bestimmen und passende anzahl leerzeichen dafuer...
-        //console.log("FONT: "+menuText+" "+ (menuItem!==undefined ? menuItem.font : "?")+" action="+menuItem.action) //+" shortcut="+menuItem.action.shortcut+ " "+menuItem.parent)
         var s = sciteQt.getLocalisedText(menuText)
         if( menuItem !== null && menuItem.action !== null && menuItem.action.shortcut !== undefined)
         {
@@ -395,7 +390,6 @@ ApplicationWindow {
     }
 
     function focusToEditor() {
-        //logToOutput("focusToEditor()")
         //quickScintillaEditor.focus = true
         quickScintillaEditor.forceActiveFocus()
         //quickScintillaEditor.update()
@@ -433,7 +427,6 @@ ApplicationWindow {
     Connections {
         target: htmlFileAccess
         onFsFileReady: {
-            console.log("onFsFileReady " + tmpFilePath + " " + fileName)
             readCurrentDoc("file://" + tmpFilePath)
             //loadProject("file://" + tmpFilePath)
         }
@@ -463,18 +456,12 @@ ApplicationWindow {
     SciteMenuActions {
         id: sciteActions
         visible: false
-
-        Component.onCompleted: {
-            // Workaround: update state of menus for desktop modus
-//            sciteQt.mobilePlatform = !sciteQt.mobilePlatform
-//            sciteQt.mobilePlatform = !sciteQt.mobilePlatform
-        }
     }
 
     ListModel {
         id: buffersModel
         objectName: "buffersMenu"
-        /*
+        /* Example of items:
         ListElement {
             display: "hello"
             checkState: true
@@ -598,7 +585,7 @@ ApplicationWindow {
                 sciteActions.actionLf.checked = val
                 break;
             default:
-//                console.log("unhandled menu checked "+menuId)
+                //console.log("unhandled menu checked "+menuId)
         }
     }
 
@@ -611,10 +598,7 @@ ApplicationWindow {
     signal redoChanged(bool value)
 
     function handleMenuEnable(menuId, val) {
-        //console.log("menu enable "+menuId+" "+val)
         switch(menuId) {
-//#define IDM_SHOWCALLTIP		232
-//#define IDM_COMPLETE		233
             case 201:   //IDM_UNDO
                 sciteActions.actionUndo.enabled = val
                 undoChanged(!val)
@@ -664,13 +648,13 @@ ApplicationWindow {
             case 308:  //IDM_CLEAN
                 sciteActions.actionClean.enabled = val
                 break;
+// TODO: 313, 311, 312 (for macros)
             case 413:  //IDM_OPENFILESHERE
                 sciteActions.actionOpenFilesHere.enabled = val
                 break;
             case 465:  //IDM_OPENDIRECTORYPROPERTIES
                 sciteActions.actionOpenDirectoryOptionsFile.enabled = val
                 break;
-// TODO: 313, 311, 312 (for macros)
             default:
                 //console.log("unhandled menu enable "+menuId)
         }
@@ -813,11 +797,7 @@ ApplicationWindow {
             anchors.leftMargin: 5
             /*
             onClicked: {
-                if (stackView.depth > 1) {
-                    stackView.pop()
-                } else {
-                    drawer.open()
-                }
+                // TODO: implement actin for left mobile menu button !
             }
             */
         }
@@ -1234,6 +1214,7 @@ ApplicationWindow {
         }
     }
 
+    // label to show the current loaded file (not used for sciteqt yet)
     Text {
         id: lblFileName
         visible: false
@@ -1285,8 +1266,6 @@ ApplicationWindow {
                 anchors.fill: parent
                 acceptedButtons: Qt.RightButton
                 onClicked: {
-                    //console.log("show context menu for row: " + text+" "+mouse.x+","+mouse.y +" current="+tabBar.currentIndex+" parent="+parent)
-
                     // activate this tab and show context menu
                     parent.onClicked()
 
@@ -1349,7 +1328,8 @@ ApplicationWindow {
         anchors.topMargin: 5
         anchors.bottomMargin: 5
 
-/*
+/* TODO: improve splitter...
+
         onHandleChanged: {
             if( verticalSplit )
             {
@@ -1413,9 +1393,6 @@ ApplicationWindow {
             fcnLocalisation: sciteQt.getLocalisedText
 
             focus: true
-            //onFocusChanged: {
-            //    console.log("FOCUS editor changed "+focus)
-            //}
 
             //SplitView.fillWidth: true
             //SplitView.fillHeight: true
@@ -1434,9 +1411,6 @@ ApplicationWindow {
             fcnLocalisation: sciteQt.getLocalisedText
 
             focus: false
-            //onFocusChanged: {
-            //    console.log("FOCUS output changed "+focus)
-            //}
 
             //SplitView.preferredWidth: splitView.outputHeight
             //SplitView.preferredHeight: splitView.outputHeight
@@ -1451,8 +1425,8 @@ ApplicationWindow {
         }
     }       
 
-    // Find Dialog above status bar:
-    //==============================
+    // Strip Find Dialog above status bar:
+    //====================================
 
     property bool isIncrementalSearch: false
     property bool isCloseOnFind: true
@@ -1881,12 +1855,14 @@ ApplicationWindow {
         anchors.topMargin: stripAreaMargin
         anchors.bottomMargin: stripAreaMargin
     }
+
 /*
     Settings {
         id: settings
         property var splitView
     }
 */
+
     SciTEQt {
        id: sciteQt
     }
@@ -1939,7 +1915,6 @@ ApplicationWindow {
         selectFolder: false
 
         onAccepted: {
-//            //console.log("Accepted: " + /*currentFile*/fileUrl+" "+fileDialog.openMode)
             sciteQt.logToDebug("FileDialog accepted: "+fileUrl)
             if(sciteQt.isWebassemblyPlatform()) {
                 if(!fileDialog.openMode) {
@@ -1974,12 +1949,10 @@ ApplicationWindow {
         target: mobileFileDialog
 
         onOpenSelectedFile: {
-            //console.log("OPEN file "+fileName+ " "+buildValidUrl(fileName))
             //readCurrentDoc(fileName)
             sciteQt.updateCurrentSelectedFileUrl(buildValidUrl(fileName))
         }
         onSaveSelectedFile: {
-            //console.log("SAVE file "+fileName+ " "+buildValidUrl(fileName))
             //writeCurrentDoc(buildValidUrl(fileName))
             sciteQt.updateCurrentSelectedFileUrl(buildValidUrl(fileName))
         }
@@ -2227,21 +2200,16 @@ ApplicationWindow {
         target: storageAccess
 
         onOpenFileContentReceived: {    // fileUri, decodedFileUri, content
-            //sciteQt.logToDebug("STORAGE loading: "+fileUri+" "+decodedFileUri)
-            ////sciteQt.updateCurrentSelectedFileUrl(decodedFileUri,fileUri)
             sciteQt.OnAddFileContent(fileUri, decodedFileUri, content, false)
             mobileFileDialog.rejected()   // because loading and showing loaded document is already processed here (in QML)
         }
         onOpenFileCanceled: {
-            //sciteQt.logToDebug("STORAGE canceled !")
             mobileFileDialog.rejected()
         }
         onOpenFileError: {
-            //sciteQt.logToDebug("STORAGE open ERROR ! "+message)
             mobileFileDialog.rejected()
         }
         onCreateFileReceived: {  // fileUri, decodedFileUri
-            //sciteQt.logToDebug("STORAGE create file ")
             sciteQt.OnAddFileContent(fileUri, decodedFileUri, "<create file received data>", true)
             mobileFileDialog.rejected()
         }
