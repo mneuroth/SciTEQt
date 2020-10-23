@@ -840,8 +840,9 @@ PRectangle Window::GetMonitorRect(Point pt)
     QPoint posGlobal = window(wid)->mapToGlobal(QPoint(pt.x, pt.y));
 #endif
 #ifdef PLAT_QT_QML
-    //QRect rectScreen = desktop->availableGeometry(QPoint(posGlobal.x(),posGlobal.y()));
-    QRect rectScreen = QGuiApplication::screenAt(QPoint(posGlobal.x(),posGlobal.y()))->geometry();
+    QDesktopWidget *desktop = QApplication::desktop();
+    QRect rectScreen = desktop->availableGeometry(QPoint(posGlobal.x(),posGlobal.y()));
+    //QRect rectScreen = QGuiApplication::screenAt(QPoint(posGlobal.x(),posGlobal.y()))->geometry();    // available since Qt 5.10
 #else
     QDesktopWidget *desktop = QApplication::desktop();
     QRect rectScreen = desktop->availableGeometry(posGlobal);
