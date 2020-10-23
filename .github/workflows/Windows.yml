@@ -89,10 +89,12 @@ jobs:
         d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\3.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw.exe
         dir 
     - name: Load Release URL File from release job
+      if: contains(github.ref, 'release')
       uses: actions/download-artifact@v1
       with:
         name: release_url
     - name: Get Release File Name & Upload URL
+      if: contains(github.ref, 'release')
       id: get_release_info
       run: |
         value=`cat release_url/release_url.txt`
@@ -169,10 +171,12 @@ jobs:
         d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\3.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc.exe
         dir 
     - name: Load Release URL File from release job
+      if: contains(github.ref, 'release')
       uses: actions/download-artifact@v1
       with:
         name: release_url
     - name: Get Release File Name & Upload URL
+      if: contains(github.ref, 'release')
       id: get_release_info
       run: |
         value=`cat release_url/release_url.txt`
