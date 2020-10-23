@@ -1,3 +1,11 @@
+/***************************************************************************
+ *
+ * SciteQt - a port of SciTE to Qt Quick/QML
+ *
+ * Copyright (C) 2020 by Michael Neuroth
+ *
+ ***************************************************************************/
+
 import QtQuick 2.9
 import QtQuick.Controls 2.9
 import QtQuick.Dialogs 1.2

@@ -19,6 +19,7 @@
         <file>qml/MobileFileDialog.qml</file>
         <file>qml/MobileFileDialogForm.ui.qml</file>
         <file>qml/SciteMenuActions.qml</file>
+        <!-- <file>qml/+Android/FileMenu.qml</file> --> <!-- Android specific menus... -->
         <file>qml/FileMenu.qml</file>
         <file>qml/EditMenu.qml</file>
         <file>qml/SearchMenu.qml</file>

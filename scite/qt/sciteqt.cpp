@@ -1,9 +1,10 @@
-/*
- * Code for the sciteqt project.
+/***************************************************************************
  *
- * (C) 2020 by Michael Neuroth
+ * SciteQt - a port of SciTE to Qt Quick/QML
  *
- */
+ * Copyright (C) 2020 by Michael Neuroth
+ *
+ ***************************************************************************/
 
 #include "sciteqt.h"
 
@@ -996,8 +997,6 @@ void SciTEQt::SetMenuItem(int menuNumber, int position, int itemID,
         int posForThisItem = itemID - IDM_TOOLS;
 		
         // TODO: analyze, msc 2017 debug has problems with this ?
-        //QString sMn;
-
 #if defined(Q_CC_MSVC)
         emit setInToolsModel(posForThisItem, ConvertGuiCharToQString(text), false, "");
 #else
@@ -1092,7 +1091,6 @@ void SciTEQt::AddToPopUp(const char *label, int cmd, bool enabled)
     // see: SciTEBase::ContextMenu()
 
     // TODO implement ! --> not needed, because implemented in qml / quick
-    //qDebug() << "AddToPopup " << label << " " << cmd << " " << enabled << endl;
 }
 
 void SciTEQt::PostOnMainThread(int cmd, Worker *pWorker)
@@ -1280,12 +1278,6 @@ bool SciTEQt::doOpen(const QString & sFileName)
 #endif
     return Open(path, openFlags);
 #endif
-}
-
-// TODO: only for debugging
-void mylog(GUI::gui_char * txt)
-{
-    qDebug() << "MYLOG: " << txt << endl;
 }
 
 void SciTEQt::setScintilla(QObject * obj)
@@ -2641,14 +2633,13 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
         }
     */
 
-    // TODO --> nach setApplicationData --> besser applicationdata direkt beim konstruieren rein reichen... ??? Property binding?
         ProcessCommandLine(args, 1);
 
         CheckMenus();
         SizeSubWindows();
         //SetFocus(wEditor);
+        WindowSetFocus(wEditor);
 
-    //qDebug() << "SciteQt::SciteQt " << (void *)this << endl;
     /* TODO: improve startup !
 
         // Break up the command line into individual arguments
@@ -2674,13 +2665,8 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     */
     }
 
-//    qDebug() << "----> OPEN" << endl;
-
     // open the untitled (empty) document at startup
-//    Open(FilePath());
-// TODO --> update ui components wie statusbar etc.
-
-    // TODO: enable lua plugin...
+    //Open(FilePath());
 
     // if no real document (but only the default document) is loaded: show the default document for SciteQt
     QString currentFileName = QString::fromStdString(FileNameExt().Name().AsUTF8());
@@ -2761,14 +2747,12 @@ void SciTEQt::RestorePosition()
 void SciTEQt::setSpliterPos(int currentPosX, int currentPosY)
 {
     GUI::Point pt(currentPosX, currentPosY);
-//qDebug() << "setSplitterPos " << currentPosX << " "<< currentPosY << " " << endl;
     MoveSplit(pt);
 }
 
 void SciTEQt::startDragSpliterPos(int currentPosX, int currentPosY)
 {
     GUI::Point pt(currentPosX, currentPosY);
-//qDebug() << "startDragSplitterPos " << currentPosX << " "<< currentPosY << " " << endl;
     ptStartDrag = pt;
 }
 
@@ -2826,8 +2810,7 @@ void SciTEQt::logToDebug(const QString & text)
 
 void SciTEQt::testFunction(const QString & text)
 {
-    std::string languageCurrent = wEditor.LexerLanguage();
-    qDebug() << "TestFunction: " << text << ":" << ExtensionFileName().c_str() << " " << languageCurrent.c_str() <<endl;
+    // place for some debugging code...
 }
 
 void SciTEQt::UpdateStatusbarView()

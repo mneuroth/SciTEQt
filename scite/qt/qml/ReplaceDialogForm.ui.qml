@@ -1,3 +1,11 @@
+/***************************************************************************
+ *
+ * SciteQt - a port of SciTE to Qt Quick/QML
+ *
+ * Copyright (C) 2020 by Michael Neuroth
+ *
+ ***************************************************************************/
+
 import QtQuick 2.4
 import QtQuick.Controls 2.9
 import QtQuick.Layouts 1.0
@@ -209,17 +217,6 @@ Window {
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
-
-            // *****
-/*
-            CheckBox {
-                id: searchOnlyInThisStyleCheckBox
-                Layout.columnSpan: 3
-                text: localiseText(qsTr("Search only in &this style:"))
-                Keys.onEscapePressed: cancelButton.clicked()
-                Keys.onBackPressed: cancelButton.clicked()
-            }
-*/
         }
     }
 }

@@ -1,3 +1,11 @@
+/***************************************************************************
+ *
+ * SciteQt - a port of SciTE to Qt Quick/QML
+ *
+ * Copyright (C) 2020 by Michael Neuroth
+ *
+ ***************************************************************************/
+
 import QtQuick 2.0
 import QtQuick.Controls 2.9
 import QtQml.Models 2.14
@@ -67,30 +75,6 @@ AutoSizingMenu {
         action: actions.actionConvertLineEndChar
     }
     MenuSeparator {}
-/*
-    Menu {
-        id: languagesSubMenu
-        title: processMenuItem(qsTr("Language"), languagesSubMenu)
-
-        Instantiator {
-            id: currentLanguagesItems
-            model: languagesModel
-            delegate: MenuItem {
-                //checkable: true
-                //checked: model !== null ? model.checkState : false
-                action: Action {
-                    text: model.display+(model.shortcut.length>0 ? (" ("+model.shortcut+")") : "")
-                    shortcut: model.shortcut
-                    onTriggered: sciteQt.cmdSelectLanguage(index)
-                }
-            }
-
-            onObjectAdded: languagesSubMenu.insertItem(index, object)
-            onObjectRemoved: languagesSubMenu.removeItem(object)
-        }
-    }
-    MenuSeparator {}
-*/
     MenuItem {
         id: actionChangeIndentationSettings
         text: processMenuItem2(actions.actionChangeIndentationSettings.text, actionChangeIndentationSettings)

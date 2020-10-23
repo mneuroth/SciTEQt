@@ -1,3 +1,10 @@
+/***************************************************************************
+ *
+ * SciteQt - a port of SciTE to Qt Quick/QML
+ *
+ * Copyright (C) 2020 by Michael Neuroth
+ *
+ ***************************************************************************/
 /*
  * Code taken from visiscript project and addapted for sciteqt.
  *

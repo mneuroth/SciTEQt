@@ -1,3 +1,11 @@
+/***************************************************************************
+ *
+ * SciteQt - a port of SciTE to Qt Quick/QML
+ *
+ * Copyright (C) 2020 by Michael Neuroth
+ *
+ ***************************************************************************/
+
 import QtQuick 2.0
 import QtQuick.Controls 2.9
 import QtQml.Models 2.14
@@ -25,6 +33,11 @@ AutoSizingMenu {
         id: actionFullScreen
         text: processMenuItem2(actions.actionFullScreen.text, actionFullScreen)
         action: actions.actionFullScreen
+    }
+    MenuItem {
+        id: actionIsMobilePlatfrom
+        text: processMenuItem2(actions.actionIsMobilePlatfrom.text, actionIsMobilePlatfrom)
+        action: actions.actionIsMobilePlatfrom
     }
     MenuItem {
         id: actionShowToolBar
@@ -82,6 +95,4 @@ AutoSizingMenu {
         text: processMenuItem2(actions.actionParameters.text, actionParameters)
         action: actions.actionParameters
     }
-// TODO --> add Fenster here !!!
-// TODO --> Extras & Help --> Diverses ?
 }

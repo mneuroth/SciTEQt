@@ -1,3 +1,11 @@
+/***************************************************************************
+ *
+ * SciteQt - a port of SciTE to Qt Quick/QML
+ *
+ * Copyright (C) 2020 by Michael Neuroth
+ *
+ ***************************************************************************/
+
 import QtQuick 2.9
 import QtQuick.Controls 2.9
 import QtQuick.Dialogs 1.2
@@ -64,7 +72,6 @@ ScrollView {
 
         anchors.fill: parent
 
-//            // TODO dies macht die Probleme mit den verschwindenden Moue Events !!! width/height ok, logicalWidth/logicalHeight oder width+1/height nicht ok ? ==> root.contentItem.interactive = false
         implicitWidth: quickScintillaEditor.logicalWidth
         implicitHeight: quickScintillaEditor.logicalHeight
 
@@ -160,9 +167,7 @@ ScrollView {
         onContentXChanged: {
             var delta = root.contentItem.contentX - quickScintillaEditor.x
             var deltaInColumns = parseInt(delta / quickScintillaEditor.charWidth,10)
-            //console.log("xchanged delta="+delta+" deltaCol="+deltaInColumns+" shift="+deltaInColumns*quickScintillaEditor.charWidth+" contentX="+root.contentItem.contentX+" scintillaX="+quickScintillaEditor.x)
             if(delta >= quickScintillaEditor.charWidth) {
-                //console.log("p1")
                 if(!root.actionFromKeyboard)
                 {
                     // disable repaint: https://stackoverflow.com/questions/46095768/how-to-disable-update-on-a-qquickitem
@@ -173,7 +178,6 @@ ScrollView {
                 }
             }
             else if(-delta >= quickScintillaEditor.charWidth) {
-                //console.log("p2")
                 if(!root.actionFromKeyboard)
                 {
                     quickScintillaEditor.enableUpdate(false);
@@ -187,15 +191,12 @@ ScrollView {
                 }
             }
             else {
-                //console.log("p3")
             }
         }
         onContentYChanged: {
-            //console.log("YCHANGED")
             var delta = root.contentItem.contentY - quickScintillaEditor.y
             var deltaInLines = parseInt(delta / quickScintillaEditor.charHeight,10)
             if(delta >= quickScintillaEditor.charHeight) {
-                //console.log("P1")
                 // disable repaint: https://stackoverflow.com/questions/46095768/how-to-disable-update-on-a-qquickitem
                 quickScintillaEditor.enableUpdate(false);
                 quickScintillaEditor.y = quickScintillaEditor.y + deltaInLines*quickScintillaEditor.charHeight    // TODO --> bewirkt geometry changed !!!
@@ -203,7 +204,6 @@ ScrollView {
                 quickScintillaEditor.enableUpdate(true)
             }
             else if(-delta >= quickScintillaEditor.charHeight) {
-                //console.log("P2")
                 quickScintillaEditor.enableUpdate(false);
                 quickScintillaEditor.y = quickScintillaEditor.y + deltaInLines*quickScintillaEditor.charHeight
                 if(quickScintillaEditor.y < 0)
@@ -214,7 +214,6 @@ ScrollView {
                 quickScintillaEditor.enableUpdate(true)
             }
             else {
-                //console.log("P3")
             }
         }
     }

@@ -1,3 +1,11 @@
+/***************************************************************************
+ *
+ * SciteQt - a port of SciTE to Qt Quick/QML
+ *
+ * Copyright (C) 2020 by Michael Neuroth
+ *
+ ***************************************************************************/
+
 import QtQuick 2.0
 import QtQuick.Controls 2.9
 
@@ -847,11 +855,6 @@ Item {
     property alias actionAboutQt: actionAboutQt
     property alias actionAboutCurrentFile: actionAboutCurrentFile
     property alias actionIsMobilePlatfrom: actionIsMobilePlatfrom
-    property alias actionTestFunction: actionTestFunction
-    property alias actionTest2Function: actionTest2Function
-    property alias actionTest3Function: actionTest3Function
-    property alias actionTest4Function: actionTest4Function
-    property alias actionTest5Function: actionTest5Function
 
     Action {
         id: actionHelp
@@ -879,11 +882,13 @@ Item {
         text: qsTr("About Q&t")
         onTriggered: sciteQt.cmdAboutQt()
     }
+
     Action {
         id: actionAboutCurrentFile
         text: qsTr("About &Current File")
         onTriggered: sciteQt.cmdAboutCurrentFile()
     }
+
     Action {
         id: actionIsMobilePlatfrom
         text: qsTr("Mobile Platform UI")
@@ -893,6 +898,15 @@ Item {
             sciteQt.mobilePlatform = !sciteQt.mobilePlatform
         }
     }
+
+/* for debugging only:
+
+    property alias actionTestFunction: actionTestFunction
+    property alias actionTest2Function: actionTest2Function
+    property alias actionTest3Function: actionTest3Function
+    property alias actionTest4Function: actionTest4Function
+    property alias actionTest5Function: actionTest5Function
+
     Action {
         id: actionTestFunction
         text: qsTr("Html Open")
@@ -918,7 +932,7 @@ Item {
         text: qsTr("Save Mobile")
         onTriggered: applicationWindow.saveViaMobileFileDialog()
     }
-
+*/
     // ************************************************
 
     function handeEolMenus(enumEol) {

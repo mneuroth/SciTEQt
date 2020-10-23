@@ -1,9 +1,10 @@
-/*
- * Code for the sciteqt project.
+/***************************************************************************
  *
- * (C) 2020 by Michael Neuroth
+ * SciteQt - a port of SciTE to Qt Quick/QML
  *
- */
+ * Copyright (C) 2020 by Michael Neuroth
+ *
+ ***************************************************************************/
 
 #include <cstddef>
 #include <cstdlib>
