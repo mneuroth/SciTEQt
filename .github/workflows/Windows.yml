@@ -10,10 +10,16 @@ on:
 
 jobs:
 
+  # see: https://github.community/t/upload-multi-assets-from-different-os-to-a-release/17031
+  # see: https://github.com/actions/create-release/issues/14#issuecomment-555379810
+  # see: https://dev.to/eugenebabichenko/automated-multi-platform-releases-with-github-actions-1abg
   windows_create_release:
 
+    name: Prepare release
     runs-on: windows-latest
-
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -38,6 +44,7 @@ jobs:
   windows_gcc_build:
 
     runs-on: windows-latest
+    needs: create_release
 
     steps:
     - uses: actions/checkout@v1
@@ -88,17 +95,17 @@ jobs:
         dir
         d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\3.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw.exe
         dir 
-    - name: Load Release URL File from release job
-      if: contains(github.ref, 'release')
-      uses: actions/download-artifact@v1
-      with:
-        name: release_url
-    - name: Get Release File Name & Upload URL
-      if: contains(github.ref, 'release')
-      id: get_release_info
-      run: |
-        value=`cat release_url/release_url.txt`
-        echo ::set-output name=upload_url::$value
+    #~ - name: Load Release URL File from release job
+      #~ if: contains(github.ref, 'release')
+      #~ uses: actions/download-artifact@v1
+      #~ with:
+        #~ name: release_url
+    #~ - name: Get Release File Name & Upload URL
+      #~ if: contains(github.ref, 'release')
+      #~ id: get_release_info
+      #~ run: |
+        #~ value=`cat release_url/release_url.txt`
+        #~ echo ::set-output name=upload_url::$value
     - name: Upload Release Asset
       if: contains(github.ref, 'release')
       id: upload-release-asset
@@ -106,7 +113,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.get_release_info.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+        upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
         asset_path: scite/qt/dist/SciTEQtInstallerMingw.exe
         asset_name: SciTEQtInstallerMingw.exe
         asset_content_type: application/exe
@@ -114,6 +121,7 @@ jobs:
   windows_msc_build:
 
     runs-on: windows-latest
+    needs: create_release
 
     steps:
     - uses: actions/checkout@v1
@@ -170,17 +178,17 @@ jobs:
         dir
         d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\3.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc.exe
         dir 
-    - name: Load Release URL File from release job
-      if: contains(github.ref, 'release')
-      uses: actions/download-artifact@v1
-      with:
-        name: release_url
-    - name: Get Release File Name & Upload URL
-      if: contains(github.ref, 'release')
-      id: get_release_info
-      run: |
-        value=`cat release_url/release_url.txt`
-        echo ::set-output name=upload_url::$value
+    #~ - name: Load Release URL File from release job
+      #~ if: contains(github.ref, 'release')
+      #~ uses: actions/download-artifact@v1
+      #~ with:
+        #~ name: release_url
+    #~ - name: Get Release File Name & Upload URL
+      #~ if: contains(github.ref, 'release')
+      #~ id: get_release_info
+      #~ run: |
+        #~ value=`cat release_url/release_url.txt`
+        #~ echo ::set-output name=upload_url::$value
     - name: Upload Release Asset
       if: contains(github.ref, 'release')
       id: upload-release-asset
@@ -188,7 +196,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.get_release_info.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+        upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
         asset_path: scite/qt/dist/SciTEQtInstallerMsc.exe
         asset_name: SciTEQtInstallerMsc.exe
         asset_content_type: application/exe
