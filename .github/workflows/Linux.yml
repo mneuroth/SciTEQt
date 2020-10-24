@@ -140,7 +140,7 @@ jobs:
         ls -lrt
         ls -lrt scite/qt
 
-  linux_build_5_9_6:
+  linux_build_5_9_9:
 
     runs-on: ubuntu-latest
       
@@ -151,7 +151,7 @@ jobs:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '5.9.6'
+        version: '5.9.9'
         # Host platform
         host: # optional
         # Target platform for build
