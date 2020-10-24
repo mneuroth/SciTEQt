@@ -122,7 +122,7 @@ jobs:
         asset_name: SciTEQtInstallerMingw.exe
         asset_content_type: application/exe
 
-  windows_gcc_5_9_6_build:
+  windows_gcc_5_9_9_build:
 
     runs-on: windows-latest
     needs: create_release
@@ -134,13 +134,13 @@ jobs:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '5.9.6'
+        version: '5.9.9'
         # Host platform
         host: # optional
         # Target platform for build
         target: 'desktop'
         # Architecture for Windows/Android
-        arch: 'win64_mingw73'
+        arch: 'win32_mingw53'
         # Whether or not to install Qt dependencies on Linux
         install-deps: 'true'
         # Additional Qt modules to install

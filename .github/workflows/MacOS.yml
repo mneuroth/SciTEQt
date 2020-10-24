@@ -65,7 +65,7 @@ jobs:
         macdeployqt sciteqt.app -dmg -verbose=1
         ls -lrt        
 
-  macos_5_9_6_build:
+  macos_5_9_9_build:
 
     runs-on: macos-latest
 
@@ -76,7 +76,7 @@ jobs:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '5.9.6'
+        version: '5.9.9'
         # Host platform
         host: 'mac'
         # Target platform for build
@@ -103,9 +103,9 @@ jobs:
         ls -lrt
         ls -lrt ..
         ls -lrt ../Qt
-        ls -lrt ../Qt/Tools
-        python3 -m aqt tool -O ../Qt mac tools_ifw 3.2.2 mac-x64
-        ls -lrt ../Qt/Tools
+        #ls -lrt ../Qt/Tools
+        #python3 -m aqt tool -O ../Qt mac tools_ifw 3.2.2 mac-x64
+        #ls -lrt ../Qt/Tools
         which qmake
         qmake -r sciteqt.pro
         ls -lrt
