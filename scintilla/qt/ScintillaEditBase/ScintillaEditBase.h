@@ -259,7 +259,7 @@ private:
 
     void UpdateQuickView();
 
-    Qt::InputMethodHints dataInputMethodHints;
+// TODO: set context menu callback... to add more menu items to context menu...
     QPoint mousePressedPoint;
     bool enableUpdateFlag;
     bool mouseMoved;
@@ -268,6 +268,7 @@ private:
     int logicalHeight;
     QFont aFont;
     QPoint longTouchPoint;
+    Qt::InputMethodHints dataInputMethodHints;
     QTimer aLongTouchTimer;
 #endif
 

@@ -498,6 +498,7 @@ void ScintillaEditBase::mousePressEvent(QMouseEvent *event)
         if (!sqt->PointInSelection(pt)) {
             sqt->SetEmptySelection(sqt->PositionFromLocation(pt));
         }
+// TODO: call context menu callback if set otherwise use default context menu...
         if (sqt->ShouldDisplayPopup(pt)) {
             sqt->ContextMenu(pos); 
         }
@@ -840,8 +841,10 @@ QVariant ScintillaEditBase::inputMethodQuery(Qt::InputMethodQuery query) const
     int pos = send(SCI_GETCURRENTPOS);
 	int line = send(SCI_LINEFROMPOSITION, pos);
 
+// TODO working gulp --> improve this Method for qml !!!
 	switch (query) {
 #ifdef PLAT_QT_QML
+    // used from QQuickTextEdit::inputMethodQuery() ==> better use from?: QQuickTextControl::inputMethodQuery()
         case Qt::ImEnabled:
             return QVariant((bool)(flags() & ItemAcceptsInputMethod));
         case Qt::ImHints:
@@ -859,7 +862,8 @@ QVariant ScintillaEditBase::inputMethodQuery(Qt::InputMethodQuery query) const
         }
     */
 #endif
-		case Qt::ImMicroFocus:
+        //case Qt::ImMicroFocus:  // <-- this is obsolete, use the constant below
+        case Qt::ImCursorRectangle:
 		{
 			int startPos = (preeditPos >= 0) ? preeditPos : pos;
 			Point pt = sqt->LocationFromPosition(startPos);
@@ -921,7 +925,9 @@ QVariant ScintillaEditBase::inputMethodQuery(Qt::InputMethodQuery query) const
 
 void ScintillaEditBase::touchEvent(QTouchEvent *event)
 {
-qDebug() << "TouchEvent " << event->type() << " " << event << " " << event->touchPointStates() << endl;
+//qDebug() << "TouchEvent " << event->type() << " " << event << " " << event->touchPointStates() << endl;
+    forceActiveFocus();
+
     if( event->touchPointStates() == Qt::TouchPointPressed && event->touchPoints().count()>0 )
     {
         QTouchEvent::TouchPoint point = event->touchPoints().first();
@@ -942,7 +948,7 @@ qDebug() << "TouchEvent " << event->type() << " " << event << " " << event->touc
         aLongTouchTimer.stop();
 
         QTouchEvent::TouchPoint point = event->touchPoints().first();
-        Point pos = PointFromQPoint(mouseMoved ? mousePressedPoint : point.pos().toPoint());
+        //Point pos = PointFromQPoint(mouseMoved ? mousePressedPoint : point.pos().toPoint());
 
         // TODO: if moved --> use old pos from press ?
         //sqt->ButtonUpWithModifiers(pos, time.elapsed(), 0);
@@ -955,10 +961,14 @@ qDebug() << "TouchEvent " << event->type() << " " << event << " " << event->touc
         // Check if not in readonly modus --> pdoc->IsReadOnly()
         if( !sqt->pdoc->IsReadOnly() )
         {
+            QGuiApplication::inputMethod()->commit();
+
             // QML: Qt.inputMethod.show();
             QInputMethod *keyboard = qGuiApp->inputMethod();
             //QInputMethod *keyboard = QGuiApplication::inputMethod();
             keyboard->show();
+            //keyboard->update(Qt::ImQueryInput);
+//            TextEdit->setTextInteractionFlags
         }
 #endif
     }

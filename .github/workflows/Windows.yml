@@ -22,8 +22,10 @@ jobs:
       
     steps:
     - name: Checkout code
+      if: contains(github.ref, 'release')
       uses: actions/checkout@v2
     - name: Create Release
+      if: contains(github.ref, 'release')
       id: create_release
       uses: actions/create-release@v1
       env:
@@ -34,8 +36,10 @@ jobs:
         draft: false
         prerelease: false
     - name: Output Release URL File
+      if: contains(github.ref, 'release')
       run: echo "${{ steps.create_release.outputs.upload_url }}" > release_url.txt
     - name: Save Release URL File for publish
+      if: contains(github.ref, 'release')
       uses: actions/upload-artifact@v1
       with:
         name: release_url
