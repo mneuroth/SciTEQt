@@ -29,8 +29,7 @@ Added freatures (compared to original SciTE):
 
 Missing features are:
 
-# * Cleanup source qt source code, remove debug loggings
-# * Github Releases erzeugen (Binary Setup für Windows & Mac)
+# * Cleanup source qt source code, remove debug loggings --> noch Scintilla Code aufraeumen !
 # * switch to Scite v4.4.5
 # * testen, testen, testen !
 # * fix known Bugs
@@ -103,6 +102,7 @@ Bugs fixed:
   //* Scroll 3 lines with mouse wheel
   //* Selection disappears if mouse wheel is used and selection goes out of scope
   //* does not work if command number is not start with 0 --> i. e. command.name.11.*=Load Lua ==> use append() instead of set in ListModel
+  //* Github Releases erzeugen (Binary Setup für Windows & Mac)
 
 Now already implemented:
 
