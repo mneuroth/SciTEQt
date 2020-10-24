@@ -13,7 +13,7 @@ jobs:
   # see: https://github.community/t/upload-multi-assets-from-different-os-to-a-release/17031
   # see: https://github.com/actions/create-release/issues/14#issuecomment-555379810
   # see: https://dev.to/eugenebabichenko/automated-multi-platform-releases-with-github-actions-1abg
-  windows_create_release:
+  create_release:
 
     name: Prepare release
     runs-on: windows-latest
