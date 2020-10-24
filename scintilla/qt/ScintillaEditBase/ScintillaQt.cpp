@@ -283,12 +283,7 @@ void ScintillaQt::ScrollText(Sci::Line linesToMove)
     Q_UNUSED(linesToMove);
 #endif
 }
-/*
-void ScintillaQt::DebugOutput(int value)
-{
-    qDebug() << "DBG out " << value << endl;
-}
-*/
+
 void ScintillaQt::SetVerticalScrollPos()
 {
 #ifndef PLAT_QT_QML

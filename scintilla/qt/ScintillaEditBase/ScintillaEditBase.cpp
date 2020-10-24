@@ -53,8 +53,6 @@
 
 using namespace Scintilla;
 
-#include <QDebug>
-
 ScintillaEditBase::ScintillaEditBase(QQuickItem/*QWidget*/ *parent)
 #ifdef PLAT_QT_QML
 : QQuickPaintedItem(parent)
@@ -181,7 +179,7 @@ void ScintillaEditBase::scrollColumn(int deltaColumns)
 
 void ScintillaEditBase::debug()
 {
-    qDebug() << "Debug: " << send(SCI_GETCURRENTPOS ) << endl;
+    // for debugging...
 }
 
 void ScintillaEditBase::cmdContextMenu(int menuID)
@@ -217,7 +215,6 @@ void ScintillaEditBase::scrollVertical(int value)
 
 bool ScintillaEditBase::event(QEvent *event)
 {
-    //qDebug() << "event " << event << " " << event->type() << endl;
 	bool result = false;
 
 	if (event->type() == QEvent::KeyPress) {
@@ -350,7 +347,6 @@ void ScintillaEditBase::geometryChanged(const QRectF &newGeometry, const QRectF 
 
 void ScintillaEditBase::hoverMoveEvent(QHoverEvent *event)
 {
-    //qDebug() << "hover move event " << event << endl;
     Q_UNUSED(event);
 }
 
@@ -460,7 +456,6 @@ static int modifierTranslated(int sciModifier)
 
 void ScintillaEditBase::mousePressEvent(QMouseEvent *event)
 {
-//qDebug() << "mouse press event " << event << " time=" << curTime << endl;       // irgendwann gehen mouse move events verloren ? warum
     Point pos = PointFromQPoint(event->pos());
 
 	emit buttonPressed(event);
@@ -536,7 +531,6 @@ void ProcessScintillaContextMenu(Point pt, Scintilla::Window & w, const QList<QP
 
 void ScintillaEditBase::mouseReleaseEvent(QMouseEvent *event)
 {
-//qDebug() << "mouse release event " << event << endl;       // irgendwann gehen mouse move events verloren ? warum
     Point point = PointFromQPoint(event->pos());
 	if (event->button() == Qt::LeftButton)
 		sqt->ButtonUpWithModifiers(point, time.elapsed(), ModifiersOfKeyboard());
@@ -564,7 +558,6 @@ void ScintillaEditBase::mouseDoubleClickEvent(QMouseEvent *event)
 
 void ScintillaEditBase::mouseMoveEvent(QMouseEvent *event)
 {
-//qDebug() << "mouse move event " << event << endl;       // TODO: BUG: irgendwann gehen mouse move events verloren ? warum --> Scroll Area ?
     Point pos = PointFromQPoint(event->pos());
 
 	bool shift = QApplication::keyboardModifiers() & Qt::ShiftModifier;
@@ -925,7 +918,6 @@ QVariant ScintillaEditBase::inputMethodQuery(Qt::InputMethodQuery query) const
 
 void ScintillaEditBase::touchEvent(QTouchEvent *event)
 {
-//qDebug() << "TouchEvent " << event->type() << " " << event << " " << event->touchPointStates() << endl;
     forceActiveFocus();
 
     if( event->touchPointStates() == Qt::TouchPointPressed && event->touchPoints().count()>0 )
