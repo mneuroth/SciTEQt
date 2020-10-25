@@ -159,6 +159,12 @@ win32 {
 }
 
 macx {
+    properties.path = Contents/MacOS
+    properties.files += SciTEUser.properties
+    properties.files += SciTEGlobal.properties
+    properties.files += SciTE.properties
+    properties.files += abbrev.properties
+
     localisations.path = Contents/MacOS/localisations
     localisations.files += translations/locale.de.properties
     localisations.files += translations/locale.nl.properties
@@ -172,7 +178,9 @@ macx {
     localisations.files += translations/locale.ja.properties
 
     QMAKE_BUNDLE_DATA += localisations
+    QMAKE_BUNDLE_DATA += properties
     INSTALLS += localisations
+    INSTALLS += properties
 
     ICON = SciteQt_512x512.icns
     QMAKE_INFO_PLIST = dist/Info.plist
