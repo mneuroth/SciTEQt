@@ -65,7 +65,7 @@ jobs:
         macdeployqt sciteqt.app -dmg -verbose=1
         ls -lrt        
 
-  macos_5_9_9_build:
+  macos_5_11_3_build:
 
     runs-on: macos-latest
 
@@ -76,7 +76,7 @@ jobs:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '5.9.9'
+        version: '5.11.3'
         # Host platform
         host: 'mac'
         # Target platform for build
