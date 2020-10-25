@@ -448,6 +448,8 @@ void SciTEQt::SaveAsHTML()
 
 FilePath GetSciTEPath(const QByteArray & home)
 {
+qDebug() << "GetScitePath " << home << " app=" << QDir::toNativeSeparators(QCoreApplication::applicationDirPath()) << endl; // gulp  C:/Users/micha/Documents/git_projects/build-sciteqt-Desktop_Qt_5_14_2_MSVC2017_64bit-Debug/scite/qt/debug
+//OnAddLineToOutput("app path "+QCoreApplication::applicationDirPath());
     GUI::gui_char buf[512];
     if(!home.isEmpty())
     {
@@ -462,12 +464,12 @@ FilePath GetSciTEPath(const QByteArray & home)
     {
 #ifdef Q_OS_WIN
         // return the directory of the executable
-        int count = QCoreApplication::applicationDirPath().toWCharArray((wchar_t *)buf);
+        int count = QDir::toNativeSeparators(QCoreApplication::applicationDirPath()).toWCharArray((wchar_t *)buf);
         buf[count] = 0;
 #elif defined(Q_OS_ANDROID)
         strcpy(buf,FILES_DIR);
 #else
-        strcpy(buf,QCoreApplication::applicationDirPath().toStdString().c_str());
+        strcpy(buf,QDir::toNativeSeparators(QCoreApplication::applicationDirPath()).toStdString().c_str());
 #endif
     }
 
@@ -1388,6 +1390,7 @@ void SciTEQt::cmdNew()
 
 void SciTEQt::cmdOpen()
 {
+    qDebug() << "cmdOpen() " << endl;
     MenuCommand(IDM_OPEN);
 }
 

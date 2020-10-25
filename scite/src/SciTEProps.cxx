@@ -1646,7 +1646,7 @@ GUI::gui_string SciTEBase::LocaliseMessage(const char *s, const GUI::gui_char *p
 		Substitute(translation, GUI_TEXT("^2"), param2);
 	return translation;
 }
-
+#include <QDebug>
 void SciTEBase::ReadLocalization() {
 	localiser.Clear();
 	GUI::gui_string title = GUI_TEXT("locale.properties");
@@ -1656,6 +1656,7 @@ void SciTEBase::ReadLocalization() {
 	}
 	FilePath propdir = GetSciteDefaultHome();
 	FilePath localePath(propdir, title);
+qDebug() << "ReadLocalisation propdir=" << propdir.AsUTF8().c_str() << " title=" << title << " loc=" << localePath.AsUTF8().c_str() << endl;
     localiser.Read(localePath, propdir, filter, &importFiles, 0);
 	localiser.SetMissing(props.GetString("translation.missing"));
 	localiser.read = true;
