@@ -158,6 +158,27 @@ win32 {
     QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\..\\doc\\*.*\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
 }
 
+macx {
+    localisations.path = Contents/MacOS/localisations
+    localisations.files += translations/locale.de.properties
+    localisations.files += translations/locale.nl.properties
+    localisations.files += translations/locale.fr.properties
+    localisations.files += translations/locale.es.properties
+    localisations.files += translations/locale.pt_PT.properties
+    localisations.files += translations/locale.it.properties
+    localisations.files += translations/locale.ru.properties
+    localisations.files += translations/locale.hu.properties
+    localisations.files += translations/locale.tr.properties
+    localisations.files += translations/locale.ja.properties
+
+    QMAKE_BUNDLE_DATA += localisations
+    INSTALLS += localisations
+
+    ICON = SciteQt_512x512.icns
+    QMAKE_INFO_PLIST = dist/Info.plist
+    QT += macextras
+}
+
 android {
     SOURCES += android/androidshareutils.cpp
 
