@@ -29,8 +29,11 @@ Added freatures (compared to original SciTE):
 
 Missing features are:
 
-# * Cleanup source qt source code, remove debug loggings --> noch Scintilla Code aufraeumen !
 # * switch to Scite v4.4.5
+# * Update screenshots for github project
+# * Cleanup this file
+# * Windows CI build does not fail if compile step has an error and sciteqt.exe was not created ... ? Why? See Mingw Build for 32 bit
+# * MacOS build with Qt 5.9.9 does not run... ? --> Test run with 5.5.9 on linux ==> many controls are not available --> port to qt 5.9 ?
 # * testen, testen, testen !
 # * fix known Bugs
   * save and restore file extensions and directories for find in files
@@ -103,6 +106,7 @@ Bugs fixed:
   //* Selection disappears if mouse wheel is used and selection goes out of scope
   //* does not work if command number is not start with 0 --> i. e. command.name.11.*=Load Lua ==> use append() instead of set in ListModel
   //* Github Releases erzeugen (Binary Setup für Windows & Mac)
+  //* Cleanup source qt source code, remove debug loggings --> noch Scintilla Code aufraeumen !
 
 Now already implemented:
 

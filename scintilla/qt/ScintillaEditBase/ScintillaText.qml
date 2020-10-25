@@ -7,9 +7,9 @@
  ***************************************************************************/
 
 import QtQuick 2.9
-import QtQuick.Controls 2.9
+import QtQuick.Controls 2.3
 import QtQuick.Dialogs 1.2
-import QtQml.Models 2.9
+import QtQml.Models 2.1
 
 import org.scintilla.scintilla 1.0
 

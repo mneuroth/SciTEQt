@@ -7,10 +7,10 @@
  ***************************************************************************/
 
 import QtQuick 2.4
-import QtQuick.Controls 2.9
+import QtQuick.Controls 2.3
 import QtQuick.Layouts 1.0
 //import QtQuick.Dialogs 1.3
-import QtQuick.Window 2.9
+import QtQuick.Window 2.1
 
 Window {
 
@@ -36,11 +36,14 @@ Window {
 
     property var fcnLocalisation: undefined
 
-    function localiseText(text,filterShortcuts=true) {
+    function localiseText2(text,filterShortcuts/*=true*/) {
         if(fcnLocalisation !== undefined) {
             return fcnLocalisation(text,filterShortcuts)
         }
         return text
+    }
+    function localiseText(text) {
+        return localiseText2(text,true)
     }
 
     // remove standard Ok button from dialog (see: https://stackoverflow.com/questions/50858605/qml-dialog-removing-ok-button)

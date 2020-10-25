@@ -56,7 +56,7 @@ enum {
 
 QString ConvertGuiCharToQString(const GUI::gui_char * s)
 {
-#ifdef Q_OS_WINDOWS
+#ifdef Q_OS_WIN
     return QString::fromWCharArray(s);
 #else
     return QString(s);
@@ -65,7 +65,7 @@ QString ConvertGuiCharToQString(const GUI::gui_char * s)
 
 QString ConvertGuiStringToQString(const GUI::gui_string & s)
 {
-#ifdef Q_OS_WINDOWS
+#ifdef Q_OS_WIN
     return QString::fromWCharArray(s.c_str());
 #else
     return QString(s.c_str());
@@ -74,7 +74,7 @@ QString ConvertGuiStringToQString(const GUI::gui_string & s)
 
 GUI::gui_string ConvertQStringToGuiString(const QString & s)
 {
-#ifdef Q_OS_WINDOWS
+#ifdef Q_OS_WIN
     return s.toStdWString();
 #else
     return s.toStdString();
@@ -1358,7 +1358,7 @@ bool SciTEQt::saveCurrentAs(const QString & sFileName)
     bool ret = false;
     QUrl aUrl(sFileName);
     QString sLocalFileName = aUrl.toLocalFile();
-#ifdef Q_OS_WINDOWS
+#ifdef Q_OS_WIN
     wchar_t * buf = new wchar_t[sLocalFileName.length()+1];
     sLocalFileName.toWCharArray(buf);
     buf[sLocalFileName.length()] = 0;
