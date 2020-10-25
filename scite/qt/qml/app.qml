@@ -7,14 +7,14 @@
  ***************************************************************************/
 
 import QtQuick 2.9
-import QtQuick.Controls 2.9
+import QtQuick.Controls 2.3     // for MenuBar (Qt 5.10)
 import QtQuick.Dialogs 1.2
-import QtQml.Models 2.9
+import QtQml.Models 2.1
 import QtQuick.Controls 1.4 as Controls1
 import QtQuick.Layouts 1.0
 //import Qt.labs.settings 1.0
 
-import QtQuick.Window 2.9   // for dialog test only (webassembly)
+import QtQuick.Window 2.1   // for dialog test only (webassembly)
 
 import org.scintilla.sciteqt 1.0
 
@@ -186,15 +186,15 @@ ApplicationWindow {
     function showFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory, wholeWord, caseSensitive, regularExpression) {
         findInFilesDialog.findWhatModel.clear()
         findInFilesDialog.findWhatModel.append({"text":text})
-        for (let i=0; i<findHistory.length; i++) {
+        for (var i=0; i<findHistory.length; i++) {
             findInFilesDialog.findWhatModel.append({"text":findHistory[i]})
         }
         findInFilesDialog.filesExtensionsModel.clear()
-        for (let i=0; i<filePatternHistory.length; i++) {
+        for (var i=0; i<filePatternHistory.length; i++) {
             findInFilesDialog.filesExtensionsModel.append({"text":filePatternHistory[i]})
         }
         findInFilesDialog.directoryModel.clear()
-        for (let i=0; i<directoryHistory.length; i++) {
+        for (var i=0; i<directoryHistory.length; i++) {
             findInFilesDialog.directoryModel.append({"text":directoryHistory[i]})
         }
         findInFilesDialog.findWhatInput.currentIndex = 0
@@ -211,14 +211,14 @@ ApplicationWindow {
     function showFindStrip(findHistory, replaceHistory, text, incremental, withReplace, closeOnFind) {
         stripFindWhatModel.clear()
         stripFindWhatModel.append({"text":text})
-        for (let i=0; i<findHistory.length; i++) {
+        for (var i=0; i<findHistory.length; i++) {
             stripFindWhatModel.append({"text":findHistory[i]})
         }
         findInput.currentIndex = 0
 
         stripReplaceWithModel.clear()
         stripReplaceWithModel.append({"text":""})
-        for (let i=0; i<replaceHistory.length; i++) {
+        for (var i=0; i<replaceHistory.length; i++) {
             stripReplaceWithModel.append({"text":replaceHistory[i]})
         }
         replaceInput.currentIndex = 0
@@ -240,12 +240,12 @@ ApplicationWindow {
     function showReplace(findHistory, replaceHistory, text, replace, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down) {
         replaceDialog.findWhatModel.clear()
         replaceDialog.findWhatModel.append({"text":text})
-        for (let i=0; i<findHistory.length; i++) {
+        for (var i=0; i<findHistory.length; i++) {
             replaceDialog.findWhatModel.append({"text":findHistory[i]})
         }
         replaceDialog.replaceWithModel.clear()
         replaceDialog.replaceWithModel.append({"text":replace})
-        for (let i=0; i<replaceHistory.length; i++) {
+        for (var i=0; i<replaceHistory.length; i++) {
             replaceDialog.replaceWithModel.append({"text":replaceHistory[i]})
         }
         replaceDialog.findWhatInput.currentIndex = 0
@@ -262,7 +262,7 @@ ApplicationWindow {
     function showFind(findHistory, text, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down) {
         findDialog.findWhatModel.clear()
         findDialog.findWhatModel.append({"text":text})
-        for (let i=0; i<findHistory.length; i++) {
+        for (var i=0; i<findHistory.length; i++) {
             findDialog.findWhatModel.append({"text":findHistory[i]})
         }
         findDialog.findWhatInput.currentIndex = 0
@@ -330,7 +330,7 @@ ApplicationWindow {
 
     function showAbbreviationDialog(items) {
         abbreviationDialog.abbreviationModel.clear()
-        for (let i=0; i<items.length; i++) {
+        for (var i=0; i<items.length; i++) {
             abbreviationDialog.abbreviationModel.append({"text":items[i]})
         }
         abbreviationDialog.show()
@@ -1274,7 +1274,7 @@ ApplicationWindow {
 
                     // update menu model with data from c++
                     sciteContextMenuModel.clear()
-                    for (let i=0; i<menuItems.length; i++) {
+                    for (var i=0; i<menuItems.length; i++) {
                         sciteContextMenuModel.append({"display":menuItems[i]["display"], "enabled":menuItems[i]["enabled"], "menuId":menuItems[i]["menuId"]})
                     }
 
