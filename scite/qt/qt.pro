@@ -160,10 +160,9 @@ win32 {
 
 macx {
     properties.path = Contents/MacOS
-    properties.files += SciTEUser.properties
-    properties.files += SciTEGlobal.properties
-    properties.files += SciTE.properties
-    properties.files += abbrev.properties
+    properties.files += ./SciTEUser.properties
+    properties.files += ./SciTEGlobal.properties
+    properties.files += ../src/SciTE.properties
 
     localisations.path = Contents/MacOS/localisations
     localisations.files += translations/locale.de.properties
