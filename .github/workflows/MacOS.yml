@@ -8,7 +8,7 @@ on:
 
 jobs:
             
-  macos_build:
+  macos_5_14_2_build:
 
     runs-on: macos-latest
 
@@ -62,7 +62,7 @@ jobs:
         ls -lrt scite/qt
         cd scite/qt
         which macdeployqt
-        macdeployqt sciteqt.app -dmg -qmldir=qml -verbose=3
+        macdeployqt sciteqt.app -dmg -qmldir=qml -verbose=2
         ls -lrt        
 
   macos_5_11_3_build:
@@ -119,5 +119,5 @@ jobs:
         ls -lrt scite/qt
         cd scite/qt
         which macdeployqt
-        macdeployqt sciteqt.app -dmg -qmldir=qml -verbose=3
+        macdeployqt sciteqt.app -dmg -qmldir=qml -verbose=2
         ls -lrt        

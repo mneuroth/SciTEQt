@@ -45,7 +45,7 @@ jobs:
         name: release_url
         path: release_url.txt        
 
-  windows_gcc_build:
+  windows_5_14_2_gcc_build:
 
     runs-on: windows-latest
     needs: create_release
@@ -97,7 +97,7 @@ jobs:
         dir
         cd ..\..\..
         dir
-        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\3.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw.exe
+        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\3.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw_5_14_2_broken.exe
         dir 
     - name: Upload Release Asset
       if: contains(github.ref, 'release')
@@ -107,8 +107,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/dist/SciTEQtInstallerMingw.exe
-        asset_name: SciTEQtInstallerMingw.exe
+        asset_path: scite/qt/dist/SciTEQtInstallerMingw_5_14_2_broken.exe
+        asset_name: SciTEQtInstallerMingw_5_14_2_broken.exe
         asset_content_type: application/exe
 
   #~ windows_gcc_5_14_2_32bit_build:
@@ -177,7 +177,7 @@ jobs:
         #~ asset_name: SciTEQtInstaller32bitMingw.exe
         #~ asset_content_type: application/exe
 
-  windows_msc_build:
+  windows_5_14_2_msc_build:
 
     runs-on: windows-latest
     needs: create_release
@@ -235,7 +235,7 @@ jobs:
         dir
         cd ..\..\..
         dir
-        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\3.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc.exe
+        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\3.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_14_2.exe
         dir 
     - name: Upload Release Asset
       if: contains(github.ref, 'release')
@@ -245,8 +245,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/dist/SciTEQtInstallerMsc.exe
-        asset_name: SciTEQtInstallerMsc.exe
+        asset_path: scite/qt/dist/SciTEQtInstallerMsc_5_14_2.exe
+        asset_name: SciTEQtInstallerMsc_5_14_2.exe
         asset_content_type: application/exe
 
   # this is a copy of the content MacOS.yml used only to upload binary for release
@@ -306,7 +306,7 @@ jobs:
         ls -lrt scite/qt
         cd scite/qt
         which macdeployqt
-        macdeployqt sciteqt.app -dmg -verbose=3 -qmldir=qml
+        macdeployqt sciteqt.app -dmg -verbose=2 -qmldir=qml
         ls -lrt
         cp sciteqt.dmg sciteqt_5_14_2.dmg
         ls -lrt        
@@ -380,7 +380,7 @@ jobs:
         ls -lrt scite/qt
         cd scite/qt
         which macdeployqt
-        macdeployqt sciteqt.app -dmg -verbose=3 -qmldir=qml
+        macdeployqt sciteqt.app -dmg -verbose=2 -qmldir=qml
         ls -lrt        
         cp sciteqt.dmg sciteqt_5_11_3.dmg
         ls -lrt        
