@@ -448,8 +448,6 @@ void SciTEQt::SaveAsHTML()
 
 FilePath GetSciTEPath(const QByteArray & home)
 {
-qDebug() << "GetScitePath " << home << " app=" << QDir::toNativeSeparators(QCoreApplication::applicationDirPath()) << endl; // gulp  C:/Users/micha/Documents/git_projects/build-sciteqt-Desktop_Qt_5_14_2_MSVC2017_64bit-Debug/scite/qt/debug
-//OnAddLineToOutput("app path "+QCoreApplication::applicationDirPath());
     GUI::gui_char buf[512];
     if(!home.isEmpty())
     {
@@ -1390,7 +1388,6 @@ void SciTEQt::cmdNew()
 
 void SciTEQt::cmdOpen()
 {
-    qDebug() << "cmdOpen() " << endl;
     MenuCommand(IDM_OPEN);
 }
 

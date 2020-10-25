@@ -35,10 +35,7 @@ Item {
         text: qsTr("&Open...")
         //icon.source: "share.svg"
         shortcut: "Ctrl+O"
-        onTriggered: {
-            console.log("Menu --> open")
-            sciteQt.cmdOpen()
-        }
+        onTriggered: sciteQt.cmdOpen()
     }
     Action {
         id: actionOpenSelectedFilename
@@ -209,10 +206,7 @@ Item {
     Action {
         id: actionExit
         text: qsTr("E&xit")
-        onTriggered: {
-            console.log("Menu --> EXIT")
-            sciteQt.cmdExit()
-        }
+        onTriggered: sciteQt.cmdExit()
     }
 
     property alias actionUndo: actionUndo

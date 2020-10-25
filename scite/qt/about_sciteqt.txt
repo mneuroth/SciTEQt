@@ -3,7 +3,8 @@ which is optimized for touch devices.
 
 All target platforms of the Qt framework are supported (Android, IOS, 
 Webassembly, Windows, Mac and Linux). The application runs even in 
-a browser via Webassembly (http://mneuroth.de/sciteqt.html)
+a browser via Webassembly (http://mneuroth.de/sciteqt.html).
+The minimum Qt version needed to compile SciteQt is Qt 5.11.3.
 
 The current homepage of the project can be found on github: 
 
@@ -69,6 +70,8 @@ Known and open Bugs are:
 
   * Anzeige der Schrift nach Monitor Wechsel teilweise durcheinander...
   (* Absturz Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? und gcc/mingw funktionieren !
+  * MacOS: file open/save as dialog does not work ? (mobile ok) ==> synchronious processing in Process*Dialog() not good for MacOS ?
+  * first Menu Item in Menu is empty on Qt 5.11.3 --> ok after switch between mobile and desktop ui !
 
   * Navigate directory in Find In Files Dialog does not work for android
   * SaveAsCopy auf Android Storage Access Framework aendert Dateinamen

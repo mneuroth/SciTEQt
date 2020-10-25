@@ -163,6 +163,7 @@ macx {
     properties.files += ./SciTEUser.properties
     properties.files += ./SciTEGlobal.properties
     properties.files += ../src/SciTE.properties
+    properties.files += ../src/abbrev.properties
 
     localisations.path = Contents/MacOS/localisations
     localisations.files += translations/locale.de.properties
