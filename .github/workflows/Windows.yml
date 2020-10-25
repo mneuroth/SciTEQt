@@ -93,23 +93,12 @@ jobs:
         dir scite\qt\release
         dir scintilla\bin
         cd scite\qt\dist\packages\org.scintilla.sciteqt\data
-        windeployqt --release --qmldir ..\..\..\.. sciteqt.exe
+        windeployqt --release --qmldir ..\..\..\..\qml sciteqt.exe
         dir
         cd ..\..\..
         dir
         d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\3.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw.exe
         dir 
-    #~ - name: Load Release URL File from release job
-      #~ if: contains(github.ref, 'release')
-      #~ uses: actions/download-artifact@v1
-      #~ with:
-        #~ name: release_url
-    #~ - name: Get Release File Name & Upload URL
-      #~ if: contains(github.ref, 'release')
-      #~ id: get_release_info
-      #~ run: |
-        #~ value=`cat release_url/release_url.txt`
-        #~ echo ::set-output name=upload_url::$value
     - name: Upload Release Asset
       if: contains(github.ref, 'release')
       id: upload-release-asset
@@ -170,7 +159,7 @@ jobs:
         dir scite\qt\release
         dir scintilla\bin
         cd scite\qt\dist\packages\org.scintilla.sciteqt\data
-        windeployqt --release --qmldir ..\..\..\.. sciteqt.exe
+        windeployqt --release --qmldir ..\..\..\..\qml sciteqt.exe
         dir
         cd ..\..\..
         dir
@@ -242,23 +231,12 @@ jobs:
         dir scite\bin
         dir scintilla\bin
         cd scite\qt\dist\packages\org.scintilla.sciteqt\data
-        windeployqt --release --qmldir ..\..\..\.. sciteqt.exe
+        windeployqt --release --qmldir ..\..\..\..\qml sciteqt.exe
         dir
         cd ..\..\..
         dir
         d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\3.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc.exe
         dir 
-    #~ - name: Load Release URL File from release job
-      #~ if: contains(github.ref, 'release')
-      #~ uses: actions/download-artifact@v1
-      #~ with:
-        #~ name: release_url
-    #~ - name: Get Release File Name & Upload URL
-      #~ if: contains(github.ref, 'release')
-      #~ id: get_release_info
-      #~ run: |
-        #~ value=`cat release_url/release_url.txt`
-        #~ echo ::set-output name=upload_url::$value
     - name: Upload Release Asset
       if: contains(github.ref, 'release')
       id: upload-release-asset
@@ -328,7 +306,7 @@ jobs:
         ls -lrt scite/qt
         cd scite/qt
         which macdeployqt
-        macdeployqt sciteqt.app -dmg -verbose=1
+        macdeployqt sciteqt.app -dmg -verbose=3 -qmldir=qml
         ls -lrt
     # this step is added for the release    
     - name: Upload Release Asset
@@ -400,7 +378,7 @@ jobs:
         ls -lrt scite/qt
         cd scite/qt
         which macdeployqt
-        macdeployqt sciteqt.app -dmg -verbose=1
+        macdeployqt sciteqt.app -dmg -verbose=3 -qmldir=qml
         ls -lrt        
         cp sciteqt.dmg sciteqt5_11_3.dmg
         ls -lrt        
@@ -474,7 +452,7 @@ jobs:
         ls -lrt scite/qt
         cd scite/qt
         which macdeployqt
-        macdeployqt sciteqt.app -dmg -verbose=1
+        macdeployqt sciteqt.app -dmg -verbose=3 -qmldir=qml
         ls -lrt        
         cp sciteqt.dmg sciteqt5_10_1.dmg
         ls -lrt        

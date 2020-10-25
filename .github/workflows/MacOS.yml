@@ -62,7 +62,7 @@ jobs:
         ls -lrt scite/qt
         cd scite/qt
         which macdeployqt
-        macdeployqt sciteqt.app -dmg -verbose=1
+        macdeployqt citeqt.app -dmg -qmldir=qml -verbose=3
         ls -lrt        
 
   macos_5_11_3_build:
