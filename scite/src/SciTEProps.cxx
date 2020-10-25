@@ -1656,7 +1656,7 @@ void SciTEBase::ReadLocalization() {
 	}
 	FilePath propdir = GetSciteDefaultHome();
 	FilePath localePath(propdir, title);
-qDebug() << "ReadLocalisation propdir=" << propdir.AsUTF8().c_str() << " title=" << title << " loc=" << localePath.AsUTF8().c_str() << endl;
+qDebug() << "ReadLocalisation propdir=" << propdir.AsUTF8().c_str() << " loc=" << localePath.AsUTF8().c_str() << endl;
     localiser.Read(localePath, propdir, filter, &importFiles, 0);
 	localiser.SetMissing(props.GetString("translation.missing"));
 	localiser.read = true;
