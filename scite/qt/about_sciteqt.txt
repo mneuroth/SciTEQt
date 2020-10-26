@@ -31,8 +31,9 @@ Added freatures (compared to original SciTE):
 
 Missing features are:
 
+* Android version bauen und Tests durchfuehren, screenshot...
 # * switch to Scite v4.4.5
-# * Update screenshots for github project --> win & android
+# * Update screenshots for github project --> win & linux & mac & android
 # * Windows CI build does not fail if compile step has an error and sciteqt.exe was not created ... ? Why? See Mingw Build for 32 bit
 # * test, test, test !
 # * fix known Bugs

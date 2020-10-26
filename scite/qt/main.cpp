@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
     UnpackFiles();
     qputenv(SCITE_HOME, FILES_DIR);
 #endif
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN) || defined(Q_OS_MACOS)
     //bool ok = false;
     // copy SciTEUser.properties from sciteqt installation directory to user directory (if not existing)
     QString sInstallationFullPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath()) + QDir::separator() + "SciTEUser.properties";
