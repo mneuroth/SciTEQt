@@ -106,19 +106,37 @@ ApplicationWindow {
         }
         else
         {
-            //fileDialog.selectExisting = bAsOpenDialog
-            fileDialog.openMode = bAsOpenDialog
-            fileDialog.folder = sDirectory
-            if( sTitle !== undefined && sTitle.length > 0 ) {
-                fileDialog.title = sciteQt.getLocalisedText(sTitle)
+            if(sciteQt.isMacOSPlatform())
+            {
+                labsFileDialog.fileMode = bAsOpenDialog ? 0 : 2
+                labsFileDialog.folder = sDirectory
+                if( sTitle !== undefined && sTitle.length > 0 ) {
+                    fileDialog.title = sciteQt.getLocalisedText(sTitle)
+                }
+                if( sFilter.length > 0) {
+                    fileDialog.nameFilters = [sFilter]
+                }
+                else {
+                    fileDialog.nameFilters = ["*"]
+                }
+                labsFileDialog.open()
             }
-            if( sFilter.length > 0) {
-                fileDialog.nameFilters = [sFilter]
+            else
+            {
+                //fileDialog.selectExisting = bAsOpenDialog
+                fileDialog.openMode = bAsOpenDialog
+                fileDialog.folder = sDirectory
+                if( sTitle !== undefined && sTitle.length > 0 ) {
+                    fileDialog.title = sciteQt.getLocalisedText(sTitle)
+                }
+                if( sFilter.length > 0) {
+                    fileDialog.nameFilters = [sFilter]
+                }
+                else {
+                    fileDialog.nameFilters = ["*"]
+                }
+                fileDialog.open()
             }
-            else {
-                fileDialog.nameFilters = ["*"]
-            }
-            fileDialog.open()
         }
     }
 
@@ -402,11 +420,7 @@ ApplicationWindow {
     }
 
     function showTestDialog() {
-        //testDialog.show()
-        console.log("show test dialog starting...")
-        fileDialog.visible = true
-        fileDialog.open()
-        console.log("show test dialog done.")
+        testDialog.show()
     }
 
     function removeAllTabs() {
@@ -427,20 +441,7 @@ ApplicationWindow {
     // *** for webassembly platform ... ***
 
     function htmlOpen() {
-//        htmlFileAccess.loadFsFile("*.*", "/tmp");
-        console.log("HTML open() "+labsFileDialog)
-// gulp
-        labsFileDialog.visible = true
-        labsFileDialog.open()
-        console.log("HTML open() done")
-    }
-
-    Labs.FileDialog {
-        id: labsFileDialog
-
-        onAccepted: {
-            console.log("platform filedialog accepted: "+currentFile)
-        }
+        htmlFileAccess.loadFsFile("*.*", "/tmp");
     }
 
     Connections {
@@ -1934,7 +1935,6 @@ ApplicationWindow {
         selectFolder: false
 
         onAccepted: {
-            sciteQt.logToDebug("FileDialog accepted: "+fileUrl)
             if(sciteQt.isWebassemblyPlatform()) {
                 if(!fileDialog.openMode) {
                     writeCurrentDoc(fileUrl)
@@ -1951,8 +1951,24 @@ ApplicationWindow {
             focusToEditor()
         }
         onRejected: {
-            sciteQt.logToDebug("FileDialog rejected: "+fileUrl)
             fileDialog.close()
+            focusToEditor()
+        }
+    }
+
+    // needed for MacOS and Qt 5.11.3
+    Labs.FileDialog {
+        id: labsFileDialog
+        objectName: "labsFileDialog"
+        visible: false
+
+        onAccepted: {
+            sciteQt.updateCurrentSelectedFileUrl(file)
+            labsFileDialog.close()
+            focusToEditor()
+        }
+        onRejected: {
+            labsFileDialog.close()
             focusToEditor()
         }
     }

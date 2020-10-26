@@ -306,8 +306,6 @@ bool SciTEQt::ProcessCurrentFileDialog()
     connect(pFileDialog,SIGNAL(accepted()),this,SLOT(OnFileDialogAcceptedClicked()));
     connect(pFileDialog,SIGNAL(rejected()),this,SLOT(OnFileDialogRejectedClicked()));
 
-qDebug() << "ProcessCurrentFileDialog() start "     << endl;
-qDebug() << "event dispatcher: " << QCoreApplication::eventDispatcher() << endl;
     // simulate a synchronious call: wait for signal from FileDialog and then return with result
     m_bFileDialogWaitDoneFlag = false;
     while(!m_bFileDialogWaitDoneFlag)
@@ -320,9 +318,7 @@ qDebug() << "event dispatcher: " << QCoreApplication::eventDispatcher() << endl;
         emscripten_sleep(10);
 #endif
         QThread::msleep(10);
-//qDebug() << "*";
     }
-qDebug() << "ProcessCurrentFileDialog() finished " << m_iFileDialogMessageDialogAccepted   << endl;
 
     disconnect(pFileDialog,SIGNAL(accepted()),this,SLOT(OnFileDialogAcceptedClicked()));
     disconnect(pFileDialog,SIGNAL(rejected()),this,SLOT(OnFileDialogRejectedClicked()));
@@ -2553,7 +2549,12 @@ QObject * SciTEQt::getCurrentInfoDialog()
 
 QObject * SciTEQt::getCurrentFileDialog()
 {
+#if defined(Q_OS_MACOS)
+    // under macos only the platform filedialog is working (at least for Qt 5.11.3, higher versions not tested yet)
+    return getDialog("labsFileDialog");
+#else
     return isMobilePlatform() ? getDialog("mobileFileDialog") : getDialog("fileDialog");
+#endif
 }
 
 void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
@@ -2788,6 +2789,15 @@ bool SciTEQt::isMobilePlatform() const
 bool SciTEQt::isWebassemblyPlatform() const
 {
 #if defined(Q_OS_WASM)
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool SciTEQt::isMacOSPlatform() const
+{
+#if defined(Q_OS_MACOS)
     return true;
 #else
     return false;

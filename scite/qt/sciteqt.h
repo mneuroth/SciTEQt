@@ -427,6 +427,7 @@ public:
 
     Q_INVOKABLE bool useSimpleMenus() const;
     Q_INVOKABLE bool isWebassemblyPlatform() const;
+    Q_INVOKABLE bool isMacOSPlatform() const;
     bool isMobilePlatform() const;
     void setMobilePlatform(bool val);
 
