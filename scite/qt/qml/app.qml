@@ -16,6 +16,8 @@ import QtQuick.Layouts 1.0
 
 import QtQuick.Window 2.1   // for dialog test only (webassembly)
 
+import Qt.labs.platform 1.0 as Labs
+
 import org.scintilla.sciteqt 1.0
 
 ApplicationWindow {
@@ -402,6 +404,7 @@ ApplicationWindow {
     function showTestDialog() {
         //testDialog.show()
         console.log("show test dialog starting...")
+        fileDialog.visible = true
         fileDialog.open()
         console.log("show test dialog done.")
     }
@@ -424,7 +427,20 @@ ApplicationWindow {
     // *** for webassembly platform ... ***
 
     function htmlOpen() {
-        htmlFileAccess.loadFsFile("*.*", "/tmp");
+//        htmlFileAccess.loadFsFile("*.*", "/tmp");
+        console.log("HTML open() "+labsFileDialog)
+// gulp
+        labsFileDialog.visible = true
+        labsFileDialog.open()
+        console.log("HTML open() done")
+    }
+
+    Labs.FileDialog {
+        id: labsFileDialog
+
+        onAccepted: {
+            console.log("platform filedialog accepted: "+currentFile)
+        }
     }
 
     Connections {
