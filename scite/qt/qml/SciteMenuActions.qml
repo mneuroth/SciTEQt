@@ -899,7 +899,7 @@ Item {
         }
     }
 
-/* for debugging only: */
+/* for debugging only:
 
     property alias actionTestFunction: actionTestFunction
     property alias actionTest2Function: actionTest2Function
@@ -932,7 +932,7 @@ Item {
         text: qsTr("Save Mobile")
         onTriggered: applicationWindow.saveViaMobileFileDialog()
     }
-/**/
+*/
     // ************************************************
 
     function handeEolMenus(enumEol) {

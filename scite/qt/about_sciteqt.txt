@@ -70,7 +70,7 @@ New open features might be:
 Known and open Bugs are:
 
   * View of fonts may be corrupted after attatching/detaching monitors to the computer... ==> restart application again
-  (* Crash Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? and gcc/mingw are working !
+  (* Crash Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? MacOS ==> but gcc/mingw are working !
   * MacOS: file open/save as dialog does not work ? (mobile ok) ==> synchronious processing in Process*Dialog() not good for MacOS ? Win & Linux are ok!
   * first Menu Item in Menu is empty on Qt 5.11.3 --> ok after switch between mobile and desktop ui !
   * strange scroll behaviour on Qt 5.11.3 --> mouse click needed to update mouse wheel scroll in scintilla window (see about scite)
