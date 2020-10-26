@@ -135,7 +135,7 @@ jobs:
         cd scite/qt
         zip sciteqt_5_15_1_wasm.zip sciteqt.js sciteqt.wasm sciteqt.html qtlogo.svg qtloader.js
         ls -lrt
-        unzip -v sciteqtt_5_15_1_wasm.zip
+        unzip -v sciteqt_5_15_1_wasm.zip
         pwd
         
 #  windows_wasm_5_14_2:

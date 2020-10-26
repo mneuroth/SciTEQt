@@ -460,9 +460,9 @@ jobs:
         ls -lrt scite/qt
         ls -lrt scite/bin
         cd scite/qt
-        zip sciteqt_wasm.zip sciteqt.js sciteqt.wasm sciteqt.html qtlogo.svg qtloader.js
+        zip sciteqt_wasm_5_14_2.zip sciteqt.js sciteqt.wasm sciteqt.html qtlogo.svg qtloader.js
         ls -lrt
-        unzip -v sciteqt_wasm.zip
+        unzip -v sciteqt_wasm_5_14_2.zip
         pwd
     # this step is added for the release    
     - name: Upload Release Asset
@@ -473,6 +473,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/sciteqt_wasm.zip
-        asset_name: sciteqt_wasm.zip
+        asset_path: scite/qt/sciteqt_wasm_5_14_2.zip
+        asset_name: sciteqt_wasm_5_14_2.zip
         asset_content_type: application/zip

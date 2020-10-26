@@ -9,6 +9,9 @@ CONFIG += c++1z
 wasm {
 #    QMAKE_CXXFLAGS += "-s ASYNCIFY=1 -s ASSERTIONS=1"
     QMAKE_CXXFLAGS += "-s ASSERTIONS=1"
+    // maybe see: https://stackoverflow.com/questions/18663331/how-to-check-the-selected-version-of-qt-in-a-pro-file
+    //versionAtLeast(QT_VERSION, 5.15.1): QMAKE_CXXFLAGS += "-s ASSERTIONS=1"
+    //versionAtMost(QT_VERSION, 5.14.2): QMAKE_CXXFLAGS += "-s ASYNCIFY=1 -s ASSERTIONS=1"
 }
 
 include(qhtml5file/qhtml5file.pri)
