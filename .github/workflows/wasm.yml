@@ -68,9 +68,9 @@ jobs:
         ls -lrt scite/qt
         ls -lrt scite/bin
         cd scite/qt
-        zip sciteqt_wasm.zip sciteqt.js sciteqt.wasm sciteqt.html qtlogo.svg qtloader.js
+        zip sciteqt_wasm_5_14_2.zip sciteqt.js sciteqt.wasm sciteqt.html qtlogo.svg qtloader.js
         ls -lrt
-        unzip -v sciteqt_wasm.zip
+        unzip -v sciteqt_wasm_5_14_2.zip
         pwd
         
   linux_wasm_5_15_1:
@@ -133,9 +133,9 @@ jobs:
         ls -lrt scite/qt
         ls -lrt scite/bin
         cd scite/qt
-        zip sciteqt_5_15_1_wasm.zip sciteqt.js sciteqt.wasm sciteqt.html qtlogo.svg qtloader.js
+        zip sciteqt_wasm_5_15_1.zip sciteqt.js sciteqt.wasm sciteqt.html qtlogo.svg qtloader.js
         ls -lrt
-        unzip -v sciteqt_5_15_1_wasm.zip
+        unzip -v sciteqt_wasm_5_15_1.zip
         pwd
         
 #  windows_wasm_5_14_2:
