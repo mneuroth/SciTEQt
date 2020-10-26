@@ -44,7 +44,7 @@ AutoSizingMenu {
         action: actions.actionAboutQt
     }
 
-/* for debugging only:
+/* for debugging only: */
 
     MenuSeparator {}
 
@@ -80,5 +80,5 @@ AutoSizingMenu {
             sciteQt.testFunction("debugging");
         }
     }
-*/
+/**/
 }

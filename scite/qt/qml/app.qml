@@ -400,7 +400,10 @@ ApplicationWindow {
     }
 
     function showTestDialog() {
-        testDialog.show()
+        //testDialog.show()
+        console.log("show test dialog starting...")
+        fileDialog.open()
+        console.log("show test dialog done.")
     }
 
     function removeAllTabs() {

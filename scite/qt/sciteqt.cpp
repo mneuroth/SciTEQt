@@ -307,6 +307,7 @@ bool SciTEQt::ProcessCurrentFileDialog()
     connect(pFileDialog,SIGNAL(rejected()),this,SLOT(OnFileDialogRejectedClicked()));
 
 qDebug() << "ProcessCurrentFileDialog() start "     << endl;
+qDebug() << "event dispatcher: " << QCoreApplication::eventDispatcher() << endl;
     // simulate a synchronious call: wait for signal from FileDialog and then return with result
     m_bFileDialogWaitDoneFlag = false;
     while(!m_bFileDialogWaitDoneFlag)
@@ -319,7 +320,7 @@ qDebug() << "ProcessCurrentFileDialog() start "     << endl;
         emscripten_sleep(10);
 #endif
         QThread::msleep(10);
-qDebug() << "*";
+//qDebug() << "*";
     }
 qDebug() << "ProcessCurrentFileDialog() finished " << m_iFileDialogMessageDialogAccepted   << endl;
 
