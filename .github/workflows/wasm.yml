@@ -73,6 +73,71 @@ jobs:
         unzip -v sciteqt_wasm.zip
         pwd
         
+  linux_wasm_5_15_1:
+  
+    runs-on: ubuntu-latest
+      
+    steps:
+    - uses: actions/checkout@v2
+    - uses: mymindstorm/setup-emsdk@v6
+    - uses: jurplel/install-qt-action@v2
+      with:
+        # Directory to install Qt
+        dir: # optional
+        # Version of Qt to install
+        version: '5.15.1'
+        # Host platform
+        host: # optional
+        # Target platform for build
+        target: 'desktop'
+        # Architecture for Windows/Android
+        arch: 'wasm_32' # optional
+        # Whether or not to install Qt dependencies on Linux
+        install-deps: 'true'
+        # Additional Qt modules to install
+        modules: 'qtscript qtscripttools' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
+        # Force a Qt mirror in case the default is not working
+        mirror: # optional
+        # Whether or not to actually download Qt
+        cached: # optional, default is false
+        # Version of aqtinstall to use in case of issues
+        aqtversion: # optional, default is ==0.8
+        # Version of py7zr to use in case of issues
+        py7zrversion: # optional, default is ==0.6
+        # Any extra arguments to append to the back
+        extra: # optional
+    - name: Install Qt and compile
+      run: |
+        em++ --version
+        which em++
+        echo $PATH
+        #python3 -m aqt install -O /home/runner/work/SciTEQt/Qt 5.15.1 linux desktop wasm_32 -m qtscript qtscripttools
+        emsdk install sdk-fastcomp-1.39.8-64bit
+        emsdk activate sdk-fastcomp-1.39.8-64bit
+        echo $PATH
+        echo $EMSDK
+        . $EMSDK/emsdk_env.sh
+        em++ --version
+        which em++
+        ls -lrt
+        ls -lrt ..
+        ls -lrt ../Qt
+        which qmake
+        qmake -v
+        ../Qt/5.15.1/wasm_32/bin/qmake -v
+        ../Qt/5.15.1/wasm_32/bin/qmake -r sciteqt.pro
+        ls -lrt
+        make
+        ls -lrt
+        ls -lrt scintilla/bin
+        ls -lrt scite/qt
+        ls -lrt scite/bin
+        cd scite/qt
+        zip sciteqt_5_15_1_wasm.zip sciteqt.js sciteqt.wasm sciteqt.html qtlogo.svg qtloader.js
+        ls -lrt
+        unzip -v sciteqtt_5_15_1_wasm.zip
+        pwd
+        
 #  windows_wasm_5_14_2:
 #  
 #    runs-on: windows-latest

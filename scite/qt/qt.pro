@@ -1,4 +1,4 @@
-QT += quick quickcontrols2 widgets printsupport svg
+QT += qml quick quickcontrols2 widgets printsupport svg
 
 TARGET = sciteqt
 
@@ -238,6 +238,17 @@ android {
     deployment10.path=/assets/files
     deployment11.files=translations/locale.it.properties
     deployment11.path=/assets/files
+# ru
+# da
+# sw
+# fi
+# ko
+# zh
+# ja
+# ar
+# th
+# id
+# tr
 
     INSTALLS += deployment1
     INSTALLS += deployment2
