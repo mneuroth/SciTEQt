@@ -145,6 +145,18 @@ int main(int argc, char *argv[])
     {
         sLanguage = "pt_PT";
     }
+    if(sLanguage=="sw")
+    {
+        sLanguage = "sw_KE";
+    }
+    if(sLanguage=="ko")
+    {
+        sLanguage = "ko_KR";
+    }
+    if(sLanguage=="zh")
+    {
+        sLanguage = "zh_s";
+    }
     // this environment variable is used to replace the language macro in SciTEGlobal.properties:
     // locale.properties=locale.$(SciteQtLanguage).properties
     sLanguage = CheckForOverrideLanguage(app.arguments(), sLanguage);

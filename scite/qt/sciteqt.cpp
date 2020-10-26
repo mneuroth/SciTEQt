@@ -306,6 +306,7 @@ bool SciTEQt::ProcessCurrentFileDialog()
     connect(pFileDialog,SIGNAL(accepted()),this,SLOT(OnFileDialogAcceptedClicked()));
     connect(pFileDialog,SIGNAL(rejected()),this,SLOT(OnFileDialogRejectedClicked()));
 
+qDebug() << "ProcessCurrentFileDialog() start "     << endl;
     // simulate a synchronious call: wait for signal from FileDialog and then return with result
     m_bFileDialogWaitDoneFlag = false;
     while(!m_bFileDialogWaitDoneFlag)
@@ -318,7 +319,9 @@ bool SciTEQt::ProcessCurrentFileDialog()
         emscripten_sleep(10);
 #endif
         QThread::msleep(10);
+qDebug() << "*";
     }
+qDebug() << "ProcessCurrentFileDialog() finished " << m_iFileDialogMessageDialogAccepted   << endl;
 
     disconnect(pFileDialog,SIGNAL(accepted()),this,SLOT(OnFileDialogAcceptedClicked()));
     disconnect(pFileDialog,SIGNAL(rejected()),this,SLOT(OnFileDialogRejectedClicked()));
@@ -2560,7 +2563,7 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
         connect(m_pApplicationData,SIGNAL(sendErrorText(QString)),this,SLOT(OnAddToOutput(QString)));
         connect(m_pApplicationData,SIGNAL(fileLoaded(QString,QString,QString,bool)),this,SLOT(OnAddFileContent(QString,QString,QString,bool)));
 
-// TODO implement ! improve !!!
+// TODO gulp implement ! improve !!!
         extender = pApplicationData->GetExtension();
 
         m_pEngine = &pApplicationData->GetQmlApplicationEngine();

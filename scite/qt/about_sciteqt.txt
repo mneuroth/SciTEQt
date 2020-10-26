@@ -32,13 +32,11 @@ Added freatures (compared to original SciTE):
 Missing features are:
 
 # * switch to Scite v4.4.5
-# * Update screenshots for github project
-# * Cleanup this file
+# * Update screenshots for github project --> win & android
 # * Windows CI build does not fail if compile step has an error and sciteqt.exe was not created ... ? Why? See Mingw Build for 32 bit
-# * testen, testen, testen !
+# * test, test, test !
 # * fix known Bugs
-  * Scrollen mit Mouse Wheel ist traege
-  * maybe: command line switch to set language ?
+  * scrolling with mouse wheel is sluggish
   * save and restore file extensions and directories for find in files
   * Improve splitter handling
   * Implement Printing (partly)
@@ -63,90 +61,24 @@ New open features might be:
   * Autocomplete symbols/functions/variables inside the file
   * Close buttons in tabpage buttons
   * Show all occurences of find in current file in outputarea
-  * ggf. save and restore text in outputarea?
-  * Scite Logo als linker Button in Titelzeile oder Einstellungsdialog/SuchDialog etc. ? (Fast Access Menu Items?)
+  * maybe: save and restore text in outputarea?
+  * Scite Logo as left button in title bar or Settings dialog/find dialog ... ? (Fast Access Menu Items?)
   * Save and Restore for View-Parameters like: show line numbers
   * Save and Restore user defined mapping of file extensions to (lexer-)languages
 
 Known and open Bugs are:
 
-  * Anzeige der Schrift nach Monitor Wechsel teilweise durcheinander...
-  (* Absturz Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? und gcc/mingw funktionieren !
-  * MacOS: file open/save as dialog does not work ? (mobile ok) ==> synchronious processing in Process*Dialog() not good for MacOS ?
---> TODO: open dialog under linux testen...
+  * View of fonts may be corrupted after attatching/detaching monitors to the computer... ==> restart application again
+  (* Crash Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? and gcc/mingw are working !
+  * MacOS: file open/save as dialog does not work ? (mobile ok) ==> synchronious processing in Process*Dialog() not good for MacOS ? Win & Linux are ok!
   * first Menu Item in Menu is empty on Qt 5.11.3 --> ok after switch between mobile and desktop ui !
   * strange scroll behaviour on Qt 5.11.3 --> mouse click needed to update mouse wheel scroll in scintilla window (see about scite)
 
   * Navigate directory in Find In Files Dialog does not work for android
-  * SaveAsCopy auf Android Storage Access Framework aendert Dateinamen
+  * SaveAsCopy on Android Storage Access Framework changes the filename
   * Files from android storage access framework will not be restored at application startup
   * Improve handling of last searches in find dialog --> update combobox inhalt direkt
 
-Beobachtung:
+Watch:
   * Memory leak when switching between tab pages?
-  * Sporadische Abstürze bei F5 und Skripts mit langen Ausgaben --> scheint besser seit QProcess in anderem Thread erzeugt wird
-
-Bugs fixed:
-  ((* Keyboard Handling Problem?: After some time the accelerator keys have to be pressed twice? --> Dialog sind dann beim oeffnen kleiner !? ==> Focus Problem, vielleicht hat Fenster keinen Input Focus !!!???
-  //* Menu Zeichensatzcodierung seltsam --> mehrfach Aktivierung moeglich ? --> nur Android ? --> MobilePlatform Menu !!!???
-  ((* Accelerator Key funktioniert, obwohl Action disabled ist !!!??? Bug? Beispiel F5 --> haengt ggf. mit zweitem Menu zusammen ?
-  ((* New Document --> no focus in new created document tab
-  //* Crash when closing the application? --> was problem with multiple menus and moving menu items from menubar into popup menu for mobile menus
-  //* optimize height of statusbar
-  //* Found 18 in files: 37, total files: 20214 --> offset of 32 ???
-  //* Speichern auf SD Karte unter Android funktioniert nicht --> storrage access framework verwenden !
-  //* Zugriff via StorageAccess Framework funktioniert nicht
-  //* Teilen von QuickMemo+ oder markiertem Text aus Chrome does not work
-  //  reason?: share can only receive files and not text ? --> check: private void processIntent(){
-  //      void fileUrlReceived(QString url);
-  //      void fileReceivedAndSaved(QString url);
-  //* implement save for items on andriod storage access framework --> see: ApplicationData::writeFileContent()
-  ((* SaveAs and Save As Copy support for Android Storage Access Framework
-  //* SetFocus nach Teilen und SaveAs? verloren
-  //* Receive Share of selected Text does not work --> processIntent()
-  ((* bei SaveAs Vorbelegung des Dateinamens mit aktuellem Dateiname --> nur bei MobileFileDialog
-  //* Manchmal: Find in Files hat Offset von 32 ?? --> anscheindend Problem mit symbolischen links !!!???
-  //* Menu wird nicht geschlossen, wenn Datei aus Last Opened ausgewaehlt wird
-  //* Find In Files Button Up funktioniert manchmal nicht korrekt
-  //* Find in Files Button Auswaehlen funktioniert manchmal nicht, ggf. wenn via Shortcut aktiviert? Oder wenn Text in Anzeigefeld selektiert ist? ==> problem ist anscheinend wenn Text im Textfeld selektiert wird !!!
-  //* Scroll 3 lines with mouse wheel
-  //* Selection disappears if mouse wheel is used and selection goes out of scope
-  //* does not work if command number is not start with 0 --> i. e. command.name.11.*=Load Lua ==> use append() instead of set in ListModel
-  //* Github Releases erzeugen (Binary Setup für Windows & Mac)
-  //* Cleanup source qt source code, remove debug loggings --> noch Scintilla Code aufraeumen !
-  //* MacOS build with Qt 5.9.9 does not run... ? --> Test run with 5.5.9 on linux ==> many controls are not available --> port to qt 5.9 ? ==> minimum Qt Version is 5.11.3
-
-Now already implemented:
-
-  * Support multiple languages via resources
-  * Support Drag&Drop (desktop)
-  * Context menus (partly, missing: context menu for tab page)
-  * TabSize dialog
-  * Abbreviation dialog
-  * Parameters dialog
-  * Parameters open --> is parameters dialog open
-  * Parameter grab --> get data from parameters dialog
-  * Find in Files dialog
-  * Double click in output navigates to file (Find in files)
-  * Support navigate in find in files dialog
-  * Execute external Scripts (build, go, stop, etc.)
-  * Find/Replace extended dialogs --> find.use.strip=0 / replace.use.strip=1 / find.replace.advanced=1
-  * History for find/replace items in strip find --> use combo boxes ?
-  * Extension: History for find in files items persistent machen ? --> SciTEBase::RestoreSession() --> use: save.find=1 in global properties
-  * Detect monitor change/removement and move position if needed --> QScreen, QDesktopWidget, QApplication::desktop(), void QDesktopWidget::screenCountChanged() ==>  QGuiApplication::screenAdded and QGuiApplication::screenRemoved()
-  * Support list of last opened files --> use global property: save.recent=1, --> RestoreRecentMenu()
-  * Open containing folder
-  * Android: improve Menu/Toolbar layout
-
-//TODO: use: command.go.*.py=*$(python.command) -u "$(FileNameExt)"  $(1)
-//TODO: Shortcut Keys in Dialogen zeigen &
-//TODO: ToolTips für Dialoge und Strip Dialoge
-//TODO: Detektierten Lexer für aktuellen Buffer anzeigen ? --> wEditor.LexerLanguage() --> new menu item "About Current File"
-
-//TODO: ggf. Script Extension für neue Dateieendungen permanent merken, z. B. yaml --> xml ==> ggf. modify: file.patterns.py=*.py;*.pyw;*.pyx;*.pxd;*.pxi
-//        file.patterns.lisp=*.lsp;*.lisp --> fuel
-//TODO: alle Vorkommen des selektierten Bereiches markieren (Box) --> Selection &Add Each --> Ctrl+Shift+A
-//TODO: Strg+Tab switcht zwischen den beiden letzten Fenstern/Buffern
-//TODO: SciTEUser.properties muessen abliegen unter: C:\Users\micha  --> sie liegen jedoch unter: C:\Users\micha\SciteQt
-//TODO: falls python nicht installiert: keine Fehlermeldung nach >pyw -u "test.py" !!! ==> sollte: kann datei nicht finden
-//TODO: F5 Go Menu Item wird nicht geschlossen nach Aktivierung
+  * Sporadic crashes with F5 und Scripts with long outputs --> maybe better after creating QProcess in own thread
