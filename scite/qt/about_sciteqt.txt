@@ -27,6 +27,7 @@ Added freatures (compared to original SciTE):
   * Find in files implementation supports regular expressions
   * Support connect/disconnect of monitors
   * Support of switch between menubar for desktop and mobile platforms
+  * Added command line option to select language, i. e. --language=de
 
 Missing features are:
 
