@@ -7,7 +7,9 @@ The minimum Qt version needed to compile SciteQt is Qt 5.11.3. Technical details
 
 <img src="scite/qt/doc/sciteqt_new_win.png" alt="SciTEQt screenshot" >
 
-Some more screenshots for different platforms: [Screenshots](scite/qt/doc/README.md), [Windows](scite/qt/doc/sciteqt_new_menu_win.png), [Linux](scite/qt/doc/sciteqt_ubuntu.png), [MacOS](scite/qt/doc/sciteqt_macos.png) and [Android](scite/qt/doc/sciteqt_android.png)
+Some more screenshots for different platforms are available here: [Screenshot gallery](scite/qt/doc/README.md), [Windows](scite/qt/doc/sciteqt_new_menu_win.png), [Linux](scite/qt/doc/sciteqt_ubuntu.png), [MacOS](scite/qt/doc/sciteqt_macos.png) and [Android](scite/qt/doc/sciteqt_android.png)
+
+Binary releases are available via the [releases](https://github.com/mneuroth/SciTEQt/releases) of the github page of this project.
 
 Build status: 
 

@@ -33,7 +33,6 @@ Missing features are:
 
 # * switch to Scite v4.4.5
 # * Windows CI build does not fail if compile step has an error and sciteqt.exe was not created ... ? Why? See Mingw Build for 32 bit
-# * gulp stellen entfernen
 # * test, test, test !
 # * fix known Bugs
   * scrolling with mouse wheel is sluggish

@@ -170,7 +170,7 @@ bool StorageAccess::readFile(const QString & fileUri, QByteArray & fileContent)
 
     QByteArray qContent = jbyteArray2QByteArray(contentArray);
     fileContent = qContent;
-//TODO gulp: check if release is needed   env->ReleaseByteArrayElements(contentArray, icon, JNI_ABORT);
+//TODO working: check if release is needed:   env->ReleaseByteArrayElements(contentArray, icon, JNI_ABORT);
     return qContent.length()>0;
 #else
     Q_UNUSED(fileUri)

@@ -45,7 +45,7 @@
 
 //*************************************************************************
 
-#define __SCITE_QT_VERSION__   "0.99.3"
+#define __SCITE_QT_VERSION__   "0.99.4"
 
 enum {
     WORK_EXECUTE = WORK_PLATFORM + 1,
@@ -2565,7 +2565,7 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
         connect(m_pApplicationData,SIGNAL(sendErrorText(QString)),this,SLOT(OnAddToOutput(QString)));
         connect(m_pApplicationData,SIGNAL(fileLoaded(QString,QString,QString,bool)),this,SLOT(OnAddFileContent(QString,QString,QString,bool)));
 
-// TODO gulp implement ! improve !!!
+// TODO working: (maybe) improve the code of this method !!!
         extender = pApplicationData->GetExtension();
 
         m_pEngine = &pApplicationData->GetQmlApplicationEngine();

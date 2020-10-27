@@ -12,6 +12,6 @@ Build the project via command line:
 
 Or build the project via QtCreator by loading the sciteqt.pro project file.
 
-Binary releases are available via the [releases](https://github.com/mneuroth/SciTEQt/releases) on the github SciteQt project page.
+Binary releases are available via the [releases](https://github.com/mneuroth/SciTEQt/releases) of the github page of this project.
 
 See [CREDITS](CREDITS.md) for contributions to this project.

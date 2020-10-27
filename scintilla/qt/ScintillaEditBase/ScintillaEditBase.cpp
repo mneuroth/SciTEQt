@@ -834,10 +834,9 @@ QVariant ScintillaEditBase::inputMethodQuery(Qt::InputMethodQuery query) const
     int pos = send(SCI_GETCURRENTPOS);
 	int line = send(SCI_LINEFROMPOSITION, pos);
 
-// TODO working gulp --> improve this Method for qml !!!
 	switch (query) {
 #ifdef PLAT_QT_QML
-    // used from QQuickTextEdit::inputMethodQuery() ==> better use from?: QQuickTextControl::inputMethodQuery()
+    // TODO working: used from QQuickTextEdit::inputMethodQuery() ==> better use from?: QQuickTextControl::inputMethodQuery()
         case Qt::ImEnabled:
             return QVariant((bool)(flags() & ItemAcceptsInputMethod));
         case Qt::ImHints:
@@ -953,14 +952,14 @@ void ScintillaEditBase::touchEvent(QTouchEvent *event)
         // Check if not in readonly modus --> pdoc->IsReadOnly()
         if( !sqt->pdoc->IsReadOnly() )
         {
-            QGuiApplication::inputMethod()->commit();
+            // TODO working: QGuiApplication::inputMethod()->commit();
 
             // QML: Qt.inputMethod.show();
             QInputMethod *keyboard = qGuiApp->inputMethod();
             //QInputMethod *keyboard = QGuiApplication::inputMethod();
             keyboard->show();
-            //keyboard->update(Qt::ImQueryInput);
-//            TextEdit->setTextInteractionFlags
+            // TODO working: keyboard->update(Qt::ImQueryInput);
+            // TODO working: TextEdit->setTextInteractionFlags
         }
 #endif
     }
