@@ -45,7 +45,7 @@
 
 //*************************************************************************
 
-#define __SCITE_QT_VERSION__   "0.99.4"
+#define __SCITE_QT_VERSION__   "0.99.5"
 
 enum {
     WORK_EXECUTE = WORK_PLATFORM + 1,
