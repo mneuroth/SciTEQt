@@ -147,7 +147,11 @@ bool LexillaLoad(std::string_view sharedLibraryPaths) {
 		std::wstring wsPath = WideStringFromUTF8(path);
 		Module lexillaDL = ::LoadLibraryW(wsPath.c_str());
 #else
-		Module lexillaDL = dlopen(path.c_str(), RTLD_LAZY);
+#if !defined(__EMSCRIPTEN__)
+        Module lexillaDL = dlopen(path.c_str(), RTLD_LAZY);
+#else
+        Module lexillaDL = 0;
+#endif
 #endif
 		if (lexillaDL) {
 			CreateLexerFn fnCL = FunctionPointer<CreateLexerFn>(
