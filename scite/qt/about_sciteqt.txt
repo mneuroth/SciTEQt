@@ -33,6 +33,7 @@ Missing features are:
 
 # * switch to Scite v4.4.5
 # * Windows CI build does not fail if compile step has an error and sciteqt.exe was not created ... ? Why? See Mingw Build for 32 bit
+# * gulp stellen entfernen
 # * test, test, test !
 # * fix known Bugs
   * scrolling with mouse wheel is sluggish
@@ -53,7 +54,6 @@ Missing features are:
   ((* Webassembly: after closing dialog (FileDialog) app needs mouse click to update view
   * Webassembly: processing of modal dialogs (FileDialog, MessageBox)
   * Webassembly: click on Buttons (i. e. Cancel) in Dialogs creates crash ! BUT: setting focus via Keyboard and return on button works sometimes !!!???
-  * github ci: windows build is green, but compile step was failing !!!???
 
 New open features might be:
   * Navigate in file via "Goto Symbol under Cursor"
@@ -62,21 +62,20 @@ New open features might be:
   * Show all occurences of find in current file in outputarea
   * maybe: save and restore text in outputarea?
   * Scite Logo as left button in title bar or Settings dialog/find dialog ... ? (Fast Access Menu Items?)
-  * Save and Restore for View-Parameters like: show line numbers
+  * Save and Restore for View-Parameters like: show line numbers, etc.
   * Save and Restore user defined mapping of file extensions to (lexer-)languages
 
 Known and open Bugs are:
 
   * View of fonts may be corrupted after attatching/detaching monitors to the computer... ==> restart application again
-  (* Crash Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? MacOS ==> but gcc/mingw are working !
-  * MacOS: file open/save as dialog does not work ? (mobile ok) ==> synchronious processing in Process*Dialog() not good for MacOS ? Win & Linux are ok!
+  * Crash Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? MacOS ==> but gcc/mingw are working !
   * first Menu Item in Menu is empty on Qt 5.11.3 --> ok after switch between mobile and desktop ui !
   * strange scroll behaviour on Qt 5.11.3 --> mouse click needed to update mouse wheel scroll in scintilla window (see about scite)
+  * Improve handling of last searches in find dialog --> update combobox content directly
 
-  * Navigate directory in Find In Files Dialog does not work for android
-  * SaveAsCopy on Android Storage Access Framework changes the filename
-  * Files from android storage access framework will not be restored at application startup
-  * Improve handling of last searches in find dialog --> update combobox inhalt direkt
+  * Android: Navigate directory in Find In Files Dialog does not work for android
+  * Android: SaveAsCopy on Android Storage Access Framework changes the filename
+  * Android: Files from android storage access framework will not be restored at application startup
 
 Watch:
   * Memory leak when switching between tab pages?
