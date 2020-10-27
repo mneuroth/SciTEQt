@@ -11,12 +11,13 @@
 // Read only access to a document, its styles and other data
 class TextReader {
 protected:
-	const Scintilla::API::Position extremePosition = INTPTR_MAX;
+	static constexpr Scintilla::API::Position extremePosition = INTPTR_MAX;
 	/** @a bufferSize is a trade off between time taken to copy the characters
 	 * and retrieval overhead.
 	 * @a slopSize positions the buffer before the desired position
 	 * in case there is some backtracking. */
-	enum {bufferSize=4000, slopSize=bufferSize/8};
+	static constexpr Scintilla::API::Position bufferSize = 4000;
+	static constexpr Scintilla::API::Position slopSize = bufferSize / 8;
 	char buf[bufferSize+1];
 	Scintilla::API::Position startPos;
 	Scintilla::API::Position endPos;

@@ -27,7 +27,7 @@
 #include "FileWorker.h"
 #include "Utf8_16.h"
 
-const double timeBetweenProgress = 0.4;
+constexpr double timeBetweenProgress = 0.4;
 
 FileWorker::FileWorker(WorkerListener *pListener_, const FilePath &path_, size_t size_, FILE *fp_) :
 	pListener(pListener_), path(path_), size(size_), err(0), fp(fp_), sleepTime(0), nextProgress(timeBetweenProgress) {

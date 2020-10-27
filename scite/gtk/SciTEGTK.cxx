@@ -650,8 +650,8 @@ protected:
 	FilePath GetSciteUserHome() override;
 
 	void SetStatusBarText(const char *s) override;
-        void TabInsert(int index, const GUI::gui_char *title, const GUI::gui_char *fullPath) override;
-	void TabSelect(int index) override;
+    void TabInsert(int index, const GUI::gui_char *title, const GUI::gui_char *fullPath) override;
+    void TabSelect(int index) override;
 	void RemoveAllTabs() override;
 	void SetFileProperties(PropSetFile &ps) override;
 	void UpdateStatusBar(bool bUpdateSlowData) override;
@@ -2579,7 +2579,9 @@ void SciTEGTK::ContinueExecute(int fromPoll) {
 	int count = read(fdFIFO, buf, sizeof(buf) - 1);
 	if (count > 0) {
 		buf[count] = '\0';
-		OutputAppendString(buf);
+		if (!(lastFlags & jobQuiet)) {
+			OutputAppendString(buf);
+		}
 		lastOutput += buf;
 	} else if (count == 0) {
 		std::string sExitMessage = StdStringFromInteger(WEXITSTATUS(exitStatus));

@@ -1685,8 +1685,8 @@ void SciTEWin::DropFiles(HDROP hdrop) {
  */
 bool SciTEWin::PreOpenCheck(const GUI::gui_char *arg) {
 	bool isHandled = false;
-	HANDLE hFFile;
-	WIN32_FIND_DATA ffile;
+	HANDLE hFFile {};
+	WIN32_FIND_DATA ffile {};
 	const DWORD fileattributes = ::GetFileAttributes(arg);
 	int nbuffers = props.GetInt("buffers");
 	FilePath fpArg(arg);
@@ -1758,7 +1758,7 @@ bool SciTEWin::PreOpenCheck(const GUI::gui_char *arg) {
 	otherwise it is unblocked
 */
 bool SciTEWin::IsStdinBlocked() {
-	DWORD unreadMessages;
+	DWORD unreadMessages = 0;
 	INPUT_RECORD irec[1] = {};
 	char bytebuffer = '\0';
 	HANDLE hStdIn = ::GetStdHandle(STD_INPUT_HANDLE);

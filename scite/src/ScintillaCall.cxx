@@ -1939,6 +1939,10 @@ void ScintillaCall::MultiEdgeClearAll() {
 	Call(Message::MultiEdgeClearAll);
 }
 
+Position ScintillaCall::MultiEdgeColumn(int which) {
+	return Call(Message::GetMultiEdgeColumn, which);
+}
+
 void ScintillaCall::SearchAnchor() {
 	Call(Message::SearchAnchor);
 }

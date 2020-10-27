@@ -499,6 +499,7 @@ public:
 	void SetEdgeColour(Colour edgeColour);
 	void MultiEdgeAddLine(Position column, Colour edgeColour);
 	void MultiEdgeClearAll();
+	Position MultiEdgeColumn(int which);
 	void SearchAnchor();
 	Position SearchNext(API::FindOption searchFlags, const char *text);
 	Position SearchPrev(API::FindOption searchFlags, const char *text);

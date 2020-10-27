@@ -666,8 +666,16 @@ void SciTEBase::ReadProperties() {
 	if (extender)
 		extender->Clear();
 
-	const std::string lexillaPath = props.GetString("lexilla.path");
+	const std::string lexillaPath = props.GetExpandedString("lexilla.path");
 	LexillaLoad(lexillaPath.empty() ? "." : lexillaPath);
+
+	std::vector<std::string> libraryProperties = LexillaLibraryProperties();
+	for (std::string property : libraryProperties) {
+		std::string key("lexilla.context.");
+		key += property;
+		std::string value = props.GetExpandedString(key.c_str());
+		LexillaSetProperty(property.c_str(), value.c_str());
+	}
 
 	const std::string fileNameForExtension = ExtensionFileName();
 
@@ -682,16 +690,6 @@ void SciTEBase::ReadProperties() {
 	if (language.length()) {
 		if (StartsWith(language, "script_")) {
 			wEditor.SetLexer(SCLEX_CONTAINER);
-		} else if (StartsWith(language, "lpeg_")) {
-			modulePath = props.GetNewExpandString("lexerpath.*.lpeg");
-			if (modulePath.length()) {
-				wEditor.LoadLexerLibrary(modulePath.c_str());
-				wEditor.SetLexerLanguage("lpeg");
-				lexLPeg = wEditor.Lexer();
-				const char *lexer = language.c_str() + language.find('_') + 1;
-				wEditor.PrivateLexerCall(SCI_SETLEXERLANGUAGE,
-							 const_cast<char *>(lexer));
-			}
 		} else {
 			std::string languageCurrent = wEditor.LexerLanguage();
 			if (language != languageCurrent) {
@@ -1656,7 +1654,7 @@ void SciTEBase::ReadLocalization() {
 	}
 	FilePath propdir = GetSciteDefaultHome();
 	FilePath localePath(propdir, title);
-    localiser.Read(localePath, propdir, filter, &importFiles, 0);
+	localiser.Read(localePath, propdir, filter, &importFiles, 0);
 	localiser.SetMissing(props.GetString("translation.missing"));
 	localiser.read = true;
 }

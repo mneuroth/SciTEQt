@@ -258,7 +258,7 @@ void JobQueue::AddCommand(const std::string &command, const FilePath &directory,
 			jobUsesOutputPane = false;
 		jobQueue[commandCurrent] = Job(command, directory, jobType, input, flags);
 		commandCurrent++;
-		if (jobType == jobCLI)
+		if (jobType == jobCLI && !(flags & jobQuiet))
 			jobUsesOutputPane = true;
 		// For jobExtension, the Trace() method shows output pane on demand.
 	}

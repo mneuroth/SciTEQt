@@ -23,4 +23,7 @@ bool LexillaLoad(std::string_view sharedLibraryPaths);
 
 Scintilla::ILexer5 *LexillaCreateLexer(std::string_view languageName);
 
+std::vector<std::string> LexillaLibraryProperties();
+void LexillaSetProperty(const char *key, const char *value);
+
 #endif

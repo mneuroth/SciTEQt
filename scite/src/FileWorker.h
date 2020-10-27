@@ -9,7 +9,7 @@
 #define FILEWORKER_H
 
 /// Base size of file I/O operations.
-const size_t blockSize = 131072;
+constexpr size_t blockSize = 128 * 1024;
 
 struct FileWorker : public Worker {
 	WorkerListener *pListener;

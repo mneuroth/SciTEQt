@@ -74,7 +74,7 @@ void SciTEWin::SetStatusBarText(const char *s) {
 		      SB_SETTEXT, 0, reinterpret_cast<LPARAM>(barText.c_str()));
 }
 
-void SciTEWin::TabInsert(int index, const GUI::gui_char *title, const GUI::gui_char *fullPath) {
+void SciTEWin::TabInsert(int index, const GUI::gui_char *title) {
 	TCITEMW tie;
 	tie.mask = TCIF_TEXT | TCIF_IMAGE;
 	tie.iImage = -1;

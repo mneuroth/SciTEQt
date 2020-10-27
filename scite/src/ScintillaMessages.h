@@ -455,6 +455,7 @@ enum class Message {
 	SetEdgeColour = 2365,
 	MultiEdgeAddLine = 2694,
 	MultiEdgeClearAll = 2695,
+	GetMultiEdgeColumn = 2749,
 	SearchAnchor = 2366,
 	SearchNext = 2367,
 	SearchPrev = 2368,

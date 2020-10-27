@@ -1458,6 +1458,7 @@ static bool InitGlobalScope(bool checkProperties, bool forceReload = false) {
 			} else {
 				host->Trace(lua_tostring(luaState, -1));
 				host->Trace("\n>Lua: error occurred while loading startup script\n");
+				lua_pop(luaState, 1);
 			}
 		}
 	}

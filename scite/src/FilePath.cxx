@@ -433,7 +433,7 @@ FILE *FilePath::Open(const GUI::gui_char *mode) const noexcept {
 }
 
 /// Size of block for file reading.
-static const size_t readBlockSize = 64 * 1024;
+static constexpr size_t readBlockSize = 64 * 1024;
 
 std::string FilePath::Read() const {
 	std::string data;

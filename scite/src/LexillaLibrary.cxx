@@ -13,6 +13,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <set>
 
 #if !_WIN32
 #include <dlfcn.h>
@@ -47,6 +48,8 @@ constexpr const char *defaultName = "liblexilla";
 #endif
 
 typedef Scintilla::ILexer5 *(EXT_LEXER_DECL *CreateLexerFn)(const char *name);
+using GetLibraryPropertyNamesFn = const char *(EXT_LEXER_DECL *)();
+using SetLibraryPropertyFn = void(EXT_LEXER_DECL *)(const char *key, const char *value);
 
 /// Generic function to convert from a Function(void* or FARPROC) to a function pointer.
 /// This avoids undefined and conditionally defined behaviour.
@@ -73,6 +76,9 @@ std::wstring WideStringFromUTF8(std::string_view sv) {
 std::string directoryLoadDefault;
 std::string lastLoaded;
 std::vector<CreateLexerFn> fnCLs;
+std::vector<GetLibraryPropertyNamesFn> fnGLPNs;
+std::vector<std::string> libraryProperties;
+std::vector<SetLibraryPropertyFn> fnSLPs;
 
 Function FindSymbol(Module m, const char *symbol) noexcept {
 #if _WIN32
@@ -113,6 +119,8 @@ bool LexillaLoad(std::string_view sharedLibraryPaths) {
 	std::string_view paths = sharedLibraryPaths;
 
 	fnCLs.clear();
+	fnGLPNs.clear();
+	fnSLPs.clear();
 	while (!paths.empty()) {
 		const size_t separator = paths.find_first_of(';');
 		std::string path(paths.substr(0, separator));
@@ -139,11 +147,7 @@ bool LexillaLoad(std::string_view sharedLibraryPaths) {
 		std::wstring wsPath = WideStringFromUTF8(path);
 		Module lexillaDL = ::LoadLibraryW(wsPath.c_str());
 #else
-#if !defined(__EMSCRIPTEN__)
-        Module lexillaDL = dlopen(path.c_str(), RTLD_LAZY);
-#else
-        Module lexillaDL = 0;
-#endif
+		Module lexillaDL = dlopen(path.c_str(), RTLD_LAZY);
 #endif
 		if (lexillaDL) {
 			CreateLexerFn fnCL = FunctionPointer<CreateLexerFn>(
@@ -151,9 +155,38 @@ bool LexillaLoad(std::string_view sharedLibraryPaths) {
 			if (fnCL) {
 				fnCLs.push_back(fnCL);
 			}
+			GetLibraryPropertyNamesFn fnGLPN = FunctionPointer<GetLibraryPropertyNamesFn>(
+				FindSymbol(lexillaDL, "GetLibraryPropertyNames"));
+			if (fnGLPN) {
+				fnGLPNs.push_back(fnGLPN);
+			}
+			SetLibraryPropertyFn fnSLP = FunctionPointer<SetLibraryPropertyFn>(
+				FindSymbol(lexillaDL, "SetLibraryProperty"));
+			if (fnSLP) {
+				fnSLPs.push_back(fnSLP);
+			}
 		}
 	}
 	lastLoaded = sharedLibraryPaths;
+
+	std::set<std::string> nameSet;
+	for (GetLibraryPropertyNamesFn fnGLPN : fnGLPNs) {
+		const char *cpNames = fnGLPN();
+		if (cpNames) {
+			std::string_view names = cpNames;
+			while (!names.empty()) {
+				const size_t separator = names.find_first_of('\n');
+				std::string name(names.substr(0, separator));
+				nameSet.insert(name);
+				if (separator == std::string::npos) {
+					names.remove_prefix(names.size());
+				} else {
+					names.remove_prefix(separator + 1);
+				}
+			}
+		}
+	}
+	libraryProperties = std::vector<std::string>(nameSet.begin(), nameSet.end());
 
 	return !fnCLs.empty();
 }
@@ -170,4 +203,14 @@ Scintilla::ILexer5 *LexillaCreateLexer(std::string_view languageName) {
 		return pCreateLexerDefault(sLanguageName.c_str());
 	}
 	return nullptr;
+}
+
+std::vector<std::string> LexillaLibraryProperties() {
+	return libraryProperties;
+}
+
+void LexillaSetProperty(const char *key, const char *value) {
+	for (SetLibraryPropertyFn fnSLP : fnSLPs) {
+		fnSLP(key, value);
+	}
 }

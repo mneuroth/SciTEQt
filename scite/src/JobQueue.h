@@ -65,6 +65,11 @@ public:
 	std::atomic_bool timeCommands;
 
 	JobQueue();
+	// Deleted so JobQueue objects can not be copied.
+	JobQueue(const JobQueue &) = delete;
+	JobQueue(JobQueue &&) = delete;
+	JobQueue &operator=(const JobQueue &) = delete;
+	JobQueue &operator=(JobQueue &&) = delete;
 	~JobQueue();
 	bool TimeCommands() const noexcept;
 	bool ClearBeforeExecute() const noexcept;
