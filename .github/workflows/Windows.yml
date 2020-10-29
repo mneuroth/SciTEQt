@@ -324,7 +324,7 @@ jobs:
   # this is a copy of the content MacOS.yml used only to upload binary for release
   macos_5_14_2_build:
 
-    runs-on: macos-latest
+    runs-on: macos-11.0
     needs: create_release
 
     steps:
@@ -367,6 +367,8 @@ jobs:
         ls -lrt ../Qt/Tools
         which qmake
         qmake -r sciteqt.pro
+        clang++ --version
+        sw_vers
         ls -lrt
         make
         ls -lrt
@@ -398,7 +400,7 @@ jobs:
   # this is a copy of the content MacOS.yml used only to upload binary for release
   macos_5_11_3_build:
 
-    runs-on: macos-latest
+    runs-on: macos-11.0
     needs: create_release
 
     steps:
@@ -439,6 +441,8 @@ jobs:
         #ls -lrt ../Qt/Tools
         #python3 -m aqt tool -O ../Qt mac tools_ifw 3.2.2 mac-x64
         #ls -lrt ../Qt/Tools
+        clang++ --version
+        sw_vers
         which qmake
         qmake -r sciteqt.pro
         ls -lrt
