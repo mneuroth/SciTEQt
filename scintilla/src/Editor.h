@@ -645,7 +645,7 @@ public:
 		if (ed->wMain.GetID()) {
 			surf.reset(Surface::Allocate(technology != -1 ? technology : ed->technology));
 #ifdef PLAT_QT_QML
-			surf->Init(false, pid);  // is QQuickPaintedItem here
+			surf->Init(true, pid);  // is QQuickPaintedItem here
 #else
 			surf->Init(ed->wMain.GetID());
 #endif

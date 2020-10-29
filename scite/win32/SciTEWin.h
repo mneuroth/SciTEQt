@@ -295,7 +295,7 @@ protected:
 	void SetFileProperties(PropSetFile &ps) override;
 	void SetStatusBarText(const char *s) override;
 
-    void TabInsert(int index, const GUI::gui_char *title, const GUI::gui_char *fullPath) override;
+	void TabInsert(int index, const GUI::gui_char *title, /*for SciteQt*/const GUI::gui_char *fullPath) override;
 	void TabSelect(int index) override;
 	void RemoveAllTabs() override;
 

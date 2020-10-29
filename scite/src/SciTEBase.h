@@ -578,7 +578,7 @@ protected:
 	void PrevInStack();
 	void EndStackedTabbing();
 
-    virtual void TabInsert(int index, const GUI::gui_char *title, const GUI::gui_char *fullPath) = 0;
+	virtual void TabInsert(int index, const GUI::gui_char *title, /*for SciteQt*/const GUI::gui_char *fullPath) = 0;
 	virtual void TabSelect(int index) = 0;
 	virtual void RemoveAllTabs() = 0;
 	void ShiftTab(int indexFrom, int indexTo);

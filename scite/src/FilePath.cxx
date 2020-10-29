@@ -80,19 +80,19 @@ FilePath::FilePath(FilePath const &directory, FilePath const &name) {
 
 void FilePath::Set(const GUI::gui_char *fileName_) {
 	fileName = fileName_;
-    nonLocalFileName = GUI::gui_string();
+	nonLocalFileName = GUI::gui_string();
 }
 
 void FilePath::Set(FilePath const &other) {
 	fileName = other.fileName;
-    nonLocalFileName = other.nonLocalFileName;
+	nonLocalFileName = other.nonLocalFileName;
 }
 
 void FilePath::Set(FilePath const &directory, FilePath const &name) {
-    nonLocalFileName = GUI::gui_string();
-    if (name.IsAbsolute()) {
+	nonLocalFileName = GUI::gui_string();
+	if (name.IsAbsolute()) {
 		fileName = name.fileName;
-    } else {
+	} else {
 		fileName = directory.fileName;
 		if (fileName.size() && (fileName[fileName.size()-1] != pathSepChar))
 			fileName += pathSepString;
@@ -107,7 +107,7 @@ void FilePath::SetDirectory(FilePath const &directory) {
 
 void FilePath::Init() noexcept {
 	fileName.clear();
-    nonLocalFileName.clear();
+	nonLocalFileName.clear();
 }
 
 bool FilePath::operator==(const FilePath &other) const noexcept {
@@ -167,11 +167,11 @@ bool FilePath::IsRoot() const {
 
 bool FilePath::IsNotLocal() const
 {
-    if(fileName.find(GUI_TEXT("content://"))==0)
-    {
-        return true;
-    }
-    return false;
+	if(fileName.find(GUI_TEXT("content://"))==0)
+	{
+		return true;
+	}
+	return false;
 }
 
 int FilePath::RootLength() noexcept {
@@ -187,7 +187,7 @@ const GUI::gui_char *FilePath::AsInternal() const noexcept {
 }
 
 const GUI::gui_char *FilePath::AsNonLocalInternal() const noexcept {
-    return nonLocalFileName.c_str();
+	return nonLocalFileName.c_str();
 }
 
 
