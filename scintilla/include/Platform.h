@@ -81,6 +81,8 @@
 
 #endif
 
+#include <assert.h>
+
 namespace Scintilla {
 
 typedef float XYPOSITION;
@@ -380,7 +382,7 @@ public:
 	virtual ~Surface() {}
 	static Surface *Allocate(int technology);
 
-	virtual void Init(bool /*signatureFlag*/, PainterID /*pid*/) {}     // this method is only needed for QtQuick/QML support !
+	virtual void Init(bool /*signatureFlag*/, PainterID /*pid*/) { assert(false); }     // this method is only needed for QtQuick/QML support and must be overwritten in a derived class !
 	virtual void Init(WindowID wid)=0;
 	virtual void Init(SurfaceID sid, WindowID wid)=0;
 	virtual void InitPixMap(int width, int height, Surface *surface_, WindowID wid)=0;

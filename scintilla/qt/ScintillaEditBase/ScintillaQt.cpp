@@ -829,7 +829,7 @@ void ScintillaQt::PartialPaint(const PRectangle &rect)
 		paintState = painting;
 		paintingAllText = true;
 
-		AutoSurface surface(this, nullptr, false);
+		AutoSurface surface(this);
 		Paint(surface, rcPaint);
 		surface->Release();
 

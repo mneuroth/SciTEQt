@@ -641,8 +641,8 @@ class AutoSurface {
 private:
 	std::unique_ptr<Surface> surf;
 public:
-    AutoSurface(const Editor *ed, PainterID pid = nullptr, int technology = -1) {
-        if (ed->wMain.GetID()) {
+	AutoSurface(const Editor *ed, /*this parameter is needed for QtQuick/QML support only*/PainterID pid = nullptr, int technology = -1) {
+		if (ed->wMain.GetID()) {
 			surf.reset(Surface::Allocate(technology != -1 ? technology : ed->technology));
 #ifdef PLAT_QT_QML
 			surf->Init(false, pid);  // is QQuickPaintedItem here
