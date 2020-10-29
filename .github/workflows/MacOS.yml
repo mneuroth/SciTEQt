@@ -10,7 +10,7 @@ jobs:
             
   macos_5_15_1_build:
 
-    runs-on: macos-latest
+    runs-on: macos-11.0
 
     steps:
     - uses: actions/checkout@v2
@@ -49,6 +49,7 @@ jobs:
         ls -lrt ../Qt/Tools
         python3 -m aqt tool -O ../Qt mac tools_ifw 3.2.2 mac-x64
         ls -lrt ../Qt/Tools
+        clang++ --version
         which qmake
         qmake -r sciteqt.pro
         ls -lrt
@@ -106,6 +107,7 @@ jobs:
         ls -lrt ../Qt/Tools
         python3 -m aqt tool -O ../Qt mac tools_ifw 3.2.2 mac-x64
         ls -lrt ../Qt/Tools
+        clang++ --version
         which qmake
         qmake -r sciteqt.pro
         ls -lrt
@@ -124,7 +126,7 @@ jobs:
 
   macos_5_11_3_build:
 
-    runs-on: macos-latest
+    runs-on: macos-10.15
 
     steps:
     - uses: actions/checkout@v2
@@ -163,6 +165,7 @@ jobs:
         #ls -lrt ../Qt/Tools
         #python3 -m aqt tool -O ../Qt mac tools_ifw 3.2.2 mac-x64
         #ls -lrt ../Qt/Tools
+        clang++ --version
         which qmake
         qmake -r sciteqt.pro
         ls -lrt
