@@ -69,7 +69,7 @@ jobs:
 
   macos_5_14_2_build:
 
-    runs-on: macos-latest
+    runs-on: macos-11.0     # macos-latest = 10.5 --> clang++ 12.0 ! (since 29.10.2020) see: https://docs.github.com/en/free-pro-team@latest/actions/reference/specifications-for-github-hosted-runners
 
     steps:
     - uses: actions/checkout@v2
