@@ -41,9 +41,9 @@ ScintillaQt::ScintillaQt(QAbstractScrollArea *parent)
 {
 
 #ifdef PLAT_QT_QML
-    wMain = scrollArea; // == parent
+	wMain = scrollArea; // == parent
 #else
-    wMain = scrollArea->viewport();
+	wMain = scrollArea->viewport();
 #endif
 
 	imeInteraction = imeInline;
@@ -63,7 +63,7 @@ ScintillaQt::ScintillaQt(QAbstractScrollArea *parent)
 #ifdef PLAT_QT_QML
 void ScintillaQt::UpdateInfos(int winId)
 {
-    SetCtrlID(winId);
+	SetCtrlID(winId);
 }
 #endif
 
@@ -196,7 +196,7 @@ static QString StringFromSelectedText(const SelectionText &selectedText)
 
 static void AddRectangularToMime(QMimeData *mimeData, [[maybe_unused]] QString su)
 {
-    Q_UNUSED(su);
+	Q_UNUSED(su);
 #if defined(Q_OS_WIN)
 	// Add an empty marker
 	mimeData->setData(sMSDEVColumnSelect, QByteArray());
@@ -214,7 +214,7 @@ static void AddRectangularToMime(QMimeData *mimeData, [[maybe_unused]] QString s
 
 static void AddLineCutCopyToMime([[maybe_unused]] QMimeData *mimeData)
 {
-    Q_UNUSED(mimeData);
+	Q_UNUSED(mimeData);
 #if defined(Q_OS_WIN)
 	// Add an empty marker
 	mimeData->setData(sVSEditorLineCutCopy, QByteArray());
@@ -277,32 +277,32 @@ bool ScintillaQt::ValidCodePage(int codePage) const
 void ScintillaQt::ScrollText(Sci::Line linesToMove)
 {
 #ifndef PLAT_QT_QML
-    int dy = vs.lineHeight * (linesToMove);
-    scrollArea->viewport()->scroll(0, dy);
+	int dy = vs.lineHeight * (linesToMove);
+	scrollArea->viewport()->scroll(0, dy);
 #else
-    Q_UNUSED(linesToMove);
+	Q_UNUSED(linesToMove);
 #endif
 }
 
 void ScintillaQt::SetVerticalScrollPos()
 {
 #ifndef PLAT_QT_QML
-    scrollArea->verticalScrollBar()->setValue(topLine);
+	scrollArea->verticalScrollBar()->setValue(topLine);
 #endif
-    emit verticalScrolled(topLine);
+	emit verticalScrolled(topLine);
 }
 
 void ScintillaQt::SetHorizontalScrollPos()
 {
 #ifndef PLAT_QT_QML
-    scrollArea->horizontalScrollBar()->setValue(xOffset);
+	scrollArea->horizontalScrollBar()->setValue(xOffset);
 #endif
-    emit horizontalScrolled(xOffset);
+	emit horizontalScrolled(xOffset);
 }
 
 bool ScintillaQt::ModifyScrollBars(Sci::Line nMax, Sci::Line nPage)
 {
-    bool modified = false;
+	bool modified = false;
 
 	int vNewPage = nPage;
 	int vNewMax = nMax - vNewPage + 1;
@@ -312,30 +312,30 @@ bool ScintillaQt::ModifyScrollBars(Sci::Line nMax, Sci::Line nPage)
 		modified = true;
 
 #ifndef PLAT_QT_QML
-        scrollArea->verticalScrollBar()->setMaximum(vMax);
-        scrollArea->verticalScrollBar()->setPageStep(vPage);
+		scrollArea->verticalScrollBar()->setMaximum(vMax);
+		scrollArea->verticalScrollBar()->setPageStep(vPage);
 #endif
-        emit verticalRangeChanged(vMax, vPage);
+		emit verticalRangeChanged(vMax, vPage);
 	}
 
 	int hNewPage = GetTextRectangle().Width();
 	int hNewMax = (scrollWidth > hNewPage) ? scrollWidth - hNewPage : 0;
 #ifndef PLAT_QT_QML
-    int charWidth = vs.styles[STYLE_DEFAULT].aveCharWidth;
+	int charWidth = vs.styles[STYLE_DEFAULT].aveCharWidth;
 #endif
-    if (hMax != hNewMax || hPage != hNewPage
+	if (hMax != hNewMax || hPage != hNewPage
 #ifndef PLAT_QT_QML
-        || scrollArea->horizontalScrollBar()->singleStep() != charWidth
+		|| scrollArea->horizontalScrollBar()->singleStep() != charWidth
 #endif
-            ) {
+			) {
 		hMax = hNewMax;
 		hPage = hNewPage;
 		modified = true;
 
 #ifndef PLAT_QT_QML
-        scrollArea->horizontalScrollBar()->setMaximum(hMax);
-        scrollArea->horizontalScrollBar()->setPageStep(hPage);
-        scrollArea->horizontalScrollBar()->setSingleStep(charWidth);
+		scrollArea->horizontalScrollBar()->setMaximum(hMax);
+		scrollArea->horizontalScrollBar()->setPageStep(hPage);
+		scrollArea->horizontalScrollBar()->setSingleStep(charWidth);
 #endif
 		emit horizontalRangeChanged(hMax, hPage);
 	}
@@ -346,16 +346,16 @@ bool ScintillaQt::ModifyScrollBars(Sci::Line nMax, Sci::Line nPage)
 void ScintillaQt::ReconfigureScrollBars()
 {
 #ifndef PLAT_QT_QML
-    if (verticalScrollBarVisible) {
-        scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	if (verticalScrollBarVisible) {
+		scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	} else {
-        scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+		scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	}
 
 	if (horizontalScrollBarVisible && !Wrapping()) {
-        scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+		scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	} else {
-        scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+		scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	}
 #endif
 }
@@ -711,7 +711,7 @@ public:
 	{
 		if (pct->inCallTipMode) {
 			Surface *surfaceWindow = Surface::Allocate(0);
-            surfaceWindow->Init(this, nullptr, false);
+			surfaceWindow->Init(this, nullptr, false);
 			surfaceWindow->SetUnicodeMode(SC_CP_UTF8 == pct->codePage);
 			surfaceWindow->SetDBCSMode(pct->codePage);
 			pct->PaintCT(surfaceWindow);
@@ -772,8 +772,12 @@ sptr_t ScintillaQt::WndProc(unsigned int iMessage, uptr_t wParam, sptr_t lParam)
 			break;
 
 		case SCI_GRABFOCUS:
-            scrollArea->setFocus(true, Qt::OtherFocusReason);
-            scrollArea->forceActiveFocus();
+#ifndef PLAT_QT_QML
+			scrollArea->setFocus(Qt::OtherFocusReason);
+#else		
+			scrollArea->setFocus(true, Qt::OtherFocusReason);
+			scrollArea->forceActiveFocus();
+#endif
 			break;
 
 		case SCI_GETDIRECTFUNCTION:
@@ -808,13 +812,13 @@ sptr_t ScintillaQt::DirectFunction(
 
 void ScintillaQt::PartialPaint(const PRectangle &rect)
 {
-/*
+#ifndef PLAT_QT_QML
 	rcPaint = rect;
 	paintState = painting;
 	PRectangle rcClient = GetClientRectangle();
 	paintingAllText = rcPaint.Contains(rcClient);
 
-    AutoSurface surfacePaint(this);
+	AutoSurface surfacePaint(this);
 	Paint(surfacePaint, rcPaint);
 	surfacePaint->Release();
 
@@ -825,56 +829,57 @@ void ScintillaQt::PartialPaint(const PRectangle &rect)
 		paintState = painting;
 		paintingAllText = true;
 
-        AutoSurface surface(this, nullptr, false);
+		AutoSurface surface(this, nullptr, false);
 		Paint(surface, rcPaint);
 		surface->Release();
 
 		// Queue a full repaint.
-        //scrollArea->viewport()->update();
-        scrollArea->update();
+		//scrollArea->viewport()->update();
+		scrollArea->update();
 	}
 
 	paintState = notPainting;
-*/
-    PartialPaintQml(rect, nullptr);
+#else
+	PartialPaintQml(rect, nullptr);
+#endif	
 }
 
 void ScintillaQt::PartialPaintQml(const PRectangle & rect, QPainter *painter)
 {
 #ifdef PLAT_QT_QML
-    currentPainter = painter;
+	currentPainter = painter;
 #endif
-    rcPaint = rect;
-    paintState = painting;
-    PRectangle rcClient = GetClientRectangle();
-    paintingAllText = rcPaint.Contains(rcClient);
+	rcPaint = rect;
+	paintState = painting;
+	PRectangle rcClient = GetClientRectangle();
+	paintingAllText = rcPaint.Contains(rcClient);
 
-    AutoSurface surfacePaint(this, painter, false);
-    Paint(surfacePaint, rcPaint);
-    surfacePaint->Release();
+	AutoSurface surfacePaint(this, painter, false);
+	Paint(surfacePaint, rcPaint);
+	surfacePaint->Release();
 
-    if (paintState == paintAbandoned) {
-        // FIXME: Failure to paint the requested rectangle in each
-        // paint event causes flicker on some platforms (Mac?)
-        // Paint rect immediately.
-        paintState = painting;
-        paintingAllText = true;
+	if (paintState == paintAbandoned) {
+		// FIXME: Failure to paint the requested rectangle in each
+		// paint event causes flicker on some platforms (Mac?)
+		// Paint rect immediately.
+		paintState = painting;
+		paintingAllText = true;
 
-        AutoSurface surface(this, painter, false);
-        Paint(surface, rcPaint);
-        surface->Release();
+		AutoSurface surface(this, painter, false);
+		Paint(surface, rcPaint);
+		surface->Release();
 
-        // Queue a full repaint.
+		// Queue a full repaint.
 #ifdef PLAT_QT_QML
-        scrollArea->update();
+		scrollArea->update();
 #else
-        scrollArea->viewport()->update();
+		scrollArea->viewport()->update();
 #endif
-    }
+	}
 
-    paintState = notPainting;
+	paintState = notPainting;
 #ifdef PLAT_QT_QML
-    currentPainter = nullptr;
+	currentPainter = nullptr;
 #endif
 }
 

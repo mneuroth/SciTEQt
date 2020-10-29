@@ -205,23 +205,23 @@ void SurfaceImpl::Clear()
 
 void SurfaceImpl::Init(WindowID wid, PainterID pid, bool flag)    // wid is QQuickPaintedItem here
 {
-    Q_UNUSED(flag);
-    Release();
+	Q_UNUSED(flag);
+	Release();
 #ifdef PLAT_QT_QML
-    Q_UNUSED(wid);
-    painter = static_cast<QPainter *>(pid);
+	Q_UNUSED(wid);
+	painter = static_cast<QPainter *>(pid);
 #else
-    Q_UNUSED(pid);
-    device = static_cast<QWidget *>(wid);
+	Q_UNUSED(pid);
+	device = static_cast<QWidget *>(wid);
 #endif
 }
 
 void SurfaceImpl::Init(SurfaceID sid, WindowID /*wid*/)
 {
-    Release();
+	Release();
 #ifdef PLAT_QT_QML
-    Q_ASSERT(false);     // not supported yet, is it really needed ?
-    Q_UNUSED(sid);
+	Q_ASSERT(false);     // not supported yet, is it really needed ?
+	Q_UNUSED(sid);
 #else
 	device = static_cast<QPaintDevice *>(sid);
 #endif
@@ -250,7 +250,7 @@ void SurfaceImpl::Release()
 bool SurfaceImpl::Initialised()
 {
 #ifdef PLAT_QT_QML
-    return painter != nullptr;
+	return painter != nullptr;
 #else
 	return device != nullptr;
 #endif
@@ -293,7 +293,7 @@ int SurfaceImpl::LogPixelsY()
 {
 #ifdef PLAT_QT_QML
 // TODO --> improve for multiple screens !!!! get current screen... ?
-    return QGuiApplication::primaryScreen()->logicalDotsPerInchY();
+	return QGuiApplication::primaryScreen()->logicalDotsPerInchY();
 #else
 	return device->logicalDpiY();
 #endif
@@ -675,7 +675,7 @@ namespace {
 #ifdef PLAT_QT_QML
 QQuickPaintedItem *window(WindowID wid) noexcept
 {
-    return static_cast<QQuickPaintedItem *>(wid);
+	return static_cast<QQuickPaintedItem *>(wid);
 }
 #else
 QWidget *window(WindowID wid) noexcept
@@ -709,7 +709,7 @@ PRectangle Window::GetPosition() const
 {
 	// Before any size allocated pretend its 1000 wide so not scrolled
 #ifdef PLAT_QT_QML
-    return wid ? PRectFromQRectF(window(wid)->contentsBoundingRect()) : PRectangle(0, 0, 1000, 1000);
+	return wid ? PRectFromQRectF(window(wid)->contentsBoundingRect()) : PRectangle(0, 0, 1000, 1000);
 #else
 	return wid ? PRectFromQRect(window(wid)->frameGeometry()) : PRectangle(0, 0, 1000, 1000);
 #endif
@@ -718,21 +718,21 @@ PRectangle Window::GetPosition() const
 void Window::SetPosition(PRectangle rc)
 {
 	if (wid)
-    {
+	{
 #ifdef PLAT_QT_QML
-        QRect aRect = QRectFromPRect(rc);
-        window(wid)->setPosition(QPointF(aRect.x(),aRect.y()));
-        window(wid)->setSize(QSizeF(aRect.width(),aRect.height()));
+		QRect aRect = QRectFromPRect(rc);
+		window(wid)->setPosition(QPointF(aRect.x(),aRect.y()));
+		window(wid)->setSize(QSizeF(aRect.width(),aRect.height()));
 #else
 		window(wid)->setGeometry(QRectFromPRect(rc));
 #endif
-    }
+	}
 }
 
 void Window::SetPositionRelative(PRectangle rc, const Window *relativeTo)
 {
 #ifdef PLAT_QT_QML
-    QPointF oPos = window(relativeTo->wid)->mapToGlobal(QPointF(0,0));
+	QPointF oPos = window(relativeTo->wid)->mapToGlobal(QPointF(0,0));
 #else
 	QPoint oPos = window(relativeTo->wid)->mapToGlobal(QPoint(0,0));
 #endif
@@ -741,13 +741,11 @@ void Window::SetPositionRelative(PRectangle rc, const Window *relativeTo)
 	ox += rc.left;
 	oy += rc.top;
 
-    //QDesktopWidget *desktop = QApplication::desktop();
-    //QRect rectDesk = desktop->availableGeometry(QPoint(ox, oy));
-    const QRect rectDesk = ScreenRectangleForPoint(QPoint(ox, oy));
+	const QRect rectDesk = ScreenRectangleForPoint(QPoint(ox, oy));
 	/* do some corrections to fit into screen */
 	int sizex = rc.right - rc.left;
 	int sizey = rc.bottom - rc.top;
-    int screenWidth = rectDesk.width();
+	int screenWidth = rectDesk.width();
 	if (ox < rectDesk.x())
 		ox = rectDesk.x();
 	if (sizex > screenWidth)
@@ -759,8 +757,8 @@ void Window::SetPositionRelative(PRectangle rc, const Window *relativeTo)
 
 	Q_ASSERT(wid);
 #ifdef PLAT_QT_QML
-    window(wid)->setPosition(QPointF(ox, oy));
-    window(wid)->setSize(QSizeF(sizex, sizey));
+	window(wid)->setPosition(QPointF(ox, oy));
+	window(wid)->setSize(QSizeF(sizex, sizey));
 #else
 	window(wid)->move(ox, oy);
 	window(wid)->resize(sizex, sizey);
@@ -794,13 +792,13 @@ void Window::InvalidateRectangle(PRectangle rc)
 void Window::SetFont(Font &font)
 {
 	if (wid)
-    {
+	{
 #ifdef PLAT_QT_QML
-        QApplication::setFont(*FontPointer(font));
+		QApplication::setFont(*FontPointer(font));
 #else
 		window(wid)->setFont(*FontPointer(font));
 #endif
-    }
+	}
 }
 
 void Window::SetCursor(Cursor curs)
@@ -833,27 +831,27 @@ void Window::SetCursor(Cursor curs)
 PRectangle Window::GetMonitorRect(Point pt)
 {
 #ifdef PLAT_QT_QML
-    QPointF originGlobal = window(wid)->mapToGlobal(QPoint(0, 0));
-    QPointF posGlobal = window(wid)->mapToGlobal(QPoint(pt.x, pt.y));
+	QPointF originGlobal = window(wid)->mapToGlobal(QPoint(0, 0));
+	QPointF posGlobal = window(wid)->mapToGlobal(QPoint(pt.x, pt.y));
 #else
-    QPoint originGlobal = window(wid)->mapToGlobal(QPoint(0, 0));
-    QPoint posGlobal = window(wid)->mapToGlobal(QPoint(pt.x, pt.y));
+	QPoint originGlobal = window(wid)->mapToGlobal(QPoint(0, 0));
+	QPoint posGlobal = window(wid)->mapToGlobal(QPoint(pt.x, pt.y));
 #endif
 #ifdef PLAT_QT_QML
-    QDesktopWidget *desktop = QApplication::desktop();
-    QRect rectScreen = desktop->availableGeometry(QPoint(posGlobal.x(),posGlobal.y()));
-    //QRect rectScreen = QGuiApplication::screenAt(QPoint(posGlobal.x(),posGlobal.y()))->geometry();    // available since Qt 5.10
+	QDesktopWidget *desktop = QApplication::desktop();
+	QRect rectScreen = desktop->availableGeometry(QPoint(posGlobal.x(),posGlobal.y()));
+	//QRect rectScreen = QGuiApplication::screenAt(QPoint(posGlobal.x(),posGlobal.y()))->geometry();    // available since Qt 5.10
 #else
-    QDesktopWidget *desktop = QApplication::desktop();
-    QRect rectScreen = desktop->availableGeometry(posGlobal);
+	QDesktopWidget *desktop = QApplication::desktop();
+	QRect rectScreen = desktop->availableGeometry(posGlobal);
 #endif
 	rectScreen.translate(-originGlobal.x(), -originGlobal.y());
-    //return PRectangle(rectScreen.left(), rectScreen.top(),
-    //        rectScreen.right(), rectScreen.bottom());
-    //const QPoint posGlobal = window(wid)->mapToGlobal(QPoint(pt.x, pt.y));
-    //const QPoint originGlobal = window(wid)->mapToGlobal(QPoint(0, 0));
+	//return PRectangle(rectScreen.left(), rectScreen.top(),
+	//		rectScreen.right(), rectScreen.bottom());
+	//const QPoint posGlobal = window(wid)->mapToGlobal(QPoint(pt.x, pt.y));
+	//const QPoint originGlobal = window(wid)->mapToGlobal(QPoint(0, 0));
 //TODO check after 4.4.0 merge... /*QRect*/ rectScreen = ScreenRectangleForPoint(posGlobal);
-    return PRectFromQRect(rectScreen);
+	return PRectFromQRect(rectScreen);
 }
 
 //----------------------------------------------------------------------

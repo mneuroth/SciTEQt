@@ -15,9 +15,6 @@
 #include "ScintillaQt.h"
 #include "PlatQt.h"
 
-#include "SciLexer.h"
-#include "Lexilla.h"
-
 #include <QApplication>
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QInputContext>
@@ -104,11 +101,11 @@ ScintillaEditBase::ScintillaEditBase(QQuickItem/*QWidget*/ *parent)
 
 	// Connect scroll bars.
 #ifndef PLAT_QT_QML
-    // scrollbars are handled by the QML ScrollView outside this class
-    connect(verticalScrollBar(), SIGNAL(valueChanged(int)),
-            this, SLOT(scrollVertical(int)));
-    connect(horizontalScrollBar(), SIGNAL(valueChanged(int)),
-            this, SLOT(scrollHorizontal(int)));
+	// scrollbars are handled by the QML ScrollView outside this class
+	connect(verticalScrollBar(), SIGNAL(valueChanged(int)),
+	        this, SLOT(scrollVertical(int)));
+	connect(horizontalScrollBar(), SIGNAL(valueChanged(int)),
+	        this, SLOT(scrollHorizontal(int)));
 #endif
 
 	// Connect pass-through signals.
@@ -131,11 +128,11 @@ ScintillaEditBase::ScintillaEditBase(QQuickItem/*QWidget*/ *parent)
 	        this, SIGNAL(aboutToCopy(QMimeData *)));
 
 #ifdef PLAT_QT_QML
-    connect(&aLongTouchTimer, SIGNAL(timeout()), this, SLOT(onLongTouch()));
+	connect(&aLongTouchTimer, SIGNAL(timeout()), this, SLOT(onLongTouch()));
 #endif
 
-    // TODO: performance optimizations... ?
-    //setRenderTarget(QQuickPaintedItem::FramebufferObject);
+	// TODO: performance optimizations... ?
+	//setRenderTarget(QQuickPaintedItem::FramebufferObject);
 }
 
 ScintillaEditBase::~ScintillaEditBase() {}
@@ -223,25 +220,25 @@ bool ScintillaEditBase::event(QEvent *event)
 		result = event->isAccepted();
 	} else if (event->type() == QEvent::Show) {
 #ifndef PLAT_QT_QML
-        setMouseTracking(true);
-        result = QAbstractScrollArea::event(event);
+		setMouseTracking(true);
+		result = QAbstractScrollArea::event(event);
 #else
-        //grabMouse();
+		//grabMouse();
 		result = QQuickPaintedItem::event(event);
 #endif
-    } else if (event->type() == QEvent::Hide) {
+	} else if (event->type() == QEvent::Hide) {
 #ifndef PLAT_QT_QML
-        setMouseTracking(false);
-        result = QAbstractScrollArea::event(event);
+		setMouseTracking(false);
+		result = QAbstractScrollArea::event(event);
 #else
-        //ungrabMouse();
-        result = QQuickPaintedItem::event(event);
+		//ungrabMouse();
+		result = QQuickPaintedItem::event(event);
 #endif
-    } else {
+	} else {
 #ifndef PLAT_QT_QML
-        result = QAbstractScrollArea::event(event);
+		result = QAbstractScrollArea::event(event);
 #else
-        result = QQuickPaintedItem::event(event);
+		result = QQuickPaintedItem::event(event);
 #endif
 	}
 
@@ -252,32 +249,32 @@ bool ScintillaEditBase::event(QEvent *event)
 
 void ScintillaEditBase::paint(QPainter *painter)
 {
-    //sqt->PartialPaintQml(PRectFromQRect(/*boundingRect().toRect()*/painter->clipRegion().boundingRect()), painter);
-    sqt->PartialPaintQml(PRectFromQRect(boundingRect().toRect()), painter);
+	//sqt->PartialPaintQml(PRectFromQRect(/*boundingRect().toRect()*/painter->clipRegion().boundingRect()), painter);
+	sqt->PartialPaintQml(PRectFromQRect(boundingRect().toRect()), painter);
 }
 
 #else
 
 void ScintillaEditBase::paintEvent(QPaintEvent *event)
 {
-    sqt->PartialPaint(PRectFromQRect(event->rect()));
+	sqt->PartialPaint(PRectFromQRect(event->rect()));
 }
 
 #endif
 
 void ScintillaEditBase::wheelEvent(QWheelEvent *event)
 {
-    if (event->orientation() == Qt::Horizontal) {
+	if (event->orientation() == Qt::Horizontal) {
 #ifndef PLAT_QT_QML
-        if (horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
-            event->ignore();
-        else
-            QAbstractScrollArea::wheelEvent(event);
+		if (horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+			event->ignore();
+		else
+			QAbstractScrollArea::wheelEvent(event);
 #endif
-            QQuickPaintedItem::wheelEvent(event);
-    } else {
+			QQuickPaintedItem::wheelEvent(event);
+	} else {
 		if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
-            // Zoom! We play with the font sizes in the styles.
+			// Zoom! We play with the font sizes in the styles.
 			// Number of steps/line is ignored, we just care if sizing up or down
 			if (event->delta() > 0) {
 				sqt->KeyCommand(SCI_ZOOMIN);
@@ -287,22 +284,22 @@ void ScintillaEditBase::wheelEvent(QWheelEvent *event)
 		} else {
 			// Ignore wheel events when the scroll bars are disabled.
 #ifndef PLAT_QT_QML
-            if (verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) {
-                event->ignore();
-            } else {
+			if (verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) {
+				event->ignore();
+			} else {
 #endif
 #ifdef PLAT_QT_QML
-                // Scroll
-                int linesToScroll = 3;
-                //QQuickPaintedItem::wheelEvent(event);
-                if (event->delta() > 0) {
-                    sqt->ScrollTo(sqt->topLine-linesToScroll);
-                } else {
-                    sqt->ScrollTo(sqt->topLine+linesToScroll);
-                }
+				// Scroll
+				int linesToScroll = 3;
+				//QQuickPaintedItem::wheelEvent(event);
+				if (event->delta() > 0) {
+					sqt->ScrollTo(sqt->topLine-linesToScroll);
+				} else {
+					sqt->ScrollTo(sqt->topLine+linesToScroll);
+				}
 #else
-                QAbstractScrollArea::wheelEvent(event);
-            }
+				QAbstractScrollArea::wheelEvent(event);
+			}
 #endif
 		}
 	}
@@ -313,9 +310,9 @@ void ScintillaEditBase::focusInEvent(QFocusEvent *event)
 	sqt->SetFocusState(true);
 
 #ifdef PLAT_QT_QML
-    QQuickPaintedItem::focusInEvent(event);
+	QQuickPaintedItem::focusInEvent(event);
 #else
-    QAbstractScrollArea::focusInEvent(event);
+	QAbstractScrollArea::focusInEvent(event);
 #endif
 }
 
@@ -324,9 +321,9 @@ void ScintillaEditBase::focusOutEvent(QFocusEvent *event)
 	sqt->SetFocusState(false);
 
 #ifdef PLAT_QT_QML
-    QQuickPaintedItem::focusOutEvent(event);
+	QQuickPaintedItem::focusOutEvent(event);
 #else
-    QAbstractScrollArea::focusOutEvent(event);
+	QAbstractScrollArea::focusOutEvent(event);
 #endif
 }
 
@@ -334,28 +331,28 @@ void ScintillaEditBase::focusOutEvent(QFocusEvent *event)
 
 void ScintillaEditBase::geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry)
 {
-    // trigger resize handling only if the size of the control has changed
-    // no update is needed for a position change
-    if(newGeometry.width() != oldGeometry.width() || newGeometry.height() != oldGeometry.height() )
-    {
-        sqt->ChangeSize();
-        emit resized();
+	// trigger resize handling only if the size of the control has changed
+	// no update is needed for a position change
+	if(newGeometry.width() != oldGeometry.width() || newGeometry.height() != oldGeometry.height() )
+	{
+		sqt->ChangeSize();
+		emit resized();
 
-        QQuickPaintedItem::geometryChanged(newGeometry, oldGeometry);
-    }
+		QQuickPaintedItem::geometryChanged(newGeometry, oldGeometry);
+	}
 }
 
 void ScintillaEditBase::hoverMoveEvent(QHoverEvent *event)
 {
-    Q_UNUSED(event);
+	Q_UNUSED(event);
 }
 
 #else
 
 void ScintillaEditBase::resizeEvent(QResizeEvent *)
 {
-    sqt->ChangeSize();
-    emit resized();
+	sqt->ChangeSize();
+	emit resized();
 }
 
 #endif
@@ -366,9 +363,9 @@ void ScintillaEditBase::keyPressEvent(QKeyEvent *event)
 	// assumed to be shortcuts not handled by scintilla.
 	if (QApplication::keyboardModifiers() & Qt::MetaModifier) {
 #ifdef PLAT_QT_QML
-        QQuickPaintedItem::keyPressEvent(event);
+		QQuickPaintedItem::keyPressEvent(event);
 #else
-        QAbstractScrollArea::keyPressEvent(event);
+		QAbstractScrollArea::keyPressEvent(event);
 #endif
 		emit keyPressed(event);
 		return;
@@ -456,7 +453,7 @@ static int modifierTranslated(int sciModifier)
 
 void ScintillaEditBase::mousePressEvent(QMouseEvent *event)
 {
-    Point pos = PointFromQPoint(event->pos());
+	Point pos = PointFromQPoint(event->pos());
 
 	emit buttonPressed(event);
 
@@ -481,42 +478,42 @@ void ScintillaEditBase::mousePressEvent(QMouseEvent *event)
 		bool alt   = QApplication::keyboardModifiers() & Qt::AltModifier;
 #endif
 
-        sqt->ButtonDownWithModifiers(pos, time.elapsed(), ScintillaQt::ModifierFlags(shift, ctrl, alt));
-    }
+		sqt->ButtonDownWithModifiers(pos, time.elapsed(), ScintillaQt::ModifierFlags(shift, ctrl, alt));
+	}
 
 	if (event->button() == Qt::RightButton) {
-        sqt->RightButtonDownWithModifiers(pos, time.elapsed(), ModifiersOfKeyboard());
+		sqt->RightButtonDownWithModifiers(pos, time.elapsed(), ModifiersOfKeyboard());
 
 #ifdef PLAT_QT_QML
-        Point pos = PointFromQPoint(event->globalPos());
-        Point pt = PointFromQPoint(event->pos());
-        if (!sqt->PointInSelection(pt)) {
-            sqt->SetEmptySelection(sqt->PositionFromLocation(pt));
-        }
+		Point pos = PointFromQPoint(event->globalPos());
+		Point pt = PointFromQPoint(event->pos());
+		if (!sqt->PointInSelection(pt)) {
+			sqt->SetEmptySelection(sqt->PositionFromLocation(pt));
+		}
 // TODO: call context menu callback if set otherwise use default context menu...
-        if (sqt->ShouldDisplayPopup(pt)) {
-            sqt->ContextMenu(pos); 
-        }
+		if (sqt->ShouldDisplayPopup(pt)) {
+			sqt->ContextMenu(pos); 
+		}
 #endif
-    }
+	}
 
 #ifdef PLAT_QT_QML
 //    setFocus(true);
-    forceActiveFocus();
+	forceActiveFocus();
 
-    emit enableScrollViewInteraction(false);
+	emit enableScrollViewInteraction(false);
 
-    event->setAccepted(true);
-#endif      
+	event->setAccepted(true);
+#endif
 }
 
 #ifdef PLAT_QT_QML
 void ProcessScintillaContextMenu(Point pt, Scintilla::Window & w, const QList<QPair<QString, QPair<int, bool>>> & menu)
 {
-    ScintillaEditBase * pQtObj = static_cast<ScintillaEditBase *>(w.GetID());
+	ScintillaEditBase * pQtObj = static_cast<ScintillaEditBase *>(w.GetID());
 
 	emit pQtObj->clearContextMenu();
-    for (QPair<QString, QPair<int, bool>> item: menu)
+	for (QPair<QString, QPair<int, bool>> item: menu)
 	{
 		if (item.first.size() > 0)
 		{
@@ -524,14 +521,14 @@ void ProcessScintillaContextMenu(Point pt, Scintilla::Window & w, const QList<QP
 		}	
 	}
 
-    QPoint aPoint(pt.x, pt.y);
-    emit pQtObj->showContextMenu(aPoint);
+	QPoint aPoint(pt.x, pt.y);
+	emit pQtObj->showContextMenu(aPoint);
 }
 #endif
 
 void ScintillaEditBase::mouseReleaseEvent(QMouseEvent *event)
 {
-    Point point = PointFromQPoint(event->pos());
+	Point point = PointFromQPoint(event->pos());
 	if (event->button() == Qt::LeftButton)
 		sqt->ButtonUpWithModifiers(point, time.elapsed(), ModifiersOfKeyboard());
 
@@ -543,22 +540,25 @@ void ScintillaEditBase::mouseReleaseEvent(QMouseEvent *event)
 	emit buttonReleased(event);
 
 #ifdef PLAT_QT_QML
-    emit enableScrollViewInteraction(true);
+	emit enableScrollViewInteraction(true);
 
-    event->setAccepted(true);
+	event->setAccepted(true);
 #endif
 }
 
 void ScintillaEditBase::mouseDoubleClickEvent(QMouseEvent *event)
 {
 	// Scintilla does its own double-click detection.
-    //mousePressEvent(event);
-    Q_UNUSED(event);
+#ifndef PLAT_QT_QML
+	mousePressEvent(event);
+#else	
+	Q_UNUSED(event);
+#endif
 }
 
 void ScintillaEditBase::mouseMoveEvent(QMouseEvent *event)
 {
-    Point pos = PointFromQPoint(event->pos());
+	Point pos = PointFromQPoint(event->pos());
 
 	bool shift = QApplication::keyboardModifiers() & Qt::ShiftModifier;
 	bool ctrl  = QApplication::keyboardModifiers() & Qt::ControlModifier;
@@ -575,7 +575,7 @@ void ScintillaEditBase::mouseMoveEvent(QMouseEvent *event)
 	sqt->ButtonMoveWithModifiers(pos, time.elapsed(), modifiers);
 
 #ifdef PLAT_QT_QML
-      event->setAccepted(true);
+	event->setAccepted(true);
 #endif
 }
 
@@ -823,7 +823,7 @@ void ScintillaEditBase::inputMethodEvent(QInputMethodEvent *event)
 		preeditPos = sqt->CurrentPosition();
 		sqt->EnsureCaretVisible();
 #ifndef PLAT_QT_QML
-        updateMicroFocus();
+		updateMicroFocus();
 #endif
 	}
 	sqt->ShowCaretAtCurrentPosition();
@@ -831,31 +831,31 @@ void ScintillaEditBase::inputMethodEvent(QInputMethodEvent *event)
 
 QVariant ScintillaEditBase::inputMethodQuery(Qt::InputMethodQuery query) const
 {
-    int pos = send(SCI_GETCURRENTPOS);
+	int pos = send(SCI_GETCURRENTPOS);
 	int line = send(SCI_LINEFROMPOSITION, pos);
 
 	switch (query) {
 #ifdef PLAT_QT_QML
-    // TODO working: used from QQuickTextEdit::inputMethodQuery() ==> better use from?: QQuickTextControl::inputMethodQuery()
-        case Qt::ImEnabled:
-            return QVariant((bool)(flags() & ItemAcceptsInputMethod));
-        case Qt::ImHints:
-            return QVariant((int)inputMethodHints());
-        case Qt::ImInputItemClipRectangle:
-            return QQuickItem::inputMethodQuery(query);
-   /*
-        defalut:
-        {
-            if (query == Qt::ImCursorPosition && !argument.isNull())
-                argument = QVariant(argument.toPointF() - QPointF(d->xoff, d->yoff));
-            QVariant v = d->control->inputMethodQuery(property, argument);
-            if (query == Qt::ImCursorRectangle || query == Qt::ImAnchorRectangle)
-                return QVariant(v.toRectF().translated(d->xoff, d->yoff));
-        }
-    */
+	// TODO working: used from QQuickTextEdit::inputMethodQuery() ==> better use from?: QQuickTextControl::inputMethodQuery()
+		case Qt::ImEnabled:
+			return QVariant((bool)(flags() & ItemAcceptsInputMethod));
+		case Qt::ImHints:
+			return QVariant((int)inputMethodHints());
+		case Qt::ImInputItemClipRectangle:
+			return QQuickItem::inputMethodQuery(query);
+	/*
+		defalut:
+		{
+			if (query == Qt::ImCursorPosition && !argument.isNull())
+				argument = QVariant(argument.toPointF() - QPointF(d->xoff, d->yoff));
+			QVariant v = d->control->inputMethodQuery(property, argument);
+			if (query == Qt::ImCursorRectangle || query == Qt::ImAnchorRectangle)
+				return QVariant(v.toRectF().translated(d->xoff, d->yoff));
+		}
+	*/
 #endif
-        //case Qt::ImMicroFocus:  // <-- this is obsolete, use the constant below
-        case Qt::ImCursorRectangle:
+		//case Qt::ImMicroFocus:  // <-- this is obsolete, use the constant below
+		case Qt::ImCursorRectangle:
 		{
 			int startPos = (preeditPos >= 0) ? preeditPos : pos;
 			Point pt = sqt->LocationFromPosition(startPos);
@@ -982,7 +982,7 @@ void ScintillaEditBase::touchEvent(QTouchEvent *event)
 
 void ScintillaEditBase::notifyParent(SCNotification scn)
 {
-    emit notify(&scn);
+	emit notify(&scn);
 	switch (scn.nmhdr.code) {
 		case SCN_STYLENEEDED:
 			emit styleNeeded(scn.position);
@@ -1014,17 +1014,17 @@ void ScintillaEditBase::notifyParent(SCNotification scn)
 
 		case SCN_UPDATEUI:
 #ifdef PLAT_QT_QML
-            UpdateQuickView();
+			UpdateQuickView();
 #endif
-            emit updateUi(scn.updated);
-            break;
+			emit updateUi(scn.updated);
+			break;
 
 		case SCN_MODIFIED:
 		{
-            bool added = scn.modificationType & SC_MOD_INSERTTEXT;
+			bool added = scn.modificationType & SC_MOD_INSERTTEXT;
 			bool deleted = scn.modificationType & SC_MOD_DELETETEXT;
 
-            int length = send(SCI_GETTEXTLENGTH);
+			int length = send(SCI_GETTEXTLENGTH);
 			bool firstLineAdded = (added && length == 1) ||
 			                      (deleted && length == 0);
 
@@ -1038,7 +1038,7 @@ void ScintillaEditBase::notifyParent(SCNotification scn)
 			emit modified(scn.modificationType, scn.position, scn.length,
 			              scn.linesAdded, bytes, scn.line,
 			              scn.foldLevelNow, scn.foldLevelPrev);
-            break;
+			break;
 		}
 
 		case SCN_MACRORECORD:
@@ -1054,7 +1054,7 @@ void ScintillaEditBase::notifyParent(SCNotification scn)
 			break;
 
 		case SCN_PAINTED:
-            emit painted();
+			emit painted();
 			break;
 
 		case SCN_USERLISTSELECTION:
@@ -1128,172 +1128,172 @@ int ScintillaEditBase::ModifiersOfKeyboard() const
 
 QString ScintillaEditBase::getText() const
 {
-    int textLength = send(SCI_GETTEXTLENGTH);
-    char * buffer = new char[textLength+1];
-    send(SCI_GETTEXT,textLength+1,(sptr_t)buffer);
-    QString ret(buffer);
-    delete [] buffer;
-    return ret;
+	int textLength = send(SCI_GETTEXTLENGTH);
+	char * buffer = new char[textLength+1];
+	send(SCI_GETTEXT,textLength+1,(sptr_t)buffer);
+	QString ret(buffer);
+	delete [] buffer;
+	return ret;
 }
 
 void ScintillaEditBase::setText(const QString & txt)
 {
-    send(SCI_SETTEXT, 0, (sptr_t)txt.toUtf8().constData());
-    send(SCI_EMPTYUNDOBUFFER);
-    send(SCI_COLOURISE, 0, -1);
-    setFocus(true);
+	send(SCI_SETTEXT, 0, (sptr_t)txt.toUtf8().constData());
+	send(SCI_EMPTYUNDOBUFFER);
+	send(SCI_COLOURISE, 0, -1);
+	setFocus(true);
 }
 
 void ScintillaEditBase::setFont(const QFont & newFont)
 {
 //TODO: maybe    QApplication::setFont(newFont);
-    aFont = newFont;
+	aFont = newFont;
 
-    // Set the font for a style.
-    setStylesFont(newFont, 0);
+	// Set the font for a style.
+	setStylesFont(newFont, 0);
 }
 
 int ScintillaEditBase::getLogicalWidth() const
 {
-    return logicalWidth;
+	return logicalWidth;
 }
 
 int ScintillaEditBase::getLogicalHeight() const
 {
-    return logicalHeight;
+	return logicalHeight;
 }
 
 int ScintillaEditBase::getCharHeight() const
 {
-    int charHeight = send(SCI_TEXTHEIGHT);
-    return charHeight;
+	int charHeight = send(SCI_TEXTHEIGHT);
+	return charHeight;
 }
 
 int ScintillaEditBase::getCharWidth() const
 {
-    char buf[2];
-    strcpy(buf,"X");
-    int charWidth = send(SCI_TEXTWIDTH,0,(sptr_t)buf);
-    return charWidth;
+	char buf[2];
+	strcpy(buf,"X");
+	int charWidth = send(SCI_TEXTWIDTH,0,(sptr_t)buf);
+	return charWidth;
 }
 
 int ScintillaEditBase::getFirstVisibleLine() const
 {
-    int firstLine = send(SCI_GETFIRSTVISIBLELINE);
-    return firstLine;
+	int firstLine = send(SCI_GETFIRSTVISIBLELINE);
+	return firstLine;
 }
 
 void ScintillaEditBase::setFirstVisisbleLine(int lineNo)
 {
-    send(SCI_SETFIRSTVISIBLELINE, lineNo);
+	send(SCI_SETFIRSTVISIBLELINE, lineNo);
 }
 
 int ScintillaEditBase::getTotalLines() const
 {
-    int lineCount = send(SCI_GETLINECOUNT);
-    return lineCount;
+	int lineCount = send(SCI_GETLINECOUNT);
+	return lineCount;
 }
 
 int ScintillaEditBase::getFirstVisibleColumn() const
 {
-    int offset = send(SCI_GETXOFFSET) / getCharWidth();
-    return offset;
+	int offset = send(SCI_GETXOFFSET) / getCharWidth();
+	return offset;
 }
 
 int ScintillaEditBase::getTotalColumns() const
 {
-    int columnCount = send(SCI_GETSCROLLWIDTH)/getCharWidth();
-    return columnCount;
+	int columnCount = send(SCI_GETSCROLLWIDTH)/getCharWidth();
+	return columnCount;
 }
 
 int ScintillaEditBase::getVisibleLines() const
 {
-    int count = send(SCI_LINESONSCREEN);
-    return count;
+	int count = send(SCI_LINESONSCREEN);
+	return count;
 }
 
 int ScintillaEditBase::getVisibleColumns() const
 {
-    int marginWidth = send(SCI_GETMARGINWIDTHN);
-    int visibleWidth = sqt->GetTextRectangle().Width() - marginWidth;
-    int count = visibleWidth / getCharWidth();
-    return count;
+	int marginWidth = send(SCI_GETMARGINWIDTHN);
+	int visibleWidth = sqt->GetTextRectangle().Width() - marginWidth;
+	int count = visibleWidth / getCharWidth();
+	return count;
 }
 
 Qt::InputMethodHints ScintillaEditBase::inputMethodHints() const
 {
-    return dataInputMethodHints | Qt::ImhNoAutoUppercase | Qt::ImhNoPredictiveText | Qt::ImhMultiLine;
+	return dataInputMethodHints | Qt::ImhNoAutoUppercase | Qt::ImhNoPredictiveText | Qt::ImhMultiLine;
 }
 
 void ScintillaEditBase::setInputMethodHints(Qt::InputMethodHints hints)
 {
-    if (hints == dataInputMethodHints)
-        return;
+	if (hints == dataInputMethodHints)
+		return;
 
-    dataInputMethodHints = hints;
-    updateInputMethod(Qt::ImHints);
-    emit inputMethodHintsChanged();
+	dataInputMethodHints = hints;
+	updateInputMethod(Qt::ImHints);
+	emit inputMethodHintsChanged();
 }
 
 bool ScintillaEditBase::getReadonly() const
 {
-    bool flag = (bool)send(SCI_GETREADONLY);
-    return flag;
+	bool flag = (bool)send(SCI_GETREADONLY);
+	return flag;
 }
 
 void ScintillaEditBase::setReadonly(bool value)
 {
-    send(SCI_SETREADONLY, value);
+	send(SCI_SETREADONLY, value);
 }
 
 void ScintillaEditBase::UpdateQuickView()
 {
-    int lineCount = send(SCI_GETLINECOUNT);
-    int textWidth = send(SCI_GETSCROLLWIDTH);
-    int lineHeight = send(SCI_TEXTHEIGHT);
-    int textHeight = lineCount * lineHeight;
+	int lineCount = send(SCI_GETLINECOUNT);
+	int textWidth = send(SCI_GETSCROLLWIDTH);
+	int lineHeight = send(SCI_TEXTHEIGHT);
+	int textHeight = lineCount * lineHeight;
 
-    bool widthChanged = logicalWidth != textWidth;
-    bool heightChanged = logicalHeight != textHeight;
-    if( widthChanged)
-    {
-        logicalWidth = textWidth;
-        emit logicalWidthChanged();
-    }
-    if( heightChanged )
-    {
-        logicalHeight = textHeight;
-        emit logicalHeightChanged();
-    }
+	bool widthChanged = logicalWidth != textWidth;
+	bool heightChanged = logicalHeight != textHeight;
+	if( widthChanged)
+	{
+		logicalWidth = textWidth;
+		emit logicalWidthChanged();
+	}
+	if( heightChanged )
+	{
+		logicalHeight = textHeight;
+		emit logicalHeightChanged();
+	}
 
 // TODO: hier nur signal senden, wenn wirklich notwendig, d. h. falls gescrollt wurde ...
-    emit firstVisibleLineChanged();
-    emit firstVisibleColumnChanged();
+	emit firstVisibleLineChanged();
+	emit firstVisibleColumnChanged();
 }
 
 // taken from QScintilla
 void ScintillaEditBase::setStylesFont(const QFont &f, int style)
 {
-    send(SCI_STYLESETFONT, style, (sptr_t)f.family().toLatin1().data());
-    send(SCI_STYLESETSIZEFRACTIONAL, style,
-            long(f.pointSizeF() * SC_FONT_SIZE_MULTIPLIER));
+	send(SCI_STYLESETFONT, style, (sptr_t)f.family().toLatin1().data());
+	send(SCI_STYLESETSIZEFRACTIONAL, style,
+			long(f.pointSizeF() * SC_FONT_SIZE_MULTIPLIER));
 
-    // Pass the Qt weight via the back door.
-    send(SCI_STYLESETWEIGHT, style, -f.weight());
+	// Pass the Qt weight via the back door.
+	send(SCI_STYLESETWEIGHT, style, -f.weight());
 
-    send(SCI_STYLESETITALIC, style, f.italic());
-    send(SCI_STYLESETUNDERLINE, style, f.underline());
+	send(SCI_STYLESETITALIC, style, f.italic());
+	send(SCI_STYLESETUNDERLINE, style, f.underline());
 
-    // Tie the font settings of the default style to that of style 0 (the style
-    // conventionally used for whitespace by lexers).  This is needed so that
-    // fold marks, indentations, edge columns etc are set properly.
-    if (style == 0)
-        setStylesFont(f, STYLE_DEFAULT);
+	// Tie the font settings of the default style to that of style 0 (the style
+	// conventionally used for whitespace by lexers).  This is needed so that
+	// fold marks, indentations, edge columns etc are set properly.
+	if (style == 0)
+		setStylesFont(f, STYLE_DEFAULT);
 }
 
 void RegisterScintillaType()
 {
-    qmlRegisterType<ScintillaEditBase>("org.scintilla.scintilla", 1, 0, "ScintillaEditBase");
+	qmlRegisterType<ScintillaEditBase>("org.scintilla.scintilla", 1, 0, "ScintillaEditBase");
 }
 
 #endif

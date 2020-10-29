@@ -60,7 +60,7 @@ inline PRectangle PRectFromQRect(QRect qr)
 #ifdef PLAT_QT_QML
 inline PRectangle PRectFromQRectF(QRectF qr)
 {
-    return PRectangle(qr.x(), qr.y(), qr.x() + qr.width(), qr.y() + qr.height());
+	return PRectangle(qr.x(), qr.y(), qr.x() + qr.width(), qr.y() + qr.height());
 }
 #endif
 
@@ -91,7 +91,7 @@ public:
 	SurfaceImpl();
 	virtual ~SurfaceImpl();
 
-    void Init(WindowID wid, PainterID pid, bool flag) override;
+	void Init(WindowID wid, PainterID pid, bool flag) override;
 	void Init(SurfaceID sid, WindowID wid) override;
 	void InitPixMap(int width, int height,
 		Surface *surface, WindowID wid) override;
