@@ -855,11 +855,6 @@ PRectangle Window::GetMonitorRect(Point pt)
 	QRect rectScreen = desktop->availableGeometry(posGlobal);
 #endif
 	rectScreen.translate(-originGlobal.x(), -originGlobal.y());
-	//return PRectangle(rectScreen.left(), rectScreen.top(),
-	//		rectScreen.right(), rectScreen.bottom());
-	//const QPoint posGlobal = window(wid)->mapToGlobal(QPoint(pt.x, pt.y));
-	//const QPoint originGlobal = window(wid)->mapToGlobal(QPoint(0, 0));
-//TODO check after 4.4.0 merge... /*QRect*/ rectScreen = ScreenRectangleForPoint(posGlobal);
 	return PRectFromQRect(rectScreen);
 }
 
