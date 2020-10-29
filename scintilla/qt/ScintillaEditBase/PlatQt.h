@@ -91,7 +91,8 @@ public:
 	SurfaceImpl();
 	virtual ~SurfaceImpl();
 
-	void Init(WindowID wid, PainterID pid, bool flag) override;
+    void Init(bool signatureFlag, PainterID pid) override;
+    void Init(WindowID wid) override;
 	void Init(SurfaceID sid, WindowID wid) override;
 	void InitPixMap(int width, int height,
 		Surface *surface, WindowID wid) override;

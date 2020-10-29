@@ -644,7 +644,11 @@ public:
     AutoSurface(const Editor *ed, PainterID pid = nullptr, int technology = -1) {
         if (ed->wMain.GetID()) {
 			surf.reset(Surface::Allocate(technology != -1 ? technology : ed->technology));
-            surf->Init(ed->wMain.GetID(), pid, false);  // is QQuickPaintedItem here
+#ifdef PLAT_QT_QML
+			surf->Init(false, pid);  // is QQuickPaintedItem here
+#else
+			surf->Init(ed->wMain.GetID());
+#endif
 			surf->SetUnicodeMode(SC_CP_UTF8 == ed->CodePage());
 			surf->SetDBCSMode(ed->CodePage());
 			surf->SetBidiR2L(ed->BidirectionalR2L());

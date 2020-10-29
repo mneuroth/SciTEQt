@@ -203,15 +203,24 @@ void SurfaceImpl::Clear()
 	painterOwned = false;
 }
 
-void SurfaceImpl::Init(WindowID wid, PainterID pid, bool flag)    // wid is QQuickPaintedItem here
+void SurfaceImpl::Init(bool signatureFlag, PainterID pid)    // wid is QQuickPaintedItem here
 {
-	Q_UNUSED(flag);
+    Q_UNUSED(signatureFlag);
+    Release();
+#ifdef PLAT_QT_QML
+    painter = static_cast<QPainter *>(pid);
+#else
+    Q_ASSERT(false);
+#endif
+}
+
+void SurfaceImpl::Init(WindowID wid)    // wid is QQuickPaintedItem here
+{
 	Release();
 #ifdef PLAT_QT_QML
+    Q_ASSERT(false);
 	Q_UNUSED(wid);
-	painter = static_cast<QPainter *>(pid);
 #else
-	Q_UNUSED(pid);
 	device = static_cast<QWidget *>(wid);
 #endif
 }

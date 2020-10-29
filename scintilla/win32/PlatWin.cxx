@@ -513,7 +513,7 @@ public:
 
 	~SurfaceGDI() noexcept override;
 
-	void Init(WindowID wid, PainterID pid, bool flag) override;
+	void Init(WindowID wid) override;
 	void Init(SurfaceID sid, WindowID wid) override;
 	void InitPixMap(int width, int height, Surface *surface_, WindowID wid) override;
 
@@ -604,7 +604,7 @@ bool SurfaceGDI::Initialised() {
 	return hdc != 0;
 }
 
-void SurfaceGDI::Init(WindowID wid, PainterID pid, bool flag) {
+void SurfaceGDI::Init(WindowID wid) {
 	Release();
 	hdc = ::CreateCompatibleDC({});
 	hdcOwned = true;
@@ -1188,7 +1188,7 @@ public:
 	~SurfaceD2D() override;
 
 	void SetScale(WindowID wid) noexcept;
-	void Init(WindowID wid, PainterID pid, bool flag) override;
+	void Init(WindowID wid) override;
 	void Init(SurfaceID sid, WindowID wid) override;
 	void InitPixMap(int width, int height, Surface *surface_, WindowID wid) override;
 
@@ -1297,7 +1297,7 @@ HRESULT SurfaceD2D::FlushDrawing() {
 	return pRenderTarget->Flush();
 }
 
-void SurfaceD2D::Init(WindowID wid, PainterID pid, bool flag) {
+void SurfaceD2D::Init(WindowID wid) {
 	Release();
 	SetScale(wid);
 }

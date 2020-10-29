@@ -711,7 +711,7 @@ public:
 	{
 		if (pct->inCallTipMode) {
 			Surface *surfaceWindow = Surface::Allocate(0);
-			surfaceWindow->Init(this, nullptr, false);
+            surfaceWindow->Init(this);
 			surfaceWindow->SetUnicodeMode(SC_CP_UTF8 == pct->codePage);
 			surfaceWindow->SetDBCSMode(pct->codePage);
 			pct->PaintCT(surfaceWindow);
@@ -854,7 +854,7 @@ void ScintillaQt::PartialPaintQml(const PRectangle & rect, QPainter *painter)
 	PRectangle rcClient = GetClientRectangle();
 	paintingAllText = rcPaint.Contains(rcClient);
 
-	AutoSurface surfacePaint(this, painter, false);
+    AutoSurface surfacePaint(this, painter);
 	Paint(surfacePaint, rcPaint);
 	surfacePaint->Release();
 
@@ -865,7 +865,7 @@ void ScintillaQt::PartialPaintQml(const PRectangle & rect, QPainter *painter)
 		paintState = painting;
 		paintingAllText = true;
 
-		AutoSurface surface(this, painter, false);
+        AutoSurface surface(this, painter);
 		Paint(surface, rcPaint);
 		surface->Release();
 

@@ -380,7 +380,8 @@ public:
 	virtual ~Surface() {}
 	static Surface *Allocate(int technology);
 
-    virtual void Init(WindowID wid, PainterID pid, bool flag)=0;
+    virtual void Init(bool /*signatureFlag*/, PainterID /*pid*/) {}     // this method is only needed for QtQuick/QML support !
+    virtual void Init(WindowID wid)=0;
 	virtual void Init(SurfaceID sid, WindowID wid)=0;
 	virtual void InitPixMap(int width, int height, Surface *surface_, WindowID wid)=0;
 
