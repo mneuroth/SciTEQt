@@ -76,7 +76,10 @@ FindInFilesDialogForm {
         target: folderDialog
 
         onAccepted: {
-            directoryInput.editText = sciteQt.cmdUrlToLocalPath(folderDialog.folder)
+            var newDirectory = sciteQt.cmdUrlToLocalPath(folderDialog.folder)
+            //directoryInput.editText = newDirectory
+            findInFilesDialog.directoryModel.append({"text":newDirectory})
+            directoryInput.currentIndex = findInFilesDialog.directoryModel.count - 1
         }
     }
 }
