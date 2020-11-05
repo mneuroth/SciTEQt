@@ -82,7 +82,8 @@ jobs:
       run: |
         d:
         dir 
-        python -m aqt tool -O d:\a\SciTEQt/Qt windows tools_ifw 3.2.2 win-x64
+        python -m aqt tool -O d:\a\SciTEQt/Qt windows tools_ifw 3.2.2 win-x86
+        python -m aqt tool -O d:\a\SciTEQt/Qt windows tools_ifw 4.0.0 win-x86
         gcc -v
         qmake -r sciteqt.pro
         dir
@@ -217,7 +218,7 @@ jobs:
         dir
         d:
         dir 
-        python -m aqt tool -O d:\a\SciteQt/Qt windows tools_ifw 3.2.2
+        python -m aqt tool -O d:\a\SciteQt/Qt windows tools_ifw 3.2.2 win-x86
         dir d:\a\SciteQt\Qt\Tools
         cl
         where qmake
@@ -289,7 +290,7 @@ jobs:
         dir
         d:
         dir 
-        python -m aqt tool -O d:\a\SciteQt/Qt windows tools_ifw 3.2.2
+        python -m aqt tool -O d:\a\SciteQt/Qt windows tools_ifw 3.2.2 win-x86
         dir d:\a\SciteQt\Qt\Tools
         cl
         where qmake
