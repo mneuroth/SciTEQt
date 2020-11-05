@@ -28,6 +28,7 @@ Added freatures (compared to original SciTE):
   * Support connect/disconnect of monitors
   * Support of switch between menubar for desktop and mobile platforms
   * Added command line option to select language, i. e. --language=de
+  * Added support to run current text/script as JavaScript (via QML)
 
 Missing features are:
 

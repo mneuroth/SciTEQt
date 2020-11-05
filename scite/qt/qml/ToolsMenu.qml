@@ -63,6 +63,11 @@ AutoSizingMenu {
         text: processMenuItem2(actions.actionAboutCurrentFile.text, actionAboutCurrentFile)
         action: actions.actionAboutCurrentFile
     }
+    MenuItem {
+        id: actionRunCurrentAsJavaScript
+        text: processMenuItem2(actions.actionRunCurrentAsJavaScript.text, actionRunCurrentAsJavaScript)
+        action: actions.actionRunCurrentAsJavaScript
+    }
     MenuSeparator {}
     MenuItem {
         id: actionNextMessage

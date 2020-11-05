@@ -854,6 +854,7 @@ Item {
     property alias actionAboutSciteQt: actionAboutSciteQt
     property alias actionAboutQt: actionAboutQt
     property alias actionAboutCurrentFile: actionAboutCurrentFile
+    property alias actionRunCurrentAsJavaScript: actionRunCurrentAsJavaScript
     property alias actionIsMobilePlatfrom: actionIsMobilePlatfrom
 
     Action {
@@ -887,6 +888,12 @@ Item {
         id: actionAboutCurrentFile
         text: qsTr("About &Current File")
         onTriggered: sciteQt.cmdAboutCurrentFile()
+    }
+
+    Action {
+        id: actionRunCurrentAsJavaScript
+        text: qsTr("Run Current File As &JavaScript")
+        onTriggered: sciteQt.cmdRunCurrentAsJavaScriptFile()
     }
 
     Action {

@@ -391,6 +391,7 @@ public:
     Q_INVOKABLE void cmdAboutScite();
     Q_INVOKABLE void cmdAboutSciteQt();
     Q_INVOKABLE void cmdAboutCurrentFile();
+    Q_INVOKABLE void cmdRunCurrentAsJavaScriptFile();
     Q_INVOKABLE void cmdShare();
     Q_INVOKABLE void cmdUpdateApplicationActive(bool active);
 

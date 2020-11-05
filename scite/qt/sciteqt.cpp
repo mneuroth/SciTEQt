@@ -2046,6 +2046,17 @@ void SciTEQt::cmdAboutCurrentFile()
     OnAddLineToOutput(sMsg);
 }
 
+void SciTEQt::cmdRunCurrentAsJavaScriptFile()
+{
+    QString text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1).c_str());
+
+    // see: https://doc.qt.io/qt-5/qjsengine.html#details
+    QJSEngine myEngine;
+    QJSValue result = myEngine.evaluate(text);
+
+    OnAddLineToOutput(result.toString());
+}
+
 void SciTEQt::cmdShare()
 {
     QString text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1));
