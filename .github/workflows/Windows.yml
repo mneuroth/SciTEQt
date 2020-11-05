@@ -81,9 +81,12 @@ jobs:
     - name: Install Qt and compile
       run: |
         d:
-        dir 
-        python -m aqt -O d:\a\SciTEQt/Qt tool windows tools_ifw qt.tools.ifw.32 win-x86
+        dir
+        python -m aqt --help       
+        python -m aqt tool -O d:\a\SciTEQt/Qt windows tools_ifw qt.tools.ifw.32 win-x86
         python -m aqt tool -O d:\a\SciTEQt/Qt windows tools_ifw qt.tools.ifw.40 win-x86
+        python -m aqt --outputdir d:\a\SciTEQt\Qt tool windows tools_ifw qt.tools.ifw.32 win-x86
+        python -m aqt --outputdir d:\a\SciTEQt\Qt tool windows tools_ifw 3.2.2 win-x86
         dir d:\a\SciteQt\Qt\Tools
         gcc -v
         qmake -r sciteqt.pro
