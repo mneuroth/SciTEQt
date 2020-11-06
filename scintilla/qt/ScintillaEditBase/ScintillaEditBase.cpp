@@ -270,8 +270,9 @@ void ScintillaEditBase::wheelEvent(QWheelEvent *event)
 			event->ignore();
 		else
 			QAbstractScrollArea::wheelEvent(event);
-#endif
+#else
 			QQuickPaintedItem::wheelEvent(event);
+#endif
 	} else {
 		if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
 			// Zoom! We play with the font sizes in the styles.
@@ -297,6 +298,7 @@ void ScintillaEditBase::wheelEvent(QWheelEvent *event)
 				} else {
 					sqt->ScrollTo(sqt->topLine+linesToScroll);
 				}
+				QQuickPaintedItem::wheelEvent(event);
 #else
 				QAbstractScrollArea::wheelEvent(event);
 			}
