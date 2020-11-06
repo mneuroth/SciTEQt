@@ -710,6 +710,7 @@ ApplicationWindow {
     // desktop modus menu bar
     MenuBar {
         id: sciteMenuBar
+        visible: !sciteQt.mobilePlatform
 
         FileMenu {
             id: fileMenuX
