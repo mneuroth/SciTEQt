@@ -95,13 +95,13 @@ ApplicationWindow {
         quickScintillaOutput.text += text
     }
 
-    function startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog, sDefaultSaveAsName) {
+    function startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog, bSaveACopyModus, sDefaultSaveAsName) {
         if(sciteQt.mobilePlatform)
         {
             if(bAsOpenDialog) {
                 openViaMobileFileDialog(sDirectory)
             } else {
-                saveViaMobileFileDialog(sDirectory,sDefaultSaveAsName)
+                saveViaMobileFileDialog(sDirectory,sDefaultSaveAsName,bSaveACopyModus)
             }
         }
         else
@@ -174,9 +174,9 @@ ApplicationWindow {
         mobileFileDialog.setOpenModus()
         mobileFileDialog.show()
     }
-    function saveViaMobileFileDialog(directory,sDefaultSaveAsName) {
+    function saveViaMobileFileDialog(directory,sDefaultSaveAsName,bSaveACopyModus) {
         mobileFileDialog.setDirectory(directory/*mobileFileDialog.currentDirectory*/)
-        mobileFileDialog.setSaveAsModus(sDefaultSaveAsName)
+        mobileFileDialog.setSaveAsModus(sDefaultSaveAsName,bSaveACopyModus)
         mobileFileDialog.show()
     }
 
@@ -1896,7 +1896,7 @@ ApplicationWindow {
         onSetTextToCurrent:                     setTextToCurrent(text)
         onAddTextToOutput:                      addTextToOutput(text)
 
-        onStartFileDialog:            startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog, sDefaultSaveAsName)
+        onStartFileDialog:            startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog, bSaveACopyModus, sDefaultSaveAsName)
         onShowInfoDialog:             showInfoDialog(sInfoText, style)
         onShowAboutSciteDialog:       showAboutSciteDialog()
 
@@ -2236,7 +2236,7 @@ ApplicationWindow {
         target: storageAccess
 
         onOpenFileContentReceived: {    // fileUri, decodedFileUri, content
-            sciteQt.OnAddFileContent(fileUri, decodedFileUri, content, false)
+            sciteQt.OnAddFileContent(fileUri, decodedFileUri, content, false, mobileFileDialog.isSaveACopyModus)
             mobileFileDialog.rejected()   // because loading and showing loaded document is already processed here (in QML)
         }
         onOpenFileCanceled: {
@@ -2246,7 +2246,7 @@ ApplicationWindow {
             mobileFileDialog.rejected()
         }
         onCreateFileReceived: {  // fileUri, decodedFileUri
-            sciteQt.OnAddFileContent(fileUri, decodedFileUri, "<create file received data>", true)
+            sciteQt.OnAddFileContent(fileUri, decodedFileUri, "<create file received data>", true, mobileFileDialog.isSaveACopyModus)
             mobileFileDialog.rejected()
         }
     }

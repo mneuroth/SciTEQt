@@ -38,10 +38,10 @@ Missing features are:
   * Context menu for Scintilla Control can not be overwritten/updated by SciTE  
   * Android: improve selection of text --> improve/use QInputContext
   * Android: implement action for left menu button (three bars button) --> dialogs ?
+  * Android: improve dialog resize when keyboard is visible...
   * Android: improve deployment --> more languages?
   * Webassembly: processing of modal dialogs (FileDialog, MessageBox)
   * Webassembly: click on Buttons (i. e. Cancel) in Dialogs creates crash ! BUT: setting focus via Keyboard and return on button works sometimes !!!???
-  * Webassembly: provide SciTEGlobal.properties --> add workaround to read this properties from the resources
 
 New open features might be:
   * Navigate in file via "Goto Symbol under Cursor"
@@ -62,7 +62,6 @@ Known and open Bugs are:
   * Improve handling of last searches in find dialog --> update combobox content directly
   * MacOS: select directory in find in files dialog does not work
   * Android: Navigate directory in Find In Files Dialog does not work for android
-  * Android: SaveAsCopy on Android Storage Access Framework changes the filename
   * Android: Files from android storage access framework will not be restored at application startup
   * CI: Windows CI build does not fail if compile step has an error and sciteqt.exe was not created ... ? Why? See Mingw Build for 32 bit
 

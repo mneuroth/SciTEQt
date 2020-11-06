@@ -48,8 +48,13 @@ FindInFilesDialogForm {
     browseButton {
         onClicked: {
             var currentDirectory = findInFilesDialog.directoryInput.editText.length > 0 ? findInFilesDialog.directoryInput.editText : findInFilesDialog.directoryInput.currentText
-            folderDialog.folder = buildValidUrl(currentDirectory)
-            folderDialog.open()
+            if(sciteQt.mobilePlatform) {
+                mobileFileDialog.show()
+            }
+            else {
+                folderDialog.folder = buildValidUrl(currentDirectory)
+                folderDialog.open()
+            }
         }
     }
 

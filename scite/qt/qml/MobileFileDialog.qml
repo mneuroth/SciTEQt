@@ -13,6 +13,7 @@ MobileFileDialogForm {
     id: root
 
     property bool isSaveAsModus: false
+    property bool isSaveACopyModus: false
     property bool isDeleteModus: false
     property var textControl: null
 
@@ -56,8 +57,9 @@ MobileFileDialogForm {
         }
     }
 
-    function setSaveAsModus(sDefaultSaveAsName) {
+    function setSaveAsModus(sDefaultSaveAsName,bSaveACopyModus) {
         mobileFileDialog.isSaveAsModus = true
+        mobileFileDialog.isSaveACopyModus = bSaveACopyModus
         mobileFileDialog.isDeleteModus = false
         mobileFileDialog.lblMFDInput.text = localiseText(qsTr("new file name:"))
         mobileFileDialog.txtMFDInput.text = (sDefaultSaveAsName === null || sDefaultSaveAsName.length==0) ? localiseText(qsTr("unknown.txt")) : sDefaultSaveAsName
@@ -68,6 +70,7 @@ MobileFileDialogForm {
 
     function setOpenModus() {
         mobileFileDialog.isSaveAsModus = false
+        mobileFileDialog.isSaveACopyModus = false
         mobileFileDialog.isDeleteModus = false
         mobileFileDialog.lblMFDInput.text = localiseText(qsTr("open name:"))
         mobileFileDialog.txtMFDInput.readOnly = true
@@ -77,6 +80,7 @@ MobileFileDialogForm {
 
     function setDeleteModus() {
         mobileFileDialog.isSaveAsModus = false
+        mobileFileDialog.isSaveACopyModus = false
         mobileFileDialog.isDeleteModus = true
         mobileFileDialog.lblMFDInput.text = localiseText(qsTr("current file name:"))
         mobileFileDialog.txtMFDInput.text = ""

@@ -359,7 +359,7 @@ bool SciTEQt::OpenDialog(const FilePath &directory, const GUI::gui_char *filesFi
 
 bool SciTEQt::SaveAsDialog()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save File", false, QString::fromStdString(filePath.Name().AsUTF8()));
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save File", false, false, QString::fromStdString(filePath.Name().AsUTF8()));
 
     if(ProcessCurrentFileDialog())
     {
@@ -381,7 +381,7 @@ void SciTEQt::LoadSessionDialog()
 
 void SciTEQt::SaveSessionDialog()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.session", "Save Session File", false, "current.session");
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.session", "Save Session File", false, false, "current.session");
 
     if(ProcessCurrentFileDialog())
     {
@@ -391,7 +391,7 @@ void SciTEQt::SaveSessionDialog()
 
 void SciTEQt::SaveACopy()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save a Copy", false, QString::fromStdString(filePath.Name().AsUTF8()));
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save a Copy", false, true, QString::fromStdString(filePath.Name().AsUTF8()));
 
     if(ProcessCurrentFileDialog())
     {
@@ -400,18 +400,21 @@ void SciTEQt::SaveACopy()
         if(aFileName.IsNotLocal())
         {
             // this should never happen !!! handled via OnAddFileContent() call from Android Storage Framework
-            Q_ASSERT(false);
+            //Q_ASSERT(false);
+            //qDebug() << "SaveACopy() not local " << m_sCurrentFileUrl << endl;
             QString text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1));
             m_pApplicationData->writeFileContent(ConvertGuiCharToQString(aFileName.AsInternal()), text);
         }
-
-        SaveBuffer(aFileName, sfNone);
+        else
+        {
+            SaveBuffer(aFileName, sfNone);
+        }
     }
 }
 
 void SciTEQt::SaveAsRTF()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.rtf", "Export File As RTF", false, QString::fromStdString(filePath.Name().AsUTF8())+".rtf");
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.rtf", "Export File As RTF", false, true, QString::fromStdString(filePath.Name().AsUTF8())+".rtf");
 
     if(ProcessCurrentFileDialog())
     {
@@ -421,7 +424,7 @@ void SciTEQt::SaveAsRTF()
 
 void SciTEQt::SaveAsPDF()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.pdf", "Export File As PDF", false, QString::fromStdString(filePath.Name().AsUTF8())+".pdf");
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.pdf", "Export File As PDF", false, true, QString::fromStdString(filePath.Name().AsUTF8())+".pdf");
 
     if(ProcessCurrentFileDialog())
     {
@@ -431,7 +434,7 @@ void SciTEQt::SaveAsPDF()
 
 void SciTEQt::SaveAsTEX()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.tex", "Export File As LaTeX", false, QString::fromStdString(filePath.Name().AsUTF8())+".tex");
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.tex", "Export File As LaTeX", false, true, QString::fromStdString(filePath.Name().AsUTF8())+".tex");
 
     if(ProcessCurrentFileDialog())
     {
@@ -441,7 +444,7 @@ void SciTEQt::SaveAsTEX()
 
 void SciTEQt::SaveAsXML()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.xml", "Export File As XML", false, QString::fromStdString(filePath.Name().AsUTF8())+".xml");
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.xml", "Export File As XML", false, true, QString::fromStdString(filePath.Name().AsUTF8())+".xml");
 
     if(ProcessCurrentFileDialog())
     {
@@ -451,7 +454,7 @@ void SciTEQt::SaveAsXML()
 
 void SciTEQt::SaveAsHTML()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.html", "Export File As HTML", false, QString::fromStdString(filePath.Name().AsUTF8())+".html");
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.html", "Export File As HTML", false, true, QString::fromStdString(filePath.Name().AsUTF8())+".html");
 
     if(ProcessCurrentFileDialog())
     {
@@ -2859,7 +2862,7 @@ void SciTEQt::updateCurrentWindowPosAndSize(int left, int top, int width, int he
 }
 
 void SciTEQt::updateCurrentSelectedFileUrl(const QString & fileUrl)
-{
+{    
     m_sCurrentFileUrl = fileUrl;
 }
 
@@ -2974,7 +2977,7 @@ void SciTEQt::OnFileSearchFinished()
     setFindInFilesRunning(false);
 }
 
-void SciTEQt::OnAddFileContent(const QString & sFileUri, const QString & sDecodedFileUri, const QString & sContent, bool bNewCreated)
+void SciTEQt::OnAddFileContent(const QString & sFileUri, const QString & sDecodedFileUri, const QString & sContent, bool bNewCreated, bool bSaveACopyModus)
 {
     // process receiving new content from android storage framework:
     // - create new document
@@ -2996,17 +2999,20 @@ void SciTEQt::OnAddFileContent(const QString & sFileUri, const QString & sDecode
         if(!ok)
         {
             ShowWindowMessageBox(QString(tr("Can not write file %1")).arg(sDecodedFileUri));
-        }
+        }        
     }
 
-    // nearly the code from SaveAs()...
-    ReadProperties();
-    FilePath newFileName(ConvertQStringToGuiString(sDecodedFileUri), ConvertQStringToGuiString(sFileUri));
-    SetFileName(newFileName, /*fixCase*/true);
-    //Save();
-    ProcessSave(ok);
-    if (extender)
-        extender->OnSave(filePath.AsUTF8().c_str());
+    if( !bSaveACopyModus )
+    {
+        // nearly the code from SaveAs()...
+        ReadProperties();
+        FilePath newFileName(ConvertQStringToGuiString(sDecodedFileUri), ConvertQStringToGuiString(sFileUri));
+        SetFileName(newFileName, /*fixCase*/true);
+        //Save();
+        ProcessSave(ok);
+        if (extender)
+            extender->OnSave(filePath.AsUTF8().c_str());
+    }
 }
 
 void SciTEQt::OnAddLineToOutput(const QString & text)

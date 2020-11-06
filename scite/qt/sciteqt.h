@@ -463,7 +463,7 @@ public slots:
     void OnCurrentFindInFilesItemChanged(const QString & currentItem);
     void OnAddToOutput(const QString & text);
     void OnAddLineToOutput(const QString & text);
-    Q_INVOKABLE void OnAddFileContent(const QString & sFileUri, const QString & sDecodedFileUri, const QString & sContent, bool bNewCreated);
+    Q_INVOKABLE void OnAddFileContent(const QString & sFileUri, const QString & sDecodedFileUri, const QString & sContent, bool bNewCreated, bool bSaveACopyModus);
 
     void OnStripFindVisible(bool val);
 
@@ -506,7 +506,7 @@ signals:
     void removeInImportModel(int index);
     void checkStateInImportModel(int index, bool checked);
 
-    void startFileDialog(const QString & sDirectory, const QString & sFilter, const QString & sTitle, bool bAsOpenDialog, const QString & sDefaultSaveAsName = "unknown.txt");
+    void startFileDialog(const QString & sDirectory, const QString & sFilter, const QString & sTitle, bool bAsOpenDialog, bool bSaveACopyModus = false, const QString & sDefaultSaveAsName = "unknown.txt");
     void showInfoDialog(const QString & sInfoText, int style);
     void showAboutSciteDialog();
 
