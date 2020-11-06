@@ -39,6 +39,8 @@
 
 #include "findinfiles.h"
 
+#include "sciteqtenvironmentforjavascript.h"
+
 #ifdef Q_OS_WASM
 #include <emscripten.h>
 #endif
@@ -2052,9 +2054,24 @@ void SciTEQt::cmdRunCurrentAsJavaScriptFile()
 
     // see: https://doc.qt.io/qt-5/qjsengine.html#details
     QJSEngine myEngine;
-    QJSValue result = myEngine.evaluate(text);
 
-    OnAddLineToOutput(result.toString());
+    SciteQtEnvironmentForJavaScript aSciteQtJSEnvironment(this);
+    connect(&aSciteQtJSEnvironment,SIGNAL(OnPrint(QString)),this,SLOT(OnAddLineToOutput(QString)));
+
+    QJSValue sciteEnvironment = myEngine.newQObject(&aSciteQtJSEnvironment);
+    myEngine.globalObject().setProperty("env", sciteEnvironment);
+
+    QJSValue result = myEngine.evaluate(text, filePath.AsUTF8().c_str());
+    if (result.isError())
+    {
+        QString sError = QString(tr("Error: Uncaught exception at line %1: %2")).arg(result.property("lineNumber").toInt()).arg(result.toString());
+    }
+    else
+    {
+        OnAddLineToOutput(QString(tr("Result=%1")).arg(result.toString()));
+    }
+
+    disconnect(&aSciteQtJSEnvironment,SIGNAL(OnPrint(QString)),this,SLOT(OnAddLineToOutput(QString)));
 }
 
 void SciTEQt::cmdShare()

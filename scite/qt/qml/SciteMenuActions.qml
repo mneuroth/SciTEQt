@@ -893,6 +893,7 @@ Item {
     Action {
         id: actionRunCurrentAsJavaScript
         text: qsTr("Run Current File As &JavaScript")
+        shortcut: "Ctrl+J"
         onTriggered: sciteQt.cmdRunCurrentAsJavaScriptFile()
     }
 
