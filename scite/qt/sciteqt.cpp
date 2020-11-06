@@ -47,7 +47,7 @@
 
 //*************************************************************************
 
-#define __SCITE_QT_VERSION__   "0.99.5"
+#define __SCITE_QT_VERSION__   "0.99.7"
 
 enum {
     WORK_EXECUTE = WORK_PLATFORM + 1,
@@ -178,6 +178,15 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
     ReadEnvironment();
 
     ReadGlobalPropFile();
+#ifdef Q_OS_WASM
+    // workaraound: provide SciTEGlobal.properties for WASM platform --> enable toolbar and statusbar as default
+    propsBase.Clear();
+	FilePath emptyPath;
+    ImportFilter importFilter;
+    FilePathSet filePathSet;
+    QString dataAsText(ApplicationData::simpleReadFileContent(":/SciTEGlobal.properties"));
+    propsBase.ReadFromMemory(dataAsText.toStdString().c_str(), dataAsText.toStdString().length(), /*directoryForImports*/emptyPath, /*filter*/importFilter, /*imports*/&filePathSet, /*depth*/0);
+#endif
 
     SetPropertiesInitial();
     // sync property files with state of qt application
@@ -2048,6 +2057,8 @@ void SciTEQt::cmdAboutCurrentFile()
     OnAddLineToOutput(sMsg);
 }
 
+static QString g_sJavaScriptLibrary = "function print(t) { env.print(t) }\n";
+
 void SciTEQt::cmdRunCurrentAsJavaScriptFile()
 {
     QString text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1).c_str());
@@ -2061,15 +2072,17 @@ void SciTEQt::cmdRunCurrentAsJavaScriptFile()
     QJSValue sciteEnvironment = myEngine.newQObject(&aSciteQtJSEnvironment);
     myEngine.globalObject().setProperty("env", sciteEnvironment);
 
-    QJSValue result = myEngine.evaluate(text, filePath.AsUTF8().c_str());
+    QJSValue result = myEngine.evaluate(g_sJavaScriptLibrary+text, filePath.AsUTF8().c_str());
+    QString sResult;
     if (result.isError())
     {
-        QString sError = QString(tr("Error: Uncaught exception at line %1: %2")).arg(result.property("lineNumber").toInt()).arg(result.toString());
+        sResult = QString(tr("Error: Uncaught exception at line %1: %2")).arg(result.property("lineNumber").toInt()).arg(result.toString());
     }
     else
     {
-        OnAddLineToOutput(QString(tr("Result=%1")).arg(result.toString()));
+        sResult = QString(tr("Result=%1")).arg(result.toString());
     }
+    OnAddLineToOutput(sResult);
 
     disconnect(&aSciteQtJSEnvironment,SIGNAL(OnPrint(QString)),this,SLOT(OnAddLineToOutput(QString)));
 }

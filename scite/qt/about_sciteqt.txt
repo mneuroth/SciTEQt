@@ -32,7 +32,6 @@ Added freatures (compared to original SciTE):
 
 Missing features are:
 
-  * scrolling with mouse wheel is sluggish
   * save and restore file extensions and directories for find in files
   * Improve splitter handling
   * Implement Printing (partly)
@@ -42,6 +41,7 @@ Missing features are:
   * Android: improve deployment --> more languages?
   * Webassembly: processing of modal dialogs (FileDialog, MessageBox)
   * Webassembly: click on Buttons (i. e. Cancel) in Dialogs creates crash ! BUT: setting focus via Keyboard and return on button works sometimes !!!???
+  * Webassembly: provide SciTEGlobal.properties --> add workaround to read this properties from the resources
 
 New open features might be:
   * Navigate in file via "Goto Symbol under Cursor"
