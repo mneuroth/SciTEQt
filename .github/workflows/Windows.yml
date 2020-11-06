@@ -367,9 +367,9 @@ jobs:
         ls -lrt
         ls -lrt ..
         ls -lrt ../Qt
-        ls -lrt ../Qt/Tools
-        python3 -m aqt tool -O ../Qt mac tools_ifw 3.2.2 mac-x64
-        ls -lrt ../Qt/Tools
+        #ls -lrt ../Qt/Tools
+        #python3 -m aqt tool -O ../Qt mac tools_ifw 3.2.2 mac-x64
+        #ls -lrt ../Qt/Tools
         which qmake
         qmake -r sciteqt.pro
         clang++ --version
