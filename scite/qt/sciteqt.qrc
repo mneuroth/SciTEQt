@@ -33,6 +33,7 @@
         <file alias="qml/ScintillaText.qml">../../scintilla/qt/ScintillaEditBase/ScintillaText.qml</file>
         <file alias="Embedded.properties">../src/Embedded.properties</file>
         <file alias="SciTEGlobal.properties">SciTEGlobal.properties</file>  <!-- used only for WASM platform -->
+        <file alias="SciTEUser.properties">SciTEUser.properties</file>      <!-- used only for WASM platform -->
         <file alias="scite_logo.png">../gtk/Sci48M.png</file>
         <file alias="about_sciteqt.txt">about_sciteqt.txt</file>
         <file alias="qml/icons/clear.svg">icons/clear-black-24dp.svg</file>

@@ -152,27 +152,22 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
       m_maximize(false),
       m_bParametersDialogOpen(false)
 {
-#ifdef Q_OS_WINDOWS
+#if defined(Q_OS_WASM)
+    //propsPlatform.Set("PLAT_GTK", "1");
+    propsPlatform.Set("PLAT_WASM", "1");
+#elif defined(Q_OS_WIN)
     propsPlatform.Set("PLAT_WIN", "1");
     propsPlatform.Set("PLAT_WINNT", "1");
-#endif
-#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
+#elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     propsPlatform.Set("PLAT_GTK", "1");
-#endif
-#ifdef Q_OS_MACOS
-    propsPlatform.Set("PLAT_MACOSX", "1");
-#endif
-#ifdef Q_OS_ANDROID
-    //propsPlatform.Set("PLAT_GTK", "1");
-    propsPlatform.Set("PLAT_ANDROID", "1");
-#endif
-#ifdef Q_OS_IOS
+#elif defined(Q_OS_IOS)
     propsPlatform.Set("PLAT_MACOSX", "1");
     propsPlatform.Set("PLAT_IOS", "1");
-#endif
-#ifdef Q_OS_WASM
-    propsPlatform.Set("PLAT_GTK", "1");
-    propsPlatform.Set("PLAT_WASM", "1");
+#elif defined(Q_OS_MACOS)
+    propsPlatform.Set("PLAT_MACOSX", "1");
+#elif defined(Q_OS_ANDROID)
+    //propsPlatform.Set("PLAT_GTK", "1");
+    propsPlatform.Set("PLAT_ANDROID", "1");
 #endif
 
     ReadEnvironment();
@@ -181,11 +176,18 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
 #ifdef Q_OS_WASM
     // workaraound: provide SciTEGlobal.properties for WASM platform --> enable toolbar and statusbar as default
     propsBase.Clear();
-	FilePath emptyPath;
+    FilePath emptyPath;
     ImportFilter importFilter;
     FilePathSet filePathSet;
     QString dataAsText(ApplicationData::simpleReadFileContent(":/SciTEGlobal.properties"));
     propsBase.ReadFromMemory(dataAsText.toStdString().c_str(), dataAsText.toStdString().length(), /*directoryForImports*/emptyPath, /*filter*/importFilter, /*imports*/&filePathSet, /*depth*/0);
+
+    propsUser.Clear();
+    dataAsText = ApplicationData::simpleReadFileContent(":/SciTEUser.properties");
+    propsUser.ReadFromMemory(dataAsText.toStdString().c_str(), dataAsText.toStdString().length(), /*directoryForImports*/emptyPath, /*filter*/importFilter, /*imports*/&filePathSet, /*depth*/0);
+
+    // disable save position for WASM, this fixes the resize problem
+	props.Set("save.position", "0");
 #endif
 
     SetPropertiesInitial();
@@ -2784,7 +2786,9 @@ void SciTEQt::UpdateWindowPosAndSizeIfNeeded(const QRect & rect, bool maximize)
 void SciTEQt::RestorePosition()
 {
     // for android platform the size of the main window must not change !!! --> ignore RestorePosition call
-#ifndef Q_OS_ANDROID
+#if defined(Q_OS_ANDROID) || defined(Q_OW_WASM)
+    // ignore restore !
+#else
     const int left = propsSession.GetInt("position.left", 0);
     const int top = propsSession.GetInt("position.top", 0);
     const int width = propsSession.GetInt("position.width", 600);
