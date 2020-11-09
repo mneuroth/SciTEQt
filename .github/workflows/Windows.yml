@@ -290,8 +290,8 @@ jobs:
         # Any extra arguments to append to the back
         extra: # optional
     - name: Install 7Zip PowerShell Module
-        shell: powershell
-        run: Install-Module 7Zip4PowerShell -Force -Verbose
+      shell: powershell
+      run: Install-Module 7Zip4PowerShell -Force -Verbose
     - name: Install Qt and compile
       run: |
         cd 
