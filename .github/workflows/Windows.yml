@@ -262,6 +262,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - uses: ilammy/msvc-dev-cmd@v1.0.0
+    - uses: TonyBogdanov/zip@1.0
     - uses: jurplel/install-qt-action@v2
       with:
         # Directory to install Qt
@@ -313,6 +314,8 @@ jobs:
         cd ..\..\..
         dir
         d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.0\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_15_1.exe
+        dir
+        zip -0 SciTEQtInstallerMsc_5_15_1.zip SciTEQtInstallerMsc_5_15_1.exe
         dir 
     - name: Upload Release Asset
       if: contains(github.ref, 'release')
@@ -325,6 +328,17 @@ jobs:
         asset_path: scite/qt/dist/SciTEQtInstallerMsc_5_15_1.exe
         asset_name: SciTEQtInstallerMsc_5_15_1.exe
         asset_content_type: application/exe
+    - name: Upload zip Release Asset
+      if: contains(github.ref, 'release')
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+        asset_path: scite/qt/dist/SciTEQtInstallerMsc_5_15_1.zip
+        asset_name: SciTEQtInstallerMsc_5_15_1.zip
+        asset_content_type: application/zip
 
   # this is a copy of the content MacOS.yml used only to upload binary for release
   macos_5_14_2_build:
