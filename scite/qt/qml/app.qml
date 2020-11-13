@@ -376,11 +376,17 @@ ApplicationWindow {
     }
 
     function showTabSizeDialog(tabSize, indentSize, useTabs) {
-        tabSizeDialog.tabSizeInput.text = tabSize
-        tabSizeDialog.indentSizeInput.text = indentSize
-        tabSizeDialog.useTabsCheckBox.checked = useTabs
-        tabSizeDialog.show()
-        tabSizeDialog.tabSizeInput.focus = true
+        var dlg = sciteQt.mobilePlatform ? tabSizeDialog : tabSizeDialogWin
+        dlg.tabSizeInput.text = tabSize
+        dlg.indentSizeInput.text = indentSize
+        dlg.useTabsCheckBox.checked = useTabs
+        if(sciteQt.mobilePlatform) {
+            stackView.pop()
+            stackView.push(dlg)
+        } else {
+            dlg.show()
+        }
+        dlg.tabSizeInput.focus = true
     }
 
     function showAbbreviationDialog(items) {
@@ -2429,7 +2435,6 @@ ApplicationWindow {
     TabSizeDialog {
         id: tabSizeDialog
         objectName: "tabSizeDialog"
-        modality: Qt.ApplicationModal
         title: sciteQt.getLocalisedText(qsTr("Indentation Settings"))
 
         fcnLocalisation: sciteQt.getLocalisedText
@@ -2441,14 +2446,56 @@ ApplicationWindow {
         target: tabSizeDialog
 
         onCanceled: {
+            stackView.pop()
             focusToEditor()
         }
         onAccepted: {
+            stackView.pop()
             sciteQt.cmdUpdateTabSizeValues(parseInt(tabSizeDialog.tabSizeInput.text), parseInt(tabSizeDialog.indentSizeInput.text), tabSizeDialog.useTabsCheckBox.checked, false)
             focusToEditor()
         }
         onConvert: {
+            stackView.pop()
             sciteQt.cmdUpdateTabSizeValues(parseInt(tabSizeDialog.tabSizeInput.text), parseInt(tabSizeDialog.indentSizeInput.text), tabSizeDialog.useTabsCheckBox.checked, true)
+            focusToEditor()
+        }
+    }
+
+    TabSizeDialogWindow {
+        id: tabSizeDialogWin
+        objectName: "tabSizeDialogWin"
+        modality: Qt.ApplicationModal
+        title: sciteQt.getLocalisedText(qsTr("Indentation Settings"))
+
+        width: grid.implicitWidth+10
+        height: grid.implicitHeight+10
+
+        // Window is not resizable !
+        maximumHeight: height
+        maximumWidth: width
+        minimumHeight: height
+        minimumWidth: width
+
+        fcnLocalisation: sciteQt.getLocalisedText
+
+        visible: false
+    }
+
+    Connections {
+        target: tabSizeDialogWin
+
+        onCanceled: {
+            tabSizeDialogWin.close()
+            focusToEditor()
+        }
+        onAccepted: {
+            tabSizeDialogWin.close()
+            sciteQt.cmdUpdateTabSizeValues(parseInt(tabSizeDialogWin.tabSizeInput.text), parseInt(tabSizeDialogWin.indentSizeInput.text), tabSizeDialogWin.useTabsCheckBox.checked, false)
+            focusToEditor()
+        }
+        onConvert: {
+            tabSizeDialogWin.close()
+            sciteQt.cmdUpdateTabSizeValues(parseInt(tabSizeDialogWin.tabSizeInput.text), parseInt(tabSizeDialogWin.indentSizeInput.text), tabSizeDialogWin.useTabsCheckBox.checked, true)
             focusToEditor()
         }
     }

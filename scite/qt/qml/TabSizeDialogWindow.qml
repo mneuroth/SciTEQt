@@ -8,46 +8,34 @@
 
 import QtQuick 2.4
 import QtQuick.Controls 2.1
-import QtQuick.Layouts 1.0
-import QtQuick.Dialogs 1.2
+import QtQuick.Window 2.3
 
-TabSizeDialogForm {
+Window {
     id: root
 
     signal canceled()
     signal accepted()
     signal convert()
 
-    tabSizeInput {
-        validator: IntValidator { bottom: 0; top: 99 }
+    property alias fcnLocalisation: dialog.fcnLocalisation
 
-        onAccepted: okButton.clicked()
+    property alias cancelButton: dialog.cancelButton
+    property alias okButton: dialog.okButton
+    property alias convertButton: dialog.convertButton
+    property alias tabSizeInput: dialog.tabSizeInput
+    property alias indentSizeInput: dialog.indentSizeInput
+    property alias useTabsCheckBox: dialog.useTabsCheckBox
+    property alias grid: dialog.grid
+
+    TabSizeDialog {
+        id: dialog
     }
 
-    indentSizeInput {
-        validator: IntValidator { bottom: 0; top: 99 }
+    Connections {
+        target: dialog
 
-        onAccepted: okButton.clicked()
-    }
-
-    cancelButton {
-        onClicked: {
-            root.close()
-            canceled()
-        }
-    }
-
-    okButton {
-        onClicked: {
-            root.close()
-            accepted()
-        }
-    }
-
-    convertButton {
-        onClicked: {
-            root.close()
-            convert()
-        }
+        onAccepted: root.accepted()
+        onCanceled: root.canceled()
+        onConvert: root.convert()
     }
 }

@@ -32,21 +32,18 @@ TabSizeDialogForm {
 
     cancelButton {
         onClicked: {
-            root.close()
             canceled()
         }
     }
 
     okButton {
         onClicked: {
-            root.close()
             accepted()
         }
     }
 
     convertButton {
         onClicked: {
-            root.close()
             convert()
         }
     }
