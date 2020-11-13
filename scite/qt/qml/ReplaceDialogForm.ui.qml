@@ -72,7 +72,7 @@ Window {
             anchors.bottomMargin: 5
 
             columns: 5
-            rows: 6
+            rows: 7
 
             Label {
                 id: findLabel
@@ -219,6 +219,16 @@ Window {
                 text: localiseText(qsTr("Transform &backslash expressions"))
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
+            }
+
+            Label {
+                id: fillLabel
+                text: ""
+                visible: sciteQt.mobilePlatform
+
+                Layout.columnSpan: 5
+                Layout.fillHeight: true
+                Layout.fillWidth: true
             }
         }
     }

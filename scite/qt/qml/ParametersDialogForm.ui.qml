@@ -50,7 +50,7 @@ Window {
     }
 
     // remove standard Ok button from dialog (see: https://stackoverflow.com/questions/50858605/qml-dialog-removing-ok-button)
-    /*contentItem:*/ Item {
+    /*contentItem:*/ Page {
 
         anchors.fill: parent
 
@@ -135,6 +135,16 @@ Window {
                 //font.pixelSize: 12
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
+            }
+
+            Label {
+                id: fillLabel
+                text: ""
+                visible: sciteQt.mobilePlatform
+
+                Layout.columnSpan: 4
+                Layout.fillHeight: true
+                Layout.fillWidth: true
             }
 
             Button {

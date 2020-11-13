@@ -69,7 +69,7 @@ Window {
             anchors.bottomMargin: 5
 
             columns: 4
-            rows: 6
+            rows: 7
 
             Label {
                 id: findLabel
@@ -198,6 +198,15 @@ Window {
                 Keys.onBackPressed: cancelButton.clicked()
             }
 */
+            Label {
+                id: fillLabel
+                text: ""
+                visible: sciteQt.mobilePlatform
+
+                Layout.columnSpan: 4
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+            }
         }
     }
 }

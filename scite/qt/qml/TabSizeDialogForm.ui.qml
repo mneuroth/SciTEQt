@@ -61,7 +61,7 @@ Window {
             anchors.bottomMargin: 5
 
             columns: 3
-            rows: 3
+            rows: 4
 
             Label {
                 id: tabSizeLabel
@@ -118,6 +118,15 @@ Window {
                 Keys.onBackPressed: cancelButton.clicked()
             }
 
+            Label {
+                id: fillLabel
+                text: ""
+                visible: sciteQt.mobilePlatform
+
+                Layout.columnSpan: 3
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+            }
         }
     }
 }
