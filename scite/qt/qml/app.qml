@@ -390,12 +390,18 @@ ApplicationWindow {
     }
 
     function showAbbreviationDialog(items) {
-        abbreviationDialog.abbreviationModel.clear()
+        var dlg = sciteQt.mobilePlatform ? abbreviationDialog : abbreviationDialogWin
+        dlg.abbreviationModel.clear()
         for (var i=0; i<items.length; i++) {
-            abbreviationDialog.abbreviationModel.append({"text":items[i]})
+            dlg.abbreviationModel.append({"text":items[i]})
         }
-        abbreviationDialog.show()
-        abbreviationDialog.abbreviationInput.focus = true
+        if(sciteQt.mobilePlatform) {
+            stackView.pop()
+            stackView.push(dlg)
+        } else {
+            dlg.show()
+        }
+        dlg.abbreviationInput.focus = true
     }
 
     function showParametersDialog(modal, parameters) {
@@ -2503,7 +2509,6 @@ ApplicationWindow {
     AbbreviationDialog {
         id: abbreviationDialog
         objectName: "abbreviationDialog"
-        modality: Qt.ApplicationModal
         title: sciteQt.getLocalisedText(qsTr("Insert Abbreviation"))
 
         fcnLocalisation: sciteQt.getLocalisedText
@@ -2515,10 +2520,46 @@ ApplicationWindow {
         target: abbreviationDialog
 
         onCanceled: {
+            stackView.pop()
             focusToEditor()
         }
         onAccepted: {
+            stackView.pop()
             sciteQt.cmdSetAbbreviationText(abbreviationDialog.abbreviationInput.currentText)
+            focusToEditor()
+        }
+    }
+
+    AbbreviationDialogWindow {
+        id: abbreviationDialogWin
+        objectName: "abbreviationDialogWin"
+        modality: Qt.ApplicationModal
+        title: sciteQt.getLocalisedText(qsTr("Insert Abbreviation"))
+
+        width: grid.implicitWidth+10
+        height: grid.implicitHeight+10
+
+        // Window is not resizable !
+        maximumHeight: height
+        maximumWidth: width
+        minimumHeight: height
+        minimumWidth: width
+
+        fcnLocalisation: sciteQt.getLocalisedText
+
+        visible: false
+    }
+
+    Connections {
+        target: abbreviationDialogWin
+
+        onCanceled: {
+            abbreviationDialogWin.close()
+            focusToEditor()
+        }
+        onAccepted: {
+            abbreviationDialogWin.close()
+            sciteQt.cmdSetAbbreviationText(abbreviationDialogWin.abbreviationInput.currentText)
             focusToEditor()
         }
     }

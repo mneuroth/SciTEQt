@@ -8,28 +8,16 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.3
 import QtQuick.Layouts 1.0
-//import QtQuick.Dialogs 1.3
-import QtQuick.Window 2.3
 
-Window {
+Page {
 
-    //width: 550
-    //height: 100
-    width: grid.implicitWidth+10
-    height: grid.implicitHeight+10
-
-    //flags: Qt.MSWindowsFixedSizeDialogHint
-
-    // Window is not resizable !
-    maximumHeight: height
-    maximumWidth: width
-    minimumHeight: height
-    minimumWidth: width
+    anchors.fill: parent
 
     property alias cancelButton: cancelButton
     property alias insertButton: insertButton
     property alias abbreviationInput: abbreviationInput
     property alias abbreviationModel: abbreviationModel
+    property alias grid: grid
 
     property var fcnLocalisation: undefined
 

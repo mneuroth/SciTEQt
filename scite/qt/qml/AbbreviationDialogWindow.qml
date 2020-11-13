@@ -7,30 +7,30 @@
  ***************************************************************************/
 import QtQuick 2.4
 import QtQuick.Controls 2.1
-import QtQuick.Layouts 1.0
-import QtQuick.Dialogs 1.2
+import QtQuick.Window 2.3
 
-AbbreviationDialogForm {
+Window {
     id: root
 
     signal canceled()
     signal accepted()
 
-    abbreviationInput {
-        onAccepted: insertButton.clicked()
+    property alias fcnLocalisation: dialog.fcnLocalisation
+
+    property alias cancelButton: dialog.cancelButton
+    property alias insertButton: dialog.insertButton
+    property alias abbreviationInput: dialog.abbreviationInput
+    property alias abbreviationModel: dialog.abbreviationModel
+    property alias grid: dialog.grid
+
+    AbbreviationDialog {
+        id: dialog
     }
 
-    cancelButton {
-        onClicked: {
-            root.close()
-            canceled()
-        }
-    }
+    Connections {
+        target: dialog
 
-    insertButton {
-        onClicked: {
-            root.close()
-            accepted()
-        }
+        onAccepted: root.accepted()
+        onCanceled: root.canceled()
     }
 }

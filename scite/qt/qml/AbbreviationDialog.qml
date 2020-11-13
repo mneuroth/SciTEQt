@@ -22,14 +22,12 @@ AbbreviationDialogForm {
 
     cancelButton {
         onClicked: {
-            root.close()
             canceled()
         }
     }
 
     insertButton {
         onClicked: {
-            root.close()
             accepted()
         }
     }

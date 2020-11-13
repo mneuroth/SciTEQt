@@ -803,7 +803,8 @@ bool SciTEQt::AbbrevDialog()
 
     emit showAbbreviationDialog(items);
 
-    MessageBoxChoice result = ProcessModalWindowSynchronious("abbreviationDialog");
+    QString name = isMobilePlatform() ? "abbreviationDialog" : "abbreviationDialogWin";
+    MessageBoxChoice result = ProcessModalWindowSynchronious(name);
     return result == SciTEQt::MessageBoxChoice::mbOK;
 }
 
@@ -858,7 +859,8 @@ bool SciTEQt::ParametersDialog(bool modal)
 
     if(modal)
     {
-        MessageBoxChoice result = ProcessModalWindowSynchronious("parametersDialog");
+        QString name = isMobilePlatform() ? "parametersDialog" : "parametersDialogWin";
+        MessageBoxChoice result = ProcessModalWindowSynchronious(name);
         m_bParametersDialogOpen = false;
         return result == SciTEQt::MessageBoxChoice::mbOK;
     }

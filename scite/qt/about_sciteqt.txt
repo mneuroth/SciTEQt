@@ -44,6 +44,7 @@ Missing features are:
   * Webassembly: click on Buttons (i. e. Cancel) in Dialogs creates crash ! BUT: setting focus via Keyboard and return on button works sometimes !!!???
 
 New open features might be:
+  * Allow user (menu)items in tool button (android) ?
   * Navigate in file via "Goto Symbol under Cursor"
   * Autocomplete symbols/functions/variables inside the file
   * Close buttons in tabpage buttons
@@ -61,6 +62,7 @@ Known and open Bugs are:
   * strange scroll behaviour on Qt 5.11.3 --> mouse click needed to update mouse wheel scroll in scintilla window (see about scite)
   * Improve handling of last searches in find dialog --> update combobox content directly
   * MacOS: select directory in find in files dialog does not work
+  * WASM: Dialog handling does not work correctly! --> change dialogs in mobile ui to stackview ?
   * Android: Navigate directory in Find In Files Dialog does not work for android
   * Android: Files from android storage access framework will not be restored at application startup
   * CI: Windows CI build does not fail if compile step has an error and sciteqt.exe was not created ... ? Why? See Mingw Build for 32 bit
