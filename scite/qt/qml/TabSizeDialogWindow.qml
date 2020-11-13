@@ -11,41 +11,43 @@ import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 
-ParametersDialogForm {
+TabSizeDialogForm {
     id: root
 
     signal canceled()
     signal accepted()
+    signal convert()
 
-    cmdInput {
-        onAccepted: setButton.clicked()
+    tabSizeInput {
+        validator: IntValidator { bottom: 0; top: 99 }
+
+        onAccepted: okButton.clicked()
     }
 
-    parameter1Input {
-        onAccepted: setButton.clicked()
-    }
+    indentSizeInput {
+        validator: IntValidator { bottom: 0; top: 99 }
 
-    parameter2Input {
-        onAccepted: setButton.clicked()
-    }
-
-    parameter3Input {
-        onAccepted: setButton.clicked()
-    }
-
-    parameter4Input {
-        onAccepted: setButton.clicked()
+        onAccepted: okButton.clicked()
     }
 
     cancelButton {
         onClicked: {
+            root.close()
             canceled()
         }
     }
 
-    setButton {
+    okButton {
         onClicked: {
+            root.close()
             accepted()
+        }
+    }
+
+    convertButton {
+        onClicked: {
+            root.close()
+            convert()
         }
     }
 }

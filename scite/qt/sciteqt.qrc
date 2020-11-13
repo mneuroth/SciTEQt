@@ -14,10 +14,13 @@
         <file>qml/GoToDialogWindow.qml</file>
         <file>qml/GoToDialog.qml</file>
         <file>qml/GoToDialogForm.ui.qml</file>
+        <file>qml/TabSizeDialogWindow.qml</file>
         <file>qml/TabSizeDialog.qml</file>
         <file>qml/TabSizeDialogForm.ui.qml</file>
+        <file>qml/AbbreviationDialogWindow.qml</file>
         <file>qml/AbbreviationDialog.qml</file>
         <file>qml/AbbreviationDialogForm.ui.qml</file>
+        <file>qml/ParametersDialogWindow.qml</file>
         <file>qml/ParametersDialog.qml</file>
         <file>qml/ParametersDialogForm.ui.qml</file>
         <file>qml/MobileFileDialog.qml</file>

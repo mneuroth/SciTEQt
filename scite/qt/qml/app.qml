@@ -393,11 +393,19 @@ ApplicationWindow {
     }
 
     function showParametersDialog(modal, parameters) {
-        parametersDialog.modality = modal ? Qt.ApplicationModal : Qt.NonModal
-        parametersDialog.isModal = modal
-        parametersDialog.show()
-        parametersDialog.parameter1Input.focus = !modal
-        parametersDialog.cmdInput.focus = modal
+        var dlg = sciteQt.mobilePlatform ? parametersDialog : parametersDialogWin
+        if(!sciteQt.mobilePlatform) {
+            dlg.modality = modal ? Qt.ApplicationModal : Qt.NonModal
+        }
+        dlg.isModal = modal
+        if(sciteQt.mobilePlatform) {
+            stackView.pop()
+            stackView.push(dlg)
+        } else {
+            dlg.show()
+        }
+        dlg.parameter1Input.focus = !modal
+        dlg.cmdInput.focus = modal
     }
 
     function closeFindReplaceDialog() {
@@ -1333,9 +1341,10 @@ ApplicationWindow {
             ItemDelegate {
                 text: sciteQt.getLocalisedText(qsTr("Parameters"))
                 width: parent.width
-                onClicked: {
+                onClicked: {                    
                     stackView.pop()
-                    stackView.push(parametersDialog)
+                    //stackView.push(parametersDialog)
+                    sciteQt.cmdParameters()
                     drawer.close()
                 }
             }
@@ -2470,7 +2479,6 @@ ApplicationWindow {
     ParametersDialog {
         id: parametersDialog
         objectName: "parametersDialog"
-        modality: Qt.ApplicationModal
         title: sciteQt.getLocalisedText(qsTr("Parameters"))
 
         fcnLocalisation: sciteQt.getLocalisedText
@@ -2482,11 +2490,49 @@ ApplicationWindow {
         target: parametersDialog
 
         onCanceled: {
+            stackView.pop()
             focusToEditor()
             sciteQt.cmdParametersDialogClosed()
         }
         onAccepted: {
+            stackView.pop()
             sciteQt.cmdSetParameters(parametersDialog.cmdInput.text, parametersDialog.parameter1Input.text, parametersDialog.parameter2Input.text, parametersDialog.parameter3Input.text, parametersDialog.parameter4Input.text)
+            sciteQt.cmdParametersDialogClosed()
+            focusToEditor()
+        }
+    }
+
+    ParametersDialogWindow {
+        id: parametersDialogWin
+        objectName: "parametersDialogWin"
+        modality: Qt.ApplicationModal
+        title: sciteQt.getLocalisedText(qsTr("Parameters"))
+
+        width: grid.implicitWidth+10+50
+        height: grid.implicitHeight+10
+
+        // Window is not resizable !
+        maximumHeight: height
+        maximumWidth: width
+        minimumHeight: height
+        minimumWidth: width
+
+        fcnLocalisation: sciteQt.getLocalisedText
+
+        visible: false
+    }
+
+    Connections {
+        target: parametersDialogWin
+
+        onCanceled: {
+            parametersDialogWin.close()
+            focusToEditor()
+            sciteQt.cmdParametersDialogClosed()
+        }
+        onAccepted: {
+            parametersDialogWin.close()
+            sciteQt.cmdSetParameters(parametersDialogWin.cmdInput.text, parametersDialogWin.parameter1Input.text, parametersDialogWin.parameter2Input.text, parametersDialogWin.parameter3Input.text, parametersDialogWin.parameter4Input.text)
             sciteQt.cmdParametersDialogClosed()
             focusToEditor()
         }
