@@ -8,6 +8,7 @@
         <file>qml/FindDialogForm.ui.qml</file>
         <file>qml/FindInFilesDialog.qml</file>
         <file>qml/FindInFilesDialogForm.ui.qml</file>
+        <file>qml/GoToDialogWindow.qml</file>
         <file>qml/GoToDialog.qml</file>
         <file>qml/GoToDialogForm.ui.qml</file>
         <file>qml/TabSizeDialog.qml</file>
@@ -65,5 +66,7 @@
         <file alias="qml/icons/menu-black.svg">icons/menu-black-24dp.svg</file>
         <file alias="qml/icons/more_vert-black.svg">icons/more_vert-black-24dp.svg</file>
         <file alias="qml/icons/more_horiz-black.svg">icons/more_horiz-black-24dp.svg</file>
+        <file alias="qml/icons/arrow_right-black.svg">icons/arrow_right-black-24dp.svg</file>
+        <file alias="qml/icons/arrow_left-black.svg">icons/arrow_left-black-24dp.svg</file>
     </qresource>
 </RCC>

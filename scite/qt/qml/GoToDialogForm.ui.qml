@@ -9,23 +9,8 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.3
 import QtQuick.Layouts 1.0
-//import QtQuick.Dialogs 1.3
-import QtQuick.Window 2.3
 
-Window {
-
-    //width: 550
-    //height: 100
-    width: grid.implicitWidth+10
-    height: grid.implicitHeight+10
-
-    //flags: Qt.MSWindowsFixedSizeDialogHint
-
-    // Window is not resizable !
-    maximumHeight: height
-    maximumWidth: width
-    minimumHeight: height
-    minimumWidth: width
+Page {
 
     property alias cancelButton: cancelButton
     property alias gotoButton: gotoButton
@@ -34,6 +19,7 @@ Window {
     property alias currentLineOutput: currentLineOutput
     property alias currentColumnOutput: currentColumnOutput
     property alias lastLineOutput: lastLineOutput
+    property alias grid: grid
 
     property int lastLineNumber
 
@@ -133,15 +119,13 @@ Window {
             }
 
             Label {
-                id: fillRowLabel
-                Layout.columnSpan: 3
-                //Layout.fillWidth: true
-            }
-
-            Label {
                 id: fillLabel
-                text: qsTr("")
+                text: ""
+                visible: sciteQt.mobilePlatform
+
+                Layout.columnSpan: 5
                 Layout.fillHeight: true
+                Layout.fillWidth: true
             }
         }
     }

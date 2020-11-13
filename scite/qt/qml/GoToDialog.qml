@@ -37,14 +37,12 @@ GoToDialogForm {
 
     cancelButton {
         onClicked: {
-            root.close()
             canceled()
         }
     }
 
     gotoButton {
         onClicked: {
-            root.close()
             accepted()
         }
     }

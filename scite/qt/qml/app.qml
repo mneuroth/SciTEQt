@@ -165,7 +165,6 @@ ApplicationWindow {
     function readCurrentDoc(url) {
         // then read new document
         var urlFileName = buildValidUrl(url)
-        lblFileName.text = urlFileName
         sciteQt.doOpen(url)
     }
 
@@ -330,14 +329,20 @@ ApplicationWindow {
     }
 
     function showGoToDialog(currentLine, currentColumn, maxLine) {
-        gotoDialog.destinationLineInput.text = ""
-        gotoDialog.columnInput.text = ""
-        gotoDialog.currentLineOutput.text = currentLine
-        gotoDialog.currentColumnOutput.text = currentColumn
-        gotoDialog.lastLineOutput.text = maxLine
-        gotoDialog.show()
-        //gotoDialog.open()
-        gotoDialog.destinationLineInput.focus = true
+        var dlg = sciteQt.mobilePlatform ? gotoDialog : gotoDialogWin
+        dlg.destinationLineInput.text = ""
+        dlg.columnInput.text = ""
+        dlg.currentLineOutput.text = currentLine
+        dlg.currentColumnOutput.text = currentColumn
+        dlg.lastLineOutput.text = maxLine
+        if(sciteQt.mobilePlatform) {
+            stackView.pop()
+            stackView.push(dlg)
+        } else {
+            dlg.show()
+        }
+        //gotoDialogWin.open()
+        dlg.destinationLineInput.focus = true
     }
 
     function showTabSizeDialog(tabSize, indentSize, useTabs) {
@@ -810,17 +815,19 @@ ApplicationWindow {
         ToolButton {
             id: toolButton
             //text: "\u2261"  //stackView.depth > 1 ? "\u25C0" : "\u2261"  // original: "\u2630" for second entry, does not work on Android
-            icon.source:  "icons/menu-black.svg" //stackView.depth > 1 ? "back" : "menu_bars"
+            icon.source:  stackView.depth > 1 ? "icons/arrow_left-black.svg" : "icons/menu-black.svg"
             icon.width: mobileMenuBar.contentHeight-12
             icon.height: mobileMenuBar.contentHeight-12
             //font.pixelSize: Qt.application.font.pixelSize * 1.6
             anchors.left: parent.left
             anchors.leftMargin: 5
-            /*
             onClicked: {
-                // TODO: implement actin for left mobile menu button !
+                if (stackView.depth > 1) {
+                    stackView.pop()
+                } else {
+                    drawer.open()
+                }
             }
-            */
         }
 
         Label {
@@ -1235,21 +1242,71 @@ ApplicationWindow {
         }
     }
 
-    // label to show the current loaded file (not used for sciteqt yet)
-    Text {
-        id: lblFileName
-        visible: false
-        height: visible ? implicitHeight : 0
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        //anchors.verticalCenter: btnShowText.verticalCenter
-        anchors.leftMargin: 5
-        anchors.rightMargin: 5
-        anchors.topMargin: visible ? 5 : 0
-        anchors.bottomMargin: visible ? 5 : 0
-        text: "?"
+    Drawer {
+        id: drawer
+        width: applicationWindow.width * 0.66
+        height: applicationWindow.height
+
+        Column {
+            anchors.fill: parent
+
+            ItemDelegate {
+// gulp
+                text: qsTr("Goto")
+                width: parent.width
+                onClicked: {
+                    sciteQt.GoLineDialog()
+                    //stackView.pop()
+                    //stackView.push(gotoDialog)
+                    drawer.close()
+                }
+            }
+            ItemDelegate {
+                text: qsTr("Output")
+                width: parent.width
+                onClicked: {
+                    stackView.pop()
+                    stackView.push(outputPage)
+                    drawer.close()
+                }
+            }
+            ItemDelegate {
+                text: qsTr("Help")
+                width: parent.width
+                onClicked: {
+                    stackView.pop()
+                    stackView.push(helpPage)
+                    drawer.close()
+                }
+            }
+        }
     }
+
+    StackView {
+        id: stackView
+        initialItem: centralWidget //splitView
+        anchors.fill: parent
+        //width: parent.width
+        //height: parent.height
+        /*
+        anchors.top: tabBar.bottom
+        anchors.right: parent.right
+        anchors.bottom: findInput.top
+        anchors.left: parent.left
+        anchors.rightMargin: 5
+        anchors.leftMargin: 5
+        anchors.topMargin: 5
+        */
+    }
+
+    property bool isIncrementalSearch: false
+    property bool isCloseOnFind: true
+    property int stripAreaMargin: findInput.visible ? 5 : 0
+
+    Item {
+        id: centralWidget
+        anchors.fill: parent
+        visible: true
 
     TabBar {
         id: tabBar
@@ -1258,7 +1315,7 @@ ApplicationWindow {
         height: sciteQt.showTabBar ? implicitHeight : 0
         //focusPolicy: Qt.NoFocus
 
-        anchors.top: lblFileName.bottom
+        anchors.top: parent.top
         anchors.right: parent.right
         anchors.left: parent.left
         anchors.rightMargin: 5
@@ -1331,6 +1388,7 @@ ApplicationWindow {
     Controls1.SplitView {
         id: splitView        
         objectName: "SplitView"
+        visible: true
 
         resizing: true
 
@@ -1340,6 +1398,7 @@ ApplicationWindow {
         property bool verticalSplit: true
 
         //anchors.fill: parent
+
         anchors.top: tabBar.bottom
         anchors.right: parent.right
         anchors.bottom: findInput.top
@@ -1410,6 +1469,7 @@ ApplicationWindow {
         ScintillaText {
             id: quickScintillaEditor
             objectName: "ScintillaEditor"
+            visible: true
 
             fcnLocalisation: sciteQt.getLocalisedText
 
@@ -1448,10 +1508,6 @@ ApplicationWindow {
 
     // Strip Find Dialog above status bar:
     //====================================
-
-    property bool isIncrementalSearch: false
-    property bool isCloseOnFind: true
-    property int stripAreaMargin: findInput.visible ? 5 : 0
 
     Label {
         id: findLabel
@@ -1877,6 +1933,8 @@ ApplicationWindow {
         anchors.bottomMargin: stripAreaMargin
     }
 
+    }   // Item
+
 /*
     Settings {
         id: settings
@@ -2134,10 +2192,11 @@ ApplicationWindow {
         }
     }
 
+    // for mobile ui (as page)
     GoToDialog {
         id: gotoDialog
         objectName: "gotoDialog"
-        modality: Qt.ApplicationModal
+        //modality: Qt.ApplicationModal
         title: sciteQt.getLocalisedText(qsTr("Go To"))
 
         fcnLocalisation: sciteQt.getLocalisedText
@@ -2149,10 +2208,46 @@ ApplicationWindow {
         target: gotoDialog
 
         onCanceled: {
+            stackView.pop()
             focusToEditor()
         }
         onAccepted: {
+            stackView.pop()
             sciteQt.cmdGotoLine(parseInt(gotoDialog.destinationLineInput.text), parseInt(gotoDialog.columnInput.text))
+            focusToEditor()
+        }
+    }
+
+    // for desktop ui
+    GoToDialogWindow {
+        id: gotoDialogWin
+        objectName: "gotoDialogWin"
+        modality: Qt.ApplicationModal
+        title: sciteQt.getLocalisedText(qsTr("Go To"))
+
+        width: grid.implicitWidth+10
+        height: grid.implicitHeight+10
+
+        maximumHeight: height
+        maximumWidth: width
+        minimumHeight: height
+        minimumWidth: width
+
+        fcnLocalisation: sciteQt.getLocalisedText
+
+        visible: false
+    }
+
+    Connections {
+        target: gotoDialogWin
+
+        onCanceled: {
+            gotoDialogWin.close()
+            focusToEditor()
+        }
+        onAccepted: {
+            gotoDialogWin.close()
+            sciteQt.cmdGotoLine(parseInt(gotoDialogWin.destinationLineInput.text), parseInt(gotoDialogWin.columnInput.text))
             focusToEditor()
         }
     }
