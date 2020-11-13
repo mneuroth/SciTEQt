@@ -10,9 +10,8 @@ import QtQuick.Controls 2.1
 import QtQuick.Dialogs 1.2
 import Qt.labs.folderlistmodel 2.1
 import QtQuick.Layouts 1.3
-import QtQuick.Window 2.9
 
-Window {
+Page {
     property alias btnCancel: btnCancel
     property alias btnOpen: btnOpen
     property alias txtMFDInput: txtMFDInput
@@ -27,10 +26,10 @@ Window {
     property string currentDirectory: "."
     property string currentFileName: ""
 
-    width: 450
-    height: 400
+    //width: 450
+    //height: 400
     id: page
-    //anchors.fill: parent
+    anchors.fill: parent
 
     title: localiseText(qsTr("Select file"))
 

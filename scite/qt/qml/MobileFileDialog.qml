@@ -115,13 +115,11 @@ MobileFileDialogForm {
 
     function openCurrentFileNow() {
         var fullPath = currentDirectory + "/" + currentFileName
-        root.close()
         openSelectedFile(fullPath)
         accepted()
     }
 
     function saveAsCurrentFileNow(fullPath) {
-        root.close()
         saveSelectedFile(fullPath)
         accepted()
     }
@@ -228,7 +226,6 @@ MobileFileDialogForm {
 
     btnCancel {
         onClicked: {
-            root.close()
             rejected()
         }
     }
@@ -286,7 +283,7 @@ MobileFileDialogForm {
                 storageAccess.openFile()
             }
 
-            root.close()
+            //root.close()
         }
     }
 }

@@ -171,12 +171,16 @@ ApplicationWindow {
     function openViaMobileFileDialog(directory) {
         mobileFileDialog.setDirectory(directory)
         mobileFileDialog.setOpenModus()
-        mobileFileDialog.show()
+        //mobileFileDialog.show()
+        stackView.pop()
+        stackView.push(mobileFileDialog)
     }
     function saveViaMobileFileDialog(directory,sDefaultSaveAsName,bSaveACopyModus) {
         mobileFileDialog.setDirectory(directory/*mobileFileDialog.currentDirectory*/)
         mobileFileDialog.setSaveAsModus(sDefaultSaveAsName,bSaveACopyModus)
-        mobileFileDialog.show()
+        //mobileFileDialog.show()
+        stackView.pop()
+        stackView.push(mobileFileDialog)
     }
 
     function showInfoDialog(infoText,style) {
@@ -1280,7 +1284,7 @@ ApplicationWindow {
 
     Drawer {
         id: drawer
-        width: applicationWindow.width * 0.4 // original: 0.66
+        width: applicationWindow.width * 0.66
         height: applicationWindow.height
 
         Column {
@@ -1332,6 +1336,15 @@ ApplicationWindow {
                 onClicked: {
                     stackView.pop()
                     stackView.push(parametersDialog)
+                    drawer.close()
+                }
+            }
+            ItemDelegate {
+                text: sciteQt.getLocalisedText(qsTr("Run as JavaScript"))
+                width: parent.width
+                onClicked: {
+                    stackView.pop()
+                    sciteQt.cmdRunCurrentAsJavaScriptFile()
                     drawer.close()
                 }
             }
@@ -2081,6 +2094,7 @@ ApplicationWindow {
     MobileFileDialog {
         id: mobileFileDialog
         objectName: "mobileFileDialog"
+        visible: false
 
         fcnLocalisation: sciteQt.getLocalisedText
     }
@@ -2097,8 +2111,14 @@ ApplicationWindow {
             sciteQt.updateCurrentSelectedFileUrl(buildValidUrl(fileName))
         }
 
-        onRejected: focusToEditor()
-        onAccepted: focusToEditor()
+        onRejected: {
+            stackView.pop()
+            focusToEditor()
+        }
+        onAccepted: {
+            stackView.pop()
+            focusToEditor()
+        }
     }
 
     MessageDialog {
