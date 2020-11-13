@@ -2,8 +2,10 @@
     <qresource prefix="/">
         <file>qml/app.qml</file>
         <file>qml/AutoSizingMenu.qml</file>
+        <file>qml/ReplaceDialogWindow.qml</file>
         <file>qml/ReplaceDialog.qml</file>
         <file>qml/ReplaceDialogForm.ui.qml</file>
+        <file>qml/FindDialogWindow.qml</file>
         <file>qml/FindDialog.qml</file>
         <file>qml/FindDialogForm.ui.qml</file>
         <file>qml/FindInFilesDialogWindow.qml</file>

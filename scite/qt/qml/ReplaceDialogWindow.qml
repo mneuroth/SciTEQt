@@ -11,12 +11,14 @@ import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 
-FindDialogForm {
+ReplaceDialogForm {
     id: root
 
     signal canceled()
     signal accepted()
-    signal markAll()
+    signal replace()
+    signal replaceAll()
+    signal replaceInSection()
 
     findWhatInput {
         onAccepted: findNextButton.clicked()
@@ -24,19 +26,24 @@ FindDialogForm {
 
     cancelButton {
         onClicked: {
+            root.close()
             canceled()
         }
     }
 
     findNextButton {
-        onClicked: {
-            accepted()
-        }
+        onClicked: accepted()
     }
 
-    markAllButton {
-        onClicked: {
-            markAll()
-        }
+    replaceButton {
+        onClicked: replace()
+    }
+
+    replaceAllButton {
+        onClicked: replaceAll()
+    }
+
+    replaceInSectionButton {
+        onClicked: replaceInSection()
     }
 }

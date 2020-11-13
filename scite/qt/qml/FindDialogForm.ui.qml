@@ -9,25 +9,9 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.3
 import QtQuick.Layouts 1.0
-//import QtQuick.Dialogs 1.3
-import QtQuick.Window 2.3
 
-Window {
-
-    //width: 500
-    //height: 130
-    width: grid.implicitWidth+10
-    height: grid.implicitHeight+10
-
-    //flags: Qt.MSWindowsFixedSizeDialogHint
-
-    // Window is not resizable !
-    maximumHeight: height
-    minimumHeight: height
-/*
-    maximumWidth: width
-    minimumWidth: width
-*/
+Page {
+    anchors.fill: parent
 
     property alias cancelButton: cancelButton
     property alias findNextButton: findNextButton
@@ -41,6 +25,7 @@ Window {
     property alias regularExpressionCheckBox: regularExpressionCheckBox
     property alias wrapAroundCheckBox: wrapAroundCheckBox
     property alias tramsformBackslashExprCheckBox: tramsformBackslashExprCheckBox
+    property alias grid: grid
 
     property var fcnLocalisation: undefined
 

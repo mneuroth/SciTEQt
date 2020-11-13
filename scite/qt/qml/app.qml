@@ -285,21 +285,27 @@ ApplicationWindow {
     }
 
     function showFind(findHistory, text, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down) {
-        findDialog.findWhatModel.clear()
-        findDialog.findWhatModel.append({"text":text})
+        var dlg = sciteQt.mobilePlatform ? findDialog : findDialogWin
+        dlg.findWhatModel.clear()
+        dlg.findWhatModel.append({"text":text})
         for (var i=0; i<findHistory.length; i++) {
-            findDialog.findWhatModel.append({"text":findHistory[i]})
+            dlg.findWhatModel.append({"text":findHistory[i]})
         }
-        findDialog.findWhatInput.currentIndex = 0
-        findDialog.matchWholeWordCheckBox.checked = wholeWord
-        findDialog.caseSensitiveCheckBox.checked = caseSensitive
-        findDialog.regularExpressionCheckBox.checked = regExpr
-        findDialog.wrapAroundCheckBox.checked = wrap
-        findDialog.searchUpButton.checked = !down
-        findDialog.searchDownButton.checked = down
-        findDialog.show()
-        findDialog.findWhatInput.selectAll()
-        findDialog.findWhatInput.focus = true
+        dlg.findWhatInput.currentIndex = 0
+        dlg.matchWholeWordCheckBox.checked = wholeWord
+        dlg.caseSensitiveCheckBox.checked = caseSensitive
+        dlg.regularExpressionCheckBox.checked = regExpr
+        dlg.wrapAroundCheckBox.checked = wrap
+        dlg.searchUpButton.checked = !down
+        dlg.searchDownButton.checked = down
+        if(sciteQt.mobilePlatform) {
+            stackView.pop()
+            stackView.push(dlg)
+        } else {
+            dlg.show()
+        }
+        dlg.findWhatInput.selectAll()
+        dlg.findWhatInput.focus = true
     }
 
     function doExecuteFind(findDialog, markAll, useDown) {
@@ -313,7 +319,11 @@ ApplicationWindow {
         var shouldClose = sciteQt.cmdExecuteFind(findWhatInput, wholeWord, caseSensitive, regularExpression, wrap, transformBackslash, down, markAll)
         if(shouldClose)
         {
-            findDialog.close()
+            if(sciteQt.mobilePlatform) {
+                stackView.pop()
+            } else {
+                findDialog.close()
+            }
             focusToEditor()
         }
     }
@@ -329,7 +339,11 @@ ApplicationWindow {
         var shouldClose = sciteQt.cmdExecuteReplace(findWhatInput, replace, wholeWord, caseSensitive, regularExpression, wrap, transformBackslash, replaceAll, replaceInSection)
         if(shouldClose)
         {
-            replaceDialog.close()
+            if(sciteQt.mobilePlatform) {
+                stackView.pop()
+            } else {
+                replaceDialog.close()
+            }
             focusToEditor()
         }
     }
@@ -1281,7 +1295,7 @@ ApplicationWindow {
                 width: parent.width
                 onClicked: {
                     stackView.pop()
-                    stackView.push(outputPage)
+                    stackView.push(findDialog)
                     drawer.close()
                 }
             }
@@ -1290,7 +1304,7 @@ ApplicationWindow {
                 width: parent.width
                 onClicked: {
                     stackView.pop()
-                    stackView.push(helpPage)
+                    stackView.push(replaceDialog)
                     drawer.close()
                 }
             }
@@ -2141,7 +2155,6 @@ ApplicationWindow {
     FindDialog {
         id: findDialog
         objectName: "findDialog"
-        modality: sciteQt.mobilePlatform || sciteQt.isWebassemblyPlatform() ? Qt.ApplicationModal : Qt.NonModal
         title: sciteQt.getLocalisedText(qsTr("Find"))
 
         fcnLocalisation: sciteQt.getLocalisedText
@@ -2152,9 +2165,42 @@ ApplicationWindow {
     Connections {
         target: findDialog
 
+        onCanceled: {
+            stackView.pop()
+            focusToEditor()
+        }
+
         onAccepted: doExecuteFind(findDialog, false, true)
 
         onMarkAll:  doExecuteFind(findDialog, true, true)
+    }
+
+    FindDialogWindow {
+        id: findDialogWin
+        objectName: "findDialogWin"
+        modality: sciteQt.mobilePlatform || sciteQt.isWebassemblyPlatform() ? Qt.ApplicationModal : Qt.NonModal
+        title: sciteQt.getLocalisedText(qsTr("Find"))
+
+        width: grid.implicitWidth+10
+        height: grid.implicitHeight+10
+
+        // Window is not resizable !
+        maximumHeight: height
+        minimumHeight: height
+
+        fcnLocalisation: sciteQt.getLocalisedText
+
+        visible: false
+    }
+
+    Connections {
+        target: findDialogWin
+
+        onCanceled: findDialogWin.close()
+
+        onAccepted: doExecuteFind(findDialogWin, false, true)
+
+        onMarkAll:  doExecuteFind(findDialogWin, true, true)
     }
 
     ReplaceDialog {
