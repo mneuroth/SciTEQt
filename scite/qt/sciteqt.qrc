@@ -6,6 +6,7 @@
         <file>qml/ReplaceDialogForm.ui.qml</file>
         <file>qml/FindDialog.qml</file>
         <file>qml/FindDialogForm.ui.qml</file>
+        <file>qml/FindInFilesDialogWindow.qml</file>
         <file>qml/FindInFilesDialog.qml</file>
         <file>qml/FindInFilesDialogForm.ui.qml</file>
         <file>qml/GoToDialogWindow.qml</file>

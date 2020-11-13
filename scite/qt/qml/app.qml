@@ -203,28 +203,34 @@ ApplicationWindow {
     }
 
     function showFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory, wholeWord, caseSensitive, regularExpression) {
-        findInFilesDialog.findWhatModel.clear()
-        findInFilesDialog.findWhatModel.append({"text":text})
+        var dlg = sciteQt.mobilePlatform ? findInFilesDialog : findInFilesDialogWin
+        dlg.findWhatModel.clear()
+        dlg.findWhatModel.append({"text":text})
         for (var i=0; i<findHistory.length; i++) {
-            findInFilesDialog.findWhatModel.append({"text":findHistory[i]})
+            dlg.findWhatModel.append({"text":findHistory[i]})
         }
-        findInFilesDialog.filesExtensionsModel.clear()
+        dlg.filesExtensionsModel.clear()
         for (var i=0; i<filePatternHistory.length; i++) {
-            findInFilesDialog.filesExtensionsModel.append({"text":filePatternHistory[i]})
+            dlg.filesExtensionsModel.append({"text":filePatternHistory[i]})
         }
-        findInFilesDialog.directoryModel.clear()
+        dlg.directoryModel.clear()
         for (var i=0; i<directoryHistory.length; i++) {
-            findInFilesDialog.directoryModel.append({"text":directoryHistory[i]})
+            dlg.directoryModel.append({"text":directoryHistory[i]})
         }
-        findInFilesDialog.findWhatInput.currentIndex = 0
-        findInFilesDialog.filesExtensionsInput.currentIndex = 0
-        findInFilesDialog.directoryInput.currentIndex = 0
-        findInFilesDialog.wholeWordCheckBox.checked = wholeWord
-        findInFilesDialog.caseSensitiveCheckBox.checked = caseSensitive
-        findInFilesDialog.regularExpressionCheckBox.checked = regularExpression
-        findInFilesDialog.show() //.open()
-        findInFilesDialog.findWhatInput.selectAll()
-        findInFilesDialog.findWhatInput.focus = true
+        dlg.findWhatInput.currentIndex = 0
+        dlg.filesExtensionsInput.currentIndex = 0
+        dlg.directoryInput.currentIndex = 0
+        dlg.wholeWordCheckBox.checked = wholeWord
+        dlg.caseSensitiveCheckBox.checked = caseSensitive
+        dlg.regularExpressionCheckBox.checked = regularExpression
+        if(sciteQt.mobilePlatform) {
+            stackView.pop()
+            stackView.push(dlg)
+        } else {
+            dlg.show() //.open()
+        }
+        dlg.findWhatInput.selectAll()
+        dlg.findWhatInput.focus = true
     }
 
     function showFindStrip(findHistory, replaceHistory, text, incremental, withReplace, closeOnFind) {
@@ -441,6 +447,16 @@ ApplicationWindow {
     function insertTab(index, title, _fullPath) {
         var item = tabButton.createObject(tabBar, {text: title, fullPath: _fullPath, fcnClicked: function () { sciteQt.cmdSelectBuffer(index); focusToEditor() }})
         tabBar.insertItem(index, item)
+    }
+
+    function getCurrentFindText() {
+        var curFindInput = findInput.editText.length > 0 ? findInput.editText : findInput.currentText
+        return curFindInput
+    }
+
+    function getCurrentReplaceText() {
+        var curReplaceInput = replaceInput.editText.length > 0 ? replaceInput.editText : replaceInput.currentText
+        return curReplaceInput
     }
 
     // *** for webassembly platform ... ***
@@ -1244,15 +1260,14 @@ ApplicationWindow {
 
     Drawer {
         id: drawer
-        width: applicationWindow.width * 0.66
+        width: applicationWindow.width * 0.4 // original: 0.66
         height: applicationWindow.height
 
         Column {
             anchors.fill: parent
 
             ItemDelegate {
-// gulp
-                text: qsTr("Goto")
+                text: sciteQt.getLocalisedText(qsTr("Go to"))
                 width: parent.width
                 onClicked: {
                     sciteQt.GoLineDialog()
@@ -1262,7 +1277,7 @@ ApplicationWindow {
                 }
             }
             ItemDelegate {
-                text: qsTr("Output")
+                text: sciteQt.getLocalisedText(qsTr("Find"))
                 width: parent.width
                 onClicked: {
                     stackView.pop()
@@ -1271,7 +1286,25 @@ ApplicationWindow {
                 }
             }
             ItemDelegate {
-                text: qsTr("Help")
+                text: sciteQt.getLocalisedText(qsTr("Replace"))
+                width: parent.width
+                onClicked: {
+                    stackView.pop()
+                    stackView.push(helpPage)
+                    drawer.close()
+                }
+            }
+            ItemDelegate {
+                text: sciteQt.getLocalisedText(qsTr("Find in Files"))
+                width: parent.width
+                onClicked: {
+                    stackView.pop()
+                    stackView.push(findInFilesDialog)
+                    drawer.close()
+                }
+            }
+            ItemDelegate {
+                text: sciteQt.getLocalisedText(qsTr("Parameters"))
                 width: parent.width
                 onClicked: {
                     stackView.pop()
@@ -1284,7 +1317,7 @@ ApplicationWindow {
 
     StackView {
         id: stackView
-        initialItem: centralWidget //splitView
+        initialItem: centralWidget
         anchors.fill: parent
         //width: parent.width
         //height: parent.height
@@ -1564,11 +1597,6 @@ ApplicationWindow {
     ListModel {
         id: stripFindWhatModel
         objectName: "stripFindWhatModel"
-    }
-
-    function getCurrentFindText() {
-        var curFindInput = findInput.editText.length > 0 ? findInput.editText : findInput.currentText
-        return curFindInput
     }
 
     Button {
@@ -1873,11 +1901,6 @@ ApplicationWindow {
         objectName: "stripReplaceWithModel"
     }
 
-    function getCurrentReplaceText() {
-        var curReplaceInput = replaceInput.editText.length > 0 ? replaceInput.editText : replaceInput.currentText
-        return curReplaceInput
-    }
-
     Button {
         id: replaceButton
 
@@ -2166,7 +2189,6 @@ ApplicationWindow {
     FindInFilesDialog {
         id: findInFilesDialog
         objectName: "findInFilesDialog"
-        modality: sciteQt.mobilePlatform || sciteQt.isWebassemblyPlatform() ? Qt.ApplicationModal : Qt.NonModal
         title: sciteQt.getLocalisedText(qsTr("Find in Files"))
 
         fcnLocalisation: sciteQt.getLocalisedText
@@ -2178,9 +2200,11 @@ ApplicationWindow {
         target: findInFilesDialog
 
         onCanceled: {
+            stackView.pop()
             focusToEditor()
         }
         onAccepted: {
+            stackView.pop()
             var findWhatInput = findInFilesDialog.findWhatInput.editText.length > 0 ? findInFilesDialog.findWhatInput.editText : findInFilesDialog.findWhatInput.currentText
             var filesExtensionsInput = findInFilesDialog.filesExtensionsInput.editText.length > 0 ? findInFilesDialog.filesExtensionsInput.editText : findInFilesDialog.filesExtensionsInput.currentText
             var directoryInput = findInFilesDialog.directoryInput.editText.length > 0 ? findInFilesDialog.directoryInput.editText : findInFilesDialog.directoryInput.currentText
@@ -2192,11 +2216,48 @@ ApplicationWindow {
         }
     }
 
+    FindInFilesDialogWindow {
+        id: findInFilesDialogWin
+        objectName: "findInFilesDialogWin"
+        modality: sciteQt.mobilePlatform || sciteQt.isWebassemblyPlatform() ? Qt.ApplicationModal : Qt.NonModal
+        title: sciteQt.getLocalisedText(qsTr("Find in Files"))
+
+        width: grid.implicitWidth+10
+        height: grid.implicitHeight+10
+
+        // Window is not resizable !
+        maximumHeight: height
+        minimumHeight: height
+
+        fcnLocalisation: sciteQt.getLocalisedText
+
+        visible: false
+    }
+
+    Connections {
+        target: findInFilesDialogWin
+
+        onCanceled: {
+            findInFilesDialogWin.close()
+            focusToEditor()
+        }
+        onAccepted: {
+            findInFilesDialogWin.close()
+            var findWhatInput = findInFilesDialogWin.findWhatInput.editText.length > 0 ? findInFilesDialogWin.findWhatInput.editText : findInFilesDialogWin.findWhatInput.currentText
+            var filesExtensionsInput = findInFilesDialogWin.filesExtensionsInput.editText.length > 0 ? findInFilesDialogWin.filesExtensionsInput.editText : findInFilesDialogWin.filesExtensionsInput.currentText
+            var directoryInput = findInFilesDialogWin.directoryInput.editText.length > 0 ? findInFilesDialogWin.directoryInput.editText : findInFilesDialogWin.directoryInput.currentText
+            var wholeWord = findInFilesDialogWin.wholeWordCheckBox.checked
+            var caseSensitive = findInFilesDialogWin.caseSensitiveCheckBox.checked
+            var regularExpression = findInFilesDialogWin.regularExpressionCheckBox.checked
+            sciteQt.cmdStartFindInFilesAsync(directoryInput, filesExtensionsInput, findWhatInput, wholeWord, caseSensitive, regularExpression)
+            focusToEditor()
+        }
+    }
+
     // for mobile ui (as page)
     GoToDialog {
         id: gotoDialog
         objectName: "gotoDialog"
-        //modality: Qt.ApplicationModal
         title: sciteQt.getLocalisedText(qsTr("Go To"))
 
         fcnLocalisation: sciteQt.getLocalisedText

@@ -12,22 +12,10 @@ import QtQuick.Layouts 1.0
 //import QtQuick.Dialogs 1.3
 import QtQuick.Window 2.3
 
-Window {
+Page {
 
-    //width: 500
-    //height: 130
-    width: grid.implicitWidth+10
-    height: grid.implicitHeight+10
+    anchors.fill: parent
 
-    //flags: Qt.MSWindowsFixedSizeDialogHint
-
-    // Window is not resizable !
-    maximumHeight: height
-    minimumHeight: height
-/*
-    maximumWidth: width
-    minimumWidth: width
-*/
     property alias cancelButton: cancelButton
     property alias findButton: findButton
     property alias browseButton: browseButton
@@ -41,6 +29,7 @@ Window {
     property alias wholeWordCheckBox: wholeWordCheckBox
     property alias caseSensitiveCheckBox: caseSensitiveCheckBox
     property alias regularExpressionCheckBox: regularExpressionCheckBox
+    property alias grid: grid
 
     property var fcnLocalisation: undefined
 

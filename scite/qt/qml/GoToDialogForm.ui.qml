@@ -12,6 +12,8 @@ import QtQuick.Layouts 1.0
 
 Page {
 
+    anchors.fill: parent
+
     property alias cancelButton: cancelButton
     property alias gotoButton: gotoButton
     property alias destinationLineInput: destinationLineInput

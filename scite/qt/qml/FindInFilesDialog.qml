@@ -11,7 +11,7 @@ import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 
-import Qt.labs.platform 1.0 as Platform
+import Qt.labs.platform 1.1 as Platform
 
 FindInFilesDialogForm {
     id: root
@@ -33,21 +33,19 @@ FindInFilesDialogForm {
 
     cancelButton {
         onClicked: {
-            root.close()
             canceled()
         }
     }
 
     findButton {
         onClicked: {
-            root.close()
             accepted()
         }
     }
 
     browseButton {
         onClicked: {
-            var currentDirectory = findInFilesDialog.directoryInput.editText.length > 0 ? findInFilesDialog.directoryInput.editText : findInFilesDialog.directoryInput.currentText
+            var currentDirectory = root.directoryInput.editText.length > 0 ? root.directoryInput.editText : root.directoryInput.currentText
             if(sciteQt.mobilePlatform) {
                 mobileFileDialog.show()
             }
@@ -60,12 +58,11 @@ FindInFilesDialogForm {
 
     upButton {
         onClicked: {
-            var currentDirectory = findInFilesDialog.directoryInput.editText.length > 0 ? findInFilesDialog.directoryInput.editText : findInFilesDialog.directoryInput.currentText
+            var currentDirectory = root.directoryInput.editText.length > 0 ? root.directoryInput.editText : root.directoryInput.currentText
             var newDirectory = sciteQt.cmdDirectoryUp(currentDirectory)
             // process directory up: add new text to combobox (temporary) and select added item afterwards
-            findInFilesDialog.directoryModel.append({"text":newDirectory})
-            directoryInput.currentIndex = findInFilesDialog.directoryModel.count - 1
-            //directoryInput.editText = newDirectory
+            directoryModel.append({"text":newDirectory})
+            directoryInput.currentIndex = directoryModel.count - 1
         }
     }
 
@@ -82,9 +79,8 @@ FindInFilesDialogForm {
 
         onAccepted: {
             var newDirectory = sciteQt.cmdUrlToLocalPath(folderDialog.folder)
-            //directoryInput.editText = newDirectory
-            findInFilesDialog.directoryModel.append({"text":newDirectory})
-            directoryInput.currentIndex = findInFilesDialog.directoryModel.count - 1
+            directoryModel.append({"text":newDirectory})
+            directoryInput.currentIndex = directoryModel.count - 1
         }
     }
 }
