@@ -26,7 +26,6 @@ ReplaceDialogForm {
 
     cancelButton {
         onClicked: {
-            root.close()
             canceled()
         }
     }

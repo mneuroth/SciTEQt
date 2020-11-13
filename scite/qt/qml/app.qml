@@ -263,25 +263,31 @@ ApplicationWindow {
     }
 
     function showReplace(findHistory, replaceHistory, text, replace, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down) {
-        replaceDialog.findWhatModel.clear()
-        replaceDialog.findWhatModel.append({"text":text})
+        var dlg = sciteQt.mobilePlatform ? replaceDialog : replaceDialogWin
+        dlg.findWhatModel.clear()
+        dlg.findWhatModel.append({"text":text})
         for (var i=0; i<findHistory.length; i++) {
-            replaceDialog.findWhatModel.append({"text":findHistory[i]})
+            dlg.findWhatModel.append({"text":findHistory[i]})
         }
-        replaceDialog.replaceWithModel.clear()
-        replaceDialog.replaceWithModel.append({"text":replace})
+        dlg.replaceWithModel.clear()
+        dlg.replaceWithModel.append({"text":replace})
         for (var i=0; i<replaceHistory.length; i++) {
-            replaceDialog.replaceWithModel.append({"text":replaceHistory[i]})
+            dlg.replaceWithModel.append({"text":replaceHistory[i]})
         }
-        replaceDialog.findWhatInput.currentIndex = 0
-        replaceDialog.replaceWithInput.currentIndex = 0
-        replaceDialog.matchWholeWordCheckBox.checked = wholeWord
-        replaceDialog.caseSensitiveCheckBox.checked = caseSensitive
-        replaceDialog.regularExpressionCheckBox.checked = regExpr
-        replaceDialog.wrapAroundCheckBox.checked = wrap
-        replaceDialog.show()
-        replaceDialog.findWhatInput.selectAll()
-        replaceDialog.findWhatInput.focus = true
+        dlg.findWhatInput.currentIndex = 0
+        dlg.replaceWithInput.currentIndex = 0
+        dlg.matchWholeWordCheckBox.checked = wholeWord
+        dlg.caseSensitiveCheckBox.checked = caseSensitive
+        dlg.regularExpressionCheckBox.checked = regExpr
+        dlg.wrapAroundCheckBox.checked = wrap
+        if(sciteQt.mobilePlatform) {
+            stackView.pop()
+            stackView.push(dlg)
+        } else {
+            dlg.show()
+        }
+        dlg.findWhatInput.selectAll()
+        dlg.findWhatInput.focus = true
     }
 
     function showFind(findHistory, text, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down) {
@@ -1284,9 +1290,9 @@ ApplicationWindow {
                 text: sciteQt.getLocalisedText(qsTr("Go to"))
                 width: parent.width
                 onClicked: {
-                    sciteQt.GoLineDialog()
-                    //stackView.pop()
+                    stackView.pop()
                     //stackView.push(gotoDialog)
+                    sciteQt.cmdGoto()
                     drawer.close()
                 }
             }
@@ -1295,7 +1301,8 @@ ApplicationWindow {
                 width: parent.width
                 onClicked: {
                     stackView.pop()
-                    stackView.push(findDialog)
+                    //stackView.push(findDialog)
+                    sciteQt.cmdFind()
                     drawer.close()
                 }
             }
@@ -1304,7 +1311,8 @@ ApplicationWindow {
                 width: parent.width
                 onClicked: {
                     stackView.pop()
-                    stackView.push(replaceDialog)
+                    //stackView.push(replaceDialog)
+                    sciteQt.cmdReplace()
                     drawer.close()
                 }
             }
@@ -1313,7 +1321,8 @@ ApplicationWindow {
                 width: parent.width
                 onClicked: {
                     stackView.pop()
-                    stackView.push(findInFilesDialog)
+                    //stackView.push(findInFilesDialog)
+                    sciteQt.cmdFindInFiles()
                     drawer.close()
                 }
             }
@@ -1322,7 +1331,7 @@ ApplicationWindow {
                 width: parent.width
                 onClicked: {
                     stackView.pop()
-                    stackView.push(helpPage)
+                    stackView.push(parametersDialog)
                     drawer.close()
                 }
             }
@@ -2206,7 +2215,6 @@ ApplicationWindow {
     ReplaceDialog {
         id: replaceDialog
         objectName: "replaceDialog"
-        modality: sciteQt.mobilePlatform || sciteQt.isWebassemblyPlatform() ? Qt.ApplicationModal : Qt.NonModal
         title: sciteQt.getLocalisedText(qsTr("Replace"))
 
         fcnLocalisation: sciteQt.getLocalisedText
@@ -2217,11 +2225,41 @@ ApplicationWindow {
     Connections {
         target: replaceDialog
 
+        onCanceled:         stackView.pop()
         onAccepted:         doExecuteFind(replaceDialog, false, false)
 
         onReplace:          doExecuteReplace(replaceDialog,false,false)
         onReplaceAll:       doExecuteReplace(replaceDialog,true,false)
         onReplaceInSection: doExecuteReplace(replaceDialog,false,true)
+    }
+
+    ReplaceDialogWindow {
+        id: replaceDialogWin
+        objectName: "replaceDialogWin"
+        modality: sciteQt.mobilePlatform || sciteQt.isWebassemblyPlatform() ? Qt.ApplicationModal : Qt.NonModal
+        title: sciteQt.getLocalisedText(qsTr("Replace"))
+
+        width: grid.implicitWidth+10
+        height: grid.implicitHeight+10
+
+        // Window is not resizable !
+        maximumHeight: height
+        minimumHeight: height
+
+        fcnLocalisation: sciteQt.getLocalisedText
+
+        visible: false
+    }
+
+    Connections {
+        target: replaceDialogWin
+
+        onCanceled:         replaceDialogWin.close()
+        onAccepted:         doExecuteFind(replaceDialogWin, false, false)
+
+        onReplace:          doExecuteReplace(replaceDialogWin,false,false)
+        onReplaceAll:       doExecuteReplace(replaceDialogWin,true,false)
+        onReplaceInSection: doExecuteReplace(replaceDialogWin,false,true)
     }
 
     Connections {
