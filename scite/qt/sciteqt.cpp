@@ -2609,7 +2609,7 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     if(m_pApplicationData!=0)
     {
         connect(m_pApplicationData,SIGNAL(sendErrorText(QString)),this,SLOT(OnAddToOutput(QString)));
-        connect(m_pApplicationData,SIGNAL(fileLoaded(QString,QString,QString,bool)),this,SLOT(OnAddFileContent(QString,QString,QString,bool)));
+        connect(m_pApplicationData,SIGNAL(fileLoaded(QString,QString,QString,bool,bool)),this,SLOT(OnAddFileContent(QString,QString,QString,bool,bool)));
 
 // TODO working: (maybe) improve the code of this method !!!
         extender = pApplicationData->GetExtension();

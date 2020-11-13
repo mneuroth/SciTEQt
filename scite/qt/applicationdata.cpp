@@ -600,7 +600,7 @@ bool ApplicationData::loadAndShowFileContent(const QString & sFileName)
         }
         else
         {
-            emit fileLoaded(sFileName, sFileName, sScript, false);
+            emit fileLoaded(sFileName, sFileName, sScript, false, false);
         }
     }
     else
@@ -668,7 +668,7 @@ void ApplicationData::sltFileReceivedAndSaved(const QString & sUrl)
 void ApplicationData::sltTextReceived(const QString &sContent)
 {
     QString sTempFileName = "./shared_text.txt";
-    emit fileLoaded(sTempFileName, sTempFileName, sContent, false);
+    emit fileLoaded(sTempFileName, sTempFileName, sContent, false, false);
 }
 
 void ApplicationData::sltShareError(int requestCode, const QString & message)

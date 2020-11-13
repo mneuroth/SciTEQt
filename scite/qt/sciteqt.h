@@ -191,7 +191,7 @@ public:
     virtual void FindInFiles() override;
     virtual void Replace() override;
     virtual void DestroyFindReplace() override;
-    virtual void GoLineDialog() override;
+    Q_INVOKABLE virtual void GoLineDialog() override;
     virtual bool AbbrevDialog() override;
     virtual void TabSizeDialog() override;
     virtual bool ParametersOpen() override;

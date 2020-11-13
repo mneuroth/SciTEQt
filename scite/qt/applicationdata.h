@@ -119,7 +119,7 @@ signals:
     void isAppStoreSupportedChanged();
     void isShareSupportedChanged();
     void sendErrorText(const QString & msg);
-    void fileLoaded(const QString & sFileUri, const QString & sDecodedFileUri, const QString & sContent, bool bNewCreated);
+    void fileLoaded(const QString & sFileUri, const QString & sDecodedFileUri, const QString & sContent, bool bNewCreated, bool bSaveACopyModus);
 
 private:
 #if defined(Q_OS_ANDROID)
