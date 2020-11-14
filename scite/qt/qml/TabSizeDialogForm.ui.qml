@@ -70,6 +70,7 @@ Page {
 
             Button {
                 id: okButton
+                Layout.fillWidth: true
                 highlighted: true
                 text: localiseText(qsTr("OK"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
@@ -91,6 +92,7 @@ Page {
 
             Button {
                 id: cancelButton
+                Layout.fillWidth: true
                 text: localiseText(qsTr("Cancel"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
@@ -107,6 +109,7 @@ Page {
 
             Button {
                 id: convertButton
+                Layout.fillWidth: true
                 text: localiseText(qsTr("&Convert"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()

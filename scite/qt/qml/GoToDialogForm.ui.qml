@@ -86,6 +86,7 @@ Page {
 
             Button {
                 id: gotoButton
+                Layout.fillWidth: true
                 highlighted: true
                 text: localiseText(qsTr("&Go To"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
@@ -112,6 +113,7 @@ Page {
 
             Button {
                 id: cancelButton
+                Layout.fillWidth: true
                 text: localiseText(qsTr("Cancel"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()

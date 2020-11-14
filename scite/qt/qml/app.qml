@@ -334,7 +334,7 @@ ApplicationWindow {
         var shouldClose = sciteQt.cmdExecuteFind(findWhatInput, wholeWord, caseSensitive, regularExpression, wrap, transformBackslash, down, markAll)
         if(shouldClose)
         {
-            if(sciteQt.mobilePlatform) {
+            if(sciteQt.useMobileDialogHandling) {
                 stackView.pop()
             } else {
                 findDialog.close()
@@ -354,7 +354,7 @@ ApplicationWindow {
         var shouldClose = sciteQt.cmdExecuteReplace(findWhatInput, replace, wholeWord, caseSensitive, regularExpression, wrap, transformBackslash, replaceAll, replaceInSection)
         if(shouldClose)
         {
-            if(sciteQt.mobilePlatform) {
+            if(sciteQt.useMobileDialogHandling) {
                 stackView.pop()
             } else {
                 replaceDialog.close()
