@@ -37,8 +37,8 @@ Missing features are:
   * Implement Printing (partly)
   * Context menu for Scintilla Control can not be overwritten/updated by SciTE  
   * Android: improve selection of text --> improve/use QInputContext
-  * Android: implement action for left menu button (three bars button) --> dialogs ?
-  * Android: improve dialog resize when keyboard is visible...
+  //* Android: implement action for left menu button (three bars button) --> dialogs ?
+  (* Android: improve dialog resize when keyboard is visible...
   * Android: improve deployment --> more languages?
   * Webassembly: processing of modal dialogs (FileDialog, MessageBox)
   * Webassembly: click on Buttons (i. e. Cancel) in Dialogs creates crash ! BUT: setting focus via Keyboard and return on button works sometimes !!!???
@@ -59,7 +59,7 @@ Known and open Bugs are:
   * View of fonts may be corrupted after attatching/detaching monitors to the computer... ==> restart application again
   * Crash Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? MacOS ==> but gcc/mingw are working !
   * first Menu Item in Menu is empty on Qt 5.11.3 --> ok after switch between mobile and desktop ui !
-  * strange scroll behaviour on Qt 5.11.3 --> mouse click needed to update mouse wheel scroll in scintilla window (see about scite)
+  //* strange scroll behaviour on Qt 5.11.3 --> mouse click needed to update mouse wheel scroll in scintilla window (see about scite)
   * Improve handling of last searches in find dialog --> update combobox content directly
   * MacOS: select directory in find in files dialog does not work
   * WASM: Dialog handling does not work correctly! --> change dialogs in mobile ui to stackview ?

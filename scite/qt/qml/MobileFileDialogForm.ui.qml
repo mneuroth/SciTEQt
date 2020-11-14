@@ -12,6 +12,13 @@ import Qt.labs.folderlistmodel 2.1
 import QtQuick.Layouts 1.3
 
 Page {
+    id: root
+
+    focusPolicy: Qt.StrongFocus
+    focus: true
+
+    anchors.fill: parent
+
     property alias btnCancel: btnCancel
     property alias btnOpen: btnOpen
     property alias txtMFDInput: txtMFDInput
@@ -25,11 +32,6 @@ Page {
 
     property string currentDirectory: "."
     property string currentFileName: ""
-
-    //width: 450
-    //height: 400
-    id: page
-    anchors.fill: parent
 
     title: localiseText(qsTr("Select file"))
 

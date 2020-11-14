@@ -11,7 +11,7 @@ import QtQuick.Controls 2.1
 import QtQuick.Window 2.3
 
 Window {
-    id: root
+    id: root      
 
     signal canceled()
     signal accepted()

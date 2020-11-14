@@ -13,6 +13,10 @@ import QtQuick.Layouts 1.0
 import QtQuick.Window 2.3
 
 Page {
+    id: root
+
+    focusPolicy: Qt.StrongFocus
+    focus: true
 
     anchors.fill: parent
 

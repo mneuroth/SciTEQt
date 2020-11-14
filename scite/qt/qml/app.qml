@@ -371,7 +371,6 @@ ApplicationWindow {
         } else {
             dlg.show()
         }
-        //gotoDialogWin.open()
         dlg.destinationLineInput.focus = true
     }
 
@@ -2596,7 +2595,7 @@ ApplicationWindow {
         modality: Qt.ApplicationModal
         title: sciteQt.getLocalisedText(qsTr("Parameters"))
 
-        width: grid.implicitWidth+10+50
+        width: grid.implicitWidth+10/*+50*/
         height: grid.implicitHeight+10
 
         // Window is not resizable !
