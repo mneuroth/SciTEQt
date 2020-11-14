@@ -209,7 +209,7 @@ ApplicationWindow {
     }
 
     function showFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory, wholeWord, caseSensitive, regularExpression) {
-        var dlg = sciteQt.mobilePlatform ? findInFilesDialog : findInFilesDialogWin
+        var dlg = sciteQt.useMobileDialogHandling ? findInFilesDialog : findInFilesDialogWin
         dlg.findWhatModel.clear()
         dlg.findWhatModel.append({"text":text})
         for (var i=0; i<findHistory.length; i++) {
@@ -270,7 +270,7 @@ ApplicationWindow {
     }
 
     function showReplace(findHistory, replaceHistory, text, replace, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down) {
-        var dlg = sciteQt.mobilePlatform ? replaceDialog : replaceDialogWin
+        var dlg = sciteQt.useMobileDialogHandling ? replaceDialog : replaceDialogWin
         dlg.findWhatModel.clear()
         dlg.findWhatModel.append({"text":text})
         for (var i=0; i<findHistory.length; i++) {
@@ -299,7 +299,7 @@ ApplicationWindow {
     }
 
     function showFind(findHistory, text, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down) {
-        var dlg = sciteQt.mobilePlatform ? findDialog : findDialogWin
+        var dlg = sciteQt.useMobileDialogHandling ? findDialog : findDialogWin
         dlg.findWhatModel.clear()
         dlg.findWhatModel.append({"text":text})
         for (var i=0; i<findHistory.length; i++) {
@@ -364,7 +364,7 @@ ApplicationWindow {
     }
 
     function showGoToDialog(currentLine, currentColumn, maxLine) {
-        var dlg = sciteQt.mobilePlatform ? gotoDialog : gotoDialogWin
+        var dlg = sciteQt.useMobileDialogHandling ? gotoDialog : gotoDialogWin
         dlg.destinationLineInput.text = ""
         dlg.columnInput.text = ""
         dlg.currentLineOutput.text = currentLine
@@ -381,7 +381,7 @@ ApplicationWindow {
     }
 
     function showTabSizeDialog(tabSize, indentSize, useTabs) {
-        var dlg = sciteQt.mobilePlatform ? tabSizeDialog : tabSizeDialogWin
+        var dlg = sciteQt.useMobileDialogHandling ? tabSizeDialog : tabSizeDialogWin
         dlg.tabSizeInput.text = tabSize
         dlg.indentSizeInput.text = indentSize
         dlg.useTabsCheckBox.checked = useTabs
@@ -396,7 +396,7 @@ ApplicationWindow {
     }
 
     function showAbbreviationDialog(items) {
-        var dlg = sciteQt.mobilePlatform ? abbreviationDialog : abbreviationDialogWin
+        var dlg = sciteQt.useMobileDialogHandling ? abbreviationDialog : abbreviationDialogWin
         dlg.abbreviationModel.clear()
         for (var i=0; i<items.length; i++) {
             dlg.abbreviationModel.append({"text":items[i]})
@@ -412,7 +412,7 @@ ApplicationWindow {
     }
 
     function showParametersDialog(modal, parameters) {
-        var dlg = sciteQt.mobilePlatform ? parametersDialog : parametersDialogWin
+        var dlg = sciteQt.useMobileDialogHandling ? parametersDialog : parametersDialogWin
         dlg.isModal = modal
         if(sciteQt.useMobileDialogHandling) {
             stackView.pop()

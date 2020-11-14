@@ -80,7 +80,7 @@ Page {
             Label {
                 id: fillLabel
                 text: ""
-                visible: sciteQt.mobilePlatform
+                visible: sciteQt.useMobileDialogHandling
 
                 Layout.columnSpan: 3
                 Layout.fillHeight: true

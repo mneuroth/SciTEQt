@@ -73,6 +73,7 @@ Page {
                 id: findWhatInput
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
+                implicitWidth: 300
                 editable: true
                 model: findWhatModel
 
@@ -89,6 +90,7 @@ Page {
             Button {
                 id: findNextButton
                 Layout.columnSpan: 2
+                Layout.fillWidth: true
                 text: localiseText(qsTr("&Find Next"),false)
                 highlighted: true
                 Keys.onEscapePressed: cancelButton.clicked()
@@ -122,6 +124,7 @@ Page {
             Button {
                 id: replaceButton
                 Layout.columnSpan: 2
+                Layout.fillWidth: true
                 text: localiseText(qsTr("&Replace"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
@@ -140,6 +143,7 @@ Page {
             Button {
                 id: replaceAllButton
                 Layout.columnSpan: 2
+                Layout.fillWidth: true
                 text: localiseText(qsTr("Replace &All"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
@@ -158,6 +162,7 @@ Page {
             Button {
                 id: replaceInSectionButton
                 Layout.columnSpan: 2
+                Layout.fillWidth: true
                 text: localiseText(qsTr("Replace in &Section"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
@@ -176,6 +181,7 @@ Page {
             Button {
                 id: cancelButton
                 Layout.columnSpan: 2
+                Layout.fillWidth: true
                 text: localiseText(qsTr("Close"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
@@ -196,8 +202,10 @@ Page {
                 text: localiseText(qsTr("Replacements:"))
             }
 
-            Label {
+            TextField {
                 id: countReplacementsLabel
+                implicitWidth: 50
+                readOnly: true
                 text: "0"
             }
 
@@ -214,7 +222,7 @@ Page {
             Label {
                 id: fillLabel
                 text: ""
-                visible: sciteQt.mobilePlatform
+                visible: sciteQt.useMobileDialogHandling
 
                 Layout.columnSpan: 5
                 Layout.fillHeight: true

@@ -70,6 +70,7 @@ Page {
                 id: findWhatInput
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
+                implicitWidth: 300
                 editable: true
                 model: findWhatModel
 
@@ -85,6 +86,7 @@ Page {
 
             Button {
                 id: findNextButton
+                Layout.fillWidth: true
                 text: localiseText(qsTr("&Find Next"),false)
                 highlighted: true
                 Keys.onEscapePressed: cancelButton.clicked()
@@ -126,6 +128,7 @@ Page {
 
             Button {
                 id: markAllButton
+                Layout.fillWidth: true
                 text: localiseText(qsTr("&Mark All"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
@@ -143,6 +146,7 @@ Page {
 
             Button {
                 id: cancelButton
+                Layout.fillWidth: true
                 text: localiseText(qsTr("Cancel"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
@@ -191,7 +195,7 @@ Page {
             Label {
                 id: fillLabel
                 text: ""
-                visible: sciteQt.mobilePlatform
+                visible: sciteQt.useMobileDialogHandling
 
                 Layout.columnSpan: 4
                 Layout.fillHeight: true

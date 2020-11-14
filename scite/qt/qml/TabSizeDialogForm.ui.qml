@@ -62,6 +62,7 @@ Page {
 
             TextField {
                 id: tabSizeInput
+                implicitWidth: 40
                 //font.pixelSize: 12
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
@@ -82,6 +83,7 @@ Page {
 
             TextField {
                 id: indentSizeInput
+                implicitWidth: tabSizeInput.implicitWidth
                 //font.pixelSize: 12
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
@@ -113,7 +115,7 @@ Page {
             Label {
                 id: fillLabel
                 text: ""
-                visible: sciteQt.mobilePlatform
+                visible: sciteQt.useMobileDialogHandling
 
                 Layout.columnSpan: 3
                 Layout.fillHeight: true
