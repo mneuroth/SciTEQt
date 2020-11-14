@@ -146,6 +146,7 @@ class SciTEQt : public QObject, public SciTEBase
     Q_PROPERTY(bool showStatusBar READ isShowStatusBar WRITE setShowStatusBar NOTIFY showStatusBarChanged)
     Q_PROPERTY(bool showTabBar READ isShowTabBar WRITE setShowTabBar NOTIFY showTabBarChanged)
     Q_PROPERTY(bool mobilePlatform READ isMobilePlatform WRITE setMobilePlatform NOTIFY mobilePlatformChanged)
+    Q_PROPERTY(bool useMobileDialogHandling READ isUseMobileDialogHandling NOTIFY useMobileDialogHandlingChanged)
 
     Q_PROPERTY(bool wholeWord READ isWholeWord WRITE setWholeWord NOTIFY wholeWordChanged)
     Q_PROPERTY(bool caseSensitive READ isCaseSensitive WRITE setCaseSensitive NOTIFY caseSensitiveChanged)
@@ -431,6 +432,7 @@ public:
     Q_INVOKABLE bool isMacOSPlatform() const;
     bool isMobilePlatform() const;
     void setMobilePlatform(bool val);
+    bool isUseMobileDialogHandling() const;
 
     Q_INVOKABLE void updateCurrentWindowPosAndSize(int left, int top, int width, int height, bool maximize);
     Q_INVOKABLE void updateCurrentSelectedFileUrl(const QString & fileUrl);
@@ -477,6 +479,7 @@ signals:
     void showStatusBarChanged();
     void statusBarTextChanged();
     void mobilePlatformChanged();
+    void useMobileDialogHandlingChanged();
     void setMenuChecked(int menuID, bool val);
     void setMenuEnable(int menuID, bool val);
 

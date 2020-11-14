@@ -174,6 +174,7 @@ ApplicationWindow {
         //mobileFileDialog.show()
         stackView.pop()
         stackView.push(mobileFileDialog)
+        mobileFileDialog.forceActiveFocus()
     }
     function saveViaMobileFileDialog(directory,sDefaultSaveAsName,bSaveACopyModus) {
         mobileFileDialog.setDirectory(directory/*mobileFileDialog.currentDirectory*/)
@@ -181,6 +182,7 @@ ApplicationWindow {
         //mobileFileDialog.show()
         stackView.pop()
         stackView.push(mobileFileDialog)
+        mobileFileDialog.forceActiveFocus()
     }
 
     function showInfoDialog(infoText,style) {
@@ -227,9 +229,10 @@ ApplicationWindow {
         dlg.wholeWordCheckBox.checked = wholeWord
         dlg.caseSensitiveCheckBox.checked = caseSensitive
         dlg.regularExpressionCheckBox.checked = regularExpression
-        if(sciteQt.mobilePlatform) {
+        if(sciteQt.useMobileDialogHandling) {
             stackView.pop()
             stackView.push(dlg)
+            dlg.forceActiveFocus()
         } else {
             dlg.show() //.open()
         }
@@ -284,9 +287,10 @@ ApplicationWindow {
         dlg.caseSensitiveCheckBox.checked = caseSensitive
         dlg.regularExpressionCheckBox.checked = regExpr
         dlg.wrapAroundCheckBox.checked = wrap
-        if(sciteQt.mobilePlatform) {
+        if(sciteQt.useMobileDialogHandling) {
             stackView.pop()
             stackView.push(dlg)
+            dlg.forceActiveFocus()
         } else {
             dlg.show()
         }
@@ -308,9 +312,10 @@ ApplicationWindow {
         dlg.wrapAroundCheckBox.checked = wrap
         dlg.searchUpButton.checked = !down
         dlg.searchDownButton.checked = down
-        if(sciteQt.mobilePlatform) {
+        if(sciteQt.useMobileDialogHandling) {
             stackView.pop()
             stackView.push(dlg)
+            dlg.forceActiveFocus()
         } else {
             dlg.show()
         }
@@ -365,9 +370,10 @@ ApplicationWindow {
         dlg.currentLineOutput.text = currentLine
         dlg.currentColumnOutput.text = currentColumn
         dlg.lastLineOutput.text = maxLine
-        if(sciteQt.mobilePlatform) {
+        if(sciteQt.useMobileDialogHandling) {
             stackView.pop()
             stackView.push(dlg)
+            dlg.forceActiveFocus()
         } else {
             dlg.show()
         }
@@ -379,9 +385,10 @@ ApplicationWindow {
         dlg.tabSizeInput.text = tabSize
         dlg.indentSizeInput.text = indentSize
         dlg.useTabsCheckBox.checked = useTabs
-        if(sciteQt.mobilePlatform) {
+        if(sciteQt.useMobileDialogHandling) {
             stackView.pop()
             stackView.push(dlg)
+            dlg.forceActiveFocus()
         } else {
             dlg.show()
         }
@@ -394,9 +401,10 @@ ApplicationWindow {
         for (var i=0; i<items.length; i++) {
             dlg.abbreviationModel.append({"text":items[i]})
         }
-        if(sciteQt.mobilePlatform) {
+        if(sciteQt.useMobileDialogHandling) {
             stackView.pop()
             stackView.push(dlg)
+            dlg.forceActiveFocus()
         } else {
             dlg.show()
         }
@@ -405,14 +413,13 @@ ApplicationWindow {
 
     function showParametersDialog(modal, parameters) {
         var dlg = sciteQt.mobilePlatform ? parametersDialog : parametersDialogWin
-        if(!sciteQt.mobilePlatform) {
-            dlg.modality = modal ? Qt.ApplicationModal : Qt.NonModal
-        }
         dlg.isModal = modal
-        if(sciteQt.mobilePlatform) {
+        if(sciteQt.useMobileDialogHandling) {
             stackView.pop()
             stackView.push(dlg)
+            dlg.forceActiveFocus()
         } else {
+            dlg.modality = modal ? Qt.ApplicationModal : Qt.NonModal
             dlg.show()
         }
         dlg.parameter1Input.focus = !modal

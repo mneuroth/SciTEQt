@@ -2828,7 +2828,13 @@ void SciTEQt::setMobilePlatform(bool val)
     {
         m_bIsMobilePlatfrom = val;
         emit mobilePlatformChanged();
+        emit useMobileDialogHandlingChanged();
     }
+}
+
+bool SciTEQt::isUseMobileDialogHandling() const
+{
+    return isMobilePlatform() || isWebassemblyPlatform();
 }
 
 bool SciTEQt::isMobilePlatform() const
