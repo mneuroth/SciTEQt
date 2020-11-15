@@ -55,7 +55,8 @@ ApplicationWindow {
 // TODO: gibt es besseren weg scintilla controls bei sciteqt zu registrieren?
         sciteQt.setScintilla(quickScintillaEditor.scintilla)
         sciteQt.setOutput(quickScintillaOutput.scintilla)
-        sciteQt.setAboutScite(aboutSciteDialog.scintilla)
+        var aboutDlg = sciteQt.useMobileDialogHandling ? aboutSciteDialog : aboutSciteDialogWin
+        sciteQt.setAboutScite(aboutDlg.scintilla)
         sciteQt.setContent(splitView)
         sciteQt.setMainWindow(applicationWindow)
         sciteQt.setApplicationData(applicationData)
@@ -102,6 +103,14 @@ ApplicationWindow {
                 openViaMobileFileDialog(sDirectory)
             } else {
                 saveViaMobileFileDialog(sDirectory,sDefaultSaveAsName,bSaveACopyModus)
+            }
+        }
+        else if(sciteQt.isWebassemblyPlatform())
+        {
+            if(bAsOpenDialog) {
+                htmlOpen()
+            } else {
+                htmlSave()
             }
         }
         else
@@ -205,7 +214,14 @@ ApplicationWindow {
     }
 
     function showAboutSciteDialog() {
-        aboutSciteDialog.show()
+        var dlg = sciteQt.useMobileDialogHandling ? aboutSciteDialog : aboutSciteDialogWin
+        if(sciteQt.useMobileDialogHandling) {
+            stackView.pop()
+            stackView.push(dlg)
+            dlg.forceActiveFocus()
+        } else {
+            dlg.show()
+        }
     }
 
     function showFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory, wholeWord, caseSensitive, regularExpression) {
@@ -2196,7 +2212,6 @@ ApplicationWindow {
         id: aboutSciteDialog
         objectName: "aboutSciteDialog"
         visible: false
-        modality: Qt.ApplicationModal
         title: sciteQt.getLocalisedText(qsTr("About SciTE"))
 
         fcnLocalisation: sciteQt.getLocalisedText
@@ -2205,7 +2220,29 @@ ApplicationWindow {
     Connections {
         target: aboutSciteDialog
 
-        onClosed: focusToEditor()
+        onClosed: {
+            stackView.pop()
+            focusToEditor()
+        }
+    }
+
+    AboutSciteDialogWindow {
+        id: aboutSciteDialogWin
+        objectName: "aboutSciteDialogWin"
+        visible: false
+        modality: Qt.ApplicationModal
+        title: sciteQt.getLocalisedText(qsTr("About SciTE"))
+
+        fcnLocalisation: sciteQt.getLocalisedText
+    }
+
+    Connections {
+        target: aboutSciteDialogWin
+
+        onClosed: {
+            aboutSciteDialogWin.close()
+            focusToEditor()
+        }
     }
 
     FindDialog {
