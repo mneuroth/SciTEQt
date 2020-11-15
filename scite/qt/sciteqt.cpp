@@ -636,7 +636,8 @@ SciTEQt::MessageBoxChoice SciTEQt::ShowWindowMessageBox(const QString & msg, Mes
 {
     emit showInfoDialog(msg, style);
 
-    return ProcessModalWindowSynchronious("infoDialog");
+    QString name = isUseMobileDialogHandling() ? "infoDialogPage" : "infoDialog";
+    return ProcessModalWindowSynchronious(name);
 }
 
 SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::gui_string &msg, MessageBoxStyle style)
@@ -803,7 +804,7 @@ bool SciTEQt::AbbrevDialog()
 
     emit showAbbreviationDialog(items);
 
-    QString name = isMobilePlatform() ? "abbreviationDialog" : "abbreviationDialogWin";
+    QString name = isUseMobileDialogHandling() ? "abbreviationDialog" : "abbreviationDialogWin";
     MessageBoxChoice result = ProcessModalWindowSynchronious(name);
     return result == SciTEQt::MessageBoxChoice::mbOK;
 }
@@ -859,7 +860,7 @@ bool SciTEQt::ParametersDialog(bool modal)
 
     if(modal)
     {
-        QString name = isMobilePlatform() ? "parametersDialog" : "parametersDialogWin";
+        QString name = isUseMobileDialogHandling() ? "parametersDialog" : "parametersDialogWin";
         MessageBoxChoice result = ProcessModalWindowSynchronious(name);
         m_bParametersDialogOpen = false;
         return result == SciTEQt::MessageBoxChoice::mbOK;

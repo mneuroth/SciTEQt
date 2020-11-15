@@ -1245,7 +1245,12 @@ bool ScintillaEditBase::getReadonly() const
 
 void ScintillaEditBase::setReadonly(bool value)
 {
-	send(SCI_SETREADONLY, value);
+    if(value != getReadonly())
+    {
+        send(SCI_SETREADONLY, value);
+
+        emit readonlyChanged();
+    }
 }
 
 void ScintillaEditBase::UpdateQuickView()

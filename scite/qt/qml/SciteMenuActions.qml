@@ -881,6 +881,7 @@ Item {
     Action {
         id: actionAboutQt
         text: qsTr("About Q&t")
+        enabled: !sciteQt.isWebassemblyPlatform()
         onTriggered: sciteQt.cmdAboutQt()
     }
 

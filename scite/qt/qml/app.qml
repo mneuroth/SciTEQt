@@ -175,6 +175,7 @@ ApplicationWindow {
         // then read new document
         var urlFileName = buildValidUrl(url)
         sciteQt.doOpen(url)
+        focusToEditor()
     }
 
     function openViaMobileFileDialog(directory) {
@@ -185,6 +186,7 @@ ApplicationWindow {
         stackView.push(mobileFileDialog)
         mobileFileDialog.forceActiveFocus()
     }
+
     function saveViaMobileFileDialog(directory,sDefaultSaveAsName,bSaveACopyModus) {
         mobileFileDialog.setDirectory(directory/*mobileFileDialog.currentDirectory*/)
         mobileFileDialog.setSaveAsModus(sDefaultSaveAsName,bSaveACopyModus)
@@ -200,17 +202,28 @@ ApplicationWindow {
         //mbsYesNoCancel = 3,
         //mbsIconQuestion = 0x20,
         //mbsIconWarning = 0x30
+        var dlg = sciteQt.useMobileDialogHandling ? infoDialogPage : infoDialog
         if((style & 7) === 4)
         {
-            infoDialog.standardButtons = StandardButton.Yes | StandardButton.No
+            dlg.standardButtons = StandardButton.Yes | StandardButton.No
         }
-        if((style & 7) === 3)
+        else if((style & 7) === 3)
         {
-            infoDialog.standardButtons = StandardButton.Yes | StandardButton.No | StandardButton.Cancel
+            dlg.standardButtons = StandardButton.Yes | StandardButton.No | StandardButton.Cancel
+        }
+        else
+        {
+            dlg.standardButtons = StandardButton.Ok
         }
 
-        infoDialog.text = infoText
-        infoDialog.open()
+        dlg.text = infoText
+        if(sciteQt.useMobileDialogHandling) {
+            stackView.pop()
+            stackView.push(dlg)
+            dlg.forceActiveFocus()
+        } else {
+            dlg.open()
+        }
     }
 
     function showAboutSciteDialog() {
@@ -2168,7 +2181,7 @@ ApplicationWindow {
         id: infoDialog
         objectName: "infoDialog"
         visible: false
-        title: qsTr("Info")
+        title: sciteQt.getLocalisedText(qsTr("Info"))
         //modal: true
         modality: Qt.ApplicationModal
         standardButtons: StandardButton.Ok
@@ -2181,6 +2194,91 @@ ApplicationWindow {
         onYes: console.log("yes")
         onNo: console.log("no")
         */
+    }
+
+    // Page based InfoDialog for WASM platform only
+    Page {
+        id: infoDialogPage
+        objectName: "infoDialogPage"
+        visible: false
+        title: sciteQt.getLocalisedText(qsTr("Info"))
+
+        signal accepted()
+        signal rejected()
+        signal canceled()
+        signal yes()
+        signal no()
+
+        property var standardButtons: StandardButton.Ok
+        property string text: ""
+
+        Label {
+            id: label
+            text: infoDialogPage.text
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.rightMargin: 10
+            anchors.leftMargin: 10
+            anchors.topMargin: 10
+            anchors.bottomMargin: 10
+        }
+
+        Row {
+            anchors.top: label.bottom
+            anchors.rightMargin: 5
+            anchors.leftMargin: 5
+            anchors.topMargin: 5
+            anchors.bottomMargin: 5
+
+            padding: 10
+            spacing: 10
+
+            Button {
+                id: buttonYes
+                text: sciteQt.getLocalisedText(qsTr("Yes"))
+                visible: (infoDialogPage.standardButtons & StandardButton.Yes) === StandardButton.Yes
+
+                onClicked: {
+                    stackView.pop()
+                    focusToEditor()
+                    infoDialogPage.yes()
+                }
+            }
+            Button {
+                id: buttonNo
+                text: sciteQt.getLocalisedText(qsTr("No"))
+                visible: (infoDialogPage.standardButtons & StandardButton.No) === StandardButton.No
+
+                onClicked: {
+                    stackView.pop()
+                    focusToEditor()
+                    infoDialogPage.no()
+                }
+            }
+            Button {
+                id: buttonOk
+                text: sciteQt.getLocalisedText(qsTr("Ok"))
+                visible: (infoDialogPage.standardButtons & StandardButton.Ok) === StandardButton.Ok
+
+                onClicked: {
+                    stackView.pop()
+                    focusToEditor()
+                    infoDialogPage.accepted()
+                }
+            }
+            Button {
+                id: buttonCancel
+                text: sciteQt.getLocalisedText(qsTr("Cancel"))
+                visible: (infoDialogPage.standardButtons & StandardButton.Cancel) === StandardButton.Cancel
+
+                onClicked: {
+                    stackView.pop()
+                    focusToEditor()
+                    infoDialogPage.canceled()
+                }
+            }
+        }
     }
 
     // test dialog for webassembly tests...

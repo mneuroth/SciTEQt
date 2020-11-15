@@ -76,7 +76,7 @@ class EXPORT_IMPORT_API ScintillaEditBase : public
 
 	Q_PROPERTY(QString text READ getText WRITE setText)
 	Q_PROPERTY(QFont font READ getFont WRITE setFont)
-	Q_PROPERTY(bool readonly READ getReadonly WRITE setReadonly)
+    Q_PROPERTY(bool readonly READ getReadonly WRITE setReadonly NOTIFY readonlyChanged)
 	Q_PROPERTY(int logicalWidth READ getLogicalWidth NOTIFY logicalWidthChanged)
 	Q_PROPERTY(int logicalHeight READ getLogicalHeight NOTIFY logicalHeightChanged)
 	Q_PROPERTY(int charHeight READ getCharHeight NOTIFY charHeightChanged)
@@ -179,6 +179,7 @@ signals:
 	void keyPressed(QKeyEvent *event);
 	void resized();
 #ifdef PLAT_QT_QML
+    void readonlyChanged();
 	void logicalWidthChanged();
 	void logicalHeightChanged();
 	void charHeightChanged();
