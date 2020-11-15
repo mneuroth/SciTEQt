@@ -658,6 +658,10 @@ void SciTEQt::FindMessageBox(const std::string &msg, const std::string *findItem
     }
 
     emit showInfoDialog(ConvertGuiStringToQString(msgBuf), 0);
+
+    // make a synchronious call...
+    QString name = isUseMobileDialogHandling() ? "infoDialogPage" : "infoDialog";
+    ProcessModalWindowSynchronious(name);
 }
 
 void SciTEQt::FindIncrement()
@@ -2482,6 +2486,15 @@ bool SciTEQt::Save(SaveFlags sf)
         }
         return ok;
     }
+    if(isWebassemblyPlatform())
+    {
+        QString sFileName = ConvertGuiCharToQString(filePath.AsInternal());
+        emit saveCurrentForWasm(sFileName);
+
+        ProcessSave(true);
+        return true;
+    }
+    // delegate to base implementation if not already handled
     return SciTEBase::Save(sf);
 }
 

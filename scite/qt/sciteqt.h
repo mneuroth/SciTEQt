@@ -538,6 +538,8 @@ signals:
     void setTextToCurrent(const QString & text);
     void addTextToOutput(const QString & text);
 
+    void saveCurrentForWasm(const QString & fileName);
+
 private:
     QObject * getDialog(const QString & objectName);
     QObject * getCurrentInfoDialog();

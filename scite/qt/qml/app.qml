@@ -110,7 +110,8 @@ ApplicationWindow {
             if(bAsOpenDialog) {
                 htmlOpen()
             } else {
-                htmlSave()
+// TODO save as...
+                htmlSave(null)
             }
         }
         else
@@ -168,7 +169,7 @@ ApplicationWindow {
     }
 
     function writeCurrentDoc(url) {
-        sciteQt.saveCurrentAs(url)
+        return sciteQt.saveCurrentAs(url)
     }
 
     function readCurrentDoc(url) {
@@ -456,8 +457,15 @@ ApplicationWindow {
     }
 
     function closeFindReplaceDialog() {
-        findDialog.close()
-        replaceDialog.close()
+        if(sciteQt.useMobileDialogHandling)
+        {
+            stackView.pop()
+        }
+        else {
+            findDialog.close()
+            replaceDialog.close()
+        }
+        focusToEditor()
     }
 
     function setVerticalSplit(verticalSplit) {
@@ -552,12 +560,12 @@ ApplicationWindow {
         }
     }
 
-    function htmlSave() {
+    function htmlSave(fileName=null) {
         var tmpFilePath = "/tmp/temp.txt"
-        writeCurrentDoc("file://" + tmpFilePath)
+        var ok = writeCurrentDoc("file://" + tmpFilePath)
         //project.saveAs("file://" + tmpFilePath)
-// TODO: current document name...
-        htmlFileAccess.saveFsFile(tmpFilePath, "temp.txt")
+        var currentFileName = (fileName!==null ? fileName : "temp.txt")
+        htmlFileAccess.saveFsFile(tmpFilePath,currentFileName)
     }
 /*
     function saveOrSaveAs() {
@@ -2089,6 +2097,8 @@ ApplicationWindow {
         onInsertTab:                  insertTab(index, title, fullPath)
         onSelectTab:                  selectTab(index)
         onRemoveAllTabs:              removeAllTabs()
+
+        onSaveCurrentForWasm:         htmlSave(fileName)
     }
 
     // **********************************************************************
