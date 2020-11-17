@@ -328,7 +328,7 @@ bool SciTEQt::ProcessCurrentFileDialog()
         // http://vps2.etotheipiplusone.com:30176/redmine/projects/emscripten-qt/wiki/
         QCoreApplication::processEvents();
 #ifdef Q_OS_WASM
-        emscripten_sleep(10);
+        emscripten_sleep(10);   // TODO: this is a problem for WASM
 #endif
         QThread::msleep(10);
     }
@@ -350,10 +350,14 @@ bool SciTEQt::OpenDialog(const FilePath &directory, const GUI::gui_char *filesFi
 
     emit startFileDialog(directory.AbsolutePath().AsUTF8().c_str(), s/*ConvertGuiStringToQString(openFilter)*/, "Open File", true);
 
+#ifndef Q_OS_WASM
+    // in WASM one can easily make this call asynchroniously !
     if(ProcessCurrentFileDialog())
     {
         return Open(GetPathFromUrl(m_sCurrentFileUrl));
     }
+#endif
+    // the return value is not needed in whole SciTE
     return false;
 }
 
@@ -361,17 +365,21 @@ bool SciTEQt::SaveAsDialog()
 {
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save File", false, false, QString::fromStdString(filePath.Name().AsUTF8()));
 
+//#ifndef Q_OS_WASM
+// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
         return SaveIfNotOpen(GetPathFromUrl(m_sCurrentFileUrl), false);
     }
-    return false;
+//#endif
+    return false;    
 }
 
 void SciTEQt::LoadSessionDialog()
 {
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.session", "Load Session File", true);
 
+// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
         LoadSessionFile(GetPathFromUrl(m_sCurrentFileUrl).AsInternal());
@@ -383,6 +391,7 @@ void SciTEQt::SaveSessionDialog()
 {
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.session", "Save Session File", false, false, "current.session");
 
+// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
         SaveSessionFile(GetPathFromUrl(m_sCurrentFileUrl).AsInternal());
@@ -393,6 +402,7 @@ void SciTEQt::SaveACopy()
 {
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save a Copy", false, true, QString::fromStdString(filePath.Name().AsUTF8()));
 
+// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
         FilePath aFileName(GetPathFromUrl(m_sCurrentFileUrl));
@@ -416,6 +426,7 @@ void SciTEQt::SaveAsRTF()
 {
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.rtf", "Export File As RTF", false, true, QString::fromStdString(filePath.Name().AsUTF8())+".rtf");
 
+// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
         SaveToRTF(GetPathFromUrl(m_sCurrentFileUrl));
@@ -426,6 +437,7 @@ void SciTEQt::SaveAsPDF()
 {
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.pdf", "Export File As PDF", false, true, QString::fromStdString(filePath.Name().AsUTF8())+".pdf");
 
+// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
         SaveToPDF(GetPathFromUrl(m_sCurrentFileUrl));
@@ -436,6 +448,7 @@ void SciTEQt::SaveAsTEX()
 {
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.tex", "Export File As LaTeX", false, true, QString::fromStdString(filePath.Name().AsUTF8())+".tex");
 
+// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
         SaveToTEX(GetPathFromUrl(m_sCurrentFileUrl));
@@ -446,6 +459,7 @@ void SciTEQt::SaveAsXML()
 {
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.xml", "Export File As XML", false, true, QString::fromStdString(filePath.Name().AsUTF8())+".xml");
 
+// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
         SaveToXML(GetPathFromUrl(m_sCurrentFileUrl));
@@ -456,6 +470,7 @@ void SciTEQt::SaveAsHTML()
 {
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.html", "Export File As HTML", false, true, QString::fromStdString(filePath.Name().AsUTF8())+".html");
 
+// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
         SaveToHTML(GetPathFromUrl(m_sCurrentFileUrl));
@@ -601,13 +616,12 @@ SciTEQt::MessageBoxChoice SciTEQt::ProcessModalWindowSynchronious(const QString 
     connect(pMessageBox,SIGNAL(no()),this,SLOT(OnNoClicked()));
 
     // simulate a synchronious call: wait for signal from MessageBox and then return with result
-// TODO: problems with webassembly !!!
     m_bWaitDoneFlag = false;
     while(!m_bWaitDoneFlag)
     {
         QCoreApplication::processEvents();
 #ifdef Q_OS_WASM
-        emscripten_sleep(10);
+        emscripten_sleep(10);       // TODO: this is a problem for WASM
 #endif
         QThread::msleep(10);
     }
@@ -636,7 +650,15 @@ SciTEQt::MessageBoxChoice SciTEQt::ShowWindowMessageBox(const QString & msg, Mes
 {
     emit showInfoDialog(msg, style);
 
-    QString name = isUseMobileDialogHandling() ? "infoDialogPage" : "infoDialog";
+    QString name = isWebassemblyPlatform() ? "infoDialogPage" : "infoDialog";
+
+#ifdef Q_OS_WASM
+    // can we handle as an async call for WASM? assync possible if default value for style is given !
+    if(style == mbsIconWarning)
+    {
+        return MessageBoxChoice::mbCancel;
+    }
+#endif
     return ProcessModalWindowSynchronious(name);
 }
 
@@ -657,11 +679,12 @@ void SciTEQt::FindMessageBox(const std::string &msg, const std::string *findItem
         msgBuf = LocaliseMessage(msg.c_str(), findThing.c_str());
     }
 
-    emit showInfoDialog(ConvertGuiStringToQString(msgBuf), 0);
+    ShowWindowMessageBox(ConvertGuiStringToQString(msgBuf), 0);
+//    emit showInfoDialog(ConvertGuiStringToQString(msgBuf), 0);
 
     // make a synchronious call...
-    QString name = isUseMobileDialogHandling() ? "infoDialogPage" : "infoDialog";
-    ProcessModalWindowSynchronious(name);
+//    QString name = isWebassemblyPlatform() ? "infoDialogPage" : "infoDialog";
+//    ProcessModalWindowSynchronious(name);
 }
 
 void SciTEQt::FindIncrement()
@@ -2473,6 +2496,7 @@ bool SciTEQt::Save(SaveFlags sf)
 {
     if(filePath.IsNotLocal())
     {
+        // only for android...
         QString text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1));
         QString sFileName = ConvertGuiCharToQString(filePath.AsNonLocalInternal());
         bool ok = m_pApplicationData->writeFileContent(sFileName, text);
