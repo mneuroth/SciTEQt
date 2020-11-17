@@ -41,7 +41,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - uses: ilammy/msvc-dev-cmd@v1.0.0
+    - uses: ilammy/msvc-dev-cmd@v1
     - name: Compile SciTE
       run: |
         cl  #  19.26.28806 for x64
