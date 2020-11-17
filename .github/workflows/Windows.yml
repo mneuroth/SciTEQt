@@ -189,7 +189,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - uses: ilammy/msvc-dev-cmd@v1.0.0
+    - uses: ilammy/msvc-dev-cmd@v1
     - uses: jurplel/install-qt-action@v2
       with:
         # Directory to install Qt
@@ -261,7 +261,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - uses: ilammy/msvc-dev-cmd@v1.0.0
+    - uses: ilammy/msvc-dev-cmd@v1
     #- uses: edgarrc/action-7z@v1.0.4
     - uses: jurplel/install-qt-action@v2
       with:
@@ -504,7 +504,7 @@ jobs:
       
     steps:
     - uses: actions/checkout@v2
-    - uses: mymindstorm/setup-emsdk@v6
+    - uses: mymindstorm/setup-emsdk@v7
     - uses: jurplel/install-qt-action@v2
       with:
         # Directory to install Qt
@@ -583,7 +583,7 @@ jobs:
       
     steps:
     - uses: actions/checkout@v2
-    - uses: mymindstorm/setup-emsdk@v6
+    - uses: mymindstorm/setup-emsdk@v7
     - uses: jurplel/install-qt-action@v2
       with:
         # Directory to install Qt
