@@ -32,6 +32,7 @@ Page {
 
     property string currentDirectory: "."
     property string currentFileName: ""
+    property bool bShowFiles: false
 
     title: localiseText(qsTr("Select file"))
 
@@ -119,6 +120,7 @@ Page {
 
         FolderListModel {
             id: folderModel
+            showFiles: bShowFiles
             nameFilters: ["*"]
         }
 

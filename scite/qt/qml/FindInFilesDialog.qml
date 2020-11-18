@@ -47,7 +47,8 @@ FindInFilesDialogForm {
         onClicked: {
             var currentDirectory = root.directoryInput.editText.length > 0 ? root.directoryInput.editText : root.directoryInput.currentText
             if(sciteQt.mobilePlatform) {
-                mobileFileDialog.show()
+                selectDirectoryViaMobileFileDialog(currentDirectory)
+                //mobileFileDialog.show()
             }
             else {
                 folderDialog.folder = buildValidUrl(currentDirectory)
@@ -79,6 +80,16 @@ FindInFilesDialogForm {
 
         onAccepted: {
             var newDirectory = sciteQt.cmdUrlToLocalPath(folderDialog.folder)
+            directoryModel.append({"text":newDirectory})
+            directoryInput.currentIndex = directoryModel.count - 1
+        }
+    }
+
+    Connections {
+        target: mobileFileDialog
+
+        onDirectorySelected: {
+            var newDirectory = sciteQt.cmdUrlToLocalPath(directory)
             directoryModel.append({"text":newDirectory})
             directoryInput.currentIndex = directoryModel.count - 1
         }

@@ -62,7 +62,7 @@ Page {
             anchors.bottomMargin: 5
 
             columns: 4
-            rows: 6
+            rows: 5
 
             Label {
                 id: findLabel
@@ -96,6 +96,8 @@ Page {
                 Keys.onBackPressed: cancelButton.clicked()
             }
 
+            // **************
+
             Label {
                 id: filesLabel
                 text: localiseText(qsTr("Files:"))
@@ -126,6 +128,8 @@ Page {
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
+
+            // **************
 
             Label {
                 id: directoryLabel
@@ -165,6 +169,8 @@ Page {
                 Keys.onBackPressed: cancelButton.clicked()
             }
 
+            // **************
+
             Row {
                 Layout.columnSpan: 4
                 Layout.fillWidth: true
@@ -193,6 +199,8 @@ Page {
                     Keys.onBackPressed: cancelButton.clicked()
                 }
             }
+
+            // **************
 
             Label {
                 id: fillLabel

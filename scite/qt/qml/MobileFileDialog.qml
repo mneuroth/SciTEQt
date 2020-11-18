@@ -15,6 +15,7 @@ MobileFileDialogForm {
     property bool isSaveAsModus: false
     property bool isSaveACopyModus: false
     property bool isDeleteModus: false
+    property bool isDirectoryModus: false
     property var textControl: null
 
     property var fcnLocalisation: undefined
@@ -28,6 +29,7 @@ MobileFileDialogForm {
 
     signal openSelectedFile(string fileName)
     signal saveSelectedFile(string fileName)
+    signal directorySelected(string directory)
 
     signal accepted()
     signal rejected()
@@ -61,6 +63,8 @@ MobileFileDialogForm {
         mobileFileDialog.isSaveAsModus = true
         mobileFileDialog.isSaveACopyModus = bSaveACopyModus
         mobileFileDialog.isDeleteModus = false
+        mobileFileDialog.isDirectoryModus = false
+        mobileFileDialog.bShowFiles = true
         mobileFileDialog.lblMFDInput.text = localiseText(qsTr("new file name:"))
         mobileFileDialog.txtMFDInput.text = (sDefaultSaveAsName === null || sDefaultSaveAsName.length==0) ? localiseText(qsTr("unknown.txt")) : sDefaultSaveAsName
         mobileFileDialog.txtMFDInput.readOnly = false
@@ -72,9 +76,23 @@ MobileFileDialogForm {
         mobileFileDialog.isSaveAsModus = false
         mobileFileDialog.isSaveACopyModus = false
         mobileFileDialog.isDeleteModus = false
+        mobileFileDialog.isDirectoryModus = false
+        mobileFileDialog.bShowFiles = true
         mobileFileDialog.lblMFDInput.text = localiseText(qsTr("open name:"))
         mobileFileDialog.txtMFDInput.readOnly = true
         mobileFileDialog.btnOpen.text = localiseText(qsTr("Open"))
+        mobileFileDialog.btnOpen.enabled = false
+    }
+
+    function setDirectoryModus() {
+        mobileFileDialog.isSaveAsModus = false
+        mobileFileDialog.isSaveACopyModus = false
+        mobileFileDialog.isDeleteModus = false
+        mobileFileDialog.isDirectoryModus = true
+        mobileFileDialog.bShowFiles = false
+        mobileFileDialog.lblMFDInput.text = localiseText(qsTr("open name:"))
+        mobileFileDialog.txtMFDInput.readOnly = true
+        mobileFileDialog.btnOpen.text = localiseText(qsTr("Select"))
         mobileFileDialog.btnOpen.enabled = false
     }
 
@@ -82,6 +100,8 @@ MobileFileDialogForm {
         mobileFileDialog.isSaveAsModus = false
         mobileFileDialog.isSaveACopyModus = false
         mobileFileDialog.isDeleteModus = true
+        mobileFileDialog.isDirectoryModus = false
+        mobileFileDialog.bShowFiles = true
         mobileFileDialog.lblMFDInput.text = localiseText(qsTr("current file name:"))
         mobileFileDialog.txtMFDInput.text = ""
         mobileFileDialog.txtMFDInput.readOnly = true
@@ -121,6 +141,12 @@ MobileFileDialogForm {
 
     function saveAsCurrentFileNow(fullPath) {
         saveSelectedFile(fullPath)
+        accepted()
+    }
+
+    function selectCurrentDirectoryNow() {
+        var fullPath = currentDirectory + "/" + currentFileName
+        directorySelected(buildValidUrl(fullPath))
         accepted()
     }
 
@@ -209,17 +235,18 @@ MobileFileDialogForm {
             {
                 mobileFileDialog.deleteCurrentFileNow()
             }
+            else if( mobileFileDialog.isDirectoryModus )
+            {
+                mobileFileDialog.selectCurrentDirectoryNow()
+            }
+            else if( mobileFileDialog.isSaveAsModus )
+            {
+                var fullPath = currentDirectory + "/" + txtMFDInput.text
+                mobileFileDialog.saveAsCurrentFileNow(fullPath)
+            }
             else
             {
-                if( mobileFileDialog.isSaveAsModus )
-                {
-                    var fullPath = currentDirectory + "/" + txtMFDInput.text
-                    mobileFileDialog.saveAsCurrentFileNow(fullPath)
-                }
-                else
-                {
-                    mobileFileDialog.openCurrentFileNow()
-                }
+                mobileFileDialog.openCurrentFileNow()
             }
         }
     }

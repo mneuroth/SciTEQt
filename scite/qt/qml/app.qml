@@ -179,6 +179,15 @@ ApplicationWindow {
         focusToEditor()
     }
 
+    function selectDirectoryViaMobileFileDialog(directory) {
+        mobileFileDialog.setDirectory(directory)
+        mobileFileDialog.setDirectoryModus()
+        //mobileFileDialog.show()
+        //stackView.pop()
+        stackView.push(mobileFileDialog)
+        mobileFileDialog.forceActiveFocus()
+    }
+
     function openViaMobileFileDialog(directory) {
         mobileFileDialog.setDirectory(directory)
         mobileFileDialog.setOpenModus()
