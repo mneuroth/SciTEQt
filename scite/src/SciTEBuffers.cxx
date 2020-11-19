@@ -576,7 +576,15 @@ void SciTEBase::RestoreRecentMenu() {
 		std::string propStr = propsSession.GetString(propKey.c_str());
 		if (propStr == "")
 			continue;
+
+#if defined(__ANDROID__)
+		std::string propKey2 = IndexPropKey("mru", i, "nonlocalpath");
+		std::string propStr2 = propsSession.GetString(propKey2.c_str());
+		AddFileToStack(RecentFile(FilePath(GUI::StringFromUTF8(propStr), GUI::StringFromUTF8(propStr2)), sr, 0));
+#else
 		AddFileToStack(RecentFile(GUI::StringFromUTF8(propStr), sr, 0));
+#endif
+
 	}
 }
 
@@ -651,9 +659,15 @@ void SciTEBase::RestoreSession() {
 		std::string propStr = propsSession.GetString(propKey.c_str());
 		if (propStr == "")
 			continue;
-
+		
 		BufferState bufferState;
+#if defined(__ANDROID__)
+		std::string propKey2 = IndexPropKey("buffer", i, "nonlocalpath");
+		std::string propStr2 = propsSession.GetString(propKey2.c_str());
+		bufferState.file.Set(FilePath(GUI::StringFromUTF8(propStr), GUI::StringFromUTF8(propStr2)));
+#else
 		bufferState.file.Set(GUI::StringFromUTF8(propStr));
+#endif
 
 		propKey = IndexPropKey("buffer", i, "current");
 		if (propsSession.GetInt(propKey.c_str()))
@@ -724,8 +738,15 @@ void SciTEBase::SaveSessionFile(const GUI::gui_char *sessionName) {
 		// Save recent files list
 		for (int i = fileStackMax - 1; i >= 0; i--) {
 			if (recentFileStack[i].IsSet()) {
-				propKey = IndexPropKey("mru", j++, "path");
+				propKey = IndexPropKey("mru", j, "path");
 				fprintf(sessionFile, "%s=%s\n", propKey.c_str(), recentFileStack[i].AsUTF8().c_str());
+
+#if defined(__ANDROID__)
+				propKey = IndexPropKey("mru", j, "nonlocalpath");
+				fprintf(sessionFile, "%s=%s\n", propKey.c_str(), recentFileStack[i].AsNonLocalInternal());
+#endif
+
+				j++;
 			}
 		}
 	}
@@ -762,6 +783,11 @@ void SciTEBase::SaveSessionFile(const GUI::gui_char *sessionName) {
 			if (buff.file.IsSet() && !buff.file.IsUntitled()) {
 				std::string propKey = IndexPropKey("buffer", i, "path");
 				fprintf(sessionFile, "\n%s=%s\n", propKey.c_str(), buff.file.AsUTF8().c_str());
+
+#if defined(__ANDROID__)
+				propKey = IndexPropKey("buffer", i, "nonlocalpath");
+				fprintf(sessionFile, "%s=%s\n", propKey.c_str(), buff.file.AsNonLocalInternal());
+#endif
 
 				const SA::Position pos = buff.file.selection.position + 1;
 				const std::string sPos = std::to_string(pos);
@@ -1249,7 +1275,7 @@ void SciTEBase::SetFileStackMenu() {
 bool SciTEBase::AddFileToBuffer(const BufferState &bufferState) {
 	// Return whether file loads successfully
 	bool opened = false;
-	if (bufferState.file.Exists()) {
+	if (bufferState.file.IsNotLocal() || bufferState.file.Exists()) {
 		opened = Open(bufferState.file, static_cast<OpenFlags>(ofForceLoad));
 		// If forced synchronous should set up position, foldState and bookmarks
 		if (opened) {

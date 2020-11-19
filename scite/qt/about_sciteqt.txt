@@ -40,8 +40,8 @@ Missing features are:
   //* Android: implement action for left menu button (three bars button) --> dialogs ?
   (* Android: improve dialog resize when keyboard is visible...
   * Android: improve deployment --> more languages?
-  * Webassembly: processing of modal dialogs (FileDialog, MessageBox)
-  * Webassembly: click on Buttons (i. e. Cancel) in Dialogs creates crash ! BUT: setting focus via Keyboard and return on button works sometimes !!!???
+  (* Webassembly: processing of modal dialogs (FileDialog, MessageBox)
+  (* Webassembly: click on Buttons (i. e. Cancel) in Dialogs creates crash ! BUT: setting focus via Keyboard and return on button works sometimes !!!???
 
 New open features might be:
   * Allow user (menu)items in tool button (android) ?
@@ -59,13 +59,17 @@ Known and open Bugs are:
   * View of fonts may be corrupted after attatching/detaching monitors to the computer... ==> restart application again
   * Crash Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? MacOS ==> but gcc/mingw are working !
   * first Menu Item in Menu is empty on Qt 5.11.3 --> ok after switch between mobile and desktop ui !
-  //* strange scroll behaviour on Qt 5.11.3 --> mouse click needed to update mouse wheel scroll in scintilla window (see about scite)
+- //* strange scroll behaviour on Qt 5.11.3 --> mouse click needed to update mouse wheel scroll in scintilla window (see about scite) --> maybe fixed with fix on 6.11.2020 (fixed scrolling behaviour)
   * Improve handling of last searches in find dialog --> update combobox content directly
   * MacOS: select directory in find in files dialog does not work
-  * WASM: Dialog handling does not work correctly! --> change dialogs in mobile ui to stackview ?
-  * Android: Navigate directory in Find In Files Dialog does not work for android
-  * Android: Files from android storage access framework will not be restored at application startup
   * CI: Windows CI build does not fail if compile step has an error and sciteqt.exe was not created ... ? Why? See Mingw Build for 32 bit
+- * WASM: Close tab with changed data --> 2x messagebox quittieren --> liegt an emscripten_sleep() exception ! --> TODO: test with new 5.15 release build --> ASYNCIFY !?
+- * WASM: Exception in text not found Message box (aber: Verhalten ok) --> liegt an emscripten_sleep() exception !
+  * WASM: improve SaveAs
+  * WASM: test all other load and save functions
+  * WASM: support translations?
+  ==> https://doc.qt.io/qt-5/qtwebassembly-platform-notes.html
+  * MACOS: support qt translations like qt_de.qm
 
 Watch:
   * Memory leak when switching between tab pages?

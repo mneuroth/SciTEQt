@@ -657,7 +657,7 @@ protected:
 	enum OpenCompletion { ocSynchronous, ocCompleteCurrent, ocCompleteSwitch };
 	void CompleteOpen(OpenCompletion oc);
 	virtual bool PreOpenCheck(const GUI::gui_char *file);
-	bool Open(const FilePath &file, OpenFlags of = ofNone);
+    virtual bool Open(const FilePath &file, OpenFlags of = ofNone);
 	bool OpenSelected();
 	void Revert();
 	FilePath SaveName(const char *ext) const;

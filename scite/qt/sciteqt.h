@@ -229,7 +229,9 @@ public:
 
     virtual bool event(QEvent *e) override;
 
+    // overloaded method to improve the support of WASM and Android
     virtual bool Save(SaveFlags sf = sfProgressVisible) override;
+    virtual bool Open(const FilePath &file, OpenFlags of = ofNone) override;
 
     void ExecuteNext();
     void ResetExecution();

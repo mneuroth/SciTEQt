@@ -47,11 +47,11 @@
 
 //*************************************************************************
 
-#define __SCITE_QT_VERSION__   "0.99.7"
+#define __SCITE_QT_VERSION__   "0.99.9"
 
 enum {
     WORK_EXECUTE = WORK_PLATFORM + 1,
-	TRIGGER_GOTOPOS = WORK_PLATFORM + 2
+    TRIGGER_GOTOPOS = WORK_PLATFORM + 2
 };
 
 //*************************************************************************
@@ -2520,6 +2520,22 @@ bool SciTEQt::Save(SaveFlags sf)
     }
     // delegate to base implementation if not already handled
     return SciTEBase::Save(sf);
+}
+
+bool SciTEQt::Open(const FilePath &file, OpenFlags of)
+{
+    if(file.IsNotLocal())
+    {
+        // only for android...
+        QString sFileName = ConvertGuiCharToQString(file.AsNonLocalInternal());
+        QString sDecodedFileName = ConvertGuiCharToQString(file.AsInternal());
+        QString sContent = m_pApplicationData->readFileContent(sFileName);
+
+        OnAddFileContent(sFileName, sDecodedFileName, sContent, false, false);
+
+        return true;
+    }
+    return SciTEBase::Open(file, of);
 }
 
 void SciTEQt::onStatusbarClicked()
