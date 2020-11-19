@@ -90,7 +90,7 @@ MobileFileDialogForm {
         mobileFileDialog.isDeleteModus = false
         mobileFileDialog.isDirectoryModus = true
         mobileFileDialog.bShowFiles = false
-        mobileFileDialog.lblMFDInput.text = localiseText(qsTr("open name:"))
+        mobileFileDialog.lblMFDInput.text = localiseText(qsTr(""))
         mobileFileDialog.txtMFDInput.readOnly = true
         mobileFileDialog.btnOpen.text = localiseText(qsTr("Select"))
         mobileFileDialog.btnOpen.enabled = false
@@ -145,8 +145,7 @@ MobileFileDialogForm {
     }
 
     function selectCurrentDirectoryNow() {
-        var fullPath = currentDirectory + "/" + currentFileName
-        directorySelected(buildValidUrl(fullPath))
+        directorySelected(buildValidUrl(currentDirectory))
         accepted()
     }
 
