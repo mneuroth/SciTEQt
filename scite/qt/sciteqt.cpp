@@ -2124,6 +2124,11 @@ void SciTEQt::cmdRunCurrentAsJavaScriptFile()
     disconnect(&aSciteQtJSEnvironment,SIGNAL(OnPrint(QString)),this,SLOT(OnAddLineToOutput(QString)));
 }
 
+void SciTEQt::cmdRunCurrentAsLuaFile()
+{
+    ToolsMenu(0);   // call: dofile <filename.lua>
+}
+
 void SciTEQt::cmdShare()
 {
     QString text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1));

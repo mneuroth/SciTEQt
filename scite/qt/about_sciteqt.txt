@@ -37,14 +37,9 @@ Missing features are:
   * Implement Printing (partly)
   * Context menu for Scintilla Control can not be overwritten/updated by SciTE  
   * Android: improve selection of text --> improve/use QInputContext
-  //* Android: implement action for left menu button (three bars button) --> dialogs ?
-  (* Android: improve dialog resize when keyboard is visible...
   * Android: improve deployment --> more languages?
-  * Android: improve qt_de.qm support
   * Android: disable logging --> admin switch?
   * Android: remove message in outputarea at startup
-  (* Webassembly: processing of modal dialogs (FileDialog, MessageBox)
-  (* Webassembly: click on Buttons (i. e. Cancel) in Dialogs creates crash ! BUT: setting focus via Keyboard and return on button works sometimes !!!???
 
 New open features might be:
   * Allow user (menu)items in tool button (android) ?

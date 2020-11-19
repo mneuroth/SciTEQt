@@ -1424,6 +1424,15 @@ ApplicationWindow {
                     drawer.close()
                 }
             }
+            ItemDelegate {
+                text: sciteQt.getLocalisedText(qsTr("Run as Lua"))
+                width: parent.width
+                onClicked: {
+                    stackView.pop()
+                    sciteQt.cmdRunCurrentAsLuaFile()
+                    drawer.close()
+                }
+            }
         }
     }
 
