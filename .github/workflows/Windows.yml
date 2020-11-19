@@ -242,6 +242,8 @@ jobs:
         dir
         d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.0\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_14_2.exe
         dir 
+        powershell Compress-7Zip "SciTEQtInstallerMsc_5_14_2.exe" -ArchiveFileName "SciTEQtInstallerMsc_5_14_2.zip" -Format Zip
+        dir 
     - name: Upload Release Asset
       if: contains(github.ref, 'release')
       id: upload-release-asset
@@ -253,6 +255,17 @@ jobs:
         asset_path: scite/qt/dist/SciTEQtInstallerMsc_5_14_2.exe
         asset_name: SciTEQtInstallerMsc_5_14_2.exe
         asset_content_type: application/exe
+    - name: Upload zip Release Asset
+      if: contains(github.ref, 'release')
+      id: upload-zip-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+        asset_path: scite/qt/dist/SciTEQtInstallerMsc_5_14_2.zip
+        asset_name: SciTEQtInstallerMsc_5_14_2.zip
+        asset_content_type: application/zip
 
   windows_5_15_1_msc_build:
 

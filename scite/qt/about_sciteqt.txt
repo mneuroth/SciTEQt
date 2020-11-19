@@ -70,6 +70,7 @@ Known and open Bugs are:
   * WASM: support translations?
   ==> https://doc.qt.io/qt-5/qtwebassembly-platform-notes.html
   * MACOS: support qt translations like qt_de.qm
+  * Geheim Modus fuer MobileFileDialog --> navigation nicht beschraenken und hidden Files anzeigen
 
 Watch:
   * Memory leak when switching between tab pages?
