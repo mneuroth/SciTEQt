@@ -40,6 +40,9 @@ Missing features are:
   //* Android: implement action for left menu button (three bars button) --> dialogs ?
   (* Android: improve dialog resize when keyboard is visible...
   * Android: improve deployment --> more languages?
+  * Android: improve qt_de.qm support
+  * Android: disable logging --> admin switch?
+  * Android: remove message in outputarea at startup
   (* Webassembly: processing of modal dialogs (FileDialog, MessageBox)
   (* Webassembly: click on Buttons (i. e. Cancel) in Dialogs creates crash ! BUT: setting focus via Keyboard and return on button works sometimes !!!???
 
@@ -70,7 +73,7 @@ Known and open Bugs are:
   * WASM: support translations?
   ==> https://doc.qt.io/qt-5/qtwebassembly-platform-notes.html
   * MACOS: support qt translations like qt_de.qm
-  * Geheim Modus fuer MobileFileDialog --> navigation nicht beschraenken und hidden Files anzeigen
+  (* WASM: improve keyboard handling / shortcuts for messageboxes
 
 Watch:
   * Memory leak when switching between tab pages?

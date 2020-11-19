@@ -16,6 +16,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickStyle>
+#include <QTranslator>
 
 #include "applicationdata.h"
 #include "sciteqt.h"
@@ -141,6 +142,7 @@ int main(int argc, char *argv[])
 #endif
 
     QString sLanguage = QLocale::system().name().mid(0,2).toLower();
+    QString sQtLanguage = QLocale::system().name().mid(0,2).toLower();
     if(sLanguage=="pt")
     {
         sLanguage = "pt_PT";
@@ -156,11 +158,18 @@ int main(int argc, char *argv[])
     if(sLanguage=="zh")
     {
         sLanguage = "zh_s";
+        sQtLanguage = "zh_tw";
     }
     // this environment variable is used to replace the language macro in SciTEGlobal.properties:
     // locale.properties=locale.$(SciteQtLanguage).properties
     sLanguage = CheckForOverrideLanguage(app.arguments(), sLanguage);
     qputenv(SCITE_QT_LANGUAGE, sLanguage.toLocal8Bit());
+
+#if defined(Q_OS_ANDROID)
+    QTranslator qtTranslator;
+    /*bool ok =*/ qtTranslator.load("assets:/files/qt_"+sQtLanguage+".qm");
+    app.installTranslator(&qtTranslator);
+#endif
 
     qRegisterMetaType<SCNotification>("SCNotification");
     qRegisterMetaType<SCNotification>("uptr_t");

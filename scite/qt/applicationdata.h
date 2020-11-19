@@ -27,6 +27,7 @@
 #define ASSETS_DIR                  "assets:/files/"
 #define FILES_DIR                   "/data/data/org.scintilla.sciteqt/files/"
 #define LOCALISATIONS_DIR           "/data/data/org.scintilla.sciteqt/files/localisations/"
+#define QT_TRANSLATIONS_DIR         "/data/data/org.scintilla.sciteqt/translations/"
 #define SCRIPTS_DIR                 "/data/data/org.scintilla.sciteqt/files/scripts/"
 #define SDCARD_DIRECTORY            "/sdcard"
 
@@ -41,6 +42,11 @@
 #define SCITE_LOCALE_ES_PROPERTIES  "locale.es.properties"
 #define SCITE_LOCALE_IT_PROPERTIES  "locale.it.properties"
 #define SCITE_LOCALE_PT_PROPERTIES  "locale.pt_PT.properties"
+#define SCITE_LOCALE_RU_PROPERTIES  "locale.ru.properties"
+#define SCITE_LOCALE_JA_PROPERTIES  "locale.ja.properties"
+#define SCITE_LOCALE_KO_PROPERTIES  "locale.ko.properties"
+#define SCITE_LOCALE_ZH_T_PROPERTIES  "locale.zh_t.properties"
+#define SCITE_LOCALE_AR_PROPERTIES  "locale.ar.properties"
 
 // **************************************************************************
 

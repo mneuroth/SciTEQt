@@ -248,14 +248,69 @@ android {
     deployment10.path=/assets/files
     deployment11.files=translations/locale.it.properties
     deployment11.path=/assets/files
-# ru
+    deployment12.files=translations/locale.ru.properties
+    deployment12.path=/assets/files
+    deployment13.files=translations/locale.ja.properties
+    deployment13.path=/assets/files
+    deployment14.files=translations/locale.ko.properties
+    deployment14.path=/assets/files
+    deployment15.files=translations/locale.zh_t.properties
+    deployment15.path=/assets/files
+    deployment16.files=translations/locale.ar.properties
+    deployment16.path=/assets/files
+
+    deployment20.files=qt_de.qm
+    deployment20.path=/assets/files
+    deployment21.files=qt_fr.qm
+    deployment21.path=/assets/files
+    deployment22.files=qt_es.qm
+    deployment22.path=/assets/files
+    deployment23.files=qt_it.qm
+    deployment23.path=/assets/files
+    deployment24.files=qt_ru.qm
+    deployment24.path=/assets/files
+    deployment25.files=qt_ja.qm
+    deployment25.path=/assets/files
+    deployment26.files=qt_ko.qm
+    deployment26.path=/assets/files
+    deployment27.files=qt_zh_tw.qm
+    deployment27.path=/assets/files
+    deployment28.files=qt_ar.qm
+    deployment28.path=/assets/files
+
+# for qt available:
+#qt_ar.qm
+#qt_bg.qm
+#qt_ca.qm
+#qt_cs.qm
+#qt_da.qm
+#qt_de.qm
+#qt_en.qm
+#qt_es.qm
+#qt_fi.qm
+#qt_fr.qm
+#qt_gd.qm
+#qt_he.qm
+#qt_hu.qm
+#qt_it.qm
+#qt_ja.qm
+#qt_ko.qm
+#qt_lv.qm
+#qt_pl.qm
+#qt_ru.qm
+#qt_sk.qm
+#qt_tr.qm
+#qt_uk.qm
+#qt_zh_TW.qm
+
+## ru
 # da
 # sw
 # fi
-# ko
-# zh
-# ja
-# ar
+## ko
+## zh
+## ja
+## ar
 # th
 # id
 # tr
@@ -271,6 +326,21 @@ android {
     INSTALLS += deployment9
     INSTALLS += deployment10
     INSTALLS += deployment11
+    INSTALLS += deployment12
+    INSTALLS += deployment13
+    INSTALLS += deployment14
+    INSTALLS += deployment15
+    INSTALLS += deployment16
+
+    INSTALLS += deployment20
+    INSTALLS += deployment21
+    INSTALLS += deployment22
+    INSTALLS += deployment23
+    INSTALLS += deployment24
+    INSTALLS += deployment25
+    INSTALLS += deployment26
+    INSTALLS += deployment27
+    INSTALLS += deployment28
 }
 
 RESOURCES += sciteqt.qrc

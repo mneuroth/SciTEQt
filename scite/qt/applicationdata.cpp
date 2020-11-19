@@ -114,6 +114,52 @@ void UnpackFiles()
     sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_IT_PROPERTIES);
     sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_IT_PROPERTIES);
     extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_RU_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_RU_PROPERTIES);
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_JA_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_JA_PROPERTIES);
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_KO_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_KO_PROPERTIES);
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_ZH_T_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_ZH_T_PROPERTIES);
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_AR_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_AR_PROPERTIES);
+    extractAssetFile(sAsset,sOutput,false);
+/* --> use direct from asset
+    sAsset = QString(ASSETS_DIR)+QString("qt_de.qm");
+    sOutput = QString(QT_TRANSLATIONS_DIR)+QString("qt_de.qm");
+    extractAssetFile(sAsset,sOutput,false);
+// nl missing
+    sAsset = QString(ASSETS_DIR)+QString("qt_fr.qm");
+    sOutput = QString(QT_TRANSLATIONS_DIR)+QString("qt_fr.qm");
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString("qt_es.qm");
+    sOutput = QString(QT_TRANSLATIONS_DIR)+QString("qt_es.qm");
+    extractAssetFile(sAsset,sOutput,false);
+// pd missing
+    sAsset = QString(ASSETS_DIR)+QString("qt_it.qm");
+    sOutput = QString(QT_TRANSLATIONS_DIR)+QString("qt_it.qm");
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString("qt_ru.qm");
+    sOutput = QString(QT_TRANSLATIONS_DIR)+QString("qt_ru.qm");
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString("qt_ja.qm");
+    sOutput = QString(QT_TRANSLATIONS_DIR)+QString("qt_ja.qm");
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString("qt_ko.qm");
+    sOutput = QString(QT_TRANSLATIONS_DIR)+QString("qt_ko.qm");
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString("qt_ja.qm");
+    sOutput = QString(QT_TRANSLATIONS_DIR)+QString("qt_zh_tw.qm");
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString("qt_ja.qm");
+    sOutput = QString(QT_TRANSLATIONS_DIR)+QString("qt_ar.qm");
+    extractAssetFile(sAsset,sOutput,false);
+*/
 }
 
 bool HasAccessToSDCardPath()
