@@ -475,6 +475,8 @@ public slots:
     void OnScreenRemoved(QScreen * pScreen);
     void OnPrimaryScreenChanged(QScreen * pScreen);
 
+    void OnAdmin(bool value);
+
 signals:
     void showToolBarChanged();
     void showTabBarChanged();
@@ -541,6 +543,8 @@ signals:
     void addTextToOutput(const QString & text);
 
     void saveCurrentForWasm(const QString & fileName);
+
+    void admin(bool value);
 
 private:
     QObject * getDialog(const QString & objectName);

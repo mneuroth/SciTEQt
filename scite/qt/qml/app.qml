@@ -823,6 +823,8 @@ ApplicationWindow {
         onSetInImportModel:            writeInMenuModel(importModel, index, txt, checked, ashortcut)
         onRemoveInImportModel:         removeInMenuModel(importModel, index)
         onCheckStateInImportModel:     setCheckStateInMenuModel(importModel, index, checked)
+
+        onAdmin:                       mobileFileDialog.setAdminModus(value)
     }
 
     // desktop modus menu bar
@@ -2268,6 +2270,8 @@ ApplicationWindow {
                 id: buttonYes
                 text: sciteQt.getLocalisedText(qsTr("Yes"))
                 visible: (infoDialogPage.standardButtons & StandardButton.Yes) === StandardButton.Yes
+                Keys.onEscapePressed: buttonCancel.clicked()
+                Keys.onBackPressed: buttonCancel.clicked()
 
                 onClicked: infoDialogPage.yes()
             }
@@ -2275,6 +2279,8 @@ ApplicationWindow {
                 id: buttonNo
                 text: sciteQt.getLocalisedText(qsTr("No"))
                 visible: (infoDialogPage.standardButtons & StandardButton.No) === StandardButton.No
+                Keys.onEscapePressed: buttonCancel.clicked()
+                Keys.onBackPressed: buttonCancel.clicked()
 
                 onClicked: infoDialogPage.no()
             }
@@ -2282,6 +2288,9 @@ ApplicationWindow {
                 id: buttonOk
                 text: sciteQt.getLocalisedText(qsTr("Ok"))
                 visible: (infoDialogPage.standardButtons & StandardButton.Ok) === StandardButton.Ok
+                highlighted: true
+                Keys.onEscapePressed: buttonCancel.clicked()
+                Keys.onBackPressed: buttonCancel.clicked()
 
                 onClicked: infoDialogPage.accepted()
             }
@@ -2289,6 +2298,9 @@ ApplicationWindow {
                 id: buttonCancel
                 text: sciteQt.getLocalisedText(qsTr("Cancel"))
                 visible: (infoDialogPage.standardButtons & StandardButton.Cancel) === StandardButton.Cancel
+                highlighted: true
+                Keys.onEscapePressed: buttonCancel.clicked()
+                Keys.onBackPressed: buttonCancel.clicked()
 
                 onClicked: infoDialogPage.canceled()
             }

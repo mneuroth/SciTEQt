@@ -20,8 +20,12 @@ public:
     // usage: env.print("hello world !")
     Q_INVOKABLE void print(const QString & text);
 
+    // switch admin modus for mobile file dialog
+    Q_INVOKABLE void admin(bool value);
+
 signals:
     void OnPrint(const QString & text);
+    void OnAdmin(bool value);
 };
 
 #endif // SCITEQTENVIRONMENTFORJAVASCRIPT_H

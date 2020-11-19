@@ -2092,7 +2092,7 @@ void SciTEQt::cmdAboutCurrentFile()
     OnAddLineToOutput(sMsg);
 }
 
-static QString g_sJavaScriptLibrary = "function print(t) { env.print(t) }\n";
+static QString g_sJavaScriptLibrary = "function print(t) { env.print(t) }\nfunction admin(val) { env.admin(val) }\n";
 
 void SciTEQt::cmdRunCurrentAsJavaScriptFile()
 {
@@ -2103,6 +2103,7 @@ void SciTEQt::cmdRunCurrentAsJavaScriptFile()
 
     SciteQtEnvironmentForJavaScript aSciteQtJSEnvironment(this);
     connect(&aSciteQtJSEnvironment,SIGNAL(OnPrint(QString)),this,SLOT(OnAddLineToOutput(QString)));
+    connect(&aSciteQtJSEnvironment,SIGNAL(OnAdmin(bool)),this,SLOT(OnAdmin(bool)));
 
     QJSValue sciteEnvironment = myEngine.newQObject(&aSciteQtJSEnvironment);
     myEngine.globalObject().setProperty("env", sciteEnvironment);
@@ -2119,6 +2120,7 @@ void SciTEQt::cmdRunCurrentAsJavaScriptFile()
     }
     OnAddLineToOutput(sResult);
 
+    disconnect(&aSciteQtJSEnvironment,SIGNAL(OnAdmin(bool)),this,SLOT(OnAdmin(bool)));
     disconnect(&aSciteQtJSEnvironment,SIGNAL(OnPrint(QString)),this,SLOT(OnAddLineToOutput(QString)));
 }
 
@@ -3143,6 +3145,11 @@ void SciTEQt::OnPrimaryScreenChanged(QScreen * pScreen)
 {
     //DumpScreens();
     Q_UNUSED(pScreen);
+}
+
+void SciTEQt::OnAdmin(bool value)
+{
+    emit admin(value);
 }
 
 //*************************************************************************

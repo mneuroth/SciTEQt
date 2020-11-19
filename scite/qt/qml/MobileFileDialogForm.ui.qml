@@ -28,11 +28,12 @@ Page {
     property alias btnStorage: btnStorage
     property alias btnSDCard: btnSDCard
     property alias btnHome: btnHome
-    property alias btnUp: btnUp
+    property alias btnUp: btnUp    
 
     property string currentDirectory: "."
     property string currentFileName: ""
-    property bool bShowFiles: false
+    property bool bShowFiles: true
+    property bool bIsAdminModus: false
 
     title: localiseText(qsTr("Select file"))
 
@@ -57,6 +58,8 @@ Page {
             Layout.topMargin: 0
             Layout.fillHeight: true
             Layout.fillWidth: true
+            Keys.onEscapePressed: btnCancel.clicked()
+            Keys.onBackPressed: btnCancel.clicked()
         }
 
         Button {
@@ -68,6 +71,8 @@ Page {
             Layout.topMargin: 0
             Layout.fillHeight: true
             Layout.fillWidth: true
+            Keys.onEscapePressed: btnCancel.clicked()
+            Keys.onBackPressed: btnCancel.clicked()
         }
 
         Button {
@@ -81,6 +86,8 @@ Page {
             Layout.topMargin: 0
             Layout.fillHeight: true
             Layout.fillWidth: true
+            Keys.onEscapePressed: btnCancel.clicked()
+            Keys.onBackPressed: btnCancel.clicked()
         }
 
         Button {
@@ -92,6 +99,8 @@ Page {
             Layout.topMargin: 0
             Layout.fillHeight: true
             Layout.fillWidth: true
+            Keys.onEscapePressed: btnCancel.clicked()
+            Keys.onBackPressed: btnCancel.clicked()
         }
     }
 
@@ -117,10 +126,13 @@ Page {
         anchors.rightMargin: 10
         anchors.top: lblDirectoryName.bottom
         anchors.topMargin: 5
+        Keys.onEscapePressed: btnCancel.clicked()
+        Keys.onBackPressed: btnCancel.clicked()
 
         FolderListModel {
             id: folderModel
             showFiles: bShowFiles
+            showHidden: bIsAdminModus
             nameFilters: ["*"]
         }
 
@@ -159,6 +171,8 @@ Page {
         anchors.leftMargin: 5
         horizontalAlignment: Text.AlignLeft
         verticalAlignment: Text.AlignVCenter
+        Keys.onEscapePressed: btnCancel.clicked()
+        Keys.onBackPressed: btnCancel.clicked()
     }
 
     Button {
@@ -170,6 +184,8 @@ Page {
         anchors.leftMargin: 5
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 5
+        Keys.onEscapePressed: btnCancel.clicked()
+        Keys.onBackPressed: btnCancel.clicked()
     }
 
     Button {
@@ -180,6 +196,8 @@ Page {
         anchors.rightMargin: 5
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 5
+        Keys.onEscapePressed: btnCancel.clicked()
+        Keys.onBackPressed: btnCancel.clicked()
     }
 }
 
