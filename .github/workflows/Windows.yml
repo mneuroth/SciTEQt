@@ -439,7 +439,7 @@ jobs:
   # this is a copy of the content MacOS.yml used only to upload binary for release
   macos_5_11_3_build:
 
-    runs-on: macos-11.0
+    runs-on: macos-latest #macos-11.0
     needs: create_release
 
     steps:
