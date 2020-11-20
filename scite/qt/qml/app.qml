@@ -87,6 +87,19 @@ ApplicationWindow {
         applicationWindow.visibility = maximize ? /*QWindow.Maximized*/4 : 2;
     }
 
+    function dismissMenu() {
+        if(sciteQt.mobilePlatform) {
+            mobilePopupMenu.dismiss()
+        }
+        else {
+            var currentMenu = sciteMenuBar.currentItem
+            if(currentMenu !== null)
+            {
+                currentMenu.menu.dismiss()
+            }
+        }
+    }
+
     function setTextToCurrent(text) {
         quickScintillaEditor.text = text
         focusToEditor()
@@ -96,11 +109,13 @@ ApplicationWindow {
         quickScintillaOutput.text += text
     }
 
-    function startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog, bSaveACopyModus, sDefaultSaveAsName) {
+    function startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog, bSaveACopyModus, bDeleteModus, sDefaultSaveAsName) {
         if(sciteQt.mobilePlatform)
         {
             if(bAsOpenDialog) {
                 openViaMobileFileDialog(sDirectory)
+            } else if(bDeleteModus) {
+                deleteViaMobileFileDialog(sDirectory)
             } else {
                 saveViaMobileFileDialog(sDirectory,sDefaultSaveAsName,bSaveACopyModus)
             }
@@ -184,6 +199,15 @@ ApplicationWindow {
         mobileFileDialog.setDirectoryModus()
         //mobileFileDialog.show()
         //stackView.pop()
+        stackView.push(mobileFileDialog)
+        mobileFileDialog.forceActiveFocus()
+    }
+
+    function deleteViaMobileFileDialog(directory) {
+        mobileFileDialog.setDirectory(directory)
+        mobileFileDialog.setDeleteModus()
+        //mobileFileDialog.show()
+        stackView.pop()
         stackView.push(mobileFileDialog)
         mobileFileDialog.forceActiveFocus()
     }
@@ -2098,7 +2122,7 @@ ApplicationWindow {
         onSetTextToCurrent:                     setTextToCurrent(text)
         onAddTextToOutput:                      addTextToOutput(text)
 
-        onStartFileDialog:            startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog, bSaveACopyModus, sDefaultSaveAsName)
+        onStartFileDialog:            startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog, bSaveACopyModus, bDeleteModus, sDefaultSaveAsName)
         onShowInfoDialog:             showInfoDialog(sInfoText, style)
         onShowAboutSciteDialog:       showAboutSciteDialog()
 
@@ -2120,6 +2144,8 @@ ApplicationWindow {
         onRemoveAllTabs:              removeAllTabs()
 
         onSaveCurrentForWasm:         htmlSave(fileName)
+
+        onDismissMenu:                dismissMenu()
     }
 
     // **********************************************************************
@@ -2204,6 +2230,11 @@ ApplicationWindow {
         }
         onAccepted: {
             stackView.pop()
+            focusToEditor()
+        }
+
+        onErrorMessage: {
+            logToOutput(message)
             focusToEditor()
         }
     }

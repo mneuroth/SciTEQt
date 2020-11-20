@@ -72,6 +72,13 @@ AutoSizingMenu {
         visible: !sciteQt.mobilePlatform
         height: visible ? actionSave.height : 0
     }
+    MenuItem {
+        id: actionDeleteFiles
+        text: processMenuItem2(actions.actionDeleteFiles.text, actionDeleteFiles)
+        action: actions.actionDeleteFiles
+        visible: sciteQt.mobilePlatform
+        height: visible ? actionSave.height : 0
+    }
     Menu {
         id: actionEncoding
         title: processMenuItem(qsTr("Encodin&g"), actionEncoding)

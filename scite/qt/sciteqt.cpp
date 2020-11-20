@@ -341,6 +341,10 @@ bool SciTEQt::ProcessCurrentFileDialog()
 
 bool SciTEQt::OpenDialog(const FilePath &directory, const GUI::gui_char *filesFilter)
 {
+    // close explicit the current menu, because we make a event loop which disables automatic closing of current menu in mobile ui modus
+    //emit dismissMenu();
+    // --> dismiss not needed, because now Qt.callLater() is used to trigger menu operation, this works good also for android
+
     QString s = ConvertGuiCharToQString(filesFilter);
     if (s.startsWith("All Source|"))
     {
@@ -363,12 +367,13 @@ bool SciTEQt::OpenDialog(const FilePath &directory, const GUI::gui_char *filesFi
 
 bool SciTEQt::SaveAsDialog()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save File", false, false, QString::fromStdString(filePath.Name().AsUTF8()));
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save File", false, false, false, QString::fromStdString(filePath.Name().AsUTF8()));
 
 //#ifndef Q_OS_WASM
-// TODO for WASM
+// TODO for WASM and Android
     if(ProcessCurrentFileDialog())
     {
+// TODO Behandeln von Storage Access Framework !
         return SaveIfNotOpen(GetPathFromUrl(m_sCurrentFileUrl), false);
     }
 //#endif
@@ -379,9 +384,10 @@ void SciTEQt::LoadSessionDialog()
 {
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.session", "Load Session File", true);
 
-// TODO for WASM
+// TODO for WASM and Android
     if(ProcessCurrentFileDialog())
     {
+// TODO Behandeln von Storage Access Framework !
         LoadSessionFile(GetPathFromUrl(m_sCurrentFileUrl).AsInternal());
         RestoreSession();
     }
@@ -391,31 +397,31 @@ void SciTEQt::SaveSessionDialog()
 {
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.session", "Save Session File", false, false, "current.session");
 
-// TODO for WASM
+// TODO for WASM and Android
     if(ProcessCurrentFileDialog())
     {
+// TODO Behandeln von Storage Access Framework !
         SaveSessionFile(GetPathFromUrl(m_sCurrentFileUrl).AsInternal());
     }
 }
 
 void SciTEQt::SaveACopy()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save a Copy", false, true, QString::fromStdString(filePath.Name().AsUTF8()));
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save a Copy", false, true, false, QString::fromStdString(filePath.Name().AsUTF8()));
 
-// TODO for WASM
+// TODO for WASM and Android
     if(ProcessCurrentFileDialog())
     {
         FilePath aFileName(GetPathFromUrl(m_sCurrentFileUrl));
 
-        if(aFileName.IsNotLocal())
-        {
-            // this should never happen !!! handled via OnAddFileContent() call from Android Storage Framework
-            //Q_ASSERT(false);
-            //qDebug() << "SaveACopy() not local " << m_sCurrentFileUrl << endl;
-            QString text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1));
-            m_pApplicationData->writeFileContent(ConvertGuiCharToQString(aFileName.AsInternal()), text);
-        }
-        else
+//        if(aFileName.IsNotLocal())
+//        {
+//            // this should never happen !!! handled via OnAddFileContent() call from Android Storage Framework
+//            //Q_ASSERT(false);
+//            QString text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1));
+//            m_pApplicationData->writeFileContent(ConvertGuiCharToQString(aFileName.AsInternal()), text);
+//        }
+//        else
         {
             SaveBuffer(aFileName, sfNone);
         }
@@ -424,55 +430,61 @@ void SciTEQt::SaveACopy()
 
 void SciTEQt::SaveAsRTF()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.rtf", "Export File As RTF", false, true, QString::fromStdString(filePath.Name().AsUTF8())+".rtf");
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.rtf", "Export File As RTF", false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".rtf");
 
-// TODO for WASM
+// TODO for WASM and Android
     if(ProcessCurrentFileDialog())
     {
+// TODO Behandeln von Storage Access Framework !
         SaveToRTF(GetPathFromUrl(m_sCurrentFileUrl));
     }
 }
 
 void SciTEQt::SaveAsPDF()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.pdf", "Export File As PDF", false, true, QString::fromStdString(filePath.Name().AsUTF8())+".pdf");
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.pdf", "Export File As PDF", false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".pdf");
 
-// TODO for WASM
+    qDebug() << "SAVE as PDF" << endl;
+// TODO for WASM and Android
     if(ProcessCurrentFileDialog())
     {
+// TODO Behandeln von Storage Access Framework !
         SaveToPDF(GetPathFromUrl(m_sCurrentFileUrl));
     }
 }
 
 void SciTEQt::SaveAsTEX()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.tex", "Export File As LaTeX", false, true, QString::fromStdString(filePath.Name().AsUTF8())+".tex");
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.tex", "Export File As LaTeX", false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".tex");
 
-// TODO for WASM
+// TODO for WASM and Android
     if(ProcessCurrentFileDialog())
     {
+// TODO Behandeln von Storage Access Framework !
         SaveToTEX(GetPathFromUrl(m_sCurrentFileUrl));
     }
 }
 
 void SciTEQt::SaveAsXML()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.xml", "Export File As XML", false, true, QString::fromStdString(filePath.Name().AsUTF8())+".xml");
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.xml", "Export File As XML", false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".xml");
 
-// TODO for WASM
+// TODO for WASM and Android
     if(ProcessCurrentFileDialog())
     {
+// TODO Behandeln von Storage Access Framework !
         SaveToXML(GetPathFromUrl(m_sCurrentFileUrl));
     }
 }
 
 void SciTEQt::SaveAsHTML()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.html", "Export File As HTML", false, true, QString::fromStdString(filePath.Name().AsUTF8())+".html");
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.html", "Export File As HTML", false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".html");
 
-// TODO for WASM
+// TODO for WASM and Android
     if(ProcessCurrentFileDialog())
     {
+// TODO Behandeln von Storage Access Framework !
         SaveToHTML(GetPathFromUrl(m_sCurrentFileUrl));
     }
 }
@@ -1499,7 +1511,22 @@ void SciTEQt::cmdPageSetup()
 
 void SciTEQt::cmdPrint()
 {
+#if defined(Q_OS_ANDROID)
+    // simulate printing for android: create pdf & share pdf... --> hopefully a printer app can receive this content...
+
+    QString tempFileName = QString("%1.pdf").arg(filePath.BaseName().AsInternal()); // = "_temp_print_output.pdf";
+
+    bool ret = m_pApplicationData->writeAndSendSharedFile(tempFileName, "", "text/pdf", [this](QString name) -> bool
+    {
+        FilePath tempName(name.toStdString());
+        SaveToPDF(tempName);
+        return true;
+    }, /*bSendFile*/true);
+
+    WindowSetFocus(wEditor);
+#else
     MenuCommand(IDM_PRINT);
+#endif
 }
 
 void SciTEQt::cmdLoadSession()
@@ -1589,6 +1616,11 @@ void SciTEQt::cmdOpenContainingFolder()
     {
         showInfoDialog(tr("Warning: this function is not supported on this platform!"), 0);
     }
+}
+
+void SciTEQt::cmdDeleteFiles()
+{
+    emit startFileDialog(FILES_DIR, "*.*", tr("Delete Files"), false, false, true, "");
 }
 
 void SciTEQt::cmdExit()

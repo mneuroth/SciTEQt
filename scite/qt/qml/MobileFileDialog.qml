@@ -30,6 +30,7 @@ MobileFileDialogForm {
     signal openSelectedFile(string fileName)
     signal saveSelectedFile(string fileName)
     signal directorySelected(string directory)
+    signal errorMessage(string message)
 
     signal accepted()
     signal rejected()
@@ -74,6 +75,7 @@ MobileFileDialogForm {
         root.txtMFDInput.readOnly = false
         root.btnOpen.text = localiseText(qsTr("Save as"))
         root.btnOpen.enabled = true
+        root.btnStorage.enabled = true
     }
 
     function setOpenModus() {
@@ -86,6 +88,7 @@ MobileFileDialogForm {
         root.txtMFDInput.readOnly = true
         root.btnOpen.text = localiseText(qsTr("Open"))
         root.btnOpen.enabled = false
+        root.btnStorage.enabled = true
     }
 
     function setDirectoryModus() {
@@ -98,6 +101,7 @@ MobileFileDialogForm {
         root.txtMFDInput.readOnly = true
         root.btnOpen.text = localiseText(qsTr("Select current"))
         root.btnOpen.enabled = false
+        root.btnStorage.enabled = false
     }
 
     function setDeleteModus() {
@@ -111,6 +115,7 @@ MobileFileDialogForm {
         root.txtMFDInput.readOnly = true
         root.btnOpen.text = localiseText(qsTr("Delete"))
         root.btnOpen.enabled = false
+        root.btnStorage.enabled = false
     }
 
     function setDirectory(newPath) {
@@ -132,8 +137,8 @@ MobileFileDialogForm {
         stackView.pop()
         if( !ok )
         {
-            outputPage.txtOutput.text += localiseText(qsTr("can not delete file ")) + fullPath
-            stackView.push(outputPage)
+            var msg= localiseText(qsTr("ERROR: Can not delete file ")) + fullPath
+            errorMessage(msg)
         }
     }
 

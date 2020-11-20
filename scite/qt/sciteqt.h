@@ -285,6 +285,7 @@ public:
     Q_INVOKABLE void cmdSaveACopy();
     Q_INVOKABLE void cmdCopyPath();
     Q_INVOKABLE void cmdOpenContainingFolder();
+    Q_INVOKABLE void cmdDeleteFiles();
     Q_INVOKABLE void cmdCodePageProperty();
     Q_INVOKABLE void cmdUtf16BigEndian();
     Q_INVOKABLE void cmdUtf16LittleEndian();
@@ -487,6 +488,7 @@ signals:
     void useMobileDialogHandlingChanged();
     void setMenuChecked(int menuID, bool val);
     void setMenuEnable(int menuID, bool val);
+    void dismissMenu();
 
     void wholeWordChanged();
     void caseSensitiveChanged();
@@ -514,7 +516,7 @@ signals:
     void removeInImportModel(int index);
     void checkStateInImportModel(int index, bool checked);
 
-    void startFileDialog(const QString & sDirectory, const QString & sFilter, const QString & sTitle, bool bAsOpenDialog, bool bSaveACopyModus = false, const QString & sDefaultSaveAsName = "unknown.txt");
+    void startFileDialog(const QString & sDirectory, const QString & sFilter, const QString & sTitle, bool bAsOpenDialog, bool bSaveACopyModus = false, bool bDeleteModus = false, const QString & sDefaultSaveAsName = "unknown.txt");
     void showInfoDialog(const QString & sInfoText, int style);
     void showAboutSciteDialog();
 
