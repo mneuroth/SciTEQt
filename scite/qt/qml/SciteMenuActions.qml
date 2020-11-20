@@ -22,6 +22,7 @@ Item {
     property alias actionSaveACopy: actionSaveACopy
     property alias actionCopyPath: actionCopyPath
     property alias actionOpenContainingFolder: actionOpenContainingFolder
+    property alias actionDeleteFiles: actionDeleteFiles
 
     Action {
         id: actionNew
@@ -35,7 +36,7 @@ Item {
         text: qsTr("&Open...")
         //icon.source: "share.svg"
         shortcut: "Ctrl+O"
-        onTriggered: sciteQt.cmdOpen()
+        onTriggered: Qt.callLater(function() { sciteQt.cmdOpen() })   // maybe: mobilePopupMenu.dismiss()
     }
     Action {
         id: actionOpenSelectedFilename
@@ -64,12 +65,12 @@ Item {
     Action {
         id: actionSaveAs
         text: qsTr("Save &As...")
-        onTriggered: sciteQt.cmdSaveAs()
+        onTriggered: Qt.callLater(function() { sciteQt.cmdSaveAs() })
     }
     Action {
         id: actionSaveACopy
         text: qsTr("Save a &Copy...")
-        onTriggered: sciteQt.cmdSaveACopy()
+        onTriggered: Qt.callLater(function() { sciteQt.cmdSaveACopy() })
     }
     Action {
         id: actionCopyPath
@@ -80,6 +81,11 @@ Item {
         id: actionOpenContainingFolder
         text: qsTr("Open Containing Folder")
         onTriggered: sciteQt.cmdOpenContainingFolder()
+    }
+    Action {
+        id: actionDeleteFiles
+        text: qsTr("Delete Files...")
+        onTriggered: sciteQt.cmdDeleteFiles()
     }
 
     property alias actionCodePageProperty: actionCodePageProperty
@@ -153,27 +159,27 @@ Item {
     Action {
         id: actionAsHtml
         text: qsTr("As &HTML...")
-        onTriggered: sciteQt.cmdAsHtml()
+        onTriggered: Qt.callLater(function() { sciteQt.cmdAsHtml() })
     }
     Action {
         id: actionAsRtf
         text: qsTr("As &RTF...")
-        onTriggered: sciteQt.cmdAsRtf()
+        onTriggered: Qt.callLater(function() { sciteQt.cmdAsRtf() })
     }
     Action {
         id: actionAsPdf
         text: qsTr("As &PDF...")
-        onTriggered: sciteQt.cmdAsPdf()
+        onTriggered: Qt.callLater(function() { sciteQt.cmdAsPdf() })
     }
     Action {
         id: actionAsLatex
         text: qsTr("As &LaTeX...")
-        onTriggered: sciteQt.cmdAsLatex()
+        onTriggered: Qt.callLater(function() { sciteQt.cmdAsLatex() })
     }
     Action {
         id: actionAsXml
         text: qsTr("As &XML...")
-        onTriggered: sciteQt.cmdAsXml()
+        onTriggered: Qt.callLater(function() { sciteQt.cmdAsXml() })
     }
 
     property alias actionPageSetup: actionPageSetup
@@ -196,12 +202,12 @@ Item {
     Action {
         id: actionLoadSession
         text: qsTr("&Load Session...")
-        onTriggered: sciteQt.cmdLoadSession()
+        onTriggered: Qt.callLater(function() { sciteQt.cmdLoadSession() })
     }
     Action {
         id: actionSaveSession
         text: qsTr("Sa&ve Session...")
-        onTriggered: sciteQt.cmdSaveSession()
+        onTriggered: Qt.callLater(function() { sciteQt.cmdSaveSession() })
     }
     Action {
         id: actionExit
@@ -327,7 +333,7 @@ Item {
         id: actionInsertAbbreviation
         text: qsTr("&Insert Abbreviation")
         shortcut: "Ctrl+Shift+R"
-        onTriggered: sciteQt.cmdInsertAbbreviation()
+        onTriggered: Qt.callLater(function() { sciteQt.cmdInsertAbbreviation() })
     }
     Action {
         id: actionBlockComment
