@@ -33,6 +33,8 @@ AutoSizingMenu {
         id: actionFullScreen
         text: processMenuItem2(actions.actionFullScreen.text, actionFullScreen)
         action: actions.actionFullScreen
+        visible: !sciteQt.mobilePlatform
+        height: visible ? actionShowToolBar.heigh : 0
     }
     MenuItem {
         id: actionIsMobilePlatfrom

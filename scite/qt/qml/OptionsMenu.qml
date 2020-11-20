@@ -23,11 +23,15 @@ AutoSizingMenu {
         id: actionAlwaysOnTop
         text: processMenuItem2(actions.actionAlwaysOnTop.text, actionAlwaysOnTop)
         action: actions.actionAlwaysOnTop
+        visible: !sciteQt.mobilePlatform
+        height: visible ? actionVerticalSplit.height : 0
     }
     MenuItem {
         id: actionOpenFilesHere
         text: processMenuItem2(actions.actionOpenFilesHere.text, actionOpenFilesHere)
         action: actions.actionOpenFilesHere
+        visible: !sciteQt.mobilePlatform
+        height: visible ? actionVerticalSplit.height : 0
     }
     MenuItem {
         id: actionVerticalSplit

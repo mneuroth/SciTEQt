@@ -69,6 +69,8 @@ AutoSizingMenu {
         id: actionOpenContainingFolder
         text: processMenuItem2(actions.actionOpenContainingFolder.text, actionOpenContainingFolder)
         action: actions.actionOpenContainingFolder
+        visible: !sciteQt.mobilePlatform
+        height: visible ? actionSave.height : 0
     }
     Menu {
         id: actionEncoding
@@ -135,6 +137,8 @@ AutoSizingMenu {
         id: actionPageSetup
         text: processMenuItem2(actions.actionPageSetup.text, actionPageSetup)
         action: actions.actionPageSetup
+        visible: !sciteQt.mobilePlatform
+        height: visible ? actionSave.height : 0
     }
     MenuItem {
         id: actionPrint
