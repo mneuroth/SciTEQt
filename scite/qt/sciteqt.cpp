@@ -426,7 +426,7 @@ void SciTEQt::LoadSessionDialog()
     m_pFcnReceiveContentToProcess = new std::function<void(QString)>( [this](QString content) -> void {
         //LoadSessionFile(GetPathFromUrl(m_sCurrentFileUrl).AsInternal());
         propsSession.Clear();
-        propsSession.ReadFromMemory(content.toStdString().data(), content.toStdString().length(), FilePath(FILES_DIR), ImportFilter(), nullptr, 0);
+        propsSession.ReadFromMemory(content.toStdString().data(), content.toStdString().length(), FilePath(ConvertQStringToGuiString(FILES_DIR)), ImportFilter(), nullptr, 0);
         RestoreSession();
     } );
 
@@ -446,7 +446,7 @@ void SciTEQt::SaveSessionDialog()
 {
     CheckAndDeleteGetContentToWriteFunctionPointer();
     m_pFcnGetContentToWrite = new std::function<QString()>( [this]() -> QString {
-        return TriggerActionAndReadResultFile([this](QString name) -> void { SaveSessionFile(name.toStdString().c_str()); } );
+        return TriggerActionAndReadResultFile([this](QString name) -> void { SaveSessionFile(ConvertQStringToGuiString(name).c_str()); } );
     } );
 
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.session", tr("Save Session File"), false, true, false, "current.session");
@@ -508,7 +508,7 @@ void SciTEQt::SaveAsPDF()
 {
     CheckAndDeleteGetContentToWriteFunctionPointer();
     m_pFcnGetContentToWrite = new std::function<QString()>( [this]() -> QString {
-        return TriggerActionAndReadResultFile([this](QString name) -> void { SaveToPDF(FilePath(name.toStdString().c_str())); } );
+        return TriggerActionAndReadResultFile([this](QString name) -> void { SaveToPDF(FilePath(ConvertQStringToGuiString(name))); } );
     } );
 
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.pdf", tr("Export File As PDF"), false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".pdf");
@@ -526,7 +526,7 @@ void SciTEQt::SaveAsTEX()
 {
     CheckAndDeleteGetContentToWriteFunctionPointer();
     m_pFcnGetContentToWrite = new std::function<QString()>( [this]() -> QString {
-        return TriggerActionAndReadResultFile([this](QString name) -> void { SaveToTEX(FilePath(name.toStdString().c_str())); } );
+        return TriggerActionAndReadResultFile([this](QString name) -> void { SaveToTEX(FilePath(ConvertQStringToGuiString(name))); } );
     } );
 
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.tex", tr("Export File As LaTeX"), false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".tex");
@@ -545,7 +545,7 @@ void SciTEQt::SaveAsXML()
 {
     CheckAndDeleteGetContentToWriteFunctionPointer();
     m_pFcnGetContentToWrite = new std::function<QString()>( [this]() -> QString {
-        return TriggerActionAndReadResultFile([this](QString name) -> void { SaveToXML(FilePath(name.toStdString().c_str())); } );
+        return TriggerActionAndReadResultFile([this](QString name) -> void { SaveToXML(FilePath(ConvertQStringToGuiString(name))); } );
     } );
 
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.xml", tr("Export File As XML"), false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".xml");
@@ -563,7 +563,7 @@ void SciTEQt::SaveAsHTML()
 {
     CheckAndDeleteGetContentToWriteFunctionPointer();
     m_pFcnGetContentToWrite = new std::function<QString()>( [this]() -> QString {
-        return TriggerActionAndReadResultFile([this](QString name) -> void { SaveToHTML(FilePath(name.toStdString().c_str())); } );
+        return TriggerActionAndReadResultFile([this](QString name) -> void { SaveToHTML(FilePath(ConvertQStringToGuiString(name))); } );
     } );
 
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.html", tr("Export File As HTML"), false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".html");
