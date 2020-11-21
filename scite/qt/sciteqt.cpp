@@ -34,6 +34,8 @@
 
 #include <QDebug>
 
+#include <sstream>
+
 #include "ScintillaEditBase.h"
 #include "ScintillaQt.h"
 
@@ -127,6 +129,8 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
       m_pApplicationData(0),
       m_pEngine(pEngine),
       m_pCurrentScriptExecution(0),
+      m_pFcnGetContentToWrite(nullptr),
+      m_pFcnReceiveContentToProcess(nullptr),
       m_bWaitDoneFlag(false),
       m_iMessageDialogAccepted(MSGBOX_RESULT_EMPTY),
       m_bFileDialogWaitDoneFlag(false),
@@ -339,6 +343,43 @@ bool SciTEQt::ProcessCurrentFileDialog()
     return m_iFileDialogMessageDialogAccepted == MSGBOX_RESULT_OK;
 }
 
+void SciTEQt::CheckAndDeleteGetContentToWriteFunctionPointer()
+{
+    if (m_pFcnGetContentToWrite!=nullptr)
+    {
+        delete m_pFcnGetContentToWrite;
+        m_pFcnGetContentToWrite = nullptr;
+    }
+}
+
+void SciTEQt::CheckAndDeleteReceiveContentToProcessFunctionPointer()
+{
+    if (m_pFcnReceiveContentToProcess!=nullptr)
+    {
+        delete m_pFcnReceiveContentToProcess;
+        m_pFcnReceiveContentToProcess = nullptr;
+    }
+}
+
+QString TriggerActionAndReadResultFile(std::function<void(QString)> action)
+{
+    if(QFile::exists(FULL_TEMP_FILENAME))
+    {
+        QFile::remove(FULL_TEMP_FILENAME);
+    }
+
+    action(QString(FULL_TEMP_FILENAME));
+
+    QString content = ApplicationData::simpleReadFileContent(FULL_TEMP_FILENAME);
+
+    if(QFile::exists(FULL_TEMP_FILENAME))
+    {
+        QFile::remove(FULL_TEMP_FILENAME);
+    }
+
+    return content;
+}
+
 bool SciTEQt::OpenDialog(const FilePath &directory, const GUI::gui_char *filesFilter)
 {
     // close explicit the current menu, because we make a event loop which disables automatic closing of current menu in mobile ui modus
@@ -367,13 +408,12 @@ bool SciTEQt::OpenDialog(const FilePath &directory, const GUI::gui_char *filesFi
 
 bool SciTEQt::SaveAsDialog()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save File", false, false, false, QString::fromStdString(filePath.Name().AsUTF8()));
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", tr("Save File"), false, false, false, QString::fromStdString(filePath.Name().AsUTF8()));
 
 //#ifndef Q_OS_WASM
-// TODO for WASM and Android
+// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
-// TODO Behandeln von Storage Access Framework !
         return SaveIfNotOpen(GetPathFromUrl(m_sCurrentFileUrl), false);
     }
 //#endif
@@ -382,34 +422,49 @@ bool SciTEQt::SaveAsDialog()
 
 void SciTEQt::LoadSessionDialog()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.session", "Load Session File", true);
+    CheckAndDeleteReceiveContentToProcessFunctionPointer();
+    m_pFcnReceiveContentToProcess = new std::function<void(QString)>( [this](QString content) -> void {
+        //LoadSessionFile(GetPathFromUrl(m_sCurrentFileUrl).AsInternal());
+        propsSession.Clear();
+        propsSession.ReadFromMemory(content.toStdString().data(), content.toStdString().length(), FilePath(FILES_DIR), ImportFilter(), nullptr, 0);
+        RestoreSession();
+    } );
 
-// TODO for WASM and Android
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.session", tr("Load Session File"), true);
+
+// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
-// TODO Behandeln von Storage Access Framework !
         LoadSessionFile(GetPathFromUrl(m_sCurrentFileUrl).AsInternal());
         RestoreSession();
     }
+
+    CheckAndDeleteReceiveContentToProcessFunctionPointer();
 }
 
 void SciTEQt::SaveSessionDialog()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.session", "Save Session File", false, false, "current.session");
+    CheckAndDeleteGetContentToWriteFunctionPointer();
+    m_pFcnGetContentToWrite = new std::function<QString()>( [this]() -> QString {
+        return TriggerActionAndReadResultFile([this](QString name) -> void { SaveSessionFile(name.toStdString().c_str()); } );
+    } );
 
-// TODO for WASM and Android
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.session", tr("Save Session File"), false, true, false, "current.session");
+
+// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
-// TODO Behandeln von Storage Access Framework !
         SaveSessionFile(GetPathFromUrl(m_sCurrentFileUrl).AsInternal());
     }
+
+    CheckAndDeleteGetContentToWriteFunctionPointer();
 }
 
 void SciTEQt::SaveACopy()
 {
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "", "Save a Copy", false, true, false, QString::fromStdString(filePath.Name().AsUTF8()));
 
-// TODO for WASM and Android
+// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
         FilePath aFileName(GetPathFromUrl(m_sCurrentFileUrl));
@@ -430,63 +485,96 @@ void SciTEQt::SaveACopy()
 
 void SciTEQt::SaveAsRTF()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.rtf", "Export File As RTF", false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".rtf");
+    CheckAndDeleteGetContentToWriteFunctionPointer();
+    m_pFcnGetContentToWrite = new std::function<QString()>( [this]() -> QString {
+        std::ostringstream oss;
+        SaveToStreamRTF(oss);
+        const std::string rtf = oss.str();
+        return QString(rtf.c_str());
+    } );
 
-// TODO for WASM and Android
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.rtf", tr("Export File As RTF"), false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".rtf");
+
+// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
-// TODO Behandeln von Storage Access Framework !
         SaveToRTF(GetPathFromUrl(m_sCurrentFileUrl));
     }
+
+    CheckAndDeleteGetContentToWriteFunctionPointer();
 }
 
 void SciTEQt::SaveAsPDF()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.pdf", "Export File As PDF", false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".pdf");
+    CheckAndDeleteGetContentToWriteFunctionPointer();
+    m_pFcnGetContentToWrite = new std::function<QString()>( [this]() -> QString {
+        return TriggerActionAndReadResultFile([this](QString name) -> void { SaveToPDF(FilePath(name.toStdString().c_str())); } );
+    } );
 
-    qDebug() << "SAVE as PDF" << endl;
-// TODO for WASM and Android
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.pdf", tr("Export File As PDF"), false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".pdf");
+
+// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
-// TODO Behandeln von Storage Access Framework !
         SaveToPDF(GetPathFromUrl(m_sCurrentFileUrl));
     }
+
+    CheckAndDeleteGetContentToWriteFunctionPointer();
 }
 
 void SciTEQt::SaveAsTEX()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.tex", "Export File As LaTeX", false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".tex");
+    CheckAndDeleteGetContentToWriteFunctionPointer();
+    m_pFcnGetContentToWrite = new std::function<QString()>( [this]() -> QString {
+        return TriggerActionAndReadResultFile([this](QString name) -> void { SaveToTEX(FilePath(name.toStdString().c_str())); } );
+    } );
 
-// TODO for WASM and Android
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.tex", tr("Export File As LaTeX"), false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".tex");
+
+// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
 // TODO Behandeln von Storage Access Framework !
         SaveToTEX(GetPathFromUrl(m_sCurrentFileUrl));
     }
+
+    CheckAndDeleteGetContentToWriteFunctionPointer();
 }
 
 void SciTEQt::SaveAsXML()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.xml", "Export File As XML", false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".xml");
+    CheckAndDeleteGetContentToWriteFunctionPointer();
+    m_pFcnGetContentToWrite = new std::function<QString()>( [this]() -> QString {
+        return TriggerActionAndReadResultFile([this](QString name) -> void { SaveToXML(FilePath(name.toStdString().c_str())); } );
+    } );
 
-// TODO for WASM and Android
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.xml", tr("Export File As XML"), false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".xml");
+
+// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
-// TODO Behandeln von Storage Access Framework !
         SaveToXML(GetPathFromUrl(m_sCurrentFileUrl));
     }
+
+    CheckAndDeleteGetContentToWriteFunctionPointer();
 }
 
 void SciTEQt::SaveAsHTML()
 {
-    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.html", "Export File As HTML", false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".html");
+    CheckAndDeleteGetContentToWriteFunctionPointer();
+    m_pFcnGetContentToWrite = new std::function<QString()>( [this]() -> QString {
+        return TriggerActionAndReadResultFile([this](QString name) -> void { SaveToHTML(FilePath(name.toStdString().c_str())); } );
+    } );
 
-// TODO for WASM and Android
+    emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.html", tr("Export File As HTML"), false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".html");
+
+// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
-// TODO Behandeln von Storage Access Framework !
         SaveToHTML(GetPathFromUrl(m_sCurrentFileUrl));
     }
+
+    CheckAndDeleteGetContentToWriteFunctionPointer();
 }
 
 FilePath GetSciTEPath(const QByteArray & home)
@@ -3089,13 +3177,35 @@ void SciTEQt::OnAddFileContent(const QString & sFileUri, const QString & sDecode
     if(!bNewCreated)
     {
         // open modus
-        New();
-        emit setTextToCurrent(sContent);
+        if (m_pFcnReceiveContentToProcess!=nullptr)
+        {
+            (*m_pFcnReceiveContentToProcess)(sContent);
+
+            CheckAndDeleteReceiveContentToProcessFunctionPointer();
+        }
+        else
+        {
+            New();
+            emit setTextToCurrent(sContent);
+        }
     }
     else
     {
         // save as modus --> create new document
-        QString text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1));
+        QVariant aData;
+
+        QString text;
+        if (m_pFcnGetContentToWrite!=nullptr)
+        {
+            text = (*m_pFcnGetContentToWrite)();
+
+            CheckAndDeleteGetContentToWriteFunctionPointer();
+        }
+        else
+        {
+            text = QString::fromStdString(wEditor.GetText(wEditor.TextLength()+1));
+        }
+
         ok = m_pApplicationData->writeFileContent(sFileUri, text);
         if(!ok)
         {

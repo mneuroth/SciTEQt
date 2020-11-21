@@ -559,6 +559,8 @@ private:
     void UpdateWindowPosAndSizeIfNeeded(const QRect & rect, bool maximize);
     MessageBoxChoice ProcessModalWindowSynchronious(const QString & objectName);
     MessageBoxChoice ShowWindowMessageBox(const QString & msg, MessageBoxStyle style = mbsIconWarning);
+    void CheckAndDeleteGetContentToWriteFunctionPointer();
+    void CheckAndDeleteReceiveContentToProcessFunctionPointer();
 
     ApplicationData *       m_pApplicationData;     // not an owner !
     QQmlApplicationEngine * m_pEngine;              // not an owner !
@@ -566,6 +568,9 @@ private:
     ScriptExecution *       m_pCurrentScriptExecution;  // not an owner !
 
     FindInFilesAsync        m_aFindInFiles;
+
+    std::function<QString()> *      m_pFcnGetContentToWrite;
+    std::function<void(QString)> *  m_pFcnReceiveContentToProcess;
 
     bool                    m_bWaitDoneFlag;
     int                     m_iMessageDialogAccepted;

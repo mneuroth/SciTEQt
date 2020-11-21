@@ -30,6 +30,7 @@
 #define QT_TRANSLATIONS_DIR         "/data/data/org.scintilla.sciteqt/translations/"
 #define SCRIPTS_DIR                 "/data/data/org.scintilla.sciteqt/files/scripts/"
 #define SDCARD_DIRECTORY            "/sdcard"
+#define FULL_TEMP_FILENAME          "/data/data/org.scintilla.sciteqt/files/__temp_file__.bin"
 
 #define SCITE_PROPERTIES            "SciTE.properties"
 #define SCITE_GLOBAL_PROPERTIES     "SciTEGlobal.properties"
