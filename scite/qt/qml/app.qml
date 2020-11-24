@@ -126,6 +126,7 @@ ApplicationWindow {
                 htmlOpen()
             } else {
 // TODO save as...
+// TODO support export as ... like pdf, tex, etc.
                 htmlSave(null)
             }
         }
@@ -1454,6 +1455,15 @@ ApplicationWindow {
                 onClicked: {
                     stackView.pop()
                     sciteQt.cmdRunCurrentAsLuaFile()
+                    drawer.close()
+                }
+            }
+            ItemDelegate {
+                text: sciteQt.getLocalisedText(qsTr("Clear Output"))
+                width: parent.width
+                onClicked: {
+                    stackView.pop()
+                    sciteQt.cmdClearOutput()
                     drawer.close()
                 }
             }

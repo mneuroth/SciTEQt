@@ -40,6 +40,7 @@ Missing features are:
   * Android: improve deployment --> more languages?
   * Android: disable logging --> admin switch?
   * Android: remove message in outputarea at startup
+  * Android: support pdf output to printer app(s)
 
 New open features might be:
   * Allow user (menu)items in tool button (android) ?
@@ -48,13 +49,15 @@ New open features might be:
   * Close buttons in tabpage buttons
   * Show all occurences of find in current file in outputarea
   * maybe: save and restore text in outputarea?
-  * Scite Logo as left button in title bar or Settings dialog/find dialog ... ? (Fast Access Menu Items?)
   * Save and Restore for View-Parameters like: show line numbers, etc.
   * Save and Restore user defined mapping of file extensions to (lexer-)languages
 
 Known and open Bugs are:
 
+  * Strange output (no clipping) if CR/LF should be shown
+  * Allow/support different styling and dark scheme
   * View of fonts may be corrupted after attatching/detaching monitors to the computer... ==> restart application again
+  * Main Menu sometimes not completly visible after monitor/resolution change
   * Crash Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? MacOS ==> but gcc/mingw are working !
   * first Menu Item in Menu is empty on Qt 5.11.3 --> ok after switch between mobile and desktop ui !
 - //* strange scroll behaviour on Qt 5.11.3 --> mouse click needed to update mouse wheel scroll in scintilla window (see about scite) --> maybe fixed with fix on 6.11.2020 (fixed scrolling behaviour)
@@ -66,6 +69,7 @@ Known and open Bugs are:
   * WASM: improve SaveAs
   * WASM: test all other load and save functions
   * WASM: support translations?
+  * WASM: support Export menu items lik pdf, text, ...
   ==> https://doc.qt.io/qt-5/qtwebassembly-platform-notes.html
   * MACOS: support qt translations like qt_de.qm
   (* WASM: improve keyboard handling / shortcuts for messageboxes
