@@ -158,6 +158,14 @@ Page {
         verticalAlignment: Text.AlignVCenter
     }
 
+    Rectangle {
+        color: "lightyellow"
+        height: txtMFDInput.height
+        width: txtMFDInput.width
+        visible: txtMFDInput.visible
+        x: txtMFDInput.x
+        y: txtMFDInput.y
+    }
     TextInput {
         id: txtMFDInput
         y: 323
