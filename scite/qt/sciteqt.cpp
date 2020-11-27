@@ -125,6 +125,7 @@ template <class T> T childObject(QQmlApplicationEngine& engine,
 //*************************************************************************
 
 bool SciTEQt::m_bIsAdmin = false;
+QString SciTEQt::m_sStyle = "";
 
 SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
     : QObject(parent),
@@ -2214,7 +2215,7 @@ void SciTEQt::cmdAboutCurrentFile()
     OnAddLineToOutput(sMsg);
 }
 
-static QString g_sJavaScriptLibrary = "function print(t) { env.print(t) }\nfunction admin(val) { env.admin(val) }\n";
+static QString g_sJavaScriptLibrary = "function print(t) { env.print(t) }\nfunction admin(val) { env.admin(val) }\nfunction style(val) { env.style(val) }\n";
 
 void SciTEQt::cmdRunCurrentAsJavaScriptFile()
 {
@@ -2223,7 +2224,7 @@ void SciTEQt::cmdRunCurrentAsJavaScriptFile()
     // see: https://doc.qt.io/qt-5/qjsengine.html#details
     QJSEngine myEngine;
 
-    SciteQtEnvironmentForJavaScript aSciteQtJSEnvironment(m_bIsAdmin, this);
+    SciteQtEnvironmentForJavaScript aSciteQtJSEnvironment(m_bIsAdmin, m_sStyle, this);
     connect(&aSciteQtJSEnvironment,SIGNAL(OnPrint(QString)),this,SLOT(OnAddLineToOutput(QString)));
     connect(&aSciteQtJSEnvironment,SIGNAL(OnAdmin(bool)),this,SLOT(OnAdmin(bool)));
 
@@ -3081,6 +3082,16 @@ bool SciTEQt::IsAdmin()
 void SciTEQt::SetAdmin(bool value)
 {
     m_bIsAdmin = value;
+}
+
+QString SciTEQt::GetStyle()
+{
+    return m_sStyle;
+}
+
+void SciTEQt::SetStyle(const QString & value)
+{
+    m_sStyle = value;
 }
 
 void SciTEQt::UpdateStatusbarView()

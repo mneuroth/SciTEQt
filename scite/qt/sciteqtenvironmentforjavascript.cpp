@@ -8,8 +8,8 @@
 
 #include "sciteqtenvironmentforjavascript.h"
 
-SciteQtEnvironmentForJavaScript::SciteQtEnvironmentForJavaScript(bool & bIsAdmin, QObject *parent)
-    : QObject(parent), m_bIsAdmin(bIsAdmin)
+SciteQtEnvironmentForJavaScript::SciteQtEnvironmentForJavaScript(bool & bIsAdmin, QString & sStyle, QObject *parent)
+    : QObject(parent), m_bIsAdmin(bIsAdmin), m_sStyle(sStyle)
 {
 }
 
@@ -27,4 +27,14 @@ void SciteQtEnvironmentForJavaScript::admin(bool value)
 bool SciteQtEnvironmentForJavaScript::isAdmin() const
 {
     return m_bIsAdmin;
+}
+
+void SciteQtEnvironmentForJavaScript::style(const QString & value)
+{
+    m_sStyle = value;
+}
+
+QString SciteQtEnvironmentForJavaScript::getStyle() const
+{
+    return m_sStyle;
 }

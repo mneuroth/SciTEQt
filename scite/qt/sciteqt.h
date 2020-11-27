@@ -453,6 +453,8 @@ public:
 
     static bool IsAdmin();
     static void SetAdmin(bool value);
+    static QString GetStyle();
+    static void SetStyle(const QString & value);
 
 public slots:
     void OnAcceptedClicked();
@@ -576,6 +578,7 @@ private:
     std::function<void(QString)> *  m_pFcnReceiveContentToProcess;
 
     static bool             m_bIsAdmin;
+    static QString          m_sStyle;
 
     bool                    m_bWaitDoneFlag;
     int                     m_iMessageDialogAccepted;

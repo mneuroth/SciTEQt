@@ -42,6 +42,18 @@
 #include "LexillaLibrary.h"
 
 #define KEY_ADMIN "admin"
+#define KEY_STYLE "style"
+
+#define DEFAULT_STYLE "Default"
+#if defined(Q_OS_WIN) || defined(Q_OS_MACOS) || defined(Q_OS_LINUX)
+#define DEFAULT_STYLE "FUSION"
+// "Default"
+// "Material"
+// "Universal"
+#elif defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
+#define DEFAULT_STYLE "Material"
+// "Default"
+#endif
 
 #ifdef _WITH_QDEBUG_REDIRECT
 static qint64 g_iLastTimeStamp = 0;
@@ -115,14 +127,6 @@ int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-#if defined(Q_OS_WIN) || defined(Q_OS_MACOS) || defined(Q_OS_LINUX)
-    QQuickStyle::setStyle("Fusion");
-    //QQuickStyle::setStyle("Material");
-    //QQuickStyle::setStyle("Universal");
-#elif defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
-    //QQuickStyle::setStyle("Default");
-#endif
-
     QApplication app(argc, argv);
     app.setOrganizationName("scintilla.org");
     app.setOrganizationDomain("scintilla.org");
@@ -130,6 +134,8 @@ int main(int argc, char *argv[])
 
     QSettings aSettings;
     SciTEQt::SetAdmin(aSettings.value(KEY_ADMIN, false).toBool());
+    SciTEQt::SetStyle(aSettings.value(KEY_STYLE, DEFAULT_STYLE).toString());
+    QQuickStyle::setStyle(SciTEQt::GetStyle());
 
 #ifdef _WITH_QDEBUG_REDIRECT
     qInstallMessageHandler(PrivateMessageHandler);
@@ -248,6 +254,7 @@ int main(int argc, char *argv[])
     int ret = app.exec();
 
     aSettings.setValue(KEY_ADMIN, SciTEQt::IsAdmin());
+    aSettings.setValue(KEY_STYLE, SciTEQt::GetStyle());
 
     return ret;
 }
