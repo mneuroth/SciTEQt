@@ -200,7 +200,7 @@ Page {
                 Layout.columnSpan: 3
                 Layout.row: 4
                 Layout.column: 0
-                Layout.fillWidth: true
+                //Layout.fillWidth: true
                 spacing: 10
 
                 Button {

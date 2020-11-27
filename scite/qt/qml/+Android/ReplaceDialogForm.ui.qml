@@ -62,7 +62,7 @@ Page {
             anchors.bottomMargin: 5
 
             columns: 4
-            rows: 9
+            rows: 10
 
             // ***** row 0
 
@@ -79,7 +79,7 @@ Page {
                 Layout.fillWidth: true
                 Layout.row: 0
                 Layout.column: 1
-                implicitWidth: 300
+                //implicitWidth: 300
                 editable: true
                 model: findWhatModel
 
@@ -169,22 +169,6 @@ Page {
                 Keys.onBackPressed: cancelButton.clicked()
             }
 
-            Label {
-                id: countReplacementsLabelLabel
-                text: localiseText(qsTr("Replacements:"))
-                Layout.row: 5
-                Layout.column: 2
-            }
-
-            TextField {
-                id: countReplacementsLabel
-                implicitWidth: 50
-                readOnly: true
-                text: "0"
-                Layout.row: 5
-                Layout.column: 3
-            }
-
             // ***** row 6
 
             CheckBox {
@@ -199,19 +183,35 @@ Page {
 
             // ***** row 7
 
+            Label {
+                id: countReplacementsLabelLabel
+                text: localiseText(qsTr("Replacements:"))
+                Layout.row: 7
+                Layout.column: 0
+            }
+
+            TextField {
+                id: countReplacementsLabel
+                implicitWidth: 50
+                readOnly: true
+                text: "0"
+                Layout.row: 7
+                Layout.column: 1
+            }
+
+            // ***** row 8
+
             Flow {
 
                 Layout.columnSpan: 4
-                Layout.row: 7
+                Layout.row: 8
                 Layout.column: 0
+                Layout.fillWidth: true
+
                 spacing: 10
 
                 Button {
                     id: findNextButton
-                    //Layout.columnSpan: 2
-                    //Layout.fillWidth: true
-                    //Layout.row: 7
-                    //Layout.column: 0
                     text: localiseText(qsTr("&Find Next"),false)
                     highlighted: true
                     Keys.onEscapePressed: cancelButton.clicked()
@@ -220,8 +220,6 @@ Page {
 
                 Button {
                     id: replaceButton
-                    //Layout.columnSpan: 2
-                    //Layout.fillWidth: true
                     text: localiseText(qsTr("&Replace"),false)
                     Keys.onEscapePressed: cancelButton.clicked()
                     Keys.onBackPressed: cancelButton.clicked()
@@ -229,10 +227,6 @@ Page {
 
                 Button {
                     id: replaceAllButton
-                    //Layout.columnSpan: 2
-                    //Layout.fillWidth: true
-                    //Layout.row: 7
-                    //Layout.column: 2
                     text: localiseText(qsTr("Replace &All"),false)
                     Keys.onEscapePressed: cancelButton.clicked()
                     Keys.onBackPressed: cancelButton.clicked()
@@ -240,10 +234,6 @@ Page {
 
                 Button {
                     id: replaceInSectionButton
-                    //Layout.columnSpan: 2
-                    //Layout.fillWidth: true
-                    //Layout.row: 7
-                    //Layout.column: 3
                     text: localiseText(qsTr("Replace in &Section"),false)
                     Keys.onEscapePressed: cancelButton.clicked()
                     Keys.onBackPressed: cancelButton.clicked()
@@ -251,17 +241,13 @@ Page {
 
                 Button {
                     id: cancelButton
-                    //Layout.columnSpan: 2
-                    //Layout.fillWidth: true
-                    //Layout.row: 7
-                    //Layout.column: 4
                     text: localiseText(qsTr("Close"),false)
                     Keys.onEscapePressed: cancelButton.clicked()
                     Keys.onBackPressed: cancelButton.clicked()
                 }
             }
 
-            // ***** row 8
+            // ***** row 9
 
             Label {
                 id: fillLabel
@@ -271,7 +257,7 @@ Page {
                 Layout.columnSpan: 4
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-                Layout.row: 8
+                Layout.row: 9
                 Layout.column: 0
             }
         }

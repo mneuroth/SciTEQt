@@ -1331,7 +1331,7 @@ ApplicationWindow {
                 icon.height: toolBarButtonContainer.iconHeight
                 icon.width: toolBarButtonContainer.iconWidth
                 //text: "Build"
-                visible: sciteQt.showToolBar
+                visible: sciteQt.showToolBar && !sciteQt.mobilePlatform
                 onClicked: sciteQt.cmdBuild()
 
                 ToolTip.delay: toolTipDelay
