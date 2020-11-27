@@ -17,6 +17,7 @@
 #include <QQmlContext>
 #include <QQuickStyle>
 #include <QTranslator>
+#include <QSettings>
 
 #include "applicationdata.h"
 #include "sciteqt.h"
@@ -39,6 +40,8 @@
 //#include "SciLexer.h"
 #include "Lexilla.h"
 #include "LexillaLibrary.h"
+
+#define KEY_ADMIN "admin"
 
 #ifdef _WITH_QDEBUG_REDIRECT
 static qint64 g_iLastTimeStamp = 0;
@@ -71,21 +74,24 @@ void PrivateMessageHandler(QtMsgType type, const QMessageLogContext & context, c
 void AddToLog(const QString & msg)
 {
 #ifdef _WITH_ADD_TO_LOG
-    QString sFileName(LOG_NAME);
-    //if( !QDir("/sdcard/Texte").exists() )
-    //{
-    //    sFileName = "mgv_quick_qdebug.log";
-    //}
-    QFile outFile(sFileName);
-    outFile.open(QIODevice::WriteOnly | QIODevice::Append);
-    QTextStream ts(&outFile);
-    qint64 now = QDateTime::currentMSecsSinceEpoch();
-    qint64 delta = now - g_iLastTimeStamp;
-    g_iLastTimeStamp = now;
-    ts << delta << " ";
-    ts << msg << endl;
-    qDebug() << delta << " " << msg << endl;
-    outFile.flush();
+    if( SciTEQt::IsAdmin() )
+    {
+        QString sFileName(LOG_NAME);
+        //if( !QDir("/sdcard/Texte").exists() )
+        //{
+        //    sFileName = "mgv_quick_qdebug.log";
+        //}
+        QFile outFile(sFileName);
+        outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+        QTextStream ts(&outFile);
+        qint64 now = QDateTime::currentMSecsSinceEpoch();
+        qint64 delta = now - g_iLastTimeStamp;
+        g_iLastTimeStamp = now;
+        ts << delta << " ";
+        ts << msg << endl;
+        qDebug() << delta << " " << msg << endl;
+        outFile.flush();
+    }
 #else
     Q_UNUSED(msg)
 #endif
@@ -121,6 +127,9 @@ int main(int argc, char *argv[])
     app.setOrganizationName("scintilla.org");
     app.setOrganizationDomain("scintilla.org");
     app.setApplicationName("SciTEQt");
+
+    QSettings aSettings;
+    SciTEQt::SetAdmin(aSettings.value(KEY_ADMIN, false).toBool());
 
 #ifdef _WITH_QDEBUG_REDIRECT
     qInstallMessageHandler(PrivateMessageHandler);
@@ -236,5 +245,9 @@ int main(int argc, char *argv[])
 
     engine.load(url);
 
-    return app.exec();
+    int ret = app.exec();
+
+    aSettings.setValue(KEY_ADMIN, SciTEQt::IsAdmin());
+
+    return ret;
 }

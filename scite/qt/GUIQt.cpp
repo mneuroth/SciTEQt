@@ -60,6 +60,7 @@
 #include "SciTEBase.h"
 
 #include "ScintillaQt.h"
+#include "SciteQt.h"
 
 #include <QtQuick/QQuickView>
 #include <QtQuick/QQuickItem>
@@ -430,7 +431,8 @@ void Window::SetTitle(const gui_char *s)
     QQuickWindow * window = GetQuickWindow(GetQObject(GetID()));
     if( window != 0 )
     {
-        window->setTitle(ConvertGuiCharToQString(s));
+        QString sAdd = SciTEQt::IsAdmin() ? " [admin]" : "";
+        window->setTitle(ConvertGuiCharToQString(s)+sAdd);
     }
 }
 

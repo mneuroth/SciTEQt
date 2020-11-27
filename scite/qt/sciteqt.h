@@ -451,6 +451,9 @@ public:
 
     void MenuCommand(int cmdID, int source = 0);
 
+    static bool IsAdmin();
+    static void SetAdmin(bool value);
+
 public slots:
     void OnAcceptedClicked();
     void OnRejectedClicked();
@@ -571,6 +574,8 @@ private:
 
     std::function<QString()> *      m_pFcnGetContentToWrite;
     std::function<void(QString)> *  m_pFcnReceiveContentToProcess;
+
+    static bool             m_bIsAdmin;
 
     bool                    m_bWaitDoneFlag;
     int                     m_iMessageDialogAccepted;

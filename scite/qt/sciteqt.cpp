@@ -124,6 +124,8 @@ template <class T> T childObject(QQmlApplicationEngine& engine,
 
 //*************************************************************************
 
+bool SciTEQt::m_bIsAdmin = false;
+
 SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
     : QObject(parent),
       m_pApplicationData(0),
@@ -2221,7 +2223,7 @@ void SciTEQt::cmdRunCurrentAsJavaScriptFile()
     // see: https://doc.qt.io/qt-5/qjsengine.html#details
     QJSEngine myEngine;
 
-    SciteQtEnvironmentForJavaScript aSciteQtJSEnvironment(this);
+    SciteQtEnvironmentForJavaScript aSciteQtJSEnvironment(m_bIsAdmin, this);
     connect(&aSciteQtJSEnvironment,SIGNAL(OnPrint(QString)),this,SLOT(OnAddLineToOutput(QString)));
     connect(&aSciteQtJSEnvironment,SIGNAL(OnAdmin(bool)),this,SLOT(OnAdmin(bool)));
 
@@ -3069,6 +3071,16 @@ void SciTEQt::testFunction(const QString & text)
 {
     // place for some debugging code...
     Q_UNUSED(text);
+}
+
+bool SciTEQt::IsAdmin()
+{
+    return m_bIsAdmin;
+}
+
+void SciTEQt::SetAdmin(bool value)
+{
+    m_bIsAdmin = value;
 }
 
 void SciTEQt::UpdateStatusbarView()
