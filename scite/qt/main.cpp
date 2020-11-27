@@ -55,6 +55,8 @@
 // "Default"
 // "Material"
 // "Universal"
+#else
+#define DEFAULT_STYLE "Default"
 #endif
 
 #ifdef _WITH_QDEBUG_REDIRECT
