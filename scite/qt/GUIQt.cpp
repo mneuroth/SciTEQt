@@ -60,7 +60,7 @@
 #include "SciTEBase.h"
 
 #include "ScintillaQt.h"
-#include "SciteQt.h"
+#include "sciteqt.h"
 
 #include <QtQuick/QQuickView>
 #include <QtQuick/QQuickItem>
