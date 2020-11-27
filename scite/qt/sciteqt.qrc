@@ -1,79 +1,82 @@
 <RCC>
     <qresource prefix="/">
-        <file>qml/app.qml</file>
-        <file>qml/AutoSizingMenu.qml</file>
-        <file>qml/ReplaceDialogWindow.qml</file>
-        <file>qml/ReplaceDialog.qml</file>
-        <file>qml/ReplaceDialogForm.ui.qml</file>
-        <file>qml/FindDialogWindow.qml</file>
-        <file>qml/FindDialog.qml</file>
-        <file>qml/FindDialogForm.ui.qml</file>
-        <file>qml/FindInFilesDialogWindow.qml</file>
-        <file>qml/FindInFilesDialog.qml</file>
-        <file>qml/FindInFilesDialogForm.ui.qml</file>
-        <file>qml/GoToDialogWindow.qml</file>
-        <file>qml/GoToDialog.qml</file>
-        <file>qml/GoToDialogForm.ui.qml</file>
-        <file>qml/TabSizeDialogWindow.qml</file>
-        <file>qml/TabSizeDialog.qml</file>
-        <file>qml/TabSizeDialogForm.ui.qml</file>
-        <file>qml/AbbreviationDialogWindow.qml</file>
-        <file>qml/AbbreviationDialog.qml</file>
-        <file>qml/AbbreviationDialogForm.ui.qml</file>
-        <file>qml/ParametersDialogWindow.qml</file>
-        <file>qml/ParametersDialog.qml</file>
-        <file>qml/ParametersDialogForm.ui.qml</file>
-        <file>qml/MobileFileDialog.qml</file>
-        <file>qml/MobileFileDialogForm.ui.qml</file>
-        <file>qml/SciteMenuActions.qml</file>
-        <!-- <file>qml/+Android/FileMenu.qml</file> --> <!-- Android specific menus... -->
-        <file>qml/FileMenu.qml</file>
-        <file>qml/EditMenu.qml</file>
-        <file>qml/SearchMenu.qml</file>
-        <file>qml/ViewMenu.qml</file>
-        <file>qml/ToolsMenu.qml</file>
-        <file>qml/OptionsMenu.qml</file>
-        <file>qml/LanguageMenu.qml</file>
-        <file>qml/BuffersMenu.qml</file>
-        <file>qml/HelpMenu.qml</file>
-        <file>qml/AboutSciteDialog.qml</file>
-        <file>qml/AboutSciteDialogWindow.qml</file>
-        <file alias="qml/ScintillaText.qml">../../scintilla/qt/ScintillaEditBase/ScintillaText.qml</file>
+        <file alias="app.qml">qml/app.qml</file>
+        <file alias="AutoSizingMenu.qml">qml/AutoSizingMenu.qml</file>
+        <file alias="ReplaceDialogWindow.qml">qml/ReplaceDialogWindow.qml</file>
+        <file alias="ReplaceDialog.qml">qml/ReplaceDialog.qml</file>
+        <file alias="+android/ReplaceDialogForm.ui.qml">qml/+Android/ReplaceDialogForm.ui.qml</file>
+        <file alias="ReplaceDialogForm.ui.qml">qml/ReplaceDialogForm.ui.qml</file>
+        <file alias="FindDialogWindow.qml">qml/FindDialogWindow.qml</file>
+        <file alias="FindDialog.qml">qml/FindDialog.qml</file>
+        <file alias="+android/FindDialogForm.ui.qml">qml/+Android/FindDialogForm.ui.qml</file> <!-- Android specific dialogs... -->
+        <file alias="FindDialogForm.ui.qml">qml/FindDialogForm.ui.qml</file>
+        <file alias="FindInFilesDialogWindow.qml">qml/FindInFilesDialogWindow.qml</file>
+        <file alias="FindInFilesDialog.qml">qml/FindInFilesDialog.qml</file>
+        <file alias="+android/FindInFilesDialogForm.ui.qml">qml/+Android/FindInFilesDialogForm.ui.qml</file>
+        <file alias="FindInFilesDialogForm.ui.qml">qml/FindInFilesDialogForm.ui.qml</file>
+        <file alias="GoToDialogWindow.qml">qml/GoToDialogWindow.qml</file>
+        <file alias="GoToDialog.qml">qml/GoToDialog.qml</file>
+        <file alias="GoToDialogForm.ui.qml">qml/GoToDialogForm.ui.qml</file>
+        <file alias="TabSizeDialogWindow.qml">qml/TabSizeDialogWindow.qml</file>
+        <file alias="TabSizeDialog.qml">qml/TabSizeDialog.qml</file>
+        <file alias="TabSizeDialogForm.ui.qml">qml/TabSizeDialogForm.ui.qml</file>
+        <file alias="AbbreviationDialogWindow.qml">qml/AbbreviationDialogWindow.qml</file>
+        <file alias="AbbreviationDialog.qml">qml/AbbreviationDialog.qml</file>
+        <file alias="AbbreviationDialogForm.ui.qml">qml/AbbreviationDialogForm.ui.qml</file>
+        <file alias="ParametersDialogWindow.qml">qml/ParametersDialogWindow.qml</file>
+        <file alias="ParametersDialog.qml">qml/ParametersDialog.qml</file>
+        <file alias="ParametersDialogForm.ui.qml">qml/ParametersDialogForm.ui.qml</file>
+        <file alias="MobileFileDialog.qml">qml/MobileFileDialog.qml</file>
+        <file alias="MobileFileDialogForm.ui.qml">qml/MobileFileDialogForm.ui.qml</file>
+        <file alias="SciteMenuActions.qml">qml/SciteMenuActions.qml</file>
+        <!-- <file alias="+android/FileMenu.qml">qml/+Android/FileMenu.qml</file> --> <!-- Android specific menus... via QFileSelector -->
+        <file alias="FileMenu.qml">qml/FileMenu.qml</file>
+        <file alias="EditMenu.qml">qml/EditMenu.qml</file>
+        <file alias="SearchMenu.qml">qml/SearchMenu.qml</file>
+        <file alias="ViewMenu.qml">qml/ViewMenu.qml</file>
+        <file alias="ToolsMenu.qml">qml/ToolsMenu.qml</file>
+        <file alias="OptionsMenu.qml">qml/OptionsMenu.qml</file>
+        <file alias="LanguageMenu.qml">qml/LanguageMenu.qml</file>
+        <file alias="BuffersMenu.qml">qml/BuffersMenu.qml</file>
+        <file alias="HelpMenu.qml">qml/HelpMenu.qml</file>
+        <file alias="AboutSciteDialog.qml">qml/AboutSciteDialog.qml</file>
+        <file alias="AboutSciteDialogWindow.qml">qml/AboutSciteDialogWindow.qml</file>
+        <file alias="ScintillaText.qml">../../scintilla/qt/ScintillaEditBase/ScintillaText.qml</file>
         <file alias="Embedded.properties">../src/Embedded.properties</file>
         <file alias="SciTEGlobal.properties">SciTEGlobal.properties</file>  <!-- used only for WASM platform -->
         <file alias="SciTEUser.properties">SciTEUser.properties</file>      <!-- used only for WASM platform -->
         <file alias="scite_logo.png">../gtk/Sci48M.png</file>
         <file alias="about_sciteqt.txt">about_sciteqt.txt</file>
-        <file alias="qml/icons/clear.svg">icons/clear-black-24dp.svg</file>
-        <file alias="qml/icons/content_copy.svg">icons/content_copy-black-24dp.svg</file>
-        <file alias="qml/icons/content_cut.svg">icons/content_cut-black-24dp.svg</file>
-        <file alias="qml/icons/content_paste.svg">icons/content_paste-black-24dp.svg</file>
-        <file alias="qml/icons/create.svg">icons/create-black-24dp.svg</file>
-        <file alias="qml/icons/delete.svg">icons/delete-black-24dp.svg</file>
-        <file alias="qml/icons/find_in_page.svg">icons/find_in_page-black-24dp.svg</file>
-        <file alias="qml/icons/find_replace.svg">icons/find_replace-black-24dp.svg</file>
-        <file alias="qml/icons/open_in_new.svg">icons/open_in_new-black-24dp.svg</file>
-        <file alias="qml/icons/print.svg">icons/print-black-24dp.svg</file>
-        <file alias="qml/icons/redo.svg">icons/redo-black-24dp.svg</file>
-        <file alias="qml/icons/save.svg">icons/save-black-24dp.svg</file>
-        <file alias="qml/icons/undo.svg">icons/undo-black-24dp.svg</file>
-        <file alias="qml/icons/play_arrow.svg">icons/play_arrow-black-24dp.svg</file>
-        <file alias="qml/icons/stop.svg">icons/stop-black-24dp.svg</file>
-        <file alias="qml/icons/build.svg">icons/build-black-24dp.svg</file>
-        <file alias="qml/icons/arrow_forward_ios.svg">icons/arrow_forward_ios-black-24dp.svg</file>
-        <file alias="qml/icons/arrow_back_ios.svg">icons/arrow_back_ios-black-24dp.svg</file>
-        <file alias="qml/icons/do_not_touch.svg">icons/do_not_touch-black-24dp.svg</file>
-        <file alias="qml/icons/share.svg">icons/share-black-24dp.svg</file>
-        <file alias="qml/icons/directory.svg">icons/folder-black-24dp.svg</file>
-        <file alias="qml/icons/document.svg">icons/insert_drive_file-black-24dp.svg</file>
-        <file alias="qml/icons/file.svg">icons/text_snippet-black-24dp.svg</file>
-        <file alias="qml/icons/loop.svg">icons/loop-black-24dp.svg</file>
-        <file alias="qml/icons/arrow_upward.svg">icons/arrow_upward-black-24dp.svg</file>
-        <file alias="qml/icons/arrow_downward.svg">icons/arrow_downward-black-24dp.svg</file>
-        <file alias="qml/icons/menu-black.svg">icons/menu-black-24dp.svg</file>
-        <file alias="qml/icons/more_vert-black.svg">icons/more_vert-black-24dp.svg</file>
-        <file alias="qml/icons/more_horiz-black.svg">icons/more_horiz-black-24dp.svg</file>
-        <file alias="qml/icons/arrow_right-black.svg">icons/arrow_right-black-24dp.svg</file>
-        <file alias="qml/icons/arrow_left-black.svg">icons/arrow_left-black-24dp.svg</file>
+        <file alias="icons/clear.svg">icons/clear-black-24dp.svg</file>
+        <file alias="icons/content_copy.svg">icons/content_copy-black-24dp.svg</file>
+        <file alias="icons/content_cut.svg">icons/content_cut-black-24dp.svg</file>
+        <file alias="icons/content_paste.svg">icons/content_paste-black-24dp.svg</file>
+        <file alias="icons/create.svg">icons/create-black-24dp.svg</file>
+        <file alias="icons/delete.svg">icons/delete-black-24dp.svg</file>
+        <file alias="icons/find_in_page.svg">icons/find_in_page-black-24dp.svg</file>
+        <file alias="icons/find_replace.svg">icons/find_replace-black-24dp.svg</file>
+        <file alias="icons/open_in_new.svg">icons/open_in_new-black-24dp.svg</file>
+        <file alias="icons/print.svg">icons/print-black-24dp.svg</file>
+        <file alias="icons/redo.svg">icons/redo-black-24dp.svg</file>
+        <file alias="icons/save.svg">icons/save-black-24dp.svg</file>
+        <file alias="icons/undo.svg">icons/undo-black-24dp.svg</file>
+        <file alias="icons/play_arrow.svg">icons/play_arrow-black-24dp.svg</file>
+        <file alias="icons/stop.svg">icons/stop-black-24dp.svg</file>
+        <file alias="icons/build.svg">icons/build-black-24dp.svg</file>
+        <file alias="icons/arrow_forward_ios.svg">icons/arrow_forward_ios-black-24dp.svg</file>
+        <file alias="icons/arrow_back_ios.svg">icons/arrow_back_ios-black-24dp.svg</file>
+        <file alias="icons/do_not_touch.svg">icons/do_not_touch-black-24dp.svg</file>
+        <file alias="icons/share.svg">icons/share-black-24dp.svg</file>
+        <file alias="icons/directory.svg">icons/folder-black-24dp.svg</file>
+        <file alias="icons/document.svg">icons/insert_drive_file-black-24dp.svg</file>
+        <file alias="icons/file.svg">icons/text_snippet-black-24dp.svg</file>
+        <file alias="icons/loop.svg">icons/loop-black-24dp.svg</file>
+        <file alias="icons/arrow_upward.svg">icons/arrow_upward-black-24dp.svg</file>
+        <file alias="icons/arrow_downward.svg">icons/arrow_downward-black-24dp.svg</file>
+        <file alias="icons/menu-black.svg">icons/menu-black-24dp.svg</file>
+        <file alias="icons/more_vert-black.svg">icons/more_vert-black-24dp.svg</file>
+        <file alias="icons/more_horiz-black.svg">icons/more_horiz-black-24dp.svg</file>
+        <file alias="icons/arrow_right-black.svg">icons/arrow_right-black-24dp.svg</file>
+        <file alias="icons/arrow_left-black.svg">icons/arrow_left-black-24dp.svg</file>
     </qresource>
 </RCC>

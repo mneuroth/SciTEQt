@@ -44,15 +44,17 @@
 #define KEY_ADMIN "admin"
 #define KEY_STYLE "style"
 
+#if defined(Q_OS_ANDROID)
+//#define DEFAULT_STYLE "Material"
 #define DEFAULT_STYLE "Default"
-#if defined(Q_OS_WIN) || defined(Q_OS_MACOS) || defined(Q_OS_LINUX)
+// "Default"
+#elif defined(Q_OS_IOS)
+#define DEFAULT_STYLE "Material"
+#elif defined(Q_OS_WIN) || defined(Q_OS_MACOS) || defined(Q_OS_LINUX)
 #define DEFAULT_STYLE "FUSION"
 // "Default"
 // "Material"
 // "Universal"
-#elif defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
-#define DEFAULT_STYLE "Material"
-// "Default"
 #endif
 
 #ifdef _WITH_QDEBUG_REDIRECT
@@ -222,7 +224,7 @@ int main(int argc, char *argv[])
     app.setWindowIcon(QIcon("scite_logo.png"));
 
     QQmlApplicationEngine engine;
-    const QUrl url(QStringLiteral("qrc:/qml/app.qml"));
+    const QUrl url(QStringLiteral("qrc:/app.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
         if (!obj && url == objUrl)

@@ -32,6 +32,7 @@ Added freatures (compared to original SciTE):
 
 Missing features are:
 
+  * Dark Theme for Scintilla --> background -> black ?
   * save and restore file extensions and directories for find in files
   * Improve splitter handling
   * Implement Printing (partly)
@@ -39,7 +40,9 @@ Missing features are:
   * Android: improve selection of text --> improve/use QInputContext
   * Android: improve deployment --> more languages?
   * Android: disable logging --> admin switch?
-  * Android: remove message in outputarea at startup
+  ((* Android: remove message in outputarea at startup
+  * Android: improve layout of dialogs
+  * Android: touch on dialog and then back button -> closes app
   * Android: support pdf output to printer app(s)
 
 New open features might be:
@@ -54,6 +57,7 @@ New open features might be:
 
 Known and open Bugs are:
 
+  * Initial horizontal Scrollbar size (width of maximum screen? logical width?)
   * Strange output (no clipping) if CR/LF should be shown
   * Allow/support different styling and dark scheme
   * View of fonts may be corrupted after attatching/detaching monitors to the computer... ==> restart application again
@@ -77,3 +81,7 @@ Known and open Bugs are:
 Watch:
   * Memory leak when switching between tab pages?
   * Sporadic crashes with F5 und Scripts with long outputs --> maybe better after creating QProcess in own thread
+
+https://doc.qt.io/qt-5/qtquickcontrols2-fileselectors.html
+https://doc.qt.io/qt-5/qfileselector.html#details
+https://qmlbook.github.io/ch06-controls/controls.html
