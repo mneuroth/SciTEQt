@@ -58,18 +58,24 @@ Page {
             anchors.topMargin: 5
             anchors.bottomMargin: 5
 
-            columns: 4
-            rows: 7
+            columns: 3
+            rows: 8
+
+            // ***** row 0
 
             Label {
                 id: findLabel
                 text: localiseText(qsTr("Find what:"))
+                Layout.row: 0
+                Layout.column: 0
             }
 
             ComboBox {
                 id: findWhatInput
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
+                Layout.row: 0
+                Layout.column: 1
                 implicitWidth: 300
                 editable: true
                 model: findWhatModel
@@ -87,17 +93,21 @@ Page {
             Button {
                 id: findNextButton
                 Layout.fillWidth: true
+                Layout.row: 6
+                Layout.column: 0
                 text: localiseText(qsTr("&Find Next"),false)
                 highlighted: true
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
 
-            // *****
+            // ***** row 1
 
             CheckBox {
                 id: matchWholeWordCheckBox
                 Layout.columnSpan: 2
+                Layout.row: 1
+                Layout.column: 0
                 text: localiseText(qsTr("Match &whole word only"))
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
@@ -106,6 +116,8 @@ Page {
             Rectangle {
                 Layout.rowSpan: 2
                 Layout.fillWidth: true
+                Layout.row: 1
+                Layout.column: 2
                 border.color: "light grey"
                 border.width: 1
                 Layout.preferredWidth: direction.width
@@ -129,16 +141,20 @@ Page {
             Button {
                 id: markAllButton
                 Layout.fillWidth: true
+                Layout.row: 6
+                Layout.column: 1
                 text: localiseText(qsTr("&Mark All"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
 
-            // *****
+            // ***** row 2
 
             CheckBox {
                 id: caseSensitiveCheckBox
                 Layout.columnSpan: 2
+                Layout.row: 2
+                Layout.column: 0
                 text: localiseText(qsTr("Case sensiti&ve"))
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
@@ -147,42 +163,50 @@ Page {
             Button {
                 id: cancelButton
                 Layout.fillWidth: true
+                Layout.row: 6
+                Layout.column: 2
                 text: localiseText(qsTr("Cancel"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
 
-            // *****
+            // ***** row 3
 
             CheckBox {
                 id: regularExpressionCheckBox
                 Layout.columnSpan: 3
+                Layout.row: 3
+                Layout.column: 0
                 text: localiseText(qsTr("Regular &expression"))
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
 
-            // *****
+            // ***** row 4
 
             CheckBox {
                 id: wrapAroundCheckBox
                 Layout.columnSpan: 3
+                Layout.row: 4
+                Layout.column: 0
                 text: localiseText(qsTr("Wrap ar&ound"))
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
 
-            // *****
+            // ***** row 5
 
             CheckBox {
                 id: tramsformBackslashExprCheckBox
                 Layout.columnSpan: 3
+                Layout.row: 5
+                Layout.column: 0
                 text: localiseText(qsTr("Transform &backslash expressions"))
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
 
-            // *****
+            // ***** row 6
 /*
             CheckBox {
                 id: searchOnlyInThisStyleCheckBox
@@ -197,9 +221,11 @@ Page {
                 text: ""
                 visible: sciteQt.useMobileDialogHandling
 
-                Layout.columnSpan: 4
+                Layout.columnSpan: 3
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+                Layout.row: 7
+                Layout.column: 0
             }
         }
     }

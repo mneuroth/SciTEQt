@@ -61,17 +61,23 @@ Page {
             anchors.topMargin: 5
             anchors.bottomMargin: 5
 
-            columns: 4
-            rows: 5
+            columns: 3
+            rows: 6
+
+            // ***** row 0
 
             Label {
                 id: findLabel
                 text: localiseText(qsTr("Find what:"))
+                Layout.row: 0
+                Layout.column: 0
             }
 
             ComboBox {
                 id: findWhatInput
                 Layout.columnSpan: 2
+                Layout.row: 0
+                Layout.column: 1
                 Layout.fillWidth: true
                 editable: true
                 //selectTextByMouse: true
@@ -87,26 +93,21 @@ Page {
                 objectName: "findWhatModel"
             }
 
-            Button {
-                id: findButton
-                Layout.fillWidth: true
-                text: localiseText(qsTr("&Find"),false)
-                highlighted: true
-                Keys.onEscapePressed: cancelButton.clicked()
-                Keys.onBackPressed: cancelButton.clicked()
-            }
-
-            // **************
+            // ***** row 1
 
             Label {
                 id: filesLabel
                 text: localiseText(qsTr("Files:"))
+                Layout.row: 1
+                Layout.column: 0
             }
 
             ComboBox {
                 id: filesExtensionsInput
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
+                Layout.row: 1
+                Layout.column: 1
                 editable: true
                 //selectTextByMouse: true
                 model: filesExtensionsModel
@@ -121,23 +122,19 @@ Page {
                 objectName: "filesExtensionsModel"
             }
 
-            Button {
-                id: cancelButton
-                Layout.fillWidth: true
-                text: localiseText(qsTr("Cancel"),false)
-                Keys.onEscapePressed: cancelButton.clicked()
-                Keys.onBackPressed: cancelButton.clicked()
-            }
-
-            // **************
+            // ***** row 2
 
             Label {
                 id: directoryLabel
                 text: localiseText(qsTr("Directory:"))
+                Layout.row: 2
+                Layout.column: 0
             }
 
             ComboBox {
                 id: directoryInput
+                Layout.row: 2
+                Layout.column: 1
                 Layout.fillWidth: true
                 editable: false
                 //selectTextByMouse: true
@@ -155,24 +152,21 @@ Page {
 
             Button {
                 id: upButton
+                Layout.row: 2
+                Layout.column: 2
+                Layout.fillWidth: true
                 implicitWidth: browseButton.width / 4
                 text: localiseText(qsTr("&.."),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
 
-            Button {
-                id: browseButton
-                Layout.fillWidth: true
-                text: localiseText(qsTr("&Browse..."),false)
-                Keys.onEscapePressed: cancelButton.clicked()
-                Keys.onBackPressed: cancelButton.clicked()
-            }
+            // ***** row 3
 
-            // **************
-
-            Row {
-                Layout.columnSpan: 4
+            Flow {
+                Layout.columnSpan: 3
+                Layout.row: 3
+                Layout.column: 0
                 Layout.fillWidth: true
 
                 CheckBox {
@@ -200,16 +194,56 @@ Page {
                 }
             }
 
-            // **************
+            // ***** row 4
+
+            Flow {
+                Layout.columnSpan: 3
+                Layout.row: 4
+                Layout.column: 0
+                Layout.fillWidth: true
+                spacing: 10
+
+                Button {
+                    id: findButton
+                    //Layout.row: 4
+                    //Layout.column: 0
+                    text: localiseText(qsTr("&Find"),false)
+                    highlighted: true
+                    Keys.onEscapePressed: cancelButton.clicked()
+                    Keys.onBackPressed: cancelButton.clicked()
+                }
+
+                Button {
+                    id: cancelButton
+                    //Layout.row: 4
+                    //Layout.column: 1
+                    text: localiseText(qsTr("Cancel"),false)
+                    Keys.onEscapePressed: cancelButton.clicked()
+                    Keys.onBackPressed: cancelButton.clicked()
+                }
+
+                Button {
+                    id: browseButton
+                    //Layout.row: 4
+                    //Layout.column: 2
+                    text: localiseText(qsTr("&Browse..."),false)
+                    Keys.onEscapePressed: cancelButton.clicked()
+                    Keys.onBackPressed: cancelButton.clicked()
+                }
+            }
+
+            // ***** row 5
 
             Label {
                 id: fillLabel
                 text: ""
                 visible: sciteQt.useMobileDialogHandling
 
-                Layout.columnSpan: 4
+                Layout.columnSpan: 3
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+                Layout.row: 5
+                Layout.column: 0
             }
         }
     }

@@ -23,7 +23,7 @@ Page {
     property alias replaceButton: replaceButton
     property alias replaceAllButton: replaceAllButton
     property alias replaceInSectionButton: replaceInSectionButton
-    property alias findWhatInput: findWhatInput    
+    property alias findWhatInput: findWhatInput
     property alias findWhatModel: findWhatModel
     property alias replaceWithInput: replaceWithInput
     property alias replaceWithModel: replaceWithModel
@@ -61,18 +61,24 @@ Page {
             anchors.topMargin: 5
             anchors.bottomMargin: 5
 
-            columns: 5
-            rows: 7
+            columns: 4
+            rows: 9
+
+            // ***** row 0
 
             Label {
                 id: findLabel
                 text: localiseText(qsTr("Find what:"))
+                Layout.row: 0
+                Layout.column: 0
             }
 
             ComboBox {
                 id: findWhatInput
-                Layout.columnSpan: 2
+                Layout.columnSpan: 3
                 Layout.fillWidth: true
+                Layout.row: 0
+                Layout.column: 1
                 implicitWidth: 300
                 editable: true
                 model: findWhatModel
@@ -87,27 +93,21 @@ Page {
                 objectName: "findWhatModel"
             }
 
-            Button {
-                id: findNextButton
-                Layout.columnSpan: 2
-                Layout.fillWidth: true
-                text: localiseText(qsTr("&Find Next"),false)
-                highlighted: true
-                Keys.onEscapePressed: cancelButton.clicked()
-                Keys.onBackPressed: cancelButton.clicked()
-            }
-
-            // *****
+            // ***** row 1
 
             Label {
                 id: replaceLabel
                 text: localiseText(qsTr("Replace with:"))
+                Layout.row: 1
+                Layout.column: 0
             }
 
             ComboBox {
                 id: replaceWithInput
-                Layout.columnSpan: 2
+                Layout.columnSpan: 3
                 Layout.fillWidth: true
+                Layout.row: 1
+                Layout.column: 1
                 editable: true
                 model: replaceWithModel
 
@@ -121,77 +121,49 @@ Page {
                 objectName: "replaceWithModel"
             }
 
-            Button {
-                id: replaceButton
-                Layout.columnSpan: 2
-                Layout.fillWidth: true
-                text: localiseText(qsTr("&Replace"),false)
-                Keys.onEscapePressed: cancelButton.clicked()
-                Keys.onBackPressed: cancelButton.clicked()
-            }
-
-            // *****
+            // ***** row 2
 
             CheckBox {
                 id: matchWholeWordCheckBox
                 Layout.columnSpan: 3
+                Layout.row: 2
+                Layout.column: 0
                 text: localiseText(qsTr("Match &whole word only"))
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
 
-            Button {
-                id: replaceAllButton
-                Layout.columnSpan: 2
-                Layout.fillWidth: true
-                text: localiseText(qsTr("Replace &All"),false)
-                Keys.onEscapePressed: cancelButton.clicked()
-                Keys.onBackPressed: cancelButton.clicked()
-            }
-
-            // *****
+            // ***** row 3
 
             CheckBox {
                 id: caseSensitiveCheckBox
                 Layout.columnSpan: 3
+                Layout.row: 3
+                Layout.column: 0
                 text: localiseText(qsTr("Case sensiti&ve"))
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
 
-            Button {
-                id: replaceInSectionButton
-                Layout.columnSpan: 2
-                Layout.fillWidth: true
-                text: localiseText(qsTr("Replace in &Section"),false)
-                Keys.onEscapePressed: cancelButton.clicked()
-                Keys.onBackPressed: cancelButton.clicked()
-            }
-
-            // *****
+            // ***** row 4
 
             CheckBox {
                 id: regularExpressionCheckBox
                 Layout.columnSpan: 3
+                Layout.row: 4
+                Layout.column: 0
                 text: localiseText(qsTr("Regular &expression"))
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
 
-            Button {
-                id: cancelButton
-                Layout.columnSpan: 2
-                Layout.fillWidth: true
-                text: localiseText(qsTr("Close"),false)
-                Keys.onEscapePressed: cancelButton.clicked()
-                Keys.onBackPressed: cancelButton.clicked()
-            }
-
-            // *****
+            // ***** row 5
 
             CheckBox {
                 id: wrapAroundCheckBox
-                Layout.columnSpan: 3
+                Layout.columnSpan: 2
+                Layout.row: 5
+                Layout.column: 0
                 text: localiseText(qsTr("Wrap ar&ound"))
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
@@ -200,6 +172,8 @@ Page {
             Label {
                 id: countReplacementsLabelLabel
                 text: localiseText(qsTr("Replacements:"))
+                Layout.row: 5
+                Layout.column: 2
             }
 
             TextField {
@@ -207,26 +181,98 @@ Page {
                 implicitWidth: 50
                 readOnly: true
                 text: "0"
+                Layout.row: 5
+                Layout.column: 3
             }
 
-            // *****
+            // ***** row 6
 
             CheckBox {
                 id: tramsformBackslashExprCheckBox
                 Layout.columnSpan: 4
+                Layout.row: 6
+                Layout.column: 0
                 text: localiseText(qsTr("Transform &backslash expressions"))
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }
+
+            // ***** row 7
+
+            Flow {
+
+                Layout.columnSpan: 4
+                Layout.row: 7
+                Layout.column: 0
+                spacing: 10
+
+                Button {
+                    id: findNextButton
+                    //Layout.columnSpan: 2
+                    //Layout.fillWidth: true
+                    //Layout.row: 7
+                    //Layout.column: 0
+                    text: localiseText(qsTr("&Find Next"),false)
+                    highlighted: true
+                    Keys.onEscapePressed: cancelButton.clicked()
+                    Keys.onBackPressed: cancelButton.clicked()
+                }
+
+                Button {
+                    id: replaceButton
+                    //Layout.columnSpan: 2
+                    //Layout.fillWidth: true
+                    text: localiseText(qsTr("&Replace"),false)
+                    Keys.onEscapePressed: cancelButton.clicked()
+                    Keys.onBackPressed: cancelButton.clicked()
+                }
+
+                Button {
+                    id: replaceAllButton
+                    //Layout.columnSpan: 2
+                    //Layout.fillWidth: true
+                    //Layout.row: 7
+                    //Layout.column: 2
+                    text: localiseText(qsTr("Replace &All"),false)
+                    Keys.onEscapePressed: cancelButton.clicked()
+                    Keys.onBackPressed: cancelButton.clicked()
+                }
+
+                Button {
+                    id: replaceInSectionButton
+                    //Layout.columnSpan: 2
+                    //Layout.fillWidth: true
+                    //Layout.row: 7
+                    //Layout.column: 3
+                    text: localiseText(qsTr("Replace in &Section"),false)
+                    Keys.onEscapePressed: cancelButton.clicked()
+                    Keys.onBackPressed: cancelButton.clicked()
+                }
+
+                Button {
+                    id: cancelButton
+                    //Layout.columnSpan: 2
+                    //Layout.fillWidth: true
+                    //Layout.row: 7
+                    //Layout.column: 4
+                    text: localiseText(qsTr("Close"),false)
+                    Keys.onEscapePressed: cancelButton.clicked()
+                    Keys.onBackPressed: cancelButton.clicked()
+                }
+            }
+
+            // ***** row 8
 
             Label {
                 id: fillLabel
                 text: ""
                 visible: sciteQt.useMobileDialogHandling
 
-                Layout.columnSpan: 5
+                Layout.columnSpan: 4
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+                Layout.row: 8
+                Layout.column: 0
             }
         }
     }
