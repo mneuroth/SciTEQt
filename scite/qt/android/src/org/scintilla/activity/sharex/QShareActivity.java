@@ -248,6 +248,9 @@ private byte[] readBinaryFileFromUri(Uri uri) throws IOException {
              intentAction = "SEND";
               Bundle bundle = intent.getExtras();
               intentUri = (Uri)bundle.get(Intent.EXTRA_STREAM);
+      } else if (intent.getAction().equals("android.intent.action.MAIN")){
+              // ignore main intent of this application !
+              return;
       } else {
 //qDebugOutput("--> PROCESS_INTENT UNKNOWN");
 //qDebugOutput(intent.getAction().toString());
