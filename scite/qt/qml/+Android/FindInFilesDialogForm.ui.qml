@@ -208,7 +208,7 @@ Page {
                     //Layout.row: 4
                     //Layout.column: 0
                     text: localiseText(qsTr("&Find"),false)
-                    highlighted: true
+                    //highlighted: true
                     Keys.onEscapePressed: cancelButton.clicked()
                     Keys.onBackPressed: cancelButton.clicked()
                 }

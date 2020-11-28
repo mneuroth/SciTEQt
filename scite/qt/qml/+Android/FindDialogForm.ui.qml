@@ -96,7 +96,7 @@ Page {
                 Layout.row: 6
                 Layout.column: 0
                 text: localiseText(qsTr("&Find Next"),false)
-                highlighted: true
+                //highlighted: true
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }

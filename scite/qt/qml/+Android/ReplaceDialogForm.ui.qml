@@ -213,7 +213,7 @@ Page {
                 Button {
                     id: findNextButton
                     text: localiseText(qsTr("&Find Next"),false)
-                    highlighted: true
+                    //highlighted: true
                     Keys.onEscapePressed: cancelButton.clicked()
                     Keys.onBackPressed: cancelButton.clicked()
                 }

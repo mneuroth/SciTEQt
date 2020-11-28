@@ -89,7 +89,7 @@ Page {
 
             Button {
                 id: insertButton
-                highlighted: true
+                highlighted: !sciteQt.mobilePlatform
                 text: localiseText(qsTr("&Insert"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()

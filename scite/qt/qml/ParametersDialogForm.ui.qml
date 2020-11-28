@@ -142,7 +142,7 @@ Page {
             Button {
                 id: setButton
                 Layout.columnSpan: 2
-                highlighted: true
+                highlighted: !sciteQt.mobilePlatform
                 text: localiseText(qsTr("&Set"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()

@@ -91,7 +91,7 @@ Page {
                 id: findButton
                 Layout.fillWidth: true
                 text: localiseText(qsTr("&Find"),false)
-                highlighted: true
+                highlighted: !sciteQt.mobilePlatform
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
             }

@@ -87,7 +87,7 @@ Page {
             Button {
                 id: gotoButton
                 Layout.fillWidth: true
-                highlighted: true
+                highlighted: !sciteQt.mobilePlatform
                 text: localiseText(qsTr("&Go To"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()

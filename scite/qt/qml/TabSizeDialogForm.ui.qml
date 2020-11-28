@@ -71,7 +71,7 @@ Page {
             Button {
                 id: okButton
                 Layout.fillWidth: true
-                highlighted: true
+                highlighted: !sciteQt.mobilePlatform
                 text: localiseText(qsTr("OK"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()

@@ -53,7 +53,6 @@ Missing features are:
 # * Android: Support and Pay Page
   * Android: improve deployment --> more languages?
   * Android: Bug? touch on dialog and then back button -> closes app
-  * Android: do not highlight default button?
 
 New open features might be:
 
