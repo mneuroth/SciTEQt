@@ -44,18 +44,18 @@ Added freatures (compared to original SciTE):
 
 Missing features are:
 
-  * Dark Theme for Scintilla --> background -> black ?
   * Improve splitter handling
   * Implement Printing (partly)
   * Context menu for Scintilla Control can not be overwritten/updated by SciTE  
+# * Integrate source code of scite 4.4.6
 # * Android: improve selection of text --> improve/use QInputContext
-# * Android: support pdf output to printer app(s)
 # * Android: Support and Pay Page
-  * Android: improve deployment --> more languages?
-  * Android: Bug? touch on dialog and then back button -> closes app
+? * Android: improve deployment --> more languages?
+# * Android: cut ListView in MobileFileDialog
 
 New open features might be:
 
+  * support Dark Theme for Scintilla --> background -> black ?
   * Allow user to configure (menu)items in tool button (android) ?
   * Navigate in file via "Goto Symbol under Cursor"
   * Autocomplete symbols/functions/variables inside the file
@@ -64,6 +64,8 @@ New open features might be:
   * maybe: save and restore text in outputarea?
   * Save and Restore for View-Parameters like: show line numbers, etc.
   * Save and Restore user defined mapping of file extensions to (lexer-)languages
+  * Support graphics output like visiscript extensions (pay?)
+  * Support more scripting languages via termux or visiscript extensions (pay?)
 
 Known and open Bugs are:
 
@@ -75,6 +77,7 @@ Known and open Bugs are:
   * Main Menu sometimes not completly visible after monitor/resolution change
   * Crash Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? MacOS ==> but gcc/mingw are working !
   * first Menu Item in Menu is empty on Qt 5.11.3 --> ok after switch between mobile and desktop ui !
+  * Android: Bug? touch on dialog and then back button -> closes app
   * MacOS: select directory in find in files dialog does not work
 - * WASM: Close tab with changed data --> 2x messagebox quittieren --> liegt an emscripten_sleep() exception ! --> TODO: test with new 5.15 release build --> ASYNCIFY !?
 - * WASM: Exception in text not found Message box (aber: Verhalten ok) --> liegt an emscripten_sleep() exception !

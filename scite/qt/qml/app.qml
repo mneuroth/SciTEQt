@@ -2338,7 +2338,7 @@ ApplicationWindow {
                 id: buttonOk
                 text: sciteQt.getLocalisedText(qsTr("Ok"))
                 visible: (infoDialogPage.standardButtons & StandardButton.Ok) === StandardButton.Ok
-                highlighted: true
+                highlighted: !sciteQt.mobilePlatform
                 Keys.onEscapePressed: buttonCancel.clicked()
                 Keys.onBackPressed: buttonCancel.clicked()
 
@@ -2348,7 +2348,7 @@ ApplicationWindow {
                 id: buttonCancel
                 text: sciteQt.getLocalisedText(qsTr("Cancel"))
                 visible: (infoDialogPage.standardButtons & StandardButton.Cancel) === StandardButton.Cancel
-                highlighted: true
+                highlighted: !sciteQt.mobilePlatform
                 Keys.onEscapePressed: buttonCancel.clicked()
                 Keys.onBackPressed: buttonCancel.clicked()
 
