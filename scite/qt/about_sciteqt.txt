@@ -14,6 +14,16 @@ SciteQt ist still under development, therefore it has most probably
 some bugs and not all the features of the SciTE editor are implemented 
 yet.
 
+Qt supports different styles. In SciteQt the JavaScript function style(name)
+can be used to select the style permanently. The available styles are:
+
+  * Default
+  * Material
+  * Universal
+  * Fusion
+
+Use this command to switch to Material style: style("Material")
+
 Added freatures (compared to original SciTE):
 
   * updated Icons for toolbar (using: https://material.io/resources/icons/?icon=build&style=baseline)
@@ -29,45 +39,44 @@ Added freatures (compared to original SciTE):
   * Support of switch between menubar for desktop and mobile platforms
   * Added command line option to select language, i. e. --language=de
   * Added support to run current text/script as JavaScript (via QML)
+  * Allow selection of styles via JavaScript function: style("StyleName")
 
 Missing features are:
 
   * Dark Theme for Scintilla --> background -> black ?
-  * save and restore file extensions and directories for find in files
+# * save and restore file extensions and directories for find in files
   * Improve splitter handling
   * Implement Printing (partly)
   * Context menu for Scintilla Control can not be overwritten/updated by SciTE  
-  * Android: improve selection of text --> improve/use QInputContext
+# * Android: improve selection of text --> improve/use QInputContext
+# * Android: support pdf output to printer app(s)
+# * Android: Support and Pay Page
   * Android: improve deployment --> more languages?
-  * Android: disable logging --> admin switch?
-  ((* Android: remove message in outputarea at startup
-  * Android: improve layout of dialogs
-  * Android: touch on dialog and then back button -> closes app
-  * Android: support pdf output to printer app(s)
+  * Android: Bug? touch on dialog and then back button -> closes app
+  * Android: do not highlight default button?
 
 New open features might be:
-  * Allow user (menu)items in tool button (android) ?
+
+  * Allow user to configure (menu)items in tool button (android) ?
   * Navigate in file via "Goto Symbol under Cursor"
   * Autocomplete symbols/functions/variables inside the file
   * Close buttons in tabpage buttons
-  * Show all occurences of find in current file in outputarea
+  * Show all occurences of find in current file in output area
   * maybe: save and restore text in outputarea?
   * Save and Restore for View-Parameters like: show line numbers, etc.
   * Save and Restore user defined mapping of file extensions to (lexer-)languages
 
 Known and open Bugs are:
 
+  * CI: Windows CI build does not fail if compile step has an error and sciteqt.exe was not created ... ? Why? See Mingw Build for 32 bit
+  * MACOS: support qt translations like qt_de.qm
   * Initial horizontal Scrollbar size (width of maximum screen? logical width?)
   * Strange output (no clipping) if CR/LF should be shown
-  * Allow/support different styling and dark scheme
   * View of fonts may be corrupted after attatching/detaching monitors to the computer... ==> restart application again
   * Main Menu sometimes not completly visible after monitor/resolution change
   * Crash Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? MacOS ==> but gcc/mingw are working !
   * first Menu Item in Menu is empty on Qt 5.11.3 --> ok after switch between mobile and desktop ui !
-- //* strange scroll behaviour on Qt 5.11.3 --> mouse click needed to update mouse wheel scroll in scintilla window (see about scite) --> maybe fixed with fix on 6.11.2020 (fixed scrolling behaviour)
-  * Improve handling of last searches in find dialog --> update combobox content directly
   * MacOS: select directory in find in files dialog does not work
-  * CI: Windows CI build does not fail if compile step has an error and sciteqt.exe was not created ... ? Why? See Mingw Build for 32 bit
 - * WASM: Close tab with changed data --> 2x messagebox quittieren --> liegt an emscripten_sleep() exception ! --> TODO: test with new 5.15 release build --> ASYNCIFY !?
 - * WASM: Exception in text not found Message box (aber: Verhalten ok) --> liegt an emscripten_sleep() exception !
   * WASM: improve SaveAs
@@ -75,13 +84,8 @@ Known and open Bugs are:
   * WASM: support translations?
   * WASM: support Export menu items lik pdf, text, ...
   ==> https://doc.qt.io/qt-5/qtwebassembly-platform-notes.html
-  * MACOS: support qt translations like qt_de.qm
   (* WASM: improve keyboard handling / shortcuts for messageboxes
 
 Watch:
   * Memory leak when switching between tab pages?
   * Sporadic crashes with F5 und Scripts with long outputs --> maybe better after creating QProcess in own thread
-
-https://doc.qt.io/qt-5/qtquickcontrols2-fileselectors.html
-https://doc.qt.io/qt-5/qfileselector.html#details
-https://qmlbook.github.io/ch06-controls/controls.html

@@ -8,7 +8,7 @@
         <file alias="ReplaceDialogForm.ui.qml">qml/ReplaceDialogForm.ui.qml</file>
         <file alias="FindDialogWindow.qml">qml/FindDialogWindow.qml</file>
         <file alias="FindDialog.qml">qml/FindDialog.qml</file>
-        <file alias="+android/FindDialogForm.ui.qml">qml/+Android/FindDialogForm.ui.qml</file> <!-- Android specific dialogs... -->
+        <file alias="+android/FindDialogForm.ui.qml">qml/+Android/FindDialogForm.ui.qml</file> <!-- Android specific dialogs... via QFileSelector, see: https://doc.qt.io/qt-5/qtquickcontrols2-fileselectors.html  https://doc.qt.io/qt-5/qfileselector.html#details -->
         <file alias="FindDialogForm.ui.qml">qml/FindDialogForm.ui.qml</file>
         <file alias="FindInFilesDialogWindow.qml">qml/FindInFilesDialogWindow.qml</file>
         <file alias="FindInFilesDialog.qml">qml/FindInFilesDialog.qml</file>
