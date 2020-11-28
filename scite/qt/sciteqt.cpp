@@ -1659,7 +1659,7 @@ void SciTEQt::cmdPrint()
 
     QString tempFileName = QString("%1.pdf").arg(filePath.BaseName().AsInternal()); // = "_temp_print_output.pdf";
 
-    bool ret = m_pApplicationData->writeAndSendSharedFile(tempFileName, "", "text/pdf", [this](QString name) -> bool
+    bool ret = m_pApplicationData->writeAndSendSharedFile(tempFileName, "", "application/pdf", [this](QString name) -> bool
     {
         FilePath tempName(name.toStdString());
         SaveToPDF(tempName);
