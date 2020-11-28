@@ -566,6 +566,8 @@ private:
     MessageBoxChoice ShowWindowMessageBox(const QString & msg, MessageBoxStyle style = mbsIconWarning);
     void CheckAndDeleteGetContentToWriteFunctionPointer();
     void CheckAndDeleteReceiveContentToProcessFunctionPointer();
+    void SaveSettingsForQt();
+    void LoadSettingsForQt();
 
     ApplicationData *       m_pApplicationData;     // not an owner !
     QQmlApplicationEngine * m_pEngine;              // not an owner !

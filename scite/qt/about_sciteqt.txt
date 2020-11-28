@@ -40,11 +40,11 @@ Added freatures (compared to original SciTE):
   * Added command line option to select language, i. e. --language=de
   * Added support to run current text/script as JavaScript (via QML)
   * Allow selection of styles via JavaScript function: style("StyleName")
+  * Save and restore of extensions and paths in find in files dialog
 
 Missing features are:
 
   * Dark Theme for Scintilla --> background -> black ?
-# * save and restore file extensions and directories for find in files
   * Improve splitter handling
   * Implement Printing (partly)
   * Context menu for Scintilla Control can not be overwritten/updated by SciTE  

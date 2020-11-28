@@ -26,6 +26,7 @@
 #include <QDesktopWidget>
 #include <QScreen>
 #include <QApplication>
+#include <QSettings>
 
 #include <QJsonObject>
 #include <QJsonArray>
@@ -1047,10 +1048,61 @@ void SciTEQt::AboutDialog()
     emit showAboutSciteDialog();
 }
 
+#define KEY_FIND_EXTENSIONS "FindExtensions"
+#define KEY_FIND_PATHS      "FindPaths"
+#define KEY_FIND_COUNT      "Count"
+
+void SciTEQt::SaveSettingsForQt()
+{
+    QSettings aSettings;
+
+    QString sKey = QString("%1.%2").arg(KEY_FIND_EXTENSIONS).arg(KEY_FIND_COUNT);
+    aSettings.setValue(sKey, QVariant(memFiles.Length()));
+    for(int i=0; i<memFiles.Length(); i++)
+    {
+        QString sKey = QString("%1.%2").arg(KEY_FIND_EXTENSIONS).arg(i);
+        aSettings.setValue(sKey, QVariant(QString::fromStdString(memFiles.At(i))));
+    }
+
+    sKey = QString("%1.%2").arg(KEY_FIND_PATHS).arg(KEY_FIND_COUNT);
+    aSettings.setValue(sKey, QVariant(memDirectory.Length()));
+    for(int i=0; i<memDirectory.Length(); i++)
+    {
+        QString sKey = QString("%1.%2").arg(KEY_FIND_PATHS).arg(i);
+        aSettings.setValue(sKey, QVariant(QString::fromStdString(memDirectory.At(i))));
+    }
+}
+
+void SciTEQt::LoadSettingsForQt()
+{
+    QSettings aSettings;
+
+    QString sKey = QString("%1.%2").arg(KEY_FIND_EXTENSIONS).arg(KEY_FIND_COUNT);
+    int count = aSettings.value(sKey).toInt();
+    for(int i=count-1; i>=0; i--)
+    {
+        QString sKey = QString("%1.%2").arg(KEY_FIND_EXTENSIONS).arg(i);
+        QString value = aSettings.value(sKey).toString();
+        memFiles.Insert(value.toStdString());
+    }
+
+    sKey = QString("%1.%2").arg(KEY_FIND_PATHS).arg(KEY_FIND_COUNT);
+    count = aSettings.value(sKey).toInt();
+    for(int i=count-1; i>=0; i--)
+    {
+        QString sKey = QString("%1.%2").arg(KEY_FIND_PATHS).arg(i);
+        QString value = aSettings.value(sKey).toString();
+        memDirectory.Insert(value.toStdString());
+    }
+}
+
 void SciTEQt::QuitProgram()
 {
     quitting = false;
     if (SaveIfUnsureAll() != saveCancelled) {
+
+        SaveSettingsForQt();
+
         //if (fullScreen)	// Ensure tray visible on exit
         //	FullScreenToggle();
         quitting = true;
@@ -2877,6 +2929,8 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     */
 
         ProcessCommandLine(args, 1);
+
+        LoadSettingsForQt();
 
         CheckMenus();
         SizeSubWindows();
