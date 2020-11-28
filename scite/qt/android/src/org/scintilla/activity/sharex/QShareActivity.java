@@ -245,12 +245,14 @@ private byte[] readBinaryFileFromUri(Uri uri) throws IOException {
              intentUri = intent.getData();
       } else if (intent.getAction().equals("android.intent.action.SEND")){
 //qDebugOutput("--> PROCESS_INTENT SEND");
+//             String type = intent.getType();
+//qDebugOutput(type);
              intentAction = "SEND";
-              Bundle bundle = intent.getExtras();
-              intentUri = (Uri)bundle.get(Intent.EXTRA_STREAM);
+             Bundle bundle = intent.getExtras();
+             intentUri = (Uri)bundle.get(Intent.EXTRA_STREAM);
       } else if (intent.getAction().equals("android.intent.action.MAIN")){
-              // ignore main intent of this application !
-              return;
+             // ignore main intent of this application !
+             return;
       } else {
 //qDebugOutput("--> PROCESS_INTENT UNKNOWN");
 //qDebugOutput(intent.getAction().toString());
@@ -300,6 +302,7 @@ private byte[] readBinaryFileFromUri(Uri uri) throws IOException {
       // we'll try to copy the file into our App working dir via InputStream
       // hopefully in most cases PathResolver will give a path
 
+//qDebugOutput("--> PROCESS_INTENT <<CONTINUE>>");
       // you need the file extension, MimeType or Name from ContentResolver ?
       // here's HowTo get it:
       //Log.d("ekkescorner Intent Content URI: ", intentUri.toString());
@@ -324,6 +327,7 @@ private byte[] readBinaryFileFromUri(Uri uri) throws IOException {
             //Log.d("ekkescorner QSharePathResolver:", filePath);
             // to be safe check if this File Url really can be opened by Qt
             // there were problems with MS office apps on Android 7
+//qDebugOutput("--> PROCESS_INTENT exit file exists");
             if (checkFileExits(filePath)) {
                 setFileUrlReceived(filePath);
                 // we are done Qt can deal with file scheme
