@@ -118,8 +118,10 @@ Page {
 
     ListView {
         id: listView
+        orientation: ListView.Vertical
+        clip: true
         anchors.bottom: lblMFDInput.top
-        anchors.bottomMargin: 6
+        anchors.bottomMargin: 5
         anchors.left: parent.left
         anchors.leftMargin: 10
         anchors.right: parent.right
@@ -147,7 +149,7 @@ Page {
 
     Label {
         id: lblMFDInput
-        width: 221
+        //width: 221
         height: 40
         text: localiseText(qsTr("Any input"))
         anchors.left: parent.left
@@ -168,8 +170,8 @@ Page {
     }
     TextInput {
         id: txtMFDInput
-        y: 323
-        height: 40
+        //y: 323
+        height: lblMFDInput.height
         text: ""
         anchors.bottom: btnCancel.top
         anchors.bottomMargin: 5
