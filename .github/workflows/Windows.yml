@@ -84,6 +84,7 @@ jobs:
       run: |
         d:
         dir
+        type aqtinstall.log
         python -m aqt --help       
         #python -m aqt tool -O d:\a\SciTEQt/Qt windows tools_ifw qt.tools.ifw.32 win-x86
         #python -m aqt tool -O d:\a\SciTEQt/Qt windows tools_ifw qt.tools.ifw.40 win-x86
@@ -91,6 +92,8 @@ jobs:
         #python -m aqt tool windows tools_ifw 3.2.2 win-x86 --outputdir d:\a\SciTEQt\Qt 
         where qmake
         where binarycreator
+        dir d:\a
+        dir d:\a\SciteQt
         dir d:\a\SciteQt\Qt
         dir d:\a\SciteQt\Qt\5.14.2
         dir d:\a\SciteQt\Qt\5.14.2\mingw73_64
@@ -236,9 +239,12 @@ jobs:
         dir
         d:
         dir 
+        type aqtinstall.log
         #python -m aqt tool windows tools_ifw 4.0.1 win-x86 --outputdir d:\a\SciTEQt\Qt 
         where qmake
         where binarycreator
+        dir d:\a
+        dir d:\a\SciteQt
         dir d:\a\SciteQt\Qt
         dir d:\a\SciteQt\Qt\5.14.2
         dir d:\a\SciteQt\Qt\5.14.2\msvc2017_64
