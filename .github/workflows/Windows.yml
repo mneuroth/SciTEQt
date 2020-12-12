@@ -64,7 +64,7 @@ jobs:
         # Target platform for build
         target: 'desktop'
         # Architecture for Windows/Android
-        arch: 'win64_mingw73'
+        arch: 'win64_mingw73_64'
         # Whether or not to install Qt dependencies on Linux
         install-deps: 'true'
         # Additional Qt modules to install
@@ -74,12 +74,17 @@ jobs:
         # Whether or not to actually download Qt
         cached: # optional, default is false
         # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
+        #aqtversion: # optional, default is ==0.8
         # Version of py7zr to use in case of issues
-        py7zrversion: # optional, default is ==0.6
+        #py7zrversion: # optional, default is ==0.6
         # Any extra arguments to append to the back
         extra: # optional
-        tools: 'tools_ifw,4.0.1,qt.tools.ifw.40'
+        setup-python: 'true'
+        tools-only: 'false'
+        aqtversion: '==0.10.0'
+        py7zrversion: '==0.11.0'
+        extra: '--external 7z'
+        tools: 'tools_ifw,4.0,qt.tools.ifw.40'
     - name: Install Qt and compile
       run: |
         d:
@@ -103,7 +108,7 @@ jobs:
         gcc -v
         qmake -r sciteqt.pro
         dir
-        mingw32-make
+        mingw32-make -j 4
         dir
         dir scite\bin
         dir scite\qt
