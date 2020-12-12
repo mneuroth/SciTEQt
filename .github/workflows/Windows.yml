@@ -85,9 +85,10 @@ jobs:
         python -m aqt --help       
         #python -m aqt tool -O d:\a\SciTEQt/Qt windows tools_ifw qt.tools.ifw.32 win-x86
         #python -m aqt tool -O d:\a\SciTEQt/Qt windows tools_ifw qt.tools.ifw.40 win-x86
-        python -m aqt tool windows tools_ifw 4.0.1 win-x86 --outputdir d:\a\SciTEQt\Qt 
+        python -m aqt tool windows tools_ifw 4.0 win-x86 --outputdir d:\a\SciTEQt\Qt 
         #python -m aqt tool windows tools_ifw 3.2.2 win-x86 --outputdir d:\a\SciTEQt\Qt 
         dir d:\a\SciteQt\Qt\Tools
+        dir d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\
         gcc -v
         qmake -r sciteqt.pro
         dir
@@ -225,8 +226,9 @@ jobs:
         dir
         d:
         dir 
-        python -m aqt tool windows tools_ifw 4.0.1 win-x86 --outputdir d:\a\SciTEQt\Qt 
+        python -m aqt tool windows tools_ifw 4.0 win-x86 --outputdir d:\a\SciTEQt\Qt 
         dir d:\a\SciteQt\Qt\Tools
+        dir d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\
         cl
         where qmake
         qmake -r sciteqt.pro
@@ -314,8 +316,9 @@ jobs:
         dir
         d:
         dir 
-        python -m aqt tool windows tools_ifw 4.0.1 win-x86 --outputdir d:\a\SciTEQt\Qt 
+        python -m aqt tool windows tools_ifw 4.0 win-x86 --outputdir d:\a\SciTEQt\Qt 
         dir d:\a\SciteQt\Qt\Tools
+        dir d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\
         cl
         where qmake
         qmake -r sciteqt.pro
