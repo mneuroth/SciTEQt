@@ -78,7 +78,6 @@ jobs:
         # Version of py7zr to use in case of issues
         #py7zrversion: # optional, default is ==0.6
         # Any extra arguments to append to the back
-        extra: # optional
         setup-python: 'true'
         tools-only: 'false'
         aqtversion: '==0.10.0'
