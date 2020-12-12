@@ -93,6 +93,8 @@ jobs:
         where binarycreator
         dir d:\a\SciteQt\Qt
         dir d:\a\SciteQt\Qt\5.14.2
+        dir d:\a\SciteQt\Qt\5.14.2\mingw73_64
+        dir d:\a\SciteQt\Qt\5.14.2\mingw73_64\bin
         #dir d:\a\SciteQt\Qt\Tools
         #dir d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\
         gcc -v
@@ -239,7 +241,9 @@ jobs:
         where binarycreator
         dir d:\a\SciteQt\Qt
         dir d:\a\SciteQt\Qt\5.14.2
-        #dir d:\a\SciteQt\Qt\Tools
+        dir d:\a\SciteQt\Qt\5.14.2\msvc2017_64
+        dir d:\a\SciteQt\Qt\5.14.2\msvc2017_64\bin
+        dir d:\a\SciteQt\Qt\Tools
         #dir d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\
         cl
         where qmake
