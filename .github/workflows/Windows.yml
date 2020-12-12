@@ -78,6 +78,7 @@ jobs:
         # Version of py7zr to use in case of issues
         #py7zrversion: # optional, default is ==0.6
         # Any extra arguments to append to the back
+        mirror: 'http://mirrors.ocf.berkeley.edu/qt/'
         setup-python: 'true'
         tools-only: 'false'
         aqtversion: '==0.10.0'
@@ -228,12 +229,20 @@ jobs:
         # Whether or not to actually download Qt
         cached: # optional, default is false
         # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
+        #aqtversion: # optional, default is ==0.8
         # Version of py7zr to use in case of issues
-        py7zrversion: # optional, default is ==0.6
+        #py7zrversion: # optional, default is ==0.6
         # Any extra arguments to append to the back
-        extra: # optional
-        tools: 'tools_ifw,4.0.1,qt.tools.ifw.40'
+        #extra: # optional
+        mirror: 'http://mirrors.ocf.berkeley.edu/qt/'
+        setup-python: 'true'
+        tools-only: 'false'
+        aqtversion: '==0.10.0'
+        py7zrversion: '==0.11.0'
+        extra: '--external 7z'
+        tools: 'tools_ifw,3.2,qt.tools.ifw.32'
+        #tools: 'tools_ifw,4.0,qt.tools.ifw.40'
+        #tools: 'tools_ifw,4.0.1,qt.tools.ifw.40'
     - name: Install 7Zip PowerShell Module
       shell: powershell
       run: Install-Module 7Zip4PowerShell -Force -Verbose
