@@ -73,7 +73,7 @@ jobs:
         unzip -v sciteqt_wasm_5_14_2.zip
         pwd
         
-  linux_wasm_5_15_1:
+  linux_wasm_5_15_2:
   
     runs-on: ubuntu-latest
       
@@ -85,7 +85,7 @@ jobs:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '5.15.1'
+        version: '5.15.2'
         # Host platform
         host: # optional
         # Target platform for build
@@ -111,7 +111,7 @@ jobs:
         em++ --version
         which em++
         echo $PATH
-        #python3 -m aqt install -O /home/runner/work/SciTEQt/Qt 5.15.1 linux desktop wasm_32 -m qtscript qtscripttools
+        #python3 -m aqt install -O /home/runner/work/SciTEQt/Qt 5.15.2 linux desktop wasm_32 -m qtscript qtscripttools
         #emsdk install sdk-fastcomp-1.39.8-64bit
         #emsdk activate sdk-fastcomp-1.39.8-64bit
         emsdk install 1.39.8
@@ -126,8 +126,8 @@ jobs:
         ls -lrt ../Qt
         which qmake
         qmake -v
-        ../Qt/5.15.1/wasm_32/bin/qmake -v
-        ../Qt/5.15.1/wasm_32/bin/qmake -r sciteqt.pro
+        ../Qt/5.15.2/wasm_32/bin/qmake -v
+        ../Qt/5.15.2/wasm_32/bin/qmake -r sciteqt.pro
         ls -lrt
         make
         ls -lrt
@@ -135,9 +135,9 @@ jobs:
         ls -lrt scite/qt
         ls -lrt scite/bin
         cd scite/qt
-        zip sciteqt_wasm_5_15_1.zip sciteqt.js sciteqt.wasm sciteqt.html qtlogo.svg qtloader.js
+        zip sciteqt_wasm_5_15_2.zip sciteqt.js sciteqt.wasm sciteqt.html qtlogo.svg qtloader.js
         ls -lrt
-        unzip -v sciteqt_wasm_5_15_1.zip
+        unzip -v sciteqt_wasm_5_15_2.zip
         pwd
         
 #  windows_wasm_5_14_2:

@@ -8,7 +8,7 @@ on:
 
 jobs:
             
-  macos_5_15_1_build:
+  macos_5_15_2_build:
 
     runs-on: macos-latest
 
@@ -19,7 +19,7 @@ jobs:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '5.15.1'
+        version: '5.15.2'
         # Host platform
         host: 'mac'
         # Target platform for build

@@ -270,7 +270,7 @@ jobs:
         asset_name: SciTEQtInstallerMsc_5_14_2.zip
         asset_content_type: application/zip
 
-  windows_5_15_1_msc_build:
+  windows_5_15_2_msc_build:
 
     runs-on: windows-latest
     needs: create_release
@@ -284,7 +284,7 @@ jobs:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '5.15.1'
+        version: '5.15.2'
         # Host platform
         host: # optional
         # Target platform for build
@@ -332,10 +332,10 @@ jobs:
         dir
         cd ..\..\..
         dir
-        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.0\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_15_1.exe
+        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.0\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_15_2.exe
         dir
-        powershell Compress-7Zip "SciTEQtInstallerMsc_5_15_1.exe" -ArchiveFileName "SciTEQtInstallerMsc_5_15_1.zip" -Format Zip
-        #7z a -t7z SciTEQtInstallerMsc_5_15_1.7z SciTEQtInstallerMsc_5_15_1.exe
+        powershell Compress-7Zip "SciTEQtInstallerMsc_5_15_2.exe" -ArchiveFileName "SciTEQtInstallerMsc_5_15_2.zip" -Format Zip
+        #7z a -t7z SciTEQtInstallerMsc_5_15_2.7z SciTEQtInstallerMsc_5_15_2.exe
         dir 
     - name: Upload Release Asset
       if: contains(github.ref, 'release')
@@ -345,8 +345,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/dist/SciTEQtInstallerMsc_5_15_1.exe
-        asset_name: SciTEQtInstallerMsc_5_15_1.exe
+        asset_path: scite/qt/dist/SciTEQtInstallerMsc_5_15_2.exe
+        asset_name: SciTEQtInstallerMsc_5_15_2.exe
         asset_content_type: application/exe
     - name: Upload zip Release Asset
       if: contains(github.ref, 'release')
@@ -356,8 +356,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/dist/SciTEQtInstallerMsc_5_15_1.zip
-        asset_name: SciTEQtInstallerMsc_5_15_1.zip
+        asset_path: scite/qt/dist/SciTEQtInstallerMsc_5_15_2.zip
+        asset_name: SciTEQtInstallerMsc_5_15_2.zip
         asset_content_type: application/zip
 
   # this is a copy of the content MacOS.yml used only to upload binary for release
@@ -592,7 +592,7 @@ jobs:
         asset_name: sciteqt_wasm_5_14_2.zip
         asset_content_type: application/zip
 
-  linux_wasm_5_15_1:
+  linux_wasm_5_15_2:
   
     runs-on: ubuntu-latest
     needs: create_release
@@ -605,7 +605,7 @@ jobs:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '5.15.1'
+        version: '5.15.2'
         # Host platform
         host: # optional
         # Target platform for build
@@ -632,7 +632,7 @@ jobs:
         em++ --version
         which em++
         echo $PATH
-        #python3 -m aqt install -O /home/runner/work/SciTEQt/Qt 5.15.1 linux desktop wasm_32 -m qtscript qtscripttools
+        #python3 -m aqt install -O /home/runner/work/SciTEQt/Qt 5.15.2 linux desktop wasm_32 -m qtscript qtscripttools
         #emsdk install sdk-fastcomp-1.39.8-64bit
         #emsdk activate sdk-fastcomp-1.39.8-64bit
         emsdk install 1.39.8
@@ -647,8 +647,8 @@ jobs:
         ls -lrt ../Qt
         which qmake
         qmake -v
-        ../Qt/5.15.1/wasm_32/bin/qmake -v
-        ../Qt/5.15.1/wasm_32/bin/qmake -r sciteqt.pro
+        ../Qt/5.15.2/wasm_32/bin/qmake -v
+        ../Qt/5.15.2/wasm_32/bin/qmake -r sciteqt.pro
         ls -lrt
         make
         ls -lrt
@@ -656,9 +656,9 @@ jobs:
         ls -lrt scite/qt
         ls -lrt scite/bin
         cd scite/qt
-        zip sciteqt_wasm_5_15_1.zip sciteqt.js sciteqt.wasm sciteqt.html qtlogo.svg qtloader.js
+        zip sciteqt_wasm_5_15_2.zip sciteqt.js sciteqt.wasm sciteqt.html qtlogo.svg qtloader.js
         ls -lrt
-        unzip -v sciteqt_wasm_5_15_1.zip
+        unzip -v sciteqt_wasm_5_15_2.zip
         pwd
     # this step is added for the release    
     - name: Upload Release Asset
@@ -669,7 +669,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/sciteqt_wasm_5_15_1.zip
-        asset_name: sciteqt_wasm_5_15_1.zip
+        asset_path: scite/qt/sciteqt_wasm_5_15_2.zip
+        asset_name: sciteqt_wasm_5_15_2.zip
         asset_content_type: application/zip
        
