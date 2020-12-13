@@ -84,7 +84,7 @@ jobs:
         aqtversion: '==0.10.0'
         py7zrversion: '==0.11.0'
         extra: '--external 7z'
-        tools: 'tools_ifw,4.0,qt.tools.ifw.40'
+        tools: 'tools_ifw,4.0.1-202012091044,qt.tools.ifw.40'
     - name: Install Qt and compile
       run: |
         d:
@@ -240,9 +240,9 @@ jobs:
         aqtversion: '==0.10.0'
         py7zrversion: '==0.11.0'
         extra: '--external 7z'
-        tools: 'tools_ifw,3.2,qt.tools.ifw.32'
+        #tools: 'tools_ifw,3.2,qt.tools.ifw.32'
         #tools: 'tools_ifw,4.0,qt.tools.ifw.40'
-        #tools: 'tools_ifw,4.0.1,qt.tools.ifw.40'
+        tools: 'tools_ifw,4.0.1-202012091044,qt.tools.ifw.40'
     - name: Install 7Zip PowerShell Module
       shell: powershell
       run: Install-Module 7Zip4PowerShell -Force -Verbose
@@ -343,7 +343,7 @@ jobs:
         py7zrversion: # optional, default is ==0.6
         # Any extra arguments to append to the back
         extra: # optional
-        tools: 'tools_ifw,4.0.1,qt.tools.ifw.40'
+        tools: 'tools_ifw,4.0.1-202012091044,qt.tools.ifw.40'
     - name: Install 7Zip PowerShell Module
       shell: powershell
       run: Install-Module 7Zip4PowerShell -Force -Verbose
