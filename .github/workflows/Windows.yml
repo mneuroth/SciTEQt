@@ -70,41 +70,38 @@ jobs:
         # Additional Qt modules to install
         modules: 'qtscript qtscripttools'
         # Force a Qt mirror in case the default is not working
-        #mirror: # optional
+        mirror: # optional
         # Whether or not to actually download Qt
         cached: # optional, default is false
         # Version of aqtinstall to use in case of issues
-        #aqtversion: # optional, default is ==0.8
+        aqtversion: # optional, default is ==0.8
         # Version of py7zr to use in case of issues
-        #py7zrversion: # optional, default is ==0.6
+        py7zrversion: # optional, default is ==0.6
         # Any extra arguments to append to the back
-        mirror: 'http://mirrors.ocf.berkeley.edu/qt/'
-        setup-python: 'true'
-        tools-only: 'false'
-        aqtversion: '==0.10.0'
-        py7zrversion: '==0.11.0'
-        extra: '--external 7z'
+        #mirror: 'http://mirrors.ocf.berkeley.edu/qt/'
+        #setup-python: 'true'
+        #tools-only: 'false'
+        #aqtversion: '==0.10.0'
+        #py7zrversion: '==0.11.0'
+        #extra: '--external 7z'
         tools: 'tools_ifw,4.0.1-202012091044,qt.tools.ifw.40'
     - name: Install Qt and compile
       run: |
         d:
         dir
-        type aqtinstall.log
-        python -m aqt --help       
+        #python -m aqt --help       
         #python -m aqt tool -O d:\a\SciTEQt/Qt windows tools_ifw qt.tools.ifw.32 win-x86
         #python -m aqt tool -O d:\a\SciTEQt/Qt windows tools_ifw qt.tools.ifw.40 win-x86
         #python -m aqt tool windows tools_ifw 4.0.1 win-x86 --outputdir d:\a\SciTEQt\Qt 
         #python -m aqt tool windows tools_ifw 3.2.2 win-x86 --outputdir d:\a\SciTEQt\Qt 
-        where qmake
-        where binarycreator
         dir d:\a
         dir d:\a\SciteQt
         dir d:\a\SciteQt\Qt
         dir d:\a\SciteQt\Qt\5.14.2
         dir d:\a\SciteQt\Qt\5.14.2\mingw73_64
         dir d:\a\SciteQt\Qt\5.14.2\mingw73_64\bin
-        #dir d:\a\SciteQt\Qt\Tools
-        #dir d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\
+        dir d:\a\SciteQt\Qt\Tools
+        dir d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\
         gcc -v
         qmake -r sciteqt.pro
         dir
@@ -119,8 +116,8 @@ jobs:
         dir
         cd ..\..\..
         dir
-        binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw_5_14_2_broken.exe
-        #d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.0\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw_5_14_2_broken.exe
+        #binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw_5_14_2_broken.exe
+        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.0\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw_5_14_2_broken.exe
         dir 
     - name: Upload Release Asset
       if: contains(github.ref, 'release')
@@ -225,23 +222,21 @@ jobs:
         # Additional Qt modules to install
         modules: 'qtscript qtscripttools'
         # Force a Qt mirror in case the default is not working
-        #mirror: # optional
+        mirror: # optional
         # Whether or not to actually download Qt
         cached: # optional, default is false
         # Version of aqtinstall to use in case of issues
-        #aqtversion: # optional, default is ==0.8
+        aqtversion: # optional, default is ==0.8
         # Version of py7zr to use in case of issues
-        #py7zrversion: # optional, default is ==0.6
+        py7zrversion: # optional, default is ==0.6
         # Any extra arguments to append to the back
-        #extra: # optional
-        mirror: 'http://mirrors.ocf.berkeley.edu/qt/'
-        setup-python: 'true'
-        tools-only: 'false'
-        aqtversion: '==0.10.0'
-        py7zrversion: '==0.11.0'
-        extra: '--external 7z'
-        #tools: 'tools_ifw,3.2,qt.tools.ifw.32'
-        #tools: 'tools_ifw,4.0,qt.tools.ifw.40'
+        extra: # optional
+        #mirror: 'http://mirrors.ocf.berkeley.edu/qt/'
+        #setup-python: 'true'
+        #tools-only: 'false'
+        #aqtversion: '==0.10.0'
+        #py7zrversion: '==0.11.0'
+        #extra: '--external 7z'
         tools: 'tools_ifw,4.0.1-202012091044,qt.tools.ifw.40'
     - name: Install 7Zip PowerShell Module
       shell: powershell
@@ -252,10 +247,7 @@ jobs:
         dir
         d:
         dir 
-        type aqtinstall.log
         #python -m aqt tool windows tools_ifw 4.0.1 win-x86 --outputdir d:\a\SciTEQt\Qt 
-        where qmake
-        where binarycreator
         dir d:\a
         dir d:\a\SciteQt
         dir d:\a\SciteQt\Qt
@@ -263,7 +255,7 @@ jobs:
         dir d:\a\SciteQt\Qt\5.14.2\msvc2017_64
         dir d:\a\SciteQt\Qt\5.14.2\msvc2017_64\bin
         dir d:\a\SciteQt\Qt\Tools
-        #dir d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\
+        dir d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\
         cl
         where qmake
         qmake -r sciteqt.pro
@@ -280,8 +272,8 @@ jobs:
         dir
         cd ..\..\..
         dir
-        binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_14_2.exe
-        #d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.0\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_14_2.exe
+        #binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_14_2.exe
+        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.0\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_14_2.exe
         dir 
         powershell Compress-7Zip "SciTEQtInstallerMsc_5_14_2.exe" -ArchiveFileName "SciTEQtInstallerMsc_5_14_2.zip" -Format Zip
         dir 
@@ -354,12 +346,10 @@ jobs:
         d:
         dir 
         #python -m aqt tool windows tools_ifw 4.0.1 win-x86 --outputdir d:\a\SciTEQt\Qt 
-        where qmake
-        where binarycreator
         dir d:\a\SciteQt\Qt
         dir d:\a\SciteQt\Qt\5.15.2
-        #dir d:\a\SciteQt\Qt\Tools
-        #dir d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\
+        dir d:\a\SciteQt\Qt\Tools
+        dir d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\
         cl
         where qmake
         qmake -r sciteqt.pro
@@ -376,8 +366,8 @@ jobs:
         dir
         cd ..\..\..
         dir
-        binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_15_2.exe
-        #d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.0\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_15_2.exe
+        #binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_15_2.exe
+        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.0\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_15_2.exe
         dir
         powershell Compress-7Zip "SciTEQtInstallerMsc_5_15_2.exe" -ArchiveFileName "SciTEQtInstallerMsc_5_15_2.zip" -Format Zip
         #7z a -t7z SciTEQtInstallerMsc_5_15_2.7z SciTEQtInstallerMsc_5_15_2.exe
