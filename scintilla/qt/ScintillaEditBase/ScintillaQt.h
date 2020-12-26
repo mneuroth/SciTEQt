@@ -84,13 +84,15 @@ public:
 	explicit ScintillaQt(QQuickPaintedItem *parent);
 	void UpdateInfos(int winId);
 	QQuickPaintedItem * GetScrollArea() { return scrollArea; }
+    void selectCurrentWord();
 #else
 	explicit ScintillaQt(QAbstractScrollArea *parent);
 #endif
 	virtual ~ScintillaQt();
 
 signals:
-	void horizontalScrolled(int value);
+    void cursorPositionChanged();
+    void horizontalScrolled(int value);
 	void verticalScrolled(int value);
 	void horizontalRangeChanged(int max, int page);
 	void verticalRangeChanged(int max, int page);

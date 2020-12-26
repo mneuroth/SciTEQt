@@ -223,6 +223,7 @@ Item {
     property alias actionDuplicate: actionDuplicate
     property alias actionDelete: actionDelete
     property alias actionSelectAll: actionSelectAll
+    property alias actionSelectWord: actionSelectWord
     property alias actionCopyAsRtf: actionCopyAsRtf
     property alias actionMatchBrace: actionMatchBrace
     property alias actionSelectToBrace: actionSelectToBrace
@@ -287,6 +288,12 @@ Item {
         text: qsTr("Select &All")
         shortcut: "Ctrl+A"
         onTriggered: sciteQt.cmdSelectAll()
+    }
+    Action {
+        id: actionSelectWord
+        text: qsTr("Select &Word")
+        shortcut: "Ctrl+T"
+        onTriggered: sciteQt.cmdSelectWord()
     }
     Action {
         id: actionCopyAsRtf

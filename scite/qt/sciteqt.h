@@ -309,6 +309,7 @@ public:
     Q_INVOKABLE void cmdDuplicate();
     Q_INVOKABLE void cmdDelete();
     Q_INVOKABLE void cmdSelectAll();
+    Q_INVOKABLE void cmdSelectWord();
     Q_INVOKABLE void cmdCopyAsRtf();
     Q_INVOKABLE void cmdMatchBrace();
     Q_INVOKABLE void cmdSelectToBrace();

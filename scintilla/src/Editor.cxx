@@ -3951,13 +3951,13 @@ int Editor::KeyDefault(int, int) {
 }
 
 int Editor::KeyDownWithModifiers(int key, int modifiers, bool *consumed) {
-	DwellEnd(false);
-	const int msg = kmap.Find(key, modifiers);
+    DwellEnd(false);
+    const int msg = kmap.Find(key, modifiers);
 	if (msg) {
 		if (consumed)
 			*consumed = true;
 		return static_cast<int>(WndProc(msg, 0, 0));
-	} else {
+    } else {
 		if (consumed)
 			*consumed = false;
 		return KeyDefault(key, modifiers);
@@ -4517,6 +4517,40 @@ void Editor::MouseLeave() {
 static constexpr bool AllowVirtualSpace(int virtualSpaceOptions, bool rectangular) noexcept {
 	return (!rectangular && ((virtualSpaceOptions & SCVS_USERACCESSIBLE) != 0))
 		|| (rectangular && ((virtualSpaceOptions & SCVS_RECTANGULARSELECTION) != 0));
+}
+
+void Editor::SelectCurrentWord(Point pt)
+{
+    if (selectionUnit == TextUnit::word) {
+        Sci::Position charPos = originalAnchorPos;
+        if (sel.MainCaret() == originalAnchorPos) {
+            charPos = PositionFromLocation(pt, false, true);
+            charPos = MovePositionOutsideChar(charPos, -1);
+        }
+
+        Sci::Position startWord;
+        Sci::Position endWord;
+        if ((sel.MainCaret() >= originalAnchorPos) && !pdoc->IsLineEndPosition(charPos)) {
+            startWord = pdoc->ExtendWordSelect(pdoc->MovePositionOutsideChar(charPos + 1, 1), -1);
+            endWord = pdoc->ExtendWordSelect(charPos, 1);
+        } else {
+            // Selecting backwards, or anchor beyond last character on line. In these cases,
+            // we select the word containing the character to the *left* of the anchor.
+            if (charPos > pdoc->LineStart(pdoc->LineFromPosition(charPos))) {
+                startWord = pdoc->ExtendWordSelect(charPos, -1);
+                endWord = pdoc->ExtendWordSelect(startWord, 1);
+            } else {
+                // Anchor at start of line; select nothing to begin with.
+                startWord = charPos;
+                endWord = charPos;
+            }
+        }
+
+        wordSelectAnchorStartPos = startWord;
+        wordSelectAnchorEndPos = endWord;
+        wordSelectInitialCaretPos = sel.MainCaret();
+        WordSelection(wordSelectInitialCaretPos);
+    }
 }
 
 void Editor::ButtonDownWithModifiers(Point pt, unsigned int curTime, int modifiers) {

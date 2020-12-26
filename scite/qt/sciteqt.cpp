@@ -1811,6 +1811,34 @@ void SciTEQt::cmdSelectAll()
     MenuCommand(IDM_SELECTALL);
 }
 
+void SciTEQt::cmdSelectWord()
+{
+    auto pos = wEditor.CurrentPos();
+    auto max = wEditor.Length();
+    auto startPos = pos;
+    while(startPos>=0 && iswalnum(wEditor.CharAt(startPos)))
+    {
+        startPos--;
+    }
+    startPos++;
+    auto endPos = pos;
+    while(endPos<max && iswalnum(wEditor.CharAt(endPos)))
+    {
+        endPos++;
+    }
+    if(startPos<0)
+    {
+        startPos = 0;
+    }
+    if(endPos>=max)
+    {
+        endPos = max-1;
+    }
+
+    wEditor.SetSelectionStart(startPos);
+    wEditor.SetSelectionEnd(endPos);
+}
+
 void SciTEQt::cmdCopyAsRtf()
 {
     MenuCommand(IDM_COPYASRTF);
@@ -3352,7 +3380,7 @@ void SciTEQt::OnScreenRemoved(QScreen * pScreen)
 {
     Q_UNUSED(pScreen);
 
-    // removing a screen might make sciteqt window invisible (if it was visible on the removed screen)
+    // removing a screen might make scieqt window invisible (if it was visible on the removed screen)
     int left;
     int top;
     int width;

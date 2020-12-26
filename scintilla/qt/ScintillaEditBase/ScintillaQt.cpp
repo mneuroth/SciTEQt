@@ -65,6 +65,35 @@ void ScintillaQt::UpdateInfos(int winId)
 {
 	SetCtrlID(winId);
 }
+
+void ScintillaQt::selectCurrentWord()
+{
+    auto pos = CurrentPosition();
+    auto max = pdoc->Length();
+    auto startPos = pos;
+    while(startPos>=0 && iswalnum(pdoc->CharAt(startPos)))
+    {
+        startPos--;
+    }
+    startPos++;
+    auto endPos = pos;
+    while(endPos<max && iswalnum(pdoc->CharAt(endPos)))
+    {
+        endPos++;
+    }
+    if(startPos<0)
+    {
+        startPos = 0;
+    }
+    if(endPos>=max)
+    {
+        endPos = max-1;
+    }
+
+    SetSelection(startPos, endPos);
+
+    emit cursorPositionChanged();
+}
 #endif
 
 ScintillaQt::~ScintillaQt()
@@ -852,7 +881,8 @@ void ScintillaQt::PartialPaintQml(const PRectangle & rect, QPainter *painter)
 	rcPaint = rect;
 	paintState = painting;
 	PRectangle rcClient = GetClientRectangle();
-	paintingAllText = rcPaint.Contains(rcClient);
+// TODO: analyze repaint problem when LineEnd should be marked...
+    paintingAllText = rcPaint.Contains(rcClient);
 
     AutoSurface surfacePaint(this, painter);
 	Paint(surfacePaint, rcPaint);

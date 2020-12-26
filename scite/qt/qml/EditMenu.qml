@@ -60,6 +60,11 @@ AutoSizingMenu {
         action: actions.actionSelectAll
     }
     MenuItem {
+        id: actionSelectWord
+        text: processMenuItem2(actions.actionSelectWord.text, actionSelectWord)
+        action: actions.actionSelectWord
+    }
+    MenuItem {
         id: actionCopyAsRtf
         text: processMenuItem2(actions.actionCopyAsRtf.text, actionCopyAsRtf)
         action: actions.actionCopyAsRtf

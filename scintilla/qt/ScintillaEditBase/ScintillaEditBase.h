@@ -131,6 +131,7 @@ public slots:
 #endif
 
 signals:
+    void cursorPositionChanged();
 	void horizontalScrolled(int value);
 	void verticalScrolled(int value);
 	void horizontalRangeChanged(int max, int page);
@@ -229,10 +230,11 @@ protected:
 	void dropEvent(QDropEvent *event) override;
 	void inputMethodEvent(QInputMethodEvent *event) override;
 	QVariant inputMethodQuery(Qt::InputMethodQuery query) const override;
+    Q_INVOKABLE QVariant inputMethodQuery(Qt::InputMethodQuery property, QVariant argument) const;
 #ifndef PLAT_QT_QML
 	void scrollContentsBy(int, int) override {}
 #else
-	void touchEvent(QTouchEvent *event) override;
+    void touchEvent(QTouchEvent *event) override;
 #endif
 
 private:
@@ -258,13 +260,15 @@ private:
 	bool getReadonly() const;
 	void setReadonly(bool value);
 
-	void UpdateQuickView();
+    void cursorChangedUpdateMarker();
+
+    void UpdateQuickView();
 
 // TODO: set context menu callback... to add more menu items to context menu...
-	QPoint mousePressedPoint;
+    //QPoint mousePressedPoint;
 	bool enableUpdateFlag;
-	bool mouseMoved;
-	int mouseDeltaLineMove;
+    //bool mouseMoved;
+    //int mouseDeltaLineMove;
 	int logicalWidth;
 	int logicalHeight;
 	QFont aFont;
