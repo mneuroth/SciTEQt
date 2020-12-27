@@ -274,7 +274,8 @@ private:
 	QFont aFont;
 	QPoint longTouchPoint;
 	Qt::InputMethodHints dataInputMethodHints;
-	QTimer aLongTouchTimer;
+     QTimer aLongTouchTimer;
+     qint64 aLastTouchPressTime;
 #endif
 
 	Scintilla::ScintillaQt *sqt;

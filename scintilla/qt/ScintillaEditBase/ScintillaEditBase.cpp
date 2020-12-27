@@ -62,6 +62,7 @@ ScintillaEditBase::ScintillaEditBase(QQuickItem/*QWidget*/ *parent)
 #ifdef PLAT_QT_QML
 , dataInputMethodHints(Qt::ImhNone)
 , aLongTouchTimer(this)
+, aLastTouchPressTime(-1)
 #endif
 , sqt(0), preeditPos(-1), wheelDelta(0)
 {
@@ -200,13 +201,17 @@ void ScintillaEditBase::enableUpdate(bool enable)
 void ScintillaEditBase::onLongTouch()
 {
 #ifndef Q_OS_ANDROID
-    emit showContextMenu(longTouchPoint);
+    //emit showContextMenu(longTouchPoint);
 #else
-    // select the word under cursor and show markers and context menu (android)
-    sqt->selectCurrentWord();
+    if(!sqt->pdoc->IsReadOnly())
+    {
+        // select the word under cursor and show markers and context menu (android)
+
+        sqt->selectCurrentWord();
 #ifdef PLAT_QT_QML
-    cursorChangedUpdateMarker();
+        cursorChangedUpdateMarker();
 #endif
+    }
 #endif
 }
 
@@ -771,7 +776,7 @@ static std::vector<int> MapImeIndicators(QInputMethodEvent *event)
 
 void ScintillaEditBase::inputMethodEvent(QInputMethodEvent *event)
 {
-	// Copy & paste by johnsonj with a lot of helps of Neil
+    // Copy & paste by johnsonj with a lot of helps of Neil
 	// Great thanks for my forerunners, jiniya and BLUEnLIVE
 
 	if (sqt->pdoc->IsReadOnly() || sqt->SelectionContainsProtected()) {
@@ -792,7 +797,14 @@ void ScintillaEditBase::inputMethodEvent(QInputMethodEvent *event)
             //selStart.Add(a.length);
             SelectionPosition newStart(paraStart + a.start);
             SelectionPosition newEnd(paraStart + a.start + a.length);
-            sqt->SetSelection(newStart, newEnd);
+            if(newStart>newEnd)
+            {
+                sqt->SetSelection(newEnd, newStart);
+            }
+            else
+            {
+                sqt->SetSelection(newStart, newEnd);
+            }
             curPos = sqt->CurrentPosition();
 
             // update markers by triggering QtAndroidInputContext::updateSelectionHandles()
@@ -1069,10 +1081,17 @@ QVariant ScintillaEditBase::inputMethodQuery(Qt::InputMethodQuery query) const
 
 void ScintillaEditBase::touchEvent(QTouchEvent *event)
 {
+    if(sqt->pdoc->IsReadOnly())
+    {
+        //event->ignore();        // --> transformiert touchEvents in mouseEvents !!!
+        return;
+    }
+
     forceActiveFocus();
 
     if( event->touchPointStates() == Qt::TouchPointPressed && event->touchPoints().count()>0 )
     {
+        aLastTouchPressTime = time.elapsed();
         QTouchEvent::TouchPoint point = event->touchPoints().first();
         QPoint mousePressedPoint = point.pos().toPoint();
         //mouseMoved = false;
@@ -1080,56 +1099,93 @@ void ScintillaEditBase::touchEvent(QTouchEvent *event)
         Point scintillaPoint = PointFromQPoint(mousePressedPoint);
 
         //sqt->ButtonDownWithModifiers(scintillaPoint, time.elapsed(), 0);       // --> enables mouse selection modus
-        Sci::Position pos = sqt->PositionFromLocation(scintillaPoint);
-        sqt->MovePositionTo(pos);
+
+// versetzt cursor...
+//        Sci::Position pos = sqt->PositionFromLocation(scintillaPoint);
+//        sqt->MovePositionTo(pos);
 
         longTouchPoint = point.pos().toPoint();
 
 //#ifndef Q_OS_ANDROID
-        aLongTouchTimer.start(200);    // ggf. repaint problem ?
+//        aLongTouchTimer.start(500);    // ggf. repaint problem ?
 //#endif
 
-#ifdef Q_OS_ANDROID
-        // Android: trigger software keyboard for inputs:
-        // https://stackoverflow.com/questions/39436518/how-to-get-the-android-keyboard-to-appear-when-using-qt-for-android
-        // https://stackoverflow.com/questions/5724811/how-to-show-the-keyboard-on-qt
+//#ifdef Q_OS_ANDROID
+//        // Android: trigger software keyboard for inputs:
+//        // https://stackoverflow.com/questions/39436518/how-to-get-the-android-keyboard-to-appear-when-using-qt-for-android
+//        // https://stackoverflow.com/questions/5724811/how-to-show-the-keyboard-on-qt
 
-        // Check if not in readonly modus --> pdoc->IsReadOnly()
-        if( hasActiveFocus() && !sqt->pdoc->IsReadOnly() )
-        {
-            // TODO working: QGuiApplication::inputMethod()->commit();
+//        // Check if not in readonly modus --> pdoc->IsReadOnly()
+//        if( hasActiveFocus() && !sqt->pdoc->IsReadOnly() )
+//        {
+//            // TODO working: QGuiApplication::inputMethod()->commit();
 
-            // QML: Qt.inputMethod.show();
-            QInputMethod *keyboard = qGuiApp->inputMethod();
-            //QInputMethod *keyboard = QGuiApplication::inputMethod();
-            if(!keyboard->isVisible())
-            {
-                keyboard->show();
-            }
-        }
-#endif
+//            // QML: Qt.inputMethod.show();
+//            QInputMethod *keyboard = qGuiApp->inputMethod();
+//            //QInputMethod *keyboard = QGuiApplication::inputMethod();
+//            if(!keyboard->isVisible())
+//            {
+//                keyboard->show();
+//            }
+//        }
+//#endif
+
+//        aLongTouchTimer.start(300);    // ggf. repaint problem ?
 
         cursorChangedUpdateMarker();
-    }
-    else if( event->touchPointStates() == Qt::TouchPointReleased && event->touchPoints().count()>0 )
-    {
-//#ifndef Q_OS_ANDROID
-        aLongTouchTimer.stop();
-//#endif
     }
 //    if( event->touchPointStates() == Qt::TouchPointStationary && event->touchPoints().count()>0 )
 //    {
 //        QTouchEvent::TouchPoint point = event->touchPoints().first();
 //        emit showContextMenu(point.pos().toPoint());
 //    }
+    else if(event->touchPointStates() == Qt::TouchPointStationary && event->touchPoints().count()>0)
+    {
+    }
     else if(event->touchPointStates() == Qt::TouchPointMoved && event->touchPoints().count()>0)
     {
 //#ifndef Q_OS_ANDROID
-//        aLongTouchTimer.stop();
+    // TODO: stop timer if move is over threshold away from start point ?
+    //        aLongTouchTimer.stop();
 //#endif
-    }
-    else if(event->touchPointStates() == Qt::TouchPointStationary && event->touchPoints().count()>0)
+        }
+    else if( event->touchPointStates() == Qt::TouchPointReleased && event->touchPoints().count()>0 )
     {
+//#ifndef Q_OS_ANDROID
+        aLongTouchTimer.stop();
+//#endif
+        // is short touch ?
+        if(aLastTouchPressTime>=0 && (time.elapsed()-aLastTouchPressTime)<100)
+        {
+            QTouchEvent::TouchPoint point = event->touchPoints().first();
+            QPoint mousePressedPoint = point.pos().toPoint();
+            Point scintillaPoint = PointFromQPoint(mousePressedPoint);
+
+            Sci::Position pos = sqt->PositionFromLocation(scintillaPoint);
+            sqt->MovePositionTo(pos);
+
+#ifdef Q_OS_ANDROID
+            // Android: trigger software keyboard for inputs:
+            // https://stackoverflow.com/questions/39436518/how-to-get-the-android-keyboard-to-appear-when-using-qt-for-android
+            // https://stackoverflow.com/questions/5724811/how-to-show-the-keyboard-on-qt
+
+            // Check if not in readonly modus --> pdoc->IsReadOnly()
+            if( hasActiveFocus() && !sqt->pdoc->IsReadOnly() )
+            {
+                // TODO working: QGuiApplication::inputMethod()->commit();
+
+                // QML: Qt.inputMethod.show();
+                QInputMethod *keyboard = qGuiApp->inputMethod();
+                //QInputMethod *keyboard = QGuiApplication::inputMethod();
+                if(!keyboard->isVisible())
+                {
+                    keyboard->show();
+                }
+            }
+#endif
+
+            cursorChangedUpdateMarker();
+        }
     }
     else
     {
@@ -1447,7 +1503,7 @@ void ScintillaEditBase::setStylesFont(const QFont &f, int style)
 {
 	send(SCI_STYLESETFONT, style, (sptr_t)f.family().toLatin1().data());
 	send(SCI_STYLESETSIZEFRACTIONAL, style,
-			long(f.pointSizeF() * SC_FONT_SIZE_MULTIPLIER));
+            long(f.pointSizeF() * SC_FONT_SIZE_MULTIPLIER));
 
 	// Pass the Qt weight via the back door.
 	send(SCI_STYLESETWEIGHT, style, -f.weight());
@@ -1464,9 +1520,12 @@ void ScintillaEditBase::setStylesFont(const QFont &f, int style)
 
 void ScintillaEditBase::cursorChangedUpdateMarker()
 {
-    emit qApp->inputMethod()->cursorRectangleChanged();   // IMPORTANT: this moves the handle !!! see: QQuickTextControl::updateCursorRectangle()
-    emit qApp->inputMethod()->anchorRectangleChanged();
-    emit cursorPositionChanged();
+    if(!sqt->pdoc->IsReadOnly())
+    {
+        emit qApp->inputMethod()->cursorRectangleChanged();   // IMPORTANT: this moves the handle !!! see: QQuickTextControl::updateCursorRectangle()
+        emit qApp->inputMethod()->anchorRectangleChanged();
+        emit cursorPositionChanged();
+    }
 }
 
 void RegisterScintillaType()
