@@ -24,7 +24,7 @@ can be used to select the style permanently. The available styles are:
 
 Use this command to switch to Material style: style("Material")
 
-Added freatures (compared to original SciTE):
+Added features (compared to original SciTE):
 
   * updated Icons for toolbar (using: https://material.io/resources/icons/?icon=build&style=baseline)
   * show current file in statusbar when find in files is running
@@ -41,17 +41,15 @@ Added freatures (compared to original SciTE):
   * Added support to run current text/script as JavaScript (via QML)
   * Allow selection of styles via JavaScript function: style("StyleName")
   * Save and restore of extensions and paths in find in files dialog
+  * Select word under cursor (Ctr+W)
 
 Missing features are:
 
   * Improve splitter handling
   * Implement Printing (partly)
   * Context menu for Scintilla Control can not be overwritten/updated by SciTE  
-# * Integrate source code of scite 4.4.6
-# * Android: improve selection of text --> improve/use QInputContext
 # * Android: Support and Pay Page
 ? * Android: improve deployment --> more languages?
-# * Android: cut ListView in MobileFileDialog
 
 New open features might be:
 
@@ -69,6 +67,7 @@ New open features might be:
 
 Known and open Bugs are:
 
+  * Use signing data for visiscript instead of mobile gnuplot viewer
   * CI: Windows CI build does not fail if compile step has an error and sciteqt.exe was not created ... ? Why? See Mingw Build for 32 bit
   * MACOS: support qt translations like qt_de.qm
   * Initial horizontal Scrollbar size (width of maximum screen? logical width?)

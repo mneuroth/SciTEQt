@@ -127,7 +127,7 @@ public slots:
 	void event_command(uptr_t wParam, sptr_t lParam);
 
 #ifdef PLAT_QT_QML
-	void onLongTouch();
+    //void onLongTouch();
 #endif
 
 signals:
@@ -274,8 +274,8 @@ private:
 	QFont aFont;
 	QPoint longTouchPoint;
 	Qt::InputMethodHints dataInputMethodHints;
-     QTimer aLongTouchTimer;
-     qint64 aLastTouchPressTime;
+    //QTimer aLongTouchTimer;
+    qint64 aLastTouchPressTime;
 #endif
 
 	Scintilla::ScintillaQt *sqt;

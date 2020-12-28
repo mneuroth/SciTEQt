@@ -509,7 +509,7 @@ protected:	// ScintillaBase subclass needs access to much of Editor
 	void WordSelection(Sci::Position pos);
 	void DwellEnd(bool mouseMoved);
 	void MouseLeave();
-    void SelectCurrentWord(Point pt);
+    //void SelectCurrentWord(Point pt);
 	virtual void ButtonDownWithModifiers(Point pt, unsigned int curTime, int modifiers);
 	virtual void RightButtonDownWithModifiers(Point pt, unsigned int curTime, int modifiers);
 	void ButtonMoveWithModifiers(Point pt, unsigned int curTime, int modifiers);

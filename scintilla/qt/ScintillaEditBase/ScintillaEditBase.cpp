@@ -61,7 +61,7 @@ ScintillaEditBase::ScintillaEditBase(QQuickItem/*QWidget*/ *parent)
 , enableUpdateFlag(true), logicalWidth(0), logicalHeight(0)
 #ifdef PLAT_QT_QML
 , dataInputMethodHints(Qt::ImhNone)
-, aLongTouchTimer(this)
+//, aLongTouchTimer(this)
 , aLastTouchPressTime(-1)
 #endif
 , sqt(0), preeditPos(-1), wheelDelta(0)
@@ -133,7 +133,7 @@ ScintillaEditBase::ScintillaEditBase(QQuickItem/*QWidget*/ *parent)
 #ifdef PLAT_QT_QML
     connect(sqt, SIGNAL(cursorPositionChanged()), this, SIGNAL(cursorPositionChanged()));   // needed to update markers on android platform
 
-    connect(&aLongTouchTimer, SIGNAL(timeout()), this, SLOT(onLongTouch()));
+    //connect(&aLongTouchTimer, SIGNAL(timeout()), this, SLOT(onLongTouch()));
 #endif
 
 	// TODO: performance optimizations... ?
@@ -198,23 +198,24 @@ void ScintillaEditBase::enableUpdate(bool enable)
     }
 }
 
+/*
 void ScintillaEditBase::onLongTouch()
 {
 #ifndef Q_OS_ANDROID
     //emit showContextMenu(longTouchPoint);
 #else
-    if(!sqt->pdoc->IsReadOnly())
-    {
-        // select the word under cursor and show markers and context menu (android)
+//    if(!sqt->pdoc->IsReadOnly())
+//    {
+//        // select the word under cursor and show markers and context menu (android)
 
-        sqt->selectCurrentWord();
-#ifdef PLAT_QT_QML
-        cursorChangedUpdateMarker();
-#endif
-    }
+//        sqt->selectCurrentWord();
+//#ifdef PLAT_QT_QML
+//        cursorChangedUpdateMarker();
+//#endif
+//    }
 #endif
 }
-
+*/
 #endif
 
 void ScintillaEditBase::scrollHorizontal(int value)
@@ -1092,41 +1093,17 @@ void ScintillaEditBase::touchEvent(QTouchEvent *event)
         QPoint mousePressedPoint = point.pos().toPoint();
         //mouseMoved = false;
         //mouseDeltaLineMove = 0;
-        Point scintillaPoint = PointFromQPoint(mousePressedPoint);
 
-        //sqt->ButtonDownWithModifiers(scintillaPoint, time.elapsed(), 0);       // --> enables mouse selection modus
-
-// versetzt cursor...
-//        Sci::Position pos = sqt->PositionFromLocation(scintillaPoint);
-//        sqt->MovePositionTo(pos);
+        // moves the cursor...
+        //Point scintillaPoint = PointFromQPoint(mousePressedPoint);
+        //Sci::Position pos = sqt->PositionFromLocation(scintillaPoint);
+        //sqt->MovePositionTo(pos);
 
         longTouchPoint = point.pos().toPoint();
 
 //#ifndef Q_OS_ANDROID
-//        aLongTouchTimer.start(500);    // ggf. repaint problem ?
+//        aLongTouchTimer.start(500);
 //#endif
-
-//#ifdef Q_OS_ANDROID
-//        // Android: trigger software keyboard for inputs:
-//        // https://stackoverflow.com/questions/39436518/how-to-get-the-android-keyboard-to-appear-when-using-qt-for-android
-//        // https://stackoverflow.com/questions/5724811/how-to-show-the-keyboard-on-qt
-
-//        // Check if not in readonly modus --> pdoc->IsReadOnly()
-//        if( hasActiveFocus() && !sqt->pdoc->IsReadOnly() )
-//        {
-//            // TODO working: QGuiApplication::inputMethod()->commit();
-
-//            // QML: Qt.inputMethod.show();
-//            QInputMethod *keyboard = qGuiApp->inputMethod();
-//            //QInputMethod *keyboard = QGuiApplication::inputMethod();
-//            if(!keyboard->isVisible())
-//            {
-//                keyboard->show();
-//            }
-//        }
-//#endif
-
-//        aLongTouchTimer.start(300);    // ggf. repaint problem ?
 
         cursorChangedUpdateMarker();
     }
@@ -1141,16 +1118,15 @@ void ScintillaEditBase::touchEvent(QTouchEvent *event)
     else if(event->touchPointStates() == Qt::TouchPointMoved && event->touchPoints().count()>0)
     {
 //#ifndef Q_OS_ANDROID
-    // TODO: stop timer if move is over threshold away from start point ?
-    //        aLongTouchTimer.stop();
+//        aLongTouchTimer.stop();
 //#endif
         }
     else if( event->touchPointStates() == Qt::TouchPointReleased && event->touchPoints().count()>0 )
     {
 //#ifndef Q_OS_ANDROID
-        aLongTouchTimer.stop();
+//        aLongTouchTimer.stop();
 //#endif
-        // is short touch ?
+        // is ths a short touch (time between press and release < 100ms) ?
         if(aLastTouchPressTime>=0 && (time.elapsed()-aLastTouchPressTime)<100)
         {
             QTouchEvent::TouchPoint point = event->touchPoints().first();

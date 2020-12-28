@@ -4519,6 +4519,7 @@ static constexpr bool AllowVirtualSpace(int virtualSpaceOptions, bool rectangula
 		|| (rectangular && ((virtualSpaceOptions & SCVS_RECTANGULARSELECTION) != 0));
 }
 
+/*
 void Editor::SelectCurrentWord(Point pt)
 {
     if (selectionUnit == TextUnit::word) {
@@ -4552,6 +4553,7 @@ void Editor::SelectCurrentWord(Point pt)
         WordSelection(wordSelectInitialCaretPos);
     }
 }
+*/
 
 void Editor::ButtonDownWithModifiers(Point pt, unsigned int curTime, int modifiers) {
 	SetHoverIndicatorPoint(pt);
