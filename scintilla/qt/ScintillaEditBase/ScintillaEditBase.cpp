@@ -927,7 +927,7 @@ QVariant ScintillaEditBase::inputMethodQuery(Qt::InputMethodQuery property, QVar
 
 QVariant ScintillaEditBase::inputMethodQuery(Qt::InputMethodQuery query) const
 {
-	int pos = send(SCI_GETCURRENTPOS);
+    int pos = send(SCI_GETCURRENTPOS);
 	int line = send(SCI_LINEFROMPOSITION, pos);
 
 	switch (query) {
@@ -982,10 +982,8 @@ QVariant ScintillaEditBase::inputMethodQuery(Qt::InputMethodQuery query) const
             int paraEnd = sqt->pdoc->ParaDown(pos);
             QVarLengthArray<char,1024> buffer(paraEnd - paraStart + 1);
 
-            int localPos = pos - paraStart;
-
             Sci_CharacterRange charRange;
-            charRange.cpMin = localPos;
+            charRange.cpMin = pos;
             charRange.cpMax = paraEnd;
 
             Sci_TextRange textRange;
@@ -1003,11 +1001,9 @@ QVariant ScintillaEditBase::inputMethodQuery(Qt::InputMethodQuery query) const
             int paraEnd = sqt->pdoc->ParaDown(pos);
             QVarLengthArray<char,1024> buffer(paraEnd - paraStart + 1);
 
-            int localPos = pos - paraStart;
-
             Sci_CharacterRange charRange;
             charRange.cpMin = paraStart;
-            charRange.cpMax = localPos;
+            charRange.cpMax = pos;
 
             Sci_TextRange textRange;
             textRange.chrg = charRange;
