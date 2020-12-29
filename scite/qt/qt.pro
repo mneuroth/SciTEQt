@@ -195,6 +195,8 @@ macx {
     QT += macextras
 }
 
+ARCH_PATH = x86
+
 android {
     SOURCES += android/androidshareutils.cpp
 
