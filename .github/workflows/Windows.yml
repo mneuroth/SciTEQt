@@ -84,16 +84,16 @@ jobs:
         #aqtversion: '==0.10.0'
         #py7zrversion: '==0.11.0'
         #extra: '--external 7z'
+        # REMARK: see: https://download.qt.io/online/qtsdkrepository/ for new versions of ifw and for (version) real name
         tools: 'tools_ifw,4.0.1-202012091044,qt.tools.ifw.40'
     - name: Install Qt and compile
       run: |
         d:
         dir
         #python -m aqt --help       
-        #python -m aqt tool -O d:\a\SciTEQt/Qt windows tools_ifw qt.tools.ifw.32 win-x86
         #python -m aqt tool -O d:\a\SciTEQt/Qt windows tools_ifw qt.tools.ifw.40 win-x86
         #python -m aqt tool windows tools_ifw 4.0.1 win-x86 --outputdir d:\a\SciTEQt\Qt 
-        #python -m aqt tool windows tools_ifw 3.2.2 win-x86 --outputdir d:\a\SciTEQt\Qt 
+        #use: python -m aqt tool windows tools_ifw 4.0.1-202012091044 qt.tools.ifw.40 --outputdir d:\a\SciTEQt\Qt 
         dir d:\a
         dir d:\a\SciteQt
         dir d:\a\SciteQt\Qt

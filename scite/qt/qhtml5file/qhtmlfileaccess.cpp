@@ -34,7 +34,7 @@ Q_INVOKABLE void QHtmlFileAccess::saveFsFile(const QString &tmpFilePath, const Q
 {
     // The application has saved to the emscripten file system. Read
     // the file and download/save to the local (OS) file system.
-    qDebug() << "saveFsFile " << tmpFilePath << endl;
+    qDebug() << "saveFsFile " << tmpFilePath << " hint=" << fileNameHint << endl;   // PATCH
 
     QFile tmpFile(tmpFilePath);
     tmpFile.open(QIODevice::ReadOnly);

@@ -50,6 +50,9 @@ Missing features are:
   * Context menu for Scintilla Control can not be overwritten/updated by SciTE  
 # * Android: Support and Pay Page
 ? * Android: improve deployment --> more languages?
+((  * Disable logging ouput in official release --> logging only in admin modus !
+#  * Add some example scripts
+#  * Add better high resolution logo ?
 
 New open features might be:
 
@@ -67,6 +70,8 @@ New open features might be:
 
 Known and open Bugs are:
 
+  * Update Scintilla view needs sometimes mouse click !!!???
+  * Android: new document but can not activate keyboard (need to paste text)
   * Use signing data for visiscript instead of mobile gnuplot viewer
   * CI: Windows CI build does not fail if compile step has an error and sciteqt.exe was not created ... ? Why? See Mingw Build for 32 bit
   * MACOS: support qt translations like qt_de.qm

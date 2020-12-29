@@ -93,10 +93,6 @@ void AddToLog(const QString & msg)
     if( SciTEQt::IsAdmin() )
     {
         QString sFileName(LOG_NAME);
-        //if( !QDir("/sdcard/Texte").exists() )
-        //{
-        //    sFileName = "mgv_quick_qdebug.log";
-        //}
         QFile outFile(sFileName);
         outFile.open(QIODevice::WriteOnly | QIODevice::Append);
         QTextStream ts(&outFile);
