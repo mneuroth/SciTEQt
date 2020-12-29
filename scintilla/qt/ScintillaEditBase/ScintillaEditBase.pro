@@ -15,6 +15,34 @@ CONFIG += c++1z
 
 VERSION = 4.4.6
 
+ARCH_PATH = x86
+
+android {
+    # message("hello android !")
+
+    equals(ANDROID_TARGET_ARCH, arm64-v8a) {
+        ARCH_PATH = arm64
+    }
+    equals(ANDROID_TARGET_ARCH, armeabi-v7a) {
+        ARCH_PATH = arm
+    }
+    equals(ANDROID_TARGET_ARCH, armeabi) {
+        ARCH_PATH = arm
+    }
+    equals(ANDROID_TARGET_ARCH, x86)  {
+        ARCH_PATH = x86
+    }
+    equals(ANDROID_TARGET_ARCH, x86_64)  {
+        ARCH_PATH = x64
+    }
+    equals(ANDROID_TARGET_ARCH, mips)  {
+        ARCH_PATH = mips
+    }
+    equals(ANDROID_TARGET_ARCH, mips64)  {
+        ARCH_PATH = mips64
+    }
+}
+
 SOURCES += \
     PlatQt.cpp \
     ScintillaQt.cpp \
@@ -121,7 +149,7 @@ CONFIG(release, debug|release) {
     DEFINES += NDEBUG=1
 }
 
-DESTDIR = ../../bin
+DESTDIR = ../../bin-$${ARCH_PATH}
 
 macx {
 	QMAKE_LFLAGS_SONAME = -Wl,-install_name,@executable_path/../Frameworks/

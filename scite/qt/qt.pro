@@ -136,8 +136,6 @@ SOURCES +=  ../src/Cookie.cxx\
 
 INCLUDEPATH += ../lua/src ../src ../../scintilla/qt/ScintillaEdit ../../scintilla/qt/ScintillaEditBase ../../scintilla/include ../../scintilla/src ../../scintilla/lexilla/src ../../scintilla/lexlib
 
-LIBS += -L$$OUT_PWD/../../scintilla/bin/ -lScintillaEditBase
-
 unix {
     LIBS += -ldl
 }
@@ -361,4 +359,7 @@ DISTFILES += \
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
-ANDROID_ABIS = arm64-v8a
+ANDROID_ABIS = armeabi-v7a arm64-v8a x86 x86_64
+
+LIBS += -L$$OUT_PWD/../../scintilla/bin-$${ARCH_PATH}/ -lScintillaEditBase
+
