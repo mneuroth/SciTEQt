@@ -216,6 +216,7 @@ int ScriptExecution::DoScriptExecution(const QString & sScriptCmd, const QString
         // maybe: update some environment variables via:
         //env.insert("LD_LIBRARY_PATH", sLibraryPath);
 #if defined( Q_OS_ANDROID )
+        // added support to call interpreters from visiscriptextensions
         QString sCurrentLibraryPath;
         if( env.contains("LD_LIBRARY_PATH") )
         {
@@ -227,6 +228,13 @@ int ScriptExecution::DoScriptExecution(const QString & sScriptCmd, const QString
             sLibraryPath = sLibraryPath + ":" + sCurrentLibraryPath;
         }
         env.insert("LD_LIBRARY_PATH", sLibraryPath);
+
+        QString sLuaPaths = "?;?.lua;/data/data/de.mneuroth.visiscriptextensions/files/?.lua;/data/data/de.mneuroth.visiscriptextensions/files/lib/lua/?.lua";
+        env.insert("LUA_PATH", sLuaPaths);
+        QString sMinscriptPaths = "/data/data/de.mneuroth.visiscriptextensions/files";  // lib/minscript
+        env.insert("MINSCRIPTPATH", sMinscriptPaths);
+        QString sFuelPaths = "/data/data/de.mneuroth.visiscriptextensions/files";  // lib/fuel
+        env.insert("FUELPATH", sFuelPaths);
 #endif
         m_aScriptProcess.setProcessEnvironment( env );
 
