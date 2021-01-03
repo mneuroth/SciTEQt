@@ -2295,7 +2295,8 @@ void SciTEQt::cmdAboutCurrentFile()
     OnAddLineToOutput(sMsg);
 }
 
-static QString g_sJavaScriptLibrary = "function print(t) { env.print(t) }\nfunction admin(val) { env.admin(val) }\nfunction style(val) { env.style(val) }\n";
+static QString g_sJavaScriptInit = "var console = { log: env.print }; ";
+static QString g_sJavaScriptLibrary = "\nfunction print(t) { env.print(t) }\nfunction admin(val) { env.admin(val) }\nfunction style(val) { env.style(val) }\n";
 
 void SciTEQt::cmdRunCurrentAsJavaScriptFile()
 {
@@ -2311,7 +2312,8 @@ void SciTEQt::cmdRunCurrentAsJavaScriptFile()
     QJSValue sciteEnvironment = myEngine.newQObject(&aSciteQtJSEnvironment);
     myEngine.globalObject().setProperty("env", sciteEnvironment);
 
-    QJSValue result = myEngine.evaluate(g_sJavaScriptLibrary+text, filePath.AsUTF8().c_str());
+    // put javascript library at the end of the script because otherwiese the line numbers in exceptions are wrong !
+    QJSValue result = myEngine.evaluate(g_sJavaScriptInit+text+g_sJavaScriptLibrary, filePath.AsUTF8().c_str());
     QString sResult;
     if (result.isError())
     {

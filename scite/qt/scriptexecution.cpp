@@ -214,7 +214,20 @@ int ScriptExecution::DoScriptExecution(const QString & sScriptCmd, const QString
         //QFileInfo aScriptInfo(sScriptCommand);
         //QString sPathToInterpreterDirectory = aScriptInfo.path();
         // maybe: update some environment variables via:
-        //  env.insert("LD_LIBRARY_PATH", sLibraryPath);
+        //env.insert("LD_LIBRARY_PATH", sLibraryPath);
+#if defined( Q_OS_ANDROID )
+        QString sCurrentLibraryPath;
+        if( env.contains("LD_LIBRARY_PATH") )
+        {
+            sCurrentLibraryPath = env.value("LD_LIBRARY_PATH");
+        }
+        QString sLibraryPath = "/data/data/de.mneuroth.visiscriptextensions/files/python2.7/lib";   // maybe add also this path: /data/data/de.mneuroth.visiscriptextensions/files/python2.7/lib/python2.7/lib-dynload
+        if( sCurrentLibraryPath.length() > 0 )
+        {
+            sLibraryPath = sLibraryPath + ":" + sCurrentLibraryPath;
+        }
+        env.insert("LD_LIBRARY_PATH", sLibraryPath);
+#endif
         m_aScriptProcess.setProcessEnvironment( env );
 
         m_aScriptProcess.setWorkingDirectory(sWorkingDirectory);
