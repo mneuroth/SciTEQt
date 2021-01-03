@@ -47,6 +47,8 @@
 #include "MatchMarker.h"
 #include "SciTEBase.h"
 
+#include "Platform.h"
+
 // Contributor names are in UTF-8
 static const char *contributors[] = {
 #if defined(GTK)
@@ -587,7 +589,11 @@ void SciTEBase::SetAboutMessage(GUI::ScintillaWindow &wsci, const char *appTitle
 			AddStyledText(wsci, translator.c_str(), trsSty);
 			AddStyledText(wsci, "\n", 5);
 		}
-		AddStyledText(wsci, GetTranslationToAbout("Contributors:").c_str(), trsSty);
+#ifdef PLAT_QT_QML
+        AddStyledText(wsci, GetTranslationToAbout("SciTE port to Qt/QML/Quick (SciteQt):\n").c_str(), trsSty);
+        AddStyledText(wsci, "    Michael Neuroth\n", trsSty);
+#endif
+        AddStyledText(wsci, GetTranslationToAbout("Contributors:").c_str(), trsSty);
 		for (unsigned int co = 0; co < std::size(contributors); co++) {
 			const int colourIndex = 50 + (co % 78);
 			AddStyledText(wsci, "\n    ", colourIndex);
