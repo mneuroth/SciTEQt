@@ -585,14 +585,14 @@ void SciTEBase::SetAboutMessage(GUI::ScintillaWindow &wsci, const char *appTitle
 		AddStyledText(wsci, "http://www.scintilla.org\n", 4);
 		AddStyledText(wsci, "Lua scripting language by TeCGraf, PUC-Rio\n", 3);
 		AddStyledText(wsci, "    http://www.lua.org\n", 4);
-		if (translator.length()) {
-			AddStyledText(wsci, translator.c_str(), trsSty);
-			AddStyledText(wsci, "\n", 5);
-		}
 #ifdef PLAT_QT_QML
         AddStyledText(wsci, GetTranslationToAbout("SciTE port to Qt/QML/Quick (SciteQt):\n").c_str(), trsSty);
         AddStyledText(wsci, "    Michael Neuroth\n", trsSty);
 #endif
+        if (translator.length()) {
+			AddStyledText(wsci, translator.c_str(), trsSty);
+			AddStyledText(wsci, "\n", 5);
+		}
         AddStyledText(wsci, GetTranslationToAbout("Contributors:").c_str(), trsSty);
 		for (unsigned int co = 0; co < std::size(contributors); co++) {
 			const int colourIndex = 50 + (co % 78);
