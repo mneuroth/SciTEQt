@@ -145,9 +145,9 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
       m_iCurrentTabIndex(-1),
       m_bIsInUpdateAppActive(false),
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
-      m_bIsMobilePlatfrom(true),
+      m_bIsMobileUI(true),
 #else
-      m_bIsMobilePlatfrom(false),
+      m_bIsMobileUI(false),
 #endif
       m_bShowToolBar(false),
       m_bShowStatusBar(false),
@@ -3088,12 +3088,13 @@ bool SciTEQt::useSimpleMenus() const
     return isMobilePlatform();
 }
 
-void SciTEQt::setMobilePlatform(bool val)
+void SciTEQt::setMobileUI(bool val)
 {
-    if(val != m_bIsMobilePlatfrom)
+    if(val != m_bIsMobileUI)
     {
-        m_bIsMobilePlatfrom = val;
+        m_bIsMobileUI = val;
         emit mobilePlatformChanged();
+        emit mobileUIChanged();
         emit useMobileDialogHandlingChanged();
     }
 }
@@ -3105,7 +3106,16 @@ bool SciTEQt::isUseMobileDialogHandling() const
 
 bool SciTEQt::isMobilePlatform() const
 {
-    return m_bIsMobilePlatfrom;
+#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS) || defined(Q_OS_WASM)
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool SciTEQt::isMobileUI() const
+{
+    return m_bIsMobileUI;
 }
 
 bool SciTEQt::isWebassemblyPlatform() const

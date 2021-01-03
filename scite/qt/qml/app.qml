@@ -855,7 +855,7 @@ ApplicationWindow {
     // desktop modus menu bar
     MenuBar {
         id: sciteMenuBar
-        visible: !sciteQt.mobilePlatform
+        visible: !sciteQt.mobileUI
 
         FileMenu {
             id: fileMenuX
@@ -942,7 +942,7 @@ ApplicationWindow {
         }
     }
 
-    menuBar: sciteQt.mobilePlatform ? mobileMenuBar : sciteMenuBar
+    menuBar: sciteQt.mobileUI ? mobileMenuBar : sciteMenuBar
 
     header: toolBarButtonContainer
 
@@ -950,7 +950,7 @@ ApplicationWindow {
         id: mobileMenuBar
         contentHeight: 40
         //contentHeight: toolButton.implicitHeight
-        visible: sciteQt.mobilePlatform
+        visible: sciteQt.mobileUI
 
         ToolButton {
             id: toolButton

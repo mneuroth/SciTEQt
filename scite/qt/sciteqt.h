@@ -145,7 +145,8 @@ class SciTEQt : public QObject, public SciTEBase
     Q_PROPERTY(bool showToolBar READ isShowToolBar WRITE setShowToolBar NOTIFY showToolBarChanged)
     Q_PROPERTY(bool showStatusBar READ isShowStatusBar WRITE setShowStatusBar NOTIFY showStatusBarChanged)
     Q_PROPERTY(bool showTabBar READ isShowTabBar WRITE setShowTabBar NOTIFY showTabBarChanged)
-    Q_PROPERTY(bool mobilePlatform READ isMobilePlatform WRITE setMobilePlatform NOTIFY mobilePlatformChanged)
+    Q_PROPERTY(bool mobilePlatform READ isMobilePlatform NOTIFY mobilePlatformChanged)
+    Q_PROPERTY(bool mobileUI READ isMobileUI WRITE setMobileUI NOTIFY mobileUIChanged)
     Q_PROPERTY(bool useMobileDialogHandling READ isUseMobileDialogHandling NOTIFY useMobileDialogHandlingChanged)
 
     Q_PROPERTY(bool wholeWord READ isWholeWord WRITE setWholeWord NOTIFY wholeWordChanged)
@@ -436,8 +437,9 @@ public:
     Q_INVOKABLE bool isWebassemblyPlatform() const;
     Q_INVOKABLE bool isMacOSPlatform() const;
     bool isMobilePlatform() const;
-    void setMobilePlatform(bool val);
     bool isUseMobileDialogHandling() const;
+    bool isMobileUI() const;
+    void setMobileUI(bool val);
 
     Q_INVOKABLE void updateCurrentWindowPosAndSize(int left, int top, int width, int height, bool maximize);
     Q_INVOKABLE void updateCurrentSelectedFileUrl(const QString & fileUrl);
@@ -491,6 +493,7 @@ signals:
     void showStatusBarChanged();
     void statusBarTextChanged();
     void mobilePlatformChanged();
+    void mobileUIChanged();
     void useMobileDialogHandlingChanged();
     void setMenuChecked(int menuID, bool val);
     void setMenuEnable(int menuID, bool val);
@@ -592,7 +595,7 @@ private:
     int                     m_iLastTabIndex;
     int                     m_iCurrentTabIndex;
     bool                    m_bIsInUpdateAppActive;
-    bool                    m_bIsMobilePlatfrom;
+    bool                    m_bIsMobileUI;
 
     bool                    m_bShowToolBar;
     bool                    m_bShowStatusBar;

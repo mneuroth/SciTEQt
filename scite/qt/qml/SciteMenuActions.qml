@@ -915,9 +915,9 @@ Item {
         id: actionIsMobilePlatfrom
         text: qsTr("Mobile Platform UI")
         checkable: true
-        checked: sciteQt.mobilePlatform
+        checked: sciteQt.mobileUI
         onTriggered: {
-            sciteQt.mobilePlatform = !sciteQt.mobilePlatform
+            sciteQt.mobileUI = !sciteQt.mobileUI
         }
     }
 
