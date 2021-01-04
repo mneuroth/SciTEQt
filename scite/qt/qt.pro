@@ -1,4 +1,8 @@
-QT += qml quick quickcontrols2 widgets printsupport svg purchasing
+QT += qml quick quickcontrols2 widgets printsupport svg
+
+android {
+    QT += purchasing
+}
 
 TARGET = sciteqt
 
