@@ -44,29 +44,69 @@ Page {
         color: "#ffffff"
         anchors.fill: parent
 
-        Button {
-            id: btnSupportLevel0
-            x: 30
-            text: qsTr("Support Level Bronze")
+        Row {
+            id: row0
+
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: lblSupportInfo.bottom
             anchors.topMargin: 5
+            spacing: 10
+
+            Button {
+                id: btnSupportLevel0
+                x: 30
+                text: qsTr("Support Level Bronze")
+            }
+
+            Label {
+                id: lblLevel0
+                y: 18
+                text: "?"
+                anchors.verticalCenter: btnSupportLevel0.verticalCenter
+            }
+
         }
 
-        Button {
-            id: btnSupportLevel1
-            text: qsTr("Support Level Silver")
+        Row {
+            id: row1
+
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: btnSupportLevel0.bottom
+            anchors.top: row0.bottom
             anchors.topMargin: 5
+            spacing: 10
+
+            Button {
+                id: btnSupportLevel1
+                text: qsTr("Support Level Silver")
+            }
+
+            Label {
+                id: lblLevel1
+                y: 18
+                text: "?"
+                anchors.verticalCenter: btnSupportLevel1.verticalCenter
+            }
         }
 
-        Button {
-            id: btnSupportLevel2
-            text: qsTr("Support Level Gold")
+        Row {
+            id: row2
+
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: btnSupportLevel1.bottom
+            anchors.top: row1.bottom
             anchors.topMargin: 5
+            spacing: 10
+
+            Button {
+                id: btnSupportLevel2
+                text: qsTr("Support Level Gold")
+            }
+
+            Label {
+                id: lblLevel2
+                y: 18
+                text: "?"
+                anchors.verticalCenter: btnSupportLevel2.verticalCenter
+            }
         }
 
         Button {
@@ -77,39 +117,6 @@ Page {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 5
-        }
-
-        Label {
-            id: lblLevel0
-            y: 18
-            text: ""
-            anchors.verticalCenter: btnSupportLevel0.verticalCenter
-            anchors.right: parent.right
-            anchors.rightMargin: 5
-            anchors.left: btnSupportLevel0.right
-            anchors.leftMargin: 21
-        }
-
-        Label {
-            id: lblLevel1
-            y: 18
-            text: ""
-            anchors.verticalCenter: btnSupportLevel1.verticalCenter
-            anchors.right: parent.right
-            anchors.rightMargin: 5
-            anchors.left: btnSupportLevel1.right
-            anchors.leftMargin: 21
-        }
-
-        Label {
-            id: lblLevel2
-            y: 18
-            text: ""
-            anchors.verticalCenter: btnSupportLevel2.verticalCenter
-            anchors.right: parent.right
-            anchors.rightMargin: 5
-            anchors.left: btnSupportLevel2.right
-            anchors.leftMargin: 21
         }
 
         Text {
@@ -131,7 +138,7 @@ Page {
             y: 18
             text: "<a href='https://play.google.com/store/apps/details?id=org.scintilla.sciteqt'>SciteQt in Google Play</a>"
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: btnSupportLevel2.bottom
+            anchors.top: row2.bottom
             anchors.topMargin: 15
         }
     }
