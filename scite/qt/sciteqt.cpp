@@ -2527,6 +2527,11 @@ void SciTEQt::cmdAboutQt()
     QApplication::aboutQt();
 }
 
+void SciTEQt::cmdSupportSciteQt()
+{
+    emit showSupportSciteQtDialog();
+}
+
 void SciTEQt::ReadEmbeddedProperties()
 {
     propsEmbed.Clear();

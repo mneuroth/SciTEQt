@@ -418,6 +418,7 @@ public:
     Q_INVOKABLE QString cmdUrlToLocalPath(const QString & url);
 
     Q_INVOKABLE void cmdAboutQt();
+    Q_INVOKABLE void cmdSupportSciteQt();
 
     Q_INVOKABLE QVariant fillTabContextMenu();
 
@@ -528,6 +529,7 @@ signals:
     void startFileDialog(const QString & sDirectory, const QString & sFilter, const QString & sTitle, bool bAsOpenDialog, bool bSaveACopyModus = false, bool bDeleteModus = false, const QString & sDefaultSaveAsName = "unknown.txt");
     void showInfoDialog(const QString & sInfoText, int style);
     void showAboutSciteDialog();
+    void showSupportSciteQtDialog();
 
     void showFindInFilesDialog(const QString & text, const QStringList & findHistory, const QStringList & filePatternHistory, const QStringList & directoryHistory, bool wholeWord, bool caseSensitive, bool regularExpression);
     void showFindStrip(const QStringList & findHistory, const QStringList & replaceHistory, const QString & text, bool incremental, bool withReplace, bool closeOnFind);

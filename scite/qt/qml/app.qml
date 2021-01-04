@@ -12,7 +12,8 @@ import QtQuick.Dialogs 1.2
 import QtQml.Models 2.1
 import QtQuick.Controls 1.4 as Controls1
 import QtQuick.Layouts 1.0
-//import Qt.labs.settings 1.0
+import Qt.labs.settings 1.0
+//import QtQuick.Controls.Material 2.12
 
 import QtQuick.Window 2.1   // for dialog test only (webassembly)
 
@@ -26,6 +27,13 @@ ApplicationWindow {
     width: 600
     height: 800
     visible: true
+
+    property bool isAppStoreSupported: applicationData !== null ? applicationData.isAppStoreSupported : false
+
+// https://doc.qt.io/qt-5/qtquickcontrols2-styles.html#using-styles-in-qt-quick-controls
+//   https://doc.qt.io/qt-5/qtquickcontrols2-material.html
+//    Material.theme: Material.Dark
+//    Material.accent: Material.Purple
 
     signal stripFindVisible(bool val)
 
@@ -553,6 +561,17 @@ ApplicationWindow {
 
     function showTestDialog() {
         testDialog.show()
+    }
+
+    function showSupportSciteQtDialog() {
+        var dlg = sciteQt.useMobileDialogHandling ? supportDialog : supportDialogWin
+        if(sciteQt.useMobileDialogHandling) {
+            stackView.pop()
+            stackView.push(dlg)
+            dlg.forceActiveFocus()
+        } else {
+            dlg.show()
+        }
     }
 
     function removeAllTabs() {
@@ -1358,7 +1377,7 @@ ApplicationWindow {
                 icon.source: "icons/stop.svg"
                 icon.height: toolBarButtonContainer.iconHeight
                 icon.width: toolBarButtonContainer.iconWidth
-                //text: Stop"
+                //text: "Stop"
                 visible: sciteQt.showToolBar
                 onClicked: sciteQt.cmdStopExecuting()
 
@@ -1366,6 +1385,23 @@ ApplicationWindow {
                 ToolTip.timeout: toolTipTimeout
                 ToolTip.visible: hovered
                 ToolTip.text: sciteQt.getLocalisedText(qsTr("Stop script execution"))
+            }
+            ToolButton {
+                id: toolButtonGraphics
+                icon.source: "icons/loop.svg"
+                icon.height: toolBarButtonContainer.iconHeight
+                icon.width: toolBarButtonContainer.iconWidth
+                //text: "Graphics"
+                visible: sciteQt.showToolBar
+                onClicked: {
+                    graphicsDialog.show()
+                    console.log("graphics dlg: "+graphicsDialog.width+ " "+graphicsDialog.height)
+                }
+
+                ToolTip.delay: toolTipDelay
+                ToolTip.timeout: toolTipTimeout
+                ToolTip.visible: hovered
+                ToolTip.text: sciteQt.getLocalisedText(qsTr("Show graphics output dialog"))
             }
         }
     }
@@ -1459,11 +1495,23 @@ ApplicationWindow {
                 }
             }
             ItemDelegate {
+                id: clearOutputTool
                 text: sciteQt.getLocalisedText(qsTr("Clear Output"))
                 width: parent.width
                 onClicked: {
                     stackView.pop()
                     sciteQt.cmdClearOutput()
+                    drawer.close()
+                }
+            }
+            ItemDelegate {
+                text: sciteQt.getLocalisedText(qsTr("Support SciteQt"))
+                width: parent.width
+                visible: sciteQt.mobilePlatform
+                height: visible ? clearOutputTool.heigh : 0
+                onClicked: {
+                    stackView.pop()
+                    sciteQt.cmdSupportSciteQt()
                     drawer.close()
                 }
             }
@@ -2113,12 +2161,15 @@ ApplicationWindow {
 
     }   // Item
 
-/*
+
     Settings {
         id: settings
-        property var splitView
+
+        //property var splitView
+
+        property int supportLevel: -1   // no support level at all
     }
-*/
+
 
     SciTEQt {
        id: sciteQt
@@ -2135,6 +2186,7 @@ ApplicationWindow {
         onStartFileDialog:            startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog, bSaveACopyModus, bDeleteModus, sDefaultSaveAsName)
         onShowInfoDialog:             showInfoDialog(sInfoText, style)
         onShowAboutSciteDialog:       showAboutSciteDialog()
+        onShowSupportSciteQtDialog:   showSupportSciteQtDialog()
 
         onShowFindInFilesDialog:      showFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory, wholeWord, caseSensitive, regularExpression)
         onShowFindStrip:              showFindStrip(findHistory, replaceHistory, text, incremental, withReplace, closeOnFind)
@@ -2404,6 +2456,125 @@ ApplicationWindow {
                 }
             }
         }
+    }
+
+    Window {
+        id: graphicsDialog
+        visible: false
+
+        width: 400
+        height: 400
+
+        Canvas {
+            id: canvas
+
+            anchors.top: parent.top
+            anchors.bottom: buttons.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.rightMargin: 5
+            anchors.leftMargin: 5
+            anchors.topMargin: 5
+            anchors.bottomMargin: 5
+
+            /*
+              setPenWidth
+              setPenColor
+              setFillColor
+              addLine
+              addRect
+              addEllipse
+              addPolygon
+              addText
+              moveTo
+
+              --> set QVariantArray with List of Paint Items which could be painted in onPaint
+            */
+
+            onPaint: {
+                    var ctx = getContext("2d");
+                    ctx.fillStyle = Qt.rgba(1, 0, 0, 1);
+                    ctx.fillRect(0, 0, width, height);
+                }
+        }
+
+        Row {
+            id: buttons
+
+            //anchors.top: canvas.bottom
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.rightMargin: 5
+            anchors.leftMargin: 5
+            anchors.topMargin: 5
+            anchors.bottomMargin: 5
+
+            spacing: 10
+
+            Button {
+                text: sciteQt.getLocalisedText(qsTr("Stop"))
+                onClicked: {
+                }
+            }
+            Button {
+                text: sciteQt.getLocalisedText(qsTr("Pause"))
+                onClicked: {
+                }
+            }
+            Button {
+                text: sciteQt.getLocalisedText(qsTr("Close"))
+                onClicked: {
+                    graphicsDialog.close()
+                }
+            }
+        }
+    }
+
+    SupportDialog {
+        id: supportDialog
+        objectName: "supportDialog"
+        visible: false
+        title: sciteQt.getLocalisedText(qsTr("Support SciteQt"))
+
+        fcnLocalisation: sciteQt.getLocalisedText
+    }
+
+    Connections {
+        target: supportDialog
+
+        onClosed: {
+            stackView.pop()
+            focusToEditor()
+        }
+    }
+
+    SupportDialogWindow {
+        id: supportDialogWin
+        objectName: "supportDialogWin"
+        visible: false
+        modality: Qt.ApplicationModal
+        title: sciteQt.getLocalisedText(qsTr("Support SciteQt"))
+
+        width: 500
+        height: 500
+
+        fcnLocalisation: sciteQt.getLocalisedText
+    }
+
+    Connections {
+        target: supportDialogWin
+
+        onClosed: {
+            supportDialogWin.close()
+            focusToEditor()
+        }
+    }
+
+    Loader
+    {
+        id: storeLoader
+        source: isAppStoreSupported ? "ApplicationStore.qml" : ""
     }
 
     AboutSciteDialog {

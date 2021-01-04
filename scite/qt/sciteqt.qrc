@@ -28,6 +28,10 @@
         <file alias="ParametersDialogForm.ui.qml">qml/ParametersDialogForm.ui.qml</file>
         <file alias="MobileFileDialog.qml">qml/MobileFileDialog.qml</file>
         <file alias="MobileFileDialogForm.ui.qml">qml/MobileFileDialogForm.ui.qml</file>
+        <file alias="SupportDialog.qml">qml/SupportDialog.qml</file>
+        <file alias="SupportDialogWindow.qml">qml/SupportDialogWindow.qml</file>
+        <file alias="SupportDialogForm.ui.qml">qml/SupportDialogForm.ui.qml</file>
+        <file alias="ApplicationStore.qml">qml/ApplicationStore.qml</file>
         <file alias="SciteMenuActions.qml">qml/SciteMenuActions.qml</file>
         <!-- <file alias="+android/FileMenu.qml">qml/+Android/FileMenu.qml</file> --> <!-- Android specific menus... via QFileSelector -->
         <file alias="FileMenu.qml">qml/FileMenu.qml</file>

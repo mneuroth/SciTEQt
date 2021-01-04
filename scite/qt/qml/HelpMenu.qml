@@ -43,6 +43,13 @@ AutoSizingMenu {
         text: processMenuItem2(actions.actionAboutQt.text, actionAboutQt)
         action: actions.actionAboutQt
     }
+    MenuItem {
+        id: actionSupportSciteQt
+        text: processMenuItem2(actions.actionSupportSciteQt.text, actionSupportSciteQt)
+        action: actions.actionSupportSciteQt
+        visible: sciteQt.mobilePlatform
+        height: visible ? actionAboutQt.heigh : 0
+    }
 
 /* for debugging only:
 

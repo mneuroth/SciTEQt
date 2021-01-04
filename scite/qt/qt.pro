@@ -1,4 +1,4 @@
-QT += qml quick quickcontrols2 widgets printsupport svg
+QT += qml quick quickcontrols2 widgets printsupport svg purchasing
 
 TARGET = sciteqt
 

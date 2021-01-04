@@ -866,6 +866,7 @@ Item {
     property alias actionAboutScite: actionAboutScite
     property alias actionAboutSciteQt: actionAboutSciteQt
     property alias actionAboutQt: actionAboutQt
+    property alias actionSupportSciteQt: actionSupportSciteQt
     property alias actionAboutCurrentFile: actionAboutCurrentFile
     property alias actionRunCurrentAsJavaScript: actionRunCurrentAsJavaScript
     property alias actionIsMobilePlatfrom: actionIsMobilePlatfrom
@@ -896,6 +897,12 @@ Item {
         text: qsTr("About Q&t")
         enabled: !sciteQt.isWebassemblyPlatform()
         onTriggered: sciteQt.cmdAboutQt()
+    }
+    Action {
+        id: actionSupportSciteQt
+        text: qsTr("Su&pport SciteQt")
+        enabled: sciteQt.mobilePlatform
+        onTriggered: sciteQt.cmdSupportSciteQt()
     }
 
     Action {
