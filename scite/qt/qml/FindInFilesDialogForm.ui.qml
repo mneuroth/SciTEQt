@@ -89,7 +89,7 @@ Page {
 
             Button {
                 id: findButton
-                Layout.fillWidth: true
+                //Layout.fillWidth: true                    // TODO: has problems with older qt versions ! (with window resizeing)
                 text: localiseText(qsTr("&Find"),false)
                 highlighted: !sciteQt.mobilePlatform
                 Keys.onEscapePressed: cancelButton.clicked()
@@ -123,7 +123,7 @@ Page {
 
             Button {
                 id: cancelButton
-                Layout.fillWidth: true
+                //Layout.fillWidth: true                    // TODO: has problems with older qt versions !
                 text: localiseText(qsTr("Cancel"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
@@ -163,7 +163,7 @@ Page {
 
             Button {
                 id: browseButton
-                Layout.fillWidth: true
+                //Layout.fillWidth: true                    // TODO: has problems with older qt versions !
                 text: localiseText(qsTr("&Browse..."),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
