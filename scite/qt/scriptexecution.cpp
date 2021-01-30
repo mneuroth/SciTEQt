@@ -382,6 +382,7 @@ void ScriptExecution::sltReadyReadStandardOutputScript()
         QString sResult = m_aScriptProcess.readAllStandardOutput();
         if( sResult.length()>0 )
         {
+// TODO: for graphics output processing... call: GraphicsOutputExtension::ProcessStdOutLine()
             emit AddToOutput(sResult);
         }
     }

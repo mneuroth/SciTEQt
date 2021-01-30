@@ -48,7 +48,10 @@ Missing features are:
   * Improve splitter handling
   * Implement Printing (partly)
   * Context menu for Scintilla Control can not be overwritten/updated by SciTE  
-# * Android: Support and Pay Page
+  * Anzeige Datum, Groese, Attribute von Dateien im MobileFileDialog ?
+  * Python Distribution um external Libs verbessern, z.B. sqlite3
+  * Navigate Button for SciteQtExtension Directories... in mobile file dialog
+  * Add graphical output support for SciteQt
 ? * Android: improve deployment --> more languages?
 ((  * Disable logging ouput in official release --> logging only in admin modus !
 #  * Add some example scripts
@@ -70,13 +73,15 @@ New open features might be:
 
 Known and open Bugs are:
 
-  * Update Scintilla view needs sometimes mouse click !!!???
-  * Android: new document but can not activate keyboard (need to paste text)
-  * Use signing data for visiscript instead of mobile gnuplot viewer
+  * Text Marker manchmal out of sync... --> Stabilitaet verbessern Input Marker unter Android ?
+  * Tabwechsel --> View springt an den Anfang des Texts und nicht dahin wo der Cursor ist
+  * ggf. implement standard Verhalten von Scrollbars (page up/down) --> Desktop only ?
+  * Strange output (no clipping) if CR/LF should be shown
+((?  * Update Scintilla view needs sometimes mouse click !!!???
+((?  * Android: new document but can not activate keyboard (need to paste text)
   * CI: Windows CI build does not fail if compile step has an error and sciteqt.exe was not created ... ? Why? See Mingw Build for 32 bit
   * MACOS: support qt translations like qt_de.qm
   * Initial horizontal Scrollbar size (width of maximum screen? logical width?)
-  * Strange output (no clipping) if CR/LF should be shown
   * View of fonts may be corrupted after attatching/detaching monitors to the computer... ==> restart application again
   * Main Menu sometimes not completly visible after monitor/resolution change
   * Crash Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? MacOS ==> but gcc/mingw are working !
