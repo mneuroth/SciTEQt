@@ -227,10 +227,13 @@ QString GetTranslatedFileName(const QString & fileName)
     }
     else
     {
-        QUrl url(fileName);
-        if(url.isValid() && url.isLocalFile())
+        if(!fileName.startsWith(":"))       // files with : should be resolved in the resources ...
         {
-            translatedFileName = url.toLocalFile();
+            QUrl url(fileName);
+            if(url.isValid() && url.isLocalFile())
+            {
+                translatedFileName = url.toLocalFile();
+            }
         }
     }
     return translatedFileName;

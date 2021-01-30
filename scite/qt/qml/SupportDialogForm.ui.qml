@@ -47,7 +47,10 @@ Page {
         Row {
             id: row0
 
-            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 5
+            anchors.right: parent.right
+            anchors.rightMargin: 5
             anchors.top: lblSupportInfo.bottom
             anchors.topMargin: 5
             spacing: 10
@@ -56,6 +59,7 @@ Page {
                 id: btnSupportLevel0
                 x: 30
                 text: qsTr("Support Level Bronze")
+                width: parent.width / 2
             }
 
             Label {
@@ -70,7 +74,10 @@ Page {
         Row {
             id: row1
 
-            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 5
+            anchors.right: parent.right
+            anchors.rightMargin: 5
             anchors.top: row0.bottom
             anchors.topMargin: 5
             spacing: 10
@@ -78,6 +85,7 @@ Page {
             Button {
                 id: btnSupportLevel1
                 text: qsTr("Support Level Silver")
+                width: parent.width / 2
             }
 
             Label {
@@ -91,7 +99,10 @@ Page {
         Row {
             id: row2
 
-            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 5
+            anchors.right: parent.right
+            anchors.rightMargin: 5
             anchors.top: row1.bottom
             anchors.topMargin: 5
             spacing: 10
@@ -99,6 +110,7 @@ Page {
             Button {
                 id: btnSupportLevel2
                 text: qsTr("Support Level Gold")
+                width: parent.width / 2
             }
 
             Label {
@@ -124,7 +136,7 @@ Page {
             text: qsTr("The development of this app can be supported in various ways:\n\n* giving feedback and rating via the store enty in Google Play\n* purchasing a support level item via in app purchase (button below)\n\nPurchasing any support level will give you some more features:\n\n- graphics output for scripts\n- feature 2\n- feature 3\n")
             wrapMode: Text.WordWrap
             enabled: false
-            horizontalAlignment: Text.AlignHCenter
+            //horizontalAlignment: Text.AlignHCenter
             anchors.right: parent.right
             anchors.rightMargin: 5
             anchors.left: parent.left
@@ -135,9 +147,13 @@ Page {
 
         Text {
             id: lblGooglePlay
-            y: 18
+            //y: 18
             text: "<a href='https://play.google.com/store/apps/details?id=org.scintilla.sciteqt'>SciteQt in Google Play</a>"
-            anchors.horizontalCenter: parent.horizontalCenter
+            //anchors.horizontalCenter: parent.horizontalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 5
+            anchors.right: parent.right
+            anchors.rightMargin: 5
             anchors.top: row2.bottom
             anchors.topMargin: 15
         }

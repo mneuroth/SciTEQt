@@ -11,7 +11,7 @@ import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 
-import Qt.labs.platform 1.1 as Platform
+import Qt.labs.platform 1.0 as Platform
 
 FindInFilesDialogForm {
     id: root
