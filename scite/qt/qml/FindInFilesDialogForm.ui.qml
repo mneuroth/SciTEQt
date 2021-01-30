@@ -89,7 +89,7 @@ Page {
 
             Button {
                 id: findButton
-                //Layout.fillWidth: true                    // TODO: has problems with older qt versions ! (with window resizeing)
+                Layout.fillWidth: true
                 text: localiseText(qsTr("&Find"),false)
                 highlighted: !sciteQt.mobilePlatform
                 Keys.onEscapePressed: cancelButton.clicked()
@@ -123,7 +123,7 @@ Page {
 
             Button {
                 id: cancelButton
-                //Layout.fillWidth: true                    // TODO: has problems with older qt versions !
+                Layout.fillWidth: true
                 text: localiseText(qsTr("Cancel"),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
@@ -155,7 +155,7 @@ Page {
 
             Button {
                 id: upButton
-                implicitWidth: browseButton.width / 4
+                implicitWidth: cancelButton.implicitWidth / 2   // TODO: browseButton.width / 4 causes the problem !
                 text: localiseText(qsTr("&.."),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()
@@ -163,7 +163,7 @@ Page {
 
             Button {
                 id: browseButton
-                //Layout.fillWidth: true                    // TODO: has problems with older qt versions !
+                Layout.fillWidth: true                          // TODO: has problems with older qt versions ! (with window resizeing)
                 text: localiseText(qsTr("&Browse..."),false)
                 Keys.onEscapePressed: cancelButton.clicked()
                 Keys.onBackPressed: cancelButton.clicked()

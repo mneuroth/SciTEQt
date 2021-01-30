@@ -77,6 +77,7 @@ Known and open Bugs are:
   * Tabwechsel --> View springt an den Anfang des Texts und nicht dahin wo der Cursor ist
   * ggf. implement standard Verhalten von Scrollbars (page up/down) --> Desktop only ?
   * Strange output (no clipping) if CR/LF should be shown
+  * WASM: no localisations available for translations of text: i. e. locale.de.properties --> see: SciTEBase::ReadLocalization()
 ((?  * Update Scintilla view needs sometimes mouse click !!!???
 ((?  * Android: new document but can not activate keyboard (need to paste text)
   * CI: Windows CI build does not fail if compile step has an error and sciteqt.exe was not created ... ? Why? See Mingw Build for 32 bit
