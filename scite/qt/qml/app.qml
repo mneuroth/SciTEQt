@@ -614,7 +614,7 @@ ApplicationWindow {
         }
     }
 
-    function htmlSave(fileName=null) {
+    function htmlSave(fileName) {
         var tmpFilePath = "/tmp/temp.txt"
         var ok = writeCurrentDoc("file://" + tmpFilePath)
         //project.saveAs("file://" + tmpFilePath)
@@ -623,7 +623,7 @@ ApplicationWindow {
     }
 /*
     function saveOrSaveAs() {
-        htmlSave();
+        htmlSave(null);
         return;
 
         if (project.url.toString().length > 0) {
