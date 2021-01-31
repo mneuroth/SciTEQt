@@ -232,7 +232,7 @@ bool ScintillaEditBase::event(QEvent *event)
 {
 	bool result = false;
 
-qDebug() << "ScintillaEditBase::event() " << event->type() << " " << event << endl;
+//qDebug() << "ScintillaEditBase::event() this=" << this << " " << event->type() << " " << event << endl;
 
 	if (event->type() == QEvent::KeyPress) {
 		// Circumvent the tab focus convention.
@@ -269,7 +269,7 @@ qDebug() << "ScintillaEditBase::event() " << event->type() << " " << event << en
 
 void ScintillaEditBase::paint(QPainter *painter)
 {
-qDebug() << "ScintillaEditBase::paint() "    << Qt::endl;
+//qDebug() << "ScintillaEditBase::paint() this="  << this << " "    << Qt::endl;
 	//sqt->PartialPaintQml(PRectFromQRect(/*boundingRect().toRect()*/painter->clipRegion().boundingRect()), painter);
 	sqt->PartialPaintQml(PRectFromQRect(boundingRect().toRect()), painter);
 }
@@ -354,7 +354,7 @@ void ScintillaEditBase::focusOutEvent(QFocusEvent *event)
 
 void ScintillaEditBase::geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry)
 {
-    qDebug() << "ScintillaEditBase::geometryChanged() " << newGeometry << " old:" << oldGeometry << Qt::endl;
+//qDebug() << "ScintillaEditBase::geometryChanged() this="  << this << " " << newGeometry << " old:" << oldGeometry << Qt::endl;
 	// trigger resize handling only if the size of the control has changed
 	// no update is needed for a position change
 	if(newGeometry.width() != oldGeometry.width() || newGeometry.height() != oldGeometry.height() )
