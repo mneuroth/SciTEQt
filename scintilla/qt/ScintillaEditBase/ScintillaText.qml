@@ -42,6 +42,7 @@ ScrollView {
 
     focus: true
     onFocusChanged: {
+        console.log("ScintillaText onFocusChanged()")
         quickScintillaEditor.focus = focus
     }
 
@@ -165,6 +166,7 @@ ScrollView {
         target: root.contentItem
 
         onContentXChanged: {
+console.log("ScintillaText onContentXChanged()")
             var delta = root.contentItem.contentX - quickScintillaEditor.x
             var deltaInColumns = parseInt(delta / quickScintillaEditor.charWidth,10)
             if(delta >= quickScintillaEditor.charWidth) {
@@ -194,6 +196,7 @@ ScrollView {
             }
         }
         onContentYChanged: {
+console.log("ScintillaText onContentYChanged()")
             var delta = root.contentItem.contentY - quickScintillaEditor.y
             var deltaInLines = parseInt(delta / quickScintillaEditor.charHeight,10)
             if(delta >= quickScintillaEditor.charHeight) {
@@ -249,11 +252,13 @@ ScrollView {
         //       update content area and position of scroll view (results in updating the scrollbar)
         onHorizontalScrolled: {
             // value from scintilla in pixel !
+console.log("ScintillaText onHorizontalScrolled()")
             quickScintillaEditor.x = value              // order of calls is very important: first update child and then the container !
             root.contentItem.contentX = value
         }
         onVerticalScrolled: {
             // value from scintilla in lines !
+console.log("ScintillaText onVerticalScrolled()")
             quickScintillaEditor.y = value*quickScintillaEditor.charHeight
             root.contentItem.contentY = value*quickScintillaEditor.charHeight
         }
