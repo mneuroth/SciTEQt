@@ -1155,7 +1155,9 @@ static void EscapeFilePathsForMenu(GUI::gui_string &path) {
 #endif
 }
 
+#include <QDebug>
 void SciTEBase::SetBuffersMenu() {
+    qDebug() << "SciTEBase::SetBuffersMenu()" << Qt::endl;
 	if (buffers.size() <= 1) {
 		DestroyMenuItem(menuBuffers, IDM_BUFFERSEP);
 	}
@@ -1236,8 +1238,11 @@ void SciTEBase::SetBuffersMenu() {
 #endif
 }
 
+#include <QDebug>
+
 void SciTEBase::BuffersMenu() {
 	UpdateBuffersCurrent();
+qDebug() << "BuffersMenu() " << Qt::endl;
 	SetBuffersMenu();
 }
 
