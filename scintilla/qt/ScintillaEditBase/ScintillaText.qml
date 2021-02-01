@@ -197,6 +197,9 @@ console.log("ScintillaText onContentXChanged() "+root+" "+root.contentITem)
         }
         onContentYChanged: {
 console.log("ScintillaText onContentYChanged() "+root+" "+root.contentITem+" y="+root.contentItem.contentY)
+console.log("-----------------------------")
+console.trace()
+console.log("-----------------------------")
             var delta = root.contentItem.contentY - quickScintillaEditor.y
             var deltaInLines = parseInt(delta / quickScintillaEditor.charHeight,10)
             if(delta >= quickScintillaEditor.charHeight) {
@@ -259,6 +262,9 @@ console.log("ScintillaText onHorizontalScrolled() "+root+" "+quickScintillaEdito
         onVerticalScrolled: {
             // value from scintilla in lines !
 console.log("ScintillaText onVerticalScrolled() "+root+" "+quickScintillaEditor+" value="+value)
+console.log("=============================")
+console.trace()
+console.log("=============================")
             quickScintillaEditor.y = value*quickScintillaEditor.charHeight
             root.contentItem.contentY = value*quickScintillaEditor.charHeight
         }

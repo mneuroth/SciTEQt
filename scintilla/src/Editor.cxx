@@ -5473,7 +5473,7 @@ Sci::Line Editor::ContractedFoldNext(Sci::Line lineStart) const {
  * and unfold them all.
  */
 void Editor::EnsureLineVisible(Sci::Line lineDoc, bool enforcePolicy) {
-
+qDebug() << "EnsureLineVisible " << lineDoc << endl;
 	// In case in need of wrapping to ensure DisplayFromDoc works.
 	if (lineDoc >= wrapPending.start) {
 		if (WrapLines(WrapScope::wsAll)) {
