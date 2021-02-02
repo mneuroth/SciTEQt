@@ -2373,6 +2373,12 @@ void SciTEQt::cmdTriggerReplace(const QString & find, const QString & replace, b
     }
 }
 
+void SciTEQt::cmdEnsureCursorVisible()
+{
+    SA::Line curLine = GetCurrentLineNumber();
+    wEditor.EnsureVisibleEnforcePolicy(curLine);
+}
+
 void SciTEQt::cmdGotoLine(int lineNo, int colPos)
 {
     GotoLineEnsureVisible(lineNo);

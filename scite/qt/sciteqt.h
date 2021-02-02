@@ -420,6 +420,8 @@ public:
     Q_INVOKABLE void cmdAboutQt();
     Q_INVOKABLE void cmdSupportSciteQt();
 
+    Q_INVOKABLE void cmdEnsureCursorVisible();
+
     Q_INVOKABLE QVariant fillTabContextMenu();
 
     Q_INVOKABLE QVariant fillToLength(const QString & text, const QString & shortcut);
