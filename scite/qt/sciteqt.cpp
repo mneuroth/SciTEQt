@@ -239,7 +239,6 @@ void SciTEQt::TabSelect(int index)
 
 void SciTEQt::RemoveAllTabs()
 {
-    qDebug() << "SciTEQt::RemoveAllTabs()" << Qt::endl;
     emit removeAllTabs();
 }
 

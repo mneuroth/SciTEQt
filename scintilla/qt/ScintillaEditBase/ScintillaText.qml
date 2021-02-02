@@ -42,7 +42,6 @@ ScrollView {
 
     focus: true
     onFocusChanged: {
-        console.log("ScintillaText onFocusChanged() "+root)
         quickScintillaEditor.focus = focus
     }
 
@@ -166,7 +165,6 @@ ScrollView {
         target: root.contentItem
 
         onContentXChanged: {
-console.log("ScintillaText onContentXChanged() "+root+" "+root.contentITem)
             var delta = root.contentItem.contentX - quickScintillaEditor.x
             var deltaInColumns = parseInt(delta / quickScintillaEditor.charWidth,10)
             if(delta >= quickScintillaEditor.charWidth) {
@@ -196,10 +194,7 @@ console.log("ScintillaText onContentXChanged() "+root+" "+root.contentITem)
             }
         }
         onContentYChanged: {
-console.log("ScintillaText onContentYChanged() "+root+" "+root.contentITem+" y="+root.contentItem.contentY)
-console.log("-----------------------------")
-console.trace()
-console.log("-----------------------------")
+            //console.trace()
             var delta = root.contentItem.contentY - quickScintillaEditor.y
             var deltaInLines = parseInt(delta / quickScintillaEditor.charHeight,10)
             if(delta >= quickScintillaEditor.charHeight) {
@@ -255,16 +250,11 @@ console.log("-----------------------------")
         //       update content area and position of scroll view (results in updating the scrollbar)
         onHorizontalScrolled: {
             // value from scintilla in pixel !
-console.log("ScintillaText onHorizontalScrolled() "+root+" "+quickScintillaEditor)
             quickScintillaEditor.x = value              // order of calls is very important: first update child and then the container !
             root.contentItem.contentX = value
         }
         onVerticalScrolled: {
             // value from scintilla in lines !
-console.log("ScintillaText onVerticalScrolled() "+root+" "+quickScintillaEditor+" value="+value)
-console.log("=============================")
-console.trace()
-console.log("=============================")
             quickScintillaEditor.y = value*quickScintillaEditor.charHeight
             root.contentItem.contentY = value*quickScintillaEditor.charHeight
         }

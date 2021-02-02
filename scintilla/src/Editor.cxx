@@ -350,19 +350,15 @@ Sci::Line Editor::LinesToScroll() const {
 		return retVal;
 }
 
-#include <QDebug>
-
 Sci::Line Editor::MaxScrollPos() const {
 	//Platform::DebugPrintf("Lines %d screen = %d maxScroll = %d\n",
 	//LinesTotal(), LinesOnScreen(), LinesTotal() - LinesOnScreen() + 1);
 	Sci::Line retVal = pcs->LinesDisplayed();
-	qDebug() << "MaxScrollPos " << retVal << endl;
 	if (endAtLastLine) {
 		retVal -= LinesOnScreen();
 	} else {
 		retVal--;
 	}
-	qDebug() << "MaxScrollPos (2) " << retVal << " " << endAtLastLine << endl;
 	if (retVal < 0) {
 		return 0;
 	} else {
@@ -955,9 +951,7 @@ void Editor::SetLastXChosen() {
 }
 
 void Editor::ScrollTo(Sci::Line line, bool moveThumb) {
-	qDebug() << "ScrollTo " << line << " maxScrollPos=" << MaxScrollPos() << endl;
 	const Sci::Line topLineNew = std::clamp<Sci::Line>(line, 0, MaxScrollPos());
-	qDebug() << " --> data topLine=" << topLine << " newTopLine=" << topLineNew << endl;
 	if (topLineNew != topLine) {
 		// Try to optimise small scrolls
 #ifndef UNDER_CE
@@ -5473,7 +5467,6 @@ Sci::Line Editor::ContractedFoldNext(Sci::Line lineStart) const {
  * and unfold them all.
  */
 void Editor::EnsureLineVisible(Sci::Line lineDoc, bool enforcePolicy) {
-qDebug() << "EnsureLineVisible " << lineDoc << endl;
 	// In case in need of wrapping to ensure DisplayFromDoc works.
 	if (lineDoc >= wrapPending.start) {
 		if (WrapLines(WrapScope::wsAll)) {

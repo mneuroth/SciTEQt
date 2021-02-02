@@ -315,12 +315,10 @@ void ScintillaQt::ScrollText(Sci::Line linesToMove)
 
 void ScintillaQt::SetVerticalScrollPos()
 {
-    qDebug() << "ScintillaQt::SetVerticalScrollPos() emit verticalScrolled() " << topLine << endl;
 #ifndef PLAT_QT_QML
 	scrollArea->verticalScrollBar()->setValue(topLine);
 #endif
 	emit verticalScrolled(topLine);
-    qDebug() << "ScintillaQt::SetVerticalScrollPos() DONE ! " << topLine << endl;
 }
 
 void ScintillaQt::SetHorizontalScrollPos()

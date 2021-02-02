@@ -585,7 +585,7 @@ ApplicationWindow {
     }
 
     function insertTab(index, title, _fullPath) {
-        var item = tabButton.createObject(tabBar, {text: title, fullPath: _fullPath, fcnClicked: function () { console.log("->fcnClicked()"); sciteQt.cmdSelectBuffer(index); console.log("->fcnClicked(2)"); focusToEditor(); /*gulpx*/sciteQt.cmdEnsureCursorVisible(); console.log("->fcnClicked(3) done."); }})
+        var item = tabButton.createObject(tabBar, {text: title, fullPath: _fullPath, fcnClicked: function () { sciteQt.cmdSelectBuffer(index); focusToEditor(); sciteQt.cmdEnsureCursorVisible() }})
         tabBar.insertItem(index, item)
     }
 
