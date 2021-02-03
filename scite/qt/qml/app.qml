@@ -118,17 +118,7 @@ ApplicationWindow {
     }
 
     function startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog, bSaveACopyModus, bDeleteModus, sDefaultSaveAsName) {
-        if(sciteQt.mobilePlatform)
-        {
-            if(bAsOpenDialog) {
-                openViaMobileFileDialog(sDirectory)
-            } else if(bDeleteModus) {
-                deleteViaMobileFileDialog(sDirectory)
-            } else {
-                saveViaMobileFileDialog(sDirectory,sDefaultSaveAsName,bSaveACopyModus)
-            }
-        }
-        else if(sciteQt.isWebassemblyPlatform())
+        if(sciteQt.isWebassemblyPlatform())
         {
             if(bAsOpenDialog) {
                 htmlOpen()
@@ -136,6 +126,16 @@ ApplicationWindow {
 // TODO save as...
 // TODO support export as ... like pdf, tex, etc.
                 htmlSave(null)
+            }
+        }
+        else if(sciteQt.mobilePlatform)
+        {
+            if(bAsOpenDialog) {
+                openViaMobileFileDialog(sDirectory)
+            } else if(bDeleteModus) {
+                deleteViaMobileFileDialog(sDirectory)
+            } else {
+                saveViaMobileFileDialog(sDirectory,sDefaultSaveAsName,bSaveACopyModus)
             }
         }
         else

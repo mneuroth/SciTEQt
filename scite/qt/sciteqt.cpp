@@ -638,6 +638,7 @@ FilePath SciTEQt::GetSciteUserHome()
         }
     }
 
+qDebug() << "GetSciteUserHome() " << home << endl;
     return GetSciTEPath(home);
 }
 

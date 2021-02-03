@@ -146,6 +146,9 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_ANDROID
     qputenv(SCITE_HOME, FILES_DIR);
 #endif
+#ifdef Q_OS_WASM
+    qputenv(SCITE_HOME, "/");
+#endif
 #if defined(Q_OS_WIN) || defined(Q_OS_MACOS)
     //bool ok = false;
     // copy SciTEUser.properties from sciteqt installation directory to user directory (if not existing)
