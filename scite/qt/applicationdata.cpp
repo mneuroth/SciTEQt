@@ -168,19 +168,21 @@ void UnpackFiles()
 void UnpackFilesWasm()
 {
 #if defined(Q_OS_WASM)
+    QDir aDir("/");
+    aDir.mkpath("/localisations");
     QFile::copy(":/SciTEGlobal.properties", "/SciTEGlobal.properties");
     QFile::copy(":/SciTEUser.properties", "/SciTEUser.properties");
-    QFile::copy(":/locale.de.properties", "/locale.de.properties");
-    QFile::copy(":/locale.nl.properties", "/locale.nl.properties");
-    QFile::copy(":/locale.fr.properties", "/locale.fr.properties");
-    QFile::copy(":/locale.es.properties", "/locale.es.properties");
-    QFile::copy(":/locale.it.properties", "/locale.it.properties");
-    QFile::copy(":/locale.ru.properties", "/locale.ru.properties");
-    QFile::copy(":/locale.ja.properties", "/locale.ja.properties");
-    QFile::copy(":/locale.ko.properties", "/locale.ko.properties");
-    QFile::copy(":/locale.ar.properties", "/locale.ar.properties");
-    QFile::copy(":/locale.pt_PT.properties", "/locale.pt_PT.properties");
-    QFile::copy(":/locale.zh_t.properties", "/locale.zh_t.properties");
+    QFile::copy(":/locale.de.properties", "/localisations/locale.de.properties");
+    QFile::copy(":/locale.nl.properties", "/localisations/locale.nl.properties");
+    QFile::copy(":/locale.fr.properties", "/localisations/locale.fr.properties");
+    QFile::copy(":/locale.es.properties", "/localisations/locale.es.properties");
+    QFile::copy(":/locale.it.properties", "/localisations/locale.it.properties");
+    QFile::copy(":/locale.ru.properties", "/localisations/locale.ru.properties");
+    QFile::copy(":/locale.ja.properties", "/localisations/locale.ja.properties");
+    QFile::copy(":/locale.ar.properties", "/localisations/locale.ar.properties");
+    QFile::copy(":/locale.ko_KR.properties", "/localisations/locale.ko_KR.properties");
+    QFile::copy(":/locale.pt_PT.properties", "/localisations/locale.pt_PT.properties");
+    QFile::copy(":/locale.zh_t.properties", "/localisations/locale.zh_t.properties");
     qDebug() << "extracted locale properties for WASM"     << endl;
 #endif
 }

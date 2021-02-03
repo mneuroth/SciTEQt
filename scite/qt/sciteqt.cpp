@@ -605,7 +605,7 @@ FilePath GetSciTEPath(const QByteArray & home)
         strcpy(buf,QDir::toNativeSeparators(QCoreApplication::applicationDirPath()).toStdString().c_str());
 #endif
     }
-
+qDebug() << "GetSciTEPath() " << buf << endl;
     return FilePath(buf);
 }
 
