@@ -164,7 +164,6 @@ void UnpackFiles()
 #endif
 }
 
-#include <QtDebug>
 void UnpackFilesWasm()
 {
 #if defined(Q_OS_WASM)
@@ -183,7 +182,6 @@ void UnpackFilesWasm()
     QFile::copy(":/locale.ko_KR.properties", "/localisations/locale.ko_KR.properties");
     QFile::copy(":/locale.pt_PT.properties", "/localisations/locale.pt_PT.properties");
     QFile::copy(":/locale.zh_t.properties", "/localisations/locale.zh_t.properties");
-    qDebug() << "extracted locale properties for WASM"     << endl;
 #endif
 }
 

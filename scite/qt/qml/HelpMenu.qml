@@ -47,7 +47,7 @@ AutoSizingMenu {
         id: actionSupportSciteQt
         text: processMenuItem2(actions.actionSupportSciteQt.text, actionSupportSciteQt)
         action: actions.actionSupportSciteQt
-        visible: sciteQt.mobilePlatform
+        visible: sciteQt.mobilePlatform && sciteQt.isWebassemblyPlatform()
         height: visible ? actionAboutQt.heigh : 0
     }
 

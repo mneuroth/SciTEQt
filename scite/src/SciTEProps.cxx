@@ -1645,7 +1645,6 @@ GUI::gui_string SciTEBase::LocaliseMessage(const char *s, const GUI::gui_char *p
 	return translation;
 }
 
-#include <QDebug>
 void SciTEBase::ReadLocalization() {
 	localiser.Clear();
 	GUI::gui_string title = GUI_TEXT("locale.properties");
@@ -1654,10 +1653,7 @@ void SciTEBase::ReadLocalization() {
 		title = GUI::StringFromUTF8(localeProps);
 	}
 	FilePath propdir = GetSciteDefaultHome();
-qDebug() << "ReadLocalization() path=" << propdir.AbsolutePath().AsUTF8().c_str() << endl;
-qDebug() << "ReadLocalization() title=" << title.c_str() << endl;
     FilePath localePath(propdir, title);
-qDebug() << "ReadLocalization() localePath=" << localePath.AbsolutePath().AsUTF8().c_str() << endl;
     localiser.Read(localePath, propdir, filter, &importFiles, 0);
 	localiser.SetMissing(props.GetString("translation.missing"));
 	localiser.read = true;
@@ -1760,6 +1756,7 @@ FilePath SciTEBase::GetDirectoryPropertiesFileName() {
 	return propfile;
 }
 
+#include <QDebug>
 void SciTEBase::OpenProperties(int propsFile) {
 	FilePath propfile;
 	switch (propsFile) {
@@ -1769,7 +1766,8 @@ void SciTEBase::OpenProperties(int propsFile) {
 		break;
 	case IDM_OPENUSERPROPERTIES:
 		propfile = GetUserPropertiesFileName();
-		Open(propfile, ofQuiet);
+qDebug() << "OpenUserProp() " << propfile.AbsolutePath().AsUTF8().c_str() << endl;
+        Open(propfile, ofQuiet);
 		break;
 	case IDM_OPENABBREVPROPERTIES:
 		propfile = pathAbbreviations;
@@ -1777,6 +1775,7 @@ void SciTEBase::OpenProperties(int propsFile) {
 		break;
 	case IDM_OPENGLOBALPROPERTIES:
 		propfile = GetDefaultPropertiesFileName();
+qDebug() << "OpenGlobalProp() " << propfile.AbsolutePath().AsUTF8().c_str() << endl;
 		Open(propfile, ofQuiet);
 		break;
 	case IDM_OPENLUAEXTERNALFILE: {
