@@ -1,7 +1,9 @@
 <RCC>
     <qresource prefix="/">
+        <!--
         <file>SciTEUser.properties</file>
         <file>SciTEGlobal.properties</file>
+        -->
         <file alias="locale.de.properties">translations/locale.de.properties</file>
         <file alias="locale.nl.properties">translations/locale.nl.properties</file>
         <file alias="locale.fr.properties">translations/locale.fr.properties</file>

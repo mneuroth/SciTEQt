@@ -167,12 +167,12 @@ void UnpackFiles()
 void UnpackFilesWasm()
 {
 #if defined(Q_OS_WASM)
-    QDir aDir("/");
-    aDir.mkpath("/localisations");
-    QFile::copy(":/SciTEGlobal.properties", "/SciTEGlobal.properties");
-    QFile::copy(":/SciTEGlobal.properties", "/home/web_user/SciTEGlobal.properties");
-    QFile::copy(":/SciTEUser.properties", "/SciTEUser.properties");
-    QFile::copy(":/SciTEUser.properties", "/home/web_user/SciTEUser.properties");
+    //QDir aDir("/");
+    //aDir.mkpath("/localisations");
+    //QFile::copy(":/SciTEGlobal.properties", "/SciTEGlobal.properties");
+    //QFile::copy(":/SciTEGlobal.properties", "/home/web_user/SciTEGlobal.properties");
+    //QFile::copy(":/SciTEUser.properties", "/SciTEUser.properties");
+    //QFile::copy(":/SciTEUser.properties", "/home/web_user/SciTEUser.properties");
     QFile::copy(":/locale.de.properties", "/localisations/locale.de.properties");
     QFile::copy(":/locale.nl.properties", "/localisations/locale.nl.properties");
     QFile::copy(":/locale.fr.properties", "/localisations/locale.fr.properties");

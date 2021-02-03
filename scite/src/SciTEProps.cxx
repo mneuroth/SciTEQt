@@ -1756,30 +1756,24 @@ FilePath SciTEBase::GetDirectoryPropertiesFileName() {
 	return propfile;
 }
 
-#include <QDebug>
 void SciTEBase::OpenProperties(int propsFile) {
 	FilePath propfile;
-qDebug() << "OpenProperties " << propsFile << endl;
 	switch (propsFile) {
 	case IDM_OPENLOCALPROPERTIES:
 		propfile = GetLocalPropertiesFileName();
 		Open(propfile, ofQuiet);
 		break;
-    case IDM_OPENUSERPROPERTIES: {
+    case IDM_OPENUSERPROPERTIES:
 		propfile = GetUserPropertiesFileName();
-qDebug() <<         "OpenUserProp() "  << endl;
-qDebug() << "OpenUserProp() " << propfile.AbsolutePath().AsUTF8().c_str() << endl;
-        Open(propfile, ofQuiet); }
+          Open(propfile, ofQuiet);
 		break;
 	case IDM_OPENABBREVPROPERTIES:
 		propfile = pathAbbreviations;
 		Open(propfile, ofQuiet);
 		break;
-    case IDM_OPENGLOBALPROPERTIES: {
+    case IDM_OPENGLOBALPROPERTIES:
 		propfile = GetDefaultPropertiesFileName();
-qDebug() <<         "OpenGlobalProp() "  << endl;
-qDebug() << "OpenGlobalProp() " << propfile.AbsolutePath().AsUTF8().c_str() << endl;
-        Open(propfile, ofQuiet); }
+          Open(propfile, ofQuiet);
 		break;
 	case IDM_OPENLUAEXTERNALFILE: {
 			GUI::gui_string extlua = GUI::StringFromUTF8(props.GetExpandedString("ext.lua.startup.script"));
