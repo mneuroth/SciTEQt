@@ -3,7 +3,7 @@ which is optimized for touch devices.
 
 All target platforms of the Qt framework are supported (Android, IOS, 
 Webassembly, Windows, Mac and Linux). The application runs even in 
-a browser via Webassembly (http://mneuroth.de/sciteqt.html).
+a browser via Webassembly (https://mneuroth.github.io/SciTEQtWASM/).
 The minimum Qt version needed to compile SciteQt is Qt 5.11.3.
 
 The current homepage of the project can be found on github: 

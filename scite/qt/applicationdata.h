@@ -141,5 +141,6 @@ private:
 };
 
 void UnpackFiles();
+void UnpackFilesWasm();
 
 #endif // APPLICATIONDATA_H

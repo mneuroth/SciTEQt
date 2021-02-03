@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>SciTEUser.properties</file>
+        <file>SciTEGlobal.properties</file>
+        <file alias="locale.de.properties">translations/locale.de.properties</file>
+        <file alias="locale.nl.properties">translations/locale.nl.properties</file>
+        <file alias="locale.fr.properties">translations/locale.fr.properties</file>
+        <file alias="locale.es.properties">translations/locale.es.properties</file>
+        <file alias="locale.it.properties">translations/locale.it.properties</file>
+        <file alias="locale.ru.properties">translations/locale.ru.properties</file>
+        <file alias="locale.ja.properties">translations/locale.ja.properties</file>
+        <file alias="locale.ko.properties">translations/locale.ko.properties</file>
+        <file alias="locale.ar.properties">translations/locale.ar.properties</file>
+        <file alias="locale.pt_PT.properties">translations/locale.pt_PT.properties</file>
+        <file alias="locale.zh_t.properties">translations/locale.zh_t.properties</file>
+    </qresource>
+</RCC>

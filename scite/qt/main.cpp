@@ -28,8 +28,8 @@
 #include "storageaccess.h"
 
 #ifdef Q_OS_ANDROID
-#define _WITH_QDEBUG_REDIRECT
-#define _WITH_ADD_TO_LOG
+#undef _WITH_QDEBUG_REDIRECT
+#undef _WITH_ADD_TO_LOG
 #endif
 
 #include <QDir>
@@ -141,8 +141,9 @@ int main(int argc, char *argv[])
     qInstallMessageHandler(PrivateMessageHandler);
 #endif
 
-#ifdef Q_OS_ANDROID
     UnpackFiles();
+    UnpackFilesWasm();
+#ifdef Q_OS_ANDROID
     qputenv(SCITE_HOME, FILES_DIR);
 #endif
 #if defined(Q_OS_WIN) || defined(Q_OS_MACOS)

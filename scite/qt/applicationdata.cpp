@@ -78,6 +78,7 @@ bool extractAssetFile(const QString & sAssetFileName, const QString & sOutputFil
 
 void UnpackFiles()
 {
+#ifdef Q_OS_ANDROID
     // extract the sciteqt properties and help file
     QString sAsset,sOutput;
     //QString sCpuArchitecture(QSysInfo::buildCpuArchitecture());
@@ -160,6 +161,28 @@ void UnpackFiles()
     sOutput = QString(QT_TRANSLATIONS_DIR)+QString("qt_ar.qm");
     extractAssetFile(sAsset,sOutput,false);
 */
+#endif
+}
+
+#include <QtDebug>
+void UnpackFilesWasm()
+{
+#if defined(Q_OS_WASM)
+    QFile::copy(":/SciTEGlobal.properties", "/SciTEGlobal.properties");
+    QFile::copy(":/SciTEUser.properties", "/SciTEUser.properties");
+    QFile::copy(":/locale.de.properties", "/locale.de.properties");
+    QFile::copy(":/locale.nl.properties", "/locale.nl.properties");
+    QFile::copy(":/locale.fr.properties", "/locale.fr.properties");
+    QFile::copy(":/locale.es.properties", "/locale.es.properties");
+    QFile::copy(":/locale.it.properties", "/locale.it.properties");
+    QFile::copy(":/locale.ru.properties", "/locale.ru.properties");
+    QFile::copy(":/locale.ja.properties", "/locale.ja.properties");
+    QFile::copy(":/locale.ko.properties", "/locale.ko.properties");
+    QFile::copy(":/locale.ar.properties", "/locale.ar.properties");
+    QFile::copy(":/locale.pt_PT.properties", "/locale.pt_PT.properties");
+    QFile::copy(":/locale.zh_t.properties", "/locale.zh_t.properties");
+    qDebug() << "extracted locale properties for WASM"     << endl;
+#endif
 }
 
 bool HasAccessToSDCardPath()

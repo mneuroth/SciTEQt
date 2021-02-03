@@ -349,6 +349,10 @@ android {
 
 RESOURCES += sciteqt.qrc
 
+wasm {
+    RESOURCES += wasmres.qrc
+}
+
 DISTFILES += \
     android/AndroidManifest.xml \
     android/build.gradle \
