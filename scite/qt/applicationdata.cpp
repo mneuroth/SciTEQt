@@ -167,8 +167,8 @@ void UnpackFiles()
 void UnpackFilesWasm()
 {
 #if defined(Q_OS_WASM)
-    //QDir aDir("/");
-    //aDir.mkpath("/localisations");
+    QDir aDir("/");
+    aDir.mkpath("/localisations");
     //QFile::copy(":/SciTEGlobal.properties", "/SciTEGlobal.properties");
     //QFile::copy(":/SciTEGlobal.properties", "/home/web_user/SciTEGlobal.properties");
     //QFile::copy(":/SciTEUser.properties", "/SciTEUser.properties");
