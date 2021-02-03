@@ -256,7 +256,7 @@ android {
     deployment12.path=/assets/files
     deployment13.files=translations/locale.ja.properties
     deployment13.path=/assets/files
-    deployment14.files=translations/locale.ko.properties
+    deployment14.files=translations/locale.ko_KR.properties
     deployment14.path=/assets/files
     deployment15.files=translations/locale.zh_t.properties
     deployment15.path=/assets/files
