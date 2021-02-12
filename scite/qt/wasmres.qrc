@@ -15,5 +15,14 @@
         <file alias="locale.ko_KR.properties">translations/locale.ko_KR.properties</file>
         <file alias="locale.pt_PT.properties">translations/locale.pt_PT.properties</file>
         <file alias="locale.zh_t.properties">translations/locale.zh_t.properties</file>
+        <file alias="locale.pl.properties">translations/locale.pl.properties</file>
+        <file alias="locale.cs.properties">translations/locale.cs.properties</file>
+        <file alias="locale.da.properties">translations/locale.da.properties</file>
+        <file alias="locale.tr.properties">translations/locale.tr.properties</file>
+        <file alias="locale.id.properties">translations/locale.id.properties</file>
+        <file alias="locale.el.properties">translations/locale.el.properties</file>
+        <file alias="locale.fi.properties">translations/locale.fi.properties</file>
+        <file alias="locale.nb.properties">translations/locale.nb.properties</file>
+        <file alias="locale.hu.properties">translations/locale.hu.properties</file>
     </qresource>
 </RCC>

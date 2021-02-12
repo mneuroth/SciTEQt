@@ -185,9 +185,18 @@ macx {
     localisations.files += translations/locale.pt_PT.properties
     localisations.files += translations/locale.it.properties
     localisations.files += translations/locale.ru.properties
-    localisations.files += translations/locale.hu.properties
-    localisations.files += translations/locale.tr.properties
     localisations.files += translations/locale.ja.properties
+    localisations.files += translations/locale.ko_KR.properties
+    localisations.files += translations/locale.zh_t.properties
+    localisations.files += translations/locale.ar.properties
+    localisations.files += translations/locale.pl.properties
+    localisations.files += translations/locale.da.properties
+    localisations.files += translations/locale.tr.properties
+    localisations.files += translations/locale.id.properties
+    localisations.files += translations/locale.el.properties
+    localisations.files += translations/locale.fi.properties
+    localisations.files += translations/locale.nb.properties
+    localisations.files += translations/locale.hu.properties
 
     QMAKE_BUNDLE_DATA += localisations
     QMAKE_BUNDLE_DATA += properties
@@ -262,6 +271,28 @@ android {
     deployment15.path=/assets/files
     deployment16.files=translations/locale.ar.properties
     deployment16.path=/assets/files
+    deployment17.files=translations/locale.pl.properties
+    deployment17.path=/assets/files
+    deployment18.files=translations/locale.cs.properties
+    deployment18.path=/assets/files
+    deployment19.files=translations/locale.da.properties
+    deployment19.path=/assets/files
+    deployment40.files=translations/locale.tr.properties
+    deployment40.path=/assets/files
+    deployment41.files=translations/locale.id.properties
+    deployment41.path=/assets/files
+    deployment42.files=translations/locale.el.properties
+    deployment42.path=/assets/files
+    deployment43.files=translations/locale.fi.properties
+    deployment43.path=/assets/files
+    deployment44.files=translations/locale.nb.properties
+    deployment44.path=/assets/files
+    deployment45.files=translations/locale.hu.properties
+    deployment45.path=/assets/files
+
+# TODO: this file, applicationdata.cpp, applicationdata.h, wasmres.qrc
+# TODO: af, bg, ca, cs, cy, da, el, eo, et, eu, fi, gl, hu, id, kk, ms, nb, pl, ro, sl, sr, sv, sw_KE, th, tr, uk
+# afrikaans, bulgarisch, catalan, -czech-, welsh, -danish-, -greek-, esparanto, estonia, basq (eu), -finnish-, -hungarian-, -indonesian-, kazakh, malay, -norwegian-, -polish-, romanian, slovenian, serbian, swedish (sv), swahili, thai, -turkish-, ukrainian
 
     deployment20.files=qt_de.qm
     deployment20.path=/assets/files
@@ -281,6 +312,22 @@ android {
     deployment27.path=/assets/files
     deployment28.files=qt_ar.qm
     deployment28.path=/assets/files
+    deployment29.files=qt_pl.qm
+    deployment29.path=/assets/files
+    deployment30.files=qt_cs.qm
+    deployment30.path=/assets/files
+    deployment31.files=qt_da.qm
+    deployment31.path=/assets/files
+    deployment32.files=qt_tr.qm
+    deployment32.path=/assets/files
+    //deployment33.files=qt_id.qm
+    //deployment33.path=/assets/files
+    //deployment34.files=qt_el.qm
+    //deployment34.path=/assets/files
+    deployment35.files=qt_fi.qm
+    deployment35.path=/assets/files
+    //deployment36.files=qt_hu.qm
+    //deployment36.path=/assets/files
 
 # for qt available:
 #qt_ar.qm
@@ -335,6 +382,9 @@ android {
     INSTALLS += deployment14
     INSTALLS += deployment15
     INSTALLS += deployment16
+    INSTALLS += deployment17
+    INSTALLS += deployment18
+    INSTALLS += deployment19
 
     INSTALLS += deployment20
     INSTALLS += deployment21
@@ -345,6 +395,21 @@ android {
     INSTALLS += deployment26
     INSTALLS += deployment27
     INSTALLS += deployment28
+    INSTALLS += deployment29
+    INSTALLS += deployment30
+    INSTALLS += deployment31
+    INSTALLS += deployment32
+    //INSTALLS += deployment33
+    //INSTALLS += deployment34
+    INSTALLS += deployment35
+    //INSTALLS += deployment36
+
+    INSTALLS += deployment40
+    INSTALLS += deployment41
+    INSTALLS += deployment42
+    INSTALLS += deployment43
+    INSTALLS += deployment44
+    INSTALLS += deployment45
 }
 
 RESOURCES += sciteqt.qrc
@@ -369,7 +434,8 @@ DISTFILES += \
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
-ANDROID_ABIS = armeabi-v7a arm64-v8a x86 x86_64
+#ANDROID_ABIS = armeabi-v7a arm64-v8a x86 x86_64
+ANDROID_ABIS = arm64-v8a
 
 LIBS += -L$$OUT_PWD/../../scintilla/bin-$${ARCH_PATH}/ -lScintillaEditBase
 

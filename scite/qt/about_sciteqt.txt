@@ -53,7 +53,6 @@ Missing features are:
   * Navigate Button for SciteQtExtension Directories... in mobile file dialog
   * Add graphical output support for SciteQt
 ? * Android: improve deployment --> more languages?
-((  * Disable logging ouput in official release --> logging only in admin modus !
 #  * Add some example scripts
 #  * Add better high resolution logo ?
 
@@ -77,7 +76,6 @@ Known and open Bugs are:
 //  * Tabwechsel --> View springt an den Anfang des Texts und nicht dahin wo der Cursor ist
   * ggf. implement standard Verhalten von Scrollbars (page up/down) --> Desktop only ?
   * Strange output (no clipping) if CR/LF should be shown
-//?  * WASM: no localisations available for translations of text: i. e. locale.de.properties --> see: SciTEBase::ReadLocalization()
 ((?  * Update Scintilla view needs sometimes mouse click !!!???
 ((?  * Android: new document but can not activate keyboard (need to paste text)
   * CI: Windows CI build does not fail if compile step has an error and sciteqt.exe was not created ... ? Why? See Mingw Build for 32 bit
@@ -87,16 +85,7 @@ Known and open Bugs are:
   * Main Menu sometimes not completly visible after monitor/resolution change
   * Crash Ctrl+0  --> Load lua (user command) --> only MSC Compiler 2017; MSC 2019? MacOS ==> but gcc/mingw are working !
   * first Menu Item in Menu is empty on Qt 5.11.3 --> ok after switch between mobile and desktop ui !
-//  * Android: Bug? touch on dialog and then back button -> closes app
   * MacOS: select directory in find in files dialog does not work
-- * WASM: Close tab with changed data --> 2x messagebox quittieren --> liegt an emscripten_sleep() exception ! --> TODO: test with new 5.15 release build --> ASYNCIFY !?
-- * WASM: Exception in text not found Message box (aber: Verhalten ok) --> liegt an emscripten_sleep() exception !
-  * WASM: improve SaveAs
-  * WASM: test all other load and save functions
-((  * WASM: support translations?
-  * WASM: support Export menu items lik pdf, text, ...
-  ==> https://doc.qt.io/qt-5/qtwebassembly-platform-notes.html
-  (* WASM: improve keyboard handling / shortcuts for messageboxes
 
 Watch:
   * Memory leak when switching between tab pages?

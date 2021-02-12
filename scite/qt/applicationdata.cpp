@@ -130,6 +130,33 @@ void UnpackFiles()
     sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_AR_PROPERTIES);
     sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_AR_PROPERTIES);
     extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_PL_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_PL_PROPERTIES);
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_CS_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_CS_PROPERTIES);
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_DA_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_DA_PROPERTIES);
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_TR_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_TR_PROPERTIES);
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_ID_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_ID_PROPERTIES);
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_EL_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_EL_PROPERTIES);
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_FI_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_FI_PROPERTIES);
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_NB_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_NB_PROPERTIES);
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_HU_PROPERTIES);
+    sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_HU_PROPERTIES);
+    extractAssetFile(sAsset,sOutput,false);
 /* --> use direct from asset
     sAsset = QString(ASSETS_DIR)+QString("qt_de.qm");
     sOutput = QString(QT_TRANSLATIONS_DIR)+QString("qt_de.qm");
@@ -184,6 +211,15 @@ void UnpackFilesWasm()
     QFile::copy(":/locale.ko_KR.properties", "/localisations/locale.ko_KR.properties");
     QFile::copy(":/locale.pt_PT.properties", "/localisations/locale.pt_PT.properties");
     QFile::copy(":/locale.zh_t.properties", "/localisations/locale.zh_t.properties");
+    QFile::copy(":/locale.pl.properties", "/localisations/locale.pl.properties");
+    QFile::copy(":/locale.cz.properties", "/localisations/locale.cz.properties");
+    QFile::copy(":/locale.da.properties", "/localisations/locale.da.properties");
+    QFile::copy(":/locale.tr.properties", "/localisations/locale.tr.properties");
+    QFile::copy(":/locale.id.properties", "/localisations/locale.id.properties");
+    QFile::copy(":/locale.el.properties", "/localisations/locale.el.properties");
+    QFile::copy(":/locale.fi.properties", "/localisations/locale.fi.properties");
+    QFile::copy(":/locale.nb.properties", "/localisations/locale.nb.properties");
+    QFile::copy(":/locale.hu.properties", "/localisations/locale.hu.properties");
 #endif
 }
 
