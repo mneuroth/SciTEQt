@@ -127,6 +127,7 @@ template <class T> T childObject(QQmlApplicationEngine& engine,
 
 bool SciTEQt::m_bIsAdmin = false;
 QString SciTEQt::m_sStyle = "";
+QString SciTEQt::m_sOverwriteLanguage = "";
 
 SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
     : QObject(parent),
@@ -2295,7 +2296,7 @@ void SciTEQt::cmdAboutCurrentFile()
 }
 
 static QString g_sJavaScriptInit = "var console = { log: env.print }; ";
-static QString g_sJavaScriptLibrary = "\nfunction print(t) { env.print(t) }\nfunction admin(val) { env.admin(val) }\nfunction style(val) { env.style(val) }\n";
+static QString g_sJavaScriptLibrary = "\nfunction print(t) { env.print(t) }\nfunction admin(val) { env.admin(val) }\nfunction style(val) { env.style(val) }\nfunction   language(val) { env.language(val) }\n";
 
 void SciTEQt::cmdRunCurrentAsJavaScriptFile()
 {
@@ -2304,7 +2305,7 @@ void SciTEQt::cmdRunCurrentAsJavaScriptFile()
     // see: https://doc.qt.io/qt-5/qjsengine.html#details
     QJSEngine myEngine;
 
-    SciteQtEnvironmentForJavaScript aSciteQtJSEnvironment(m_bIsAdmin, m_sStyle, this);
+    SciteQtEnvironmentForJavaScript aSciteQtJSEnvironment(m_bIsAdmin, m_sStyle, m_sOverwriteLanguage, this);
     connect(&aSciteQtJSEnvironment,SIGNAL(OnPrint(QString)),this,SLOT(OnAddLineToOutput(QString)));
     connect(&aSciteQtJSEnvironment,SIGNAL(OnAdmin(bool)),this,SLOT(OnAdmin(bool)));
 
@@ -3196,6 +3197,16 @@ QString SciTEQt::GetStyle()
 void SciTEQt::SetStyle(const QString & value)
 {
     m_sStyle = value;
+}
+
+QString SciTEQt::GetOverwriteLanguage()
+{
+    return m_sOverwriteLanguage;
+}
+
+void SciTEQt::SetOverwriteLanguage(const QString & value)
+{
+    m_sOverwriteLanguage = value;
 }
 
 void SciTEQt::UpdateStatusbarView()

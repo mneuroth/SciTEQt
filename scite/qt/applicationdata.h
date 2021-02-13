@@ -57,6 +57,15 @@
 #define SCITE_LOCALE_FI_PROPERTIES  "locale.fi.properties"
 #define SCITE_LOCALE_NB_PROPERTIES  "locale.nb.properties"
 #define SCITE_LOCALE_HU_PROPERTIES  "locale.hu.properties"
+#define SCITE_LOCALE_SV_PROPERTIES  "locale.sv.properties"
+#define SCITE_LOCALE_SL_PROPERTIES  "locale.sl.properties"
+#define SCITE_LOCALE_RO_PROPERTIES  "locale.ro.properties"
+#define SCITE_LOCALE_BG_PROPERTIES  "locale.bg.properties"
+#define SCITE_LOCALE_TH_PROPERTIES  "locale.th.properties"
+#define SCITE_LOCALE_UK_PROPERTIES  "locale.uk.properties"
+#define SCITE_LOCALE_UK_PROPERTIES  "locale.et.properties"
+#define SCITE_LOCALE_UK_PROPERTIES  "locale.sr.properties"
+#define SCITE_LOCALE_UK_PROPERTIES  "locale.ms.properties"
 
 // **************************************************************************
 

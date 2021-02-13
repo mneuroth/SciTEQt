@@ -8,8 +8,8 @@
 
 #include "sciteqtenvironmentforjavascript.h"
 
-SciteQtEnvironmentForJavaScript::SciteQtEnvironmentForJavaScript(bool & bIsAdmin, QString & sStyle, QObject *parent)
-    : QObject(parent), m_bIsAdmin(bIsAdmin), m_sStyle(sStyle)
+SciteQtEnvironmentForJavaScript::SciteQtEnvironmentForJavaScript(bool & bIsAdmin, QString & sStyle, QString & sLanguage, QObject *parent)
+    : QObject(parent), m_bIsAdmin(bIsAdmin), m_sStyle(sStyle), m_sLanguage(sLanguage)
 {
 }
 
@@ -37,4 +37,14 @@ void SciteQtEnvironmentForJavaScript::style(const QString & value)
 QString SciteQtEnvironmentForJavaScript::getStyle() const
 {
     return m_sStyle;
+}
+
+void SciteQtEnvironmentForJavaScript::language(const QString & value)
+{
+    m_sLanguage = value;
+}
+
+QString SciteQtEnvironmentForJavaScript::getLanguage() const
+{
+    return m_sLanguage;
 }

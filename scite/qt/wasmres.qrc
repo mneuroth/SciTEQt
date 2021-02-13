@@ -24,5 +24,14 @@
         <file alias="locale.fi.properties">translations/locale.fi.properties</file>
         <file alias="locale.nb.properties">translations/locale.nb.properties</file>
         <file alias="locale.hu.properties">translations/locale.hu.properties</file>
+        <file alias="locale.sv.properties">translations/locale.sv.properties</file>
+        <file alias="locale.sl.properties">translations/locale.sl.properties</file>
+        <file alias="locale.ro.properties">translations/locale.ro.properties</file>
+        <file alias="locale.bg.properties">translations/locale.bg.properties</file>
+        <file alias="locale.th.properties">translations/locale.th.properties</file>
+        <file alias="locale.uk.properties">translations/locale.uk.properties</file>
+        <file alias="locale.et.properties">translations/locale.et.properties</file>
+        <file alias="locale.sr.properties">translations/locale.sr.properties</file>
+        <file alias="locale.ms.properties">translations/locale.ms.properties</file>
     </qresource>
 </RCC>

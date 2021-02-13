@@ -289,10 +289,28 @@ android {
     deployment44.path=/assets/files
     deployment45.files=translations/locale.hu.properties
     deployment45.path=/assets/files
+    deployment46.files=translations/locale.sv.properties
+    deployment46.path=/assets/files
+    deployment47.files=translations/locale.sl.properties
+    deployment47.path=/assets/files
+    deployment48.files=translations/locale.ro.properties
+    deployment48.path=/assets/files
+    deployment49.files=translations/locale.bg.properties
+    deployment49.path=/assets/files
+    deployment50.files=translations/locale.th.properties
+    deployment50.path=/assets/files
+    deployment51.files=translations/locale.uk.properties
+    deployment51.path=/assets/files
+    deployment52.files=translations/locale.et.properties
+    deployment52.path=/assets/files
+    deployment53.files=translations/locale.sr.properties
+    deployment53.path=/assets/files
+    deployment54.files=translations/locale.ms.properties
+    deployment54.path=/assets/files
 
 # TODO: this file, applicationdata.cpp, applicationdata.h, wasmres.qrc
 # TODO: af, bg, ca, cs, cy, da, el, eo, et, eu, fi, gl, hu, id, kk, ms, nb, pl, ro, sl, sr, sv, sw_KE, th, tr, uk
-# afrikaans, bulgarisch, catalan, -czech-, welsh, -danish-, -greek-, esparanto, estonia, basq (eu), -finnish-, -hungarian-, -indonesian-, kazakh, malay, -norwegian-, -polish-, romanian, slovenian, serbian, swedish (sv), swahili, thai, -turkish-, ukrainian
+# afrikaans, -bulgarisch-, catalan, -czech-, welsh, -danish-, -greek-, esparanto, -estonia-, basq (eu), -finnish-, -hungarian-, -indonesian-, kazakh, -malay-, -norwegian-, -polish-, -romanian-, -slovenian-, -serbian-, -swedish (sv)-, swahili, -thai-, -turkish-, -ukrainian-
 
     deployment20.files=qt_de.qm
     deployment20.path=/assets/files
@@ -328,6 +346,24 @@ android {
     deployment35.path=/assets/files
     //deployment36.files=qt_hu.qm
     //deployment36.path=/assets/files
+    deployment37.files=qt_sv.qm
+    deployment37.path=/assets/files
+    deployment38.files=qt_sl.qm
+    deployment38.path=/assets/files
+    //deployment39.files=qt_ro.qm
+    //deployment39.path=/assets/files
+    deployment60.files=qt_bg.qm
+    deployment60.path=/assets/files
+    //deployment61.files=qt_th.qm
+    //deployment61.path=/assets/files
+    deployment62.files=qt_uk.qm
+    deployment62.path=/assets/files
+    //deployment63.files=qt_et.qm
+    //deployment63.path=/assets/files
+    //deployment64.files=qt_sr.qm
+    //deployment64.path=/assets/files
+    //deployment65.files=qt_ms.qm
+    //deployment65.path=/assets/files
 
 # for qt available:
 #qt_ar.qm
@@ -353,18 +389,6 @@ android {
 #qt_tr.qm
 #qt_uk.qm
 #qt_zh_TW.qm
-
-## ru
-# da
-# sw
-# fi
-## ko
-## zh
-## ja
-## ar
-# th
-# id
-# tr
 
     INSTALLS += deployment1
     INSTALLS += deployment2
@@ -403,6 +427,9 @@ android {
     //INSTALLS += deployment34
     INSTALLS += deployment35
     //INSTALLS += deployment36
+    INSTALLS += deployment37
+    INSTALLS += deployment38
+    INSTALLS += deployment39
 
     INSTALLS += deployment40
     INSTALLS += deployment41
@@ -410,6 +437,22 @@ android {
     INSTALLS += deployment43
     INSTALLS += deployment44
     INSTALLS += deployment45
+    INSTALLS += deployment46
+    INSTALLS += deployment47
+    INSTALLS += deployment48
+    INSTALLS += deployment49
+    INSTALLS += deployment50
+    INSTALLS += deployment51
+    INSTALLS += deployment52
+    INSTALLS += deployment53
+    INSTALLS += deployment54
+
+    INSTALLS += deployment60
+    //INSTALLS += deployment61
+    INSTALLS += deployment62
+    //INSTALLS += deployment63
+    //INSTALLS += deployment64
+    //INSTALLS += deployment65
 }
 
 RESOURCES += sciteqt.qrc

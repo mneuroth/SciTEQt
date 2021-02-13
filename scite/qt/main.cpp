@@ -43,6 +43,7 @@
 
 #define KEY_ADMIN "admin"
 #define KEY_STYLE "style"
+#define KEY_LANGUAGE "language"
 
 #if defined(Q_OS_ANDROID)
 //#define DEFAULT_STYLE "Material"
@@ -136,6 +137,7 @@ int main(int argc, char *argv[])
     SciTEQt::SetAdmin(aSettings.value(KEY_ADMIN, false).toBool());
     SciTEQt::SetStyle(aSettings.value(KEY_STYLE, DEFAULT_STYLE).toString());
     QQuickStyle::setStyle(SciTEQt::GetStyle());
+    SciTEQt::SetOverwriteLanguage(aSettings.value(KEY_LANGUAGE).toString());
 
 #ifdef _WITH_QDEBUG_REDIRECT
     qInstallMessageHandler(PrivateMessageHandler);
@@ -182,6 +184,7 @@ int main(int argc, char *argv[])
     // this environment variable is used to replace the language macro in SciTEGlobal.properties:
     // locale.properties=locale.$(SciteQtLanguage).properties
     sLanguage = CheckForOverrideLanguage(app.arguments(), sLanguage);
+    sLanguage = SciTEQt::GetOverwriteLanguage().length()>0 ? SciTEQt::GetOverwriteLanguage() : sLanguage;
     qputenv(SCITE_QT_LANGUAGE, sLanguage.toLocal8Bit());
 
 #if defined(Q_OS_ANDROID)
@@ -259,6 +262,7 @@ int main(int argc, char *argv[])
 
     aSettings.setValue(KEY_ADMIN, SciTEQt::IsAdmin());
     aSettings.setValue(KEY_STYLE, SciTEQt::GetStyle());
+    aSettings.setValue(KEY_LANGUAGE, SciTEQt::GetOverwriteLanguage());
 
     return ret;
 }

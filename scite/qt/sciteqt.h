@@ -461,6 +461,8 @@ public:
     static void SetAdmin(bool value);
     static QString GetStyle();
     static void SetStyle(const QString & value);
+    static QString GetOverwriteLanguage();
+    static void SetOverwriteLanguage(const QString & value);
 
 public slots:
     void OnAcceptedClicked();
@@ -589,6 +591,7 @@ private:
 
     static bool             m_bIsAdmin;
     static QString          m_sStyle;
+    static QString          m_sOverwriteLanguage;
 
     bool                    m_bWaitDoneFlag;
     int                     m_iMessageDialogAccepted;
