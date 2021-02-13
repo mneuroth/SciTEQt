@@ -48,19 +48,20 @@ Missing features are:
   * Improve splitter handling
   * Implement Printing (partly)
   * Context menu for Scintilla Control can not be overwritten/updated by SciTE  
-#  * Add some example scripts
+#  * Add some example scripts and auto open example script at first startup
 #  * Add better high resolution logo ?
+#  * Cleanup this file
 #  * Sync MobileFileDialog
 >  * Use QFileDialog::saveFileContent() instead of htmlSave Dialog
 
 New open features might be:
 
+?  * Anzeige Datum, Groese, Attribute von Dateien im MobileFileDialog ?
 ?  * Add some embedded scripting languages as shared libraries *.so --> fuel, minscript, ...
   * Support more scripting languages via termux or visiscript extensions (pay?)
-  * Support graphics output like visiscript extensions (pay?), Add graphical output support for SciteQt
-  * Anzeige Datum, Groese, Attribute von Dateien im MobileFileDialog ?
+?  * Support graphics output like visiscript extensions (pay?), Add graphical output support for SciteQt
   * WASM: does not support export as menu: pdf, tex, ... export
-  * WASM: improve snchrionious dialogs
+  * WASM: improve synchonious dialogs
 
   * support Dark Theme for Scintilla --> background -> black ?
   * Allow user to configure (menu)items in tool button (android) ?
