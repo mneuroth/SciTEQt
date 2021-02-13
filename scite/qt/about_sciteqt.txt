@@ -48,15 +48,19 @@ Missing features are:
   * Improve splitter handling
   * Implement Printing (partly)
   * Context menu for Scintilla Control can not be overwritten/updated by SciTE  
-  * Anzeige Datum, Groese, Attribute von Dateien im MobileFileDialog ?
-  * Python Distribution um external Libs verbessern, z.B. sqlite3
-  * Navigate Button for SciteQtExtension Directories... in mobile file dialog
-  * Add graphical output support for SciteQt
-? * Android: improve deployment --> more languages?
 #  * Add some example scripts
 #  * Add better high resolution logo ?
+#  * Sync MobileFileDialog
+>  * Use QFileDialog::saveFileContent() instead of htmlSave Dialog
 
 New open features might be:
+
+?  * Add some embedded scripting languages as shared libraries *.so --> fuel, minscript, ...
+  * Support more scripting languages via termux or visiscript extensions (pay?)
+  * Support graphics output like visiscript extensions (pay?), Add graphical output support for SciteQt
+  * Anzeige Datum, Groese, Attribute von Dateien im MobileFileDialog ?
+  * WASM: does not support export as menu: pdf, tex, ... export
+  * WASM: improve snchrionious dialogs
 
   * support Dark Theme for Scintilla --> background -> black ?
   * Allow user to configure (menu)items in tool button (android) ?
@@ -67,13 +71,10 @@ New open features might be:
   * maybe: save and restore text in outputarea?
   * Save and Restore for View-Parameters like: show line numbers, etc.
   * Save and Restore user defined mapping of file extensions to (lexer-)languages
-  * Support graphics output like visiscript extensions (pay?)
-  * Support more scripting languages via termux or visiscript extensions (pay?)
 
 Known and open Bugs are:
 
   * Text Marker manchmal out of sync... --> Stabilitaet verbessern Input Marker unter Android ?
-//  * Tabwechsel --> View springt an den Anfang des Texts und nicht dahin wo der Cursor ist
   * ggf. implement standard Verhalten von Scrollbars (page up/down) --> Desktop only ?
   * Strange output (no clipping) if CR/LF should be shown
 ((?  * Update Scintilla view needs sometimes mouse click !!!???
