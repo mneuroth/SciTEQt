@@ -63,9 +63,9 @@
 #define SCITE_LOCALE_BG_PROPERTIES  "locale.bg.properties"
 #define SCITE_LOCALE_TH_PROPERTIES  "locale.th.properties"
 #define SCITE_LOCALE_UK_PROPERTIES  "locale.uk.properties"
-#define SCITE_LOCALE_UK_PROPERTIES  "locale.et.properties"
-#define SCITE_LOCALE_UK_PROPERTIES  "locale.sr.properties"
-#define SCITE_LOCALE_UK_PROPERTIES  "locale.ms.properties"
+#define SCITE_LOCALE_ET_PROPERTIES  "locale.et.properties"
+#define SCITE_LOCALE_SR_PROPERTIES  "locale.sr.properties"
+#define SCITE_LOCALE_MS_PROPERTIES  "locale.ms.properties"
 
 // **************************************************************************
 
