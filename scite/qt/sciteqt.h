@@ -89,6 +89,7 @@
 #include <QScreen>
 
 class SciTEQt;
+class SciteQtEnvironmentForJavaScript;
 
 #define SCITE_HOME          "SciTE_HOME"
 #define SCITE_QT_LANGUAGE   "SciteQtLanguage"
@@ -139,6 +140,8 @@ public:
 
 class SciTEQt : public QObject, public SciTEBase
 {
+    friend SciteQtEnvironmentForJavaScript;
+
     Q_OBJECT
 
     // control visibility of ui controls
@@ -572,8 +575,8 @@ private:
     void RestorePosition();
     void ProcessSave(bool bSetSavePoint);
     void UpdateWindowPosAndSizeIfNeeded(const QRect & rect, bool maximize);
-    MessageBoxChoice ProcessModalWindowSynchronious(const QString & objectName);
     MessageBoxChoice ShowWindowMessageBox(const QString & msg, MessageBoxStyle style = mbsIconWarning);
+    MessageBoxChoice ProcessModalWindowSynchronious(const QString & objectName);
     void CheckAndDeleteGetContentToWriteFunctionPointer();
     void CheckAndDeleteReceiveContentToProcessFunctionPointer();
     void SaveSettingsForQt();

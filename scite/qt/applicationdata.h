@@ -37,6 +37,8 @@
 #define SCITE_ABBREV_PROPERTIES     "abbrev.properties"
 #define SCITE_SCITE_USER_PROPERTIES "SciTEUser.properties"
 #define SCITE_SCITE_DOC_HTML        "SciTEDoc.html"
+#define SCITE_DEMO_JS               "demo.js"
+#define SCITE_PLOTDEMO_JS           "plotdemo.js"
 #define SCITE_LOCALE_DE_PROPERTIES  "locale.de.properties"
 #define SCITE_LOCALE_NL_PROPERTIES  "locale.nl.properties"
 #define SCITE_LOCALE_FR_PROPERTIES  "locale.fr.properties"

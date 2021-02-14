@@ -165,6 +165,9 @@ win32 {
     QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\..\\qt\\SciTEGlobal.properties\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
     QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\..\\src\\abbrev.properties\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
     QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\SciTEUser.properties\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
+# TODO: copy example files in user directory ?
+    QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\demo.js\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
+    QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\plotdemo.js\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
     QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)( if not exist \"$${PWD}/dist/packages/org.scintilla.sciteqt/data/localisations\" $${QMAKE_MKDIR} \"$${PWD}/dist/packages/org.scintilla.sciteqt/data/localisations\") )
     QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\translations\\*.*\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data/localisations\")
     QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\..\\doc\\*.*\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
@@ -238,6 +241,12 @@ android {
     equals(ANDROID_TARGET_ARCH, mips64)  {
         ARCH_PATH = mips64
     }
+
+
+    deployment100.files=demo.js
+    deployment100.path=/assets/files
+    deployment101.files=plotdemo.js
+    deployment101.path=/assets/files
 
     deployment1.files=../src/SciTE.properties
     deployment1.path=/assets/files
@@ -453,6 +462,9 @@ android {
     //INSTALLS += deployment63
     //INSTALLS += deployment64
     //INSTALLS += deployment65
+
+    INSTALLS += deployment100
+    INSTALLS += deployment101
 }
 
 RESOURCES += sciteqt.qrc

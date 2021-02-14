@@ -2296,7 +2296,7 @@ void SciTEQt::cmdAboutCurrentFile()
 }
 
 static QString g_sJavaScriptInit = "var console = { log: env.print }; ";
-static QString g_sJavaScriptLibrary = "\nfunction print(t) { env.print(t) }\nfunction admin(val) { env.admin(val) }\nfunction style(val) { env.style(val) }\nfunction   language(val) { env.language(val) }\n";
+static QString g_sJavaScriptLibrary = "\nfunction print(t,v2,v3,v4,v5,v6,v7,v8,v9,v10) { env.print(t,v2,v3,v4,v5,v6,v7,v8,v9,v10) }\nfunction println(t,v2,v3,v4,v5,v6,v7,v8,v9,v10) { env.println(t,v2,v3,v4,v5,v6,v7,v8,v9,v10) }\nfunction admin(val) { env.admin(val) }\nfunction style(val) { env.style(val) }\nfunction language(val) { env.language(val) }\nfunction messageBox(text,style=0) { return env.messageBox(text,style) }\n";
 
 void SciTEQt::cmdRunCurrentAsJavaScriptFile()
 {
@@ -2306,7 +2306,7 @@ void SciTEQt::cmdRunCurrentAsJavaScriptFile()
     QJSEngine myEngine;
 
     SciteQtEnvironmentForJavaScript aSciteQtJSEnvironment(m_bIsAdmin, m_sStyle, m_sOverwriteLanguage, this);
-    connect(&aSciteQtJSEnvironment,SIGNAL(OnPrint(QString)),this,SLOT(OnAddLineToOutput(QString)));
+    connect(&aSciteQtJSEnvironment,SIGNAL(OnPrint(QString)),this,SLOT(OnAddToOutput(QString)));
     connect(&aSciteQtJSEnvironment,SIGNAL(OnAdmin(bool)),this,SLOT(OnAdmin(bool)));
 
     QJSValue sciteEnvironment = myEngine.newQObject(&aSciteQtJSEnvironment);
@@ -2326,7 +2326,7 @@ void SciTEQt::cmdRunCurrentAsJavaScriptFile()
     OnAddLineToOutput(sResult);
 
     disconnect(&aSciteQtJSEnvironment,SIGNAL(OnAdmin(bool)),this,SLOT(OnAdmin(bool)));
-    disconnect(&aSciteQtJSEnvironment,SIGNAL(OnPrint(QString)),this,SLOT(OnAddLineToOutput(QString)));
+    disconnect(&aSciteQtJSEnvironment,SIGNAL(OnPrint(QString)),this,SLOT(OnAddToOutput(QString)));
 }
 
 void SciTEQt::cmdRunCurrentAsLuaFile()
@@ -3011,6 +3011,28 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     if( buffers.length == 1 && currentFileName.length()==0 )
     {
         cmdAboutSciteQt();
+
+#if defined(Q_OS_ANDROID)
+        QString sFileName = FILES_DIR;
+        sFileName += QDir::separator();
+        sFileName += "demo.js";
+        Open(ConvertQStringToGuiString(sFileName));
+        sFileName = FILES_DIR;
+        sFileName += QDir::separator();
+        sFileName += "plotdemo.js";
+        Open(ConvertQStringToGuiString(sFileName));
+#elif defined(Q_OS_WASM)
+        New();
+        FilePath demoFileName(ConvertQStringToGuiString("demo.js"), ConvertQStringToGuiString("demo.js"));
+        SetFileName(demoFileName, true);
+        QString demoScript = ApplicationData::simpleReadFileContent(":/demo.js");
+        emit setTextToCurrent(demoScript);
+        New();
+        FilePath plotdemoFileName(ConvertQStringToGuiString("plotdemo.js"), ConvertQStringToGuiString("plotdemo.js"));
+        SetFileName(plogdemoFileName, true);
+        QString plotdemoScript = ApplicationData::simpleReadFileContent(":/plotdemo.js");
+        emit setTextToCurrent(plotdemoScript);
+#endif
     }
 }
 

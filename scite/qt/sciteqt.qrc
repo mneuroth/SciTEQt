@@ -51,6 +51,8 @@
         <file alias="SciTEUser.properties">SciTEUser.properties</file>      <!-- used only for WASM platform -->
         <file alias="scite_logo.png">../gtk/Sci48M.png</file>
         <file alias="about_sciteqt.txt">about_sciteqt.txt</file>
+        <file alias="demo.js">demo.js</file>
+        <file alias="plotdemo.js">plotdemo.js</file>
         <file alias="icons/clear.svg">icons/clear-black-24dp.svg</file>
         <file alias="icons/content_copy.svg">icons/content_copy-black-24dp.svg</file>
         <file alias="icons/content_cut.svg">icons/content_cut-black-24dp.svg</file>
