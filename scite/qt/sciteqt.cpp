@@ -3029,7 +3029,7 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
         emit setTextToCurrent(demoScript);
         New();
         FilePath plotdemoFileName(ConvertQStringToGuiString("plotdemo.js"), ConvertQStringToGuiString("plotdemo.js"));
-        SetFileName(plogdemoFileName, true);
+        SetFileName(plotdemoFileName, true);
         QString plotdemoScript = ApplicationData::simpleReadFileContent(":/plotdemo.js");
         emit setTextToCurrent(plotdemoScript);
 #endif
