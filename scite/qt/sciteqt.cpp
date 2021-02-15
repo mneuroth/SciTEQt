@@ -490,6 +490,13 @@ void SciTEQt::SaveACopy()
 
 void SciTEQt::SaveAsRTF()
 {
+#ifdef Q_OS_WASM
+    QString sName = QString::fromUtf8(CurrentBuffer()->file.BaseName().AsUTF8().c_str());
+    sName += ".rtf";
+    QString sTmpFileName = "/tmp/"+sName;
+    SaveToRTF(ConvertQStringToGuiString(sTmpFileName));
+    emit saveCurrentForWasm(sName,sTmpFileName);
+#else
     CheckAndDeleteGetContentToWriteFunctionPointer();
     m_pFcnGetContentToWrite = new std::function<QString()>( [this]() -> QString {
         std::ostringstream oss;
@@ -500,17 +507,24 @@ void SciTEQt::SaveAsRTF()
 
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.rtf", tr("Export File As RTF"), false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".rtf");
 
-// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
         SaveToRTF(GetPathFromUrl(m_sCurrentFileUrl));
     }
 
     CheckAndDeleteGetContentToWriteFunctionPointer();
+#endif
 }
 
 void SciTEQt::SaveAsPDF()
 {
+#ifdef Q_OS_WASM
+    QString sName = QString::fromUtf8(CurrentBuffer()->file.BaseName().AsUTF8().c_str());
+    sName += ".pdf";
+    QString sTmpFileName = "/tmp/"+sName;
+    SaveToPDF(ConvertQStringToGuiString(sTmpFileName));
+    emit saveCurrentForWasm(sName,sTmpFileName);
+#else
     CheckAndDeleteGetContentToWriteFunctionPointer();
     m_pFcnGetContentToWrite = new std::function<QString()>( [this]() -> QString {
         return TriggerActionAndReadResultFile([this](QString name) -> void { SaveToPDF(FilePath(ConvertQStringToGuiString(name))); } );
@@ -518,17 +532,24 @@ void SciTEQt::SaveAsPDF()
 
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.pdf", tr("Export File As PDF"), false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".pdf");
 
-// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
         SaveToPDF(GetPathFromUrl(m_sCurrentFileUrl));
     }
 
     CheckAndDeleteGetContentToWriteFunctionPointer();
+#endif
 }
 
 void SciTEQt::SaveAsTEX()
 {
+#ifdef Q_OS_WASM
+    QString sName = QString::fromUtf8(CurrentBuffer()->file.BaseName().AsUTF8().c_str());
+    sName += ".tex";
+    QString sTmpFileName = "/tmp/"+sName;
+    SaveToTEX(ConvertQStringToGuiString(sTmpFileName));
+    emit saveCurrentForWasm(sName,sTmpFileName);
+#else
     CheckAndDeleteGetContentToWriteFunctionPointer();
     m_pFcnGetContentToWrite = new std::function<QString()>( [this]() -> QString {
         return TriggerActionAndReadResultFile([this](QString name) -> void { SaveToTEX(FilePath(ConvertQStringToGuiString(name))); } );
@@ -536,18 +557,24 @@ void SciTEQt::SaveAsTEX()
 
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.tex", tr("Export File As LaTeX"), false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".tex");
 
-// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
-// TODO Behandeln von Storage Access Framework !
         SaveToTEX(GetPathFromUrl(m_sCurrentFileUrl));
     }
 
     CheckAndDeleteGetContentToWriteFunctionPointer();
+#endif
 }
 
 void SciTEQt::SaveAsXML()
 {
+#ifdef Q_OS_WASM
+    QString sName = QString::fromUtf8(CurrentBuffer()->file.BaseName().AsUTF8().c_str());
+    sName += ".xml";
+    QString sTmpFileName = "/tmp/"+sName;
+    SaveToXML(ConvertQStringToGuiString(sTmpFileName));
+    emit saveCurrentForWasm(sName,sTmpFileName);
+#else
     CheckAndDeleteGetContentToWriteFunctionPointer();
     m_pFcnGetContentToWrite = new std::function<QString()>( [this]() -> QString {
         return TriggerActionAndReadResultFile([this](QString name) -> void { SaveToXML(FilePath(ConvertQStringToGuiString(name))); } );
@@ -555,17 +582,24 @@ void SciTEQt::SaveAsXML()
 
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.xml", tr("Export File As XML"), false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".xml");
 
-// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
         SaveToXML(GetPathFromUrl(m_sCurrentFileUrl));
     }
 
     CheckAndDeleteGetContentToWriteFunctionPointer();
+#endif
 }
 
 void SciTEQt::SaveAsHTML()
 {
+#ifdef Q_OS_WASM
+    QString sName = QString::fromUtf8(CurrentBuffer()->file.BaseName().AsUTF8().c_str());
+    sName += ".html";
+    QString sTmpFileName = "/tmp/"+sName;
+    SaveToHTML(ConvertQStringToGuiString(sTmpFileName));
+    emit saveCurrentForWasm(sName,sTmpFileName);
+#else
     CheckAndDeleteGetContentToWriteFunctionPointer();
     m_pFcnGetContentToWrite = new std::function<QString()>( [this]() -> QString {
         return TriggerActionAndReadResultFile([this](QString name) -> void { SaveToHTML(FilePath(ConvertQStringToGuiString(name))); } );
@@ -573,13 +607,13 @@ void SciTEQt::SaveAsHTML()
 
     emit startFileDialog(QString::fromStdString(filePath.Directory().AsUTF8()), "*.html", tr("Export File As HTML"), false, true, false, QString::fromStdString(filePath.Name().AsUTF8())+".html");
 
-// TODO for WASM
     if(ProcessCurrentFileDialog())
     {
         SaveToHTML(GetPathFromUrl(m_sCurrentFileUrl));
     }
 
     CheckAndDeleteGetContentToWriteFunctionPointer();
+#endif
 }
 
 FilePath GetSciTEPath(const QByteArray & home)
@@ -3010,8 +3044,6 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
     QString currentFileName = QString::fromStdString(FileNameExt().Name().AsUTF8());
     if( buffers.length == 1 && currentFileName.length()==0 )
     {
-        cmdAboutSciteQt();
-
 #if defined(Q_OS_ANDROID)
         QString sFileName = FILES_DIR;
         sFileName += QDir::separator();
@@ -3033,6 +3065,8 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
         QString plotdemoScript = ApplicationData::simpleReadFileContent(":/plotdemo.js");
         emit setTextToCurrent(plotdemoScript);
 #endif
+
+        cmdAboutSciteQt();
     }
 }
 

@@ -563,7 +563,7 @@ signals:
     void setTextToCurrent(const QString & text);
     void addTextToOutput(const QString & text);
 
-    void saveCurrentForWasm(const QString & fileName);
+    void saveCurrentForWasm(const QString & fileName, const QVariant & sTempFile = QVariant());
 
     void admin(bool value);
 

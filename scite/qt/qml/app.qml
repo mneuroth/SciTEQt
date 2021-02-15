@@ -125,7 +125,7 @@ ApplicationWindow {
             } else {
 // TODO save as...
 // TODO support export as ... like pdf, tex, etc.
-                htmlSave(null)
+                htmlSave(null,null)
             }
         }
         else if(sciteQt.mobilePlatform)
@@ -614,9 +614,14 @@ ApplicationWindow {
         }
     }
 
-    function htmlSave(fileName) {
+    function htmlSave(fileName,sTempFile) {
         var tmpFilePath = "/tmp/temp.txt"
-        var ok = writeCurrentDoc("file://" + tmpFilePath)
+        if( sTempFile === null) {
+            var ok = writeCurrentDoc("file://" + tmpFilePath)
+        }
+        else {
+            tmpFilePath = sTempFile
+        }
         //project.saveAs("file://" + tmpFilePath)
         var currentFileName = (fileName!==null ? fileName : "temp.txt")
         htmlFileAccess.saveFsFile(tmpFilePath,currentFileName)
@@ -2205,7 +2210,7 @@ ApplicationWindow {
         onSelectTab:                  selectTab(index)
         onRemoveAllTabs:              removeAllTabs()
 
-        onSaveCurrentForWasm:         htmlSave(fileName)
+        onSaveCurrentForWasm:         htmlSave(fileName,sTempFile)
 
         onDismissMenu:                dismissMenu()
     }
