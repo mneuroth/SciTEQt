@@ -1391,6 +1391,7 @@ ApplicationWindow {
                 ToolTip.visible: hovered
                 ToolTip.text: sciteQt.getLocalisedText(qsTr("Stop script execution"))
             }
+            /* TODO: implement/improve Graphic output
             ToolButton {
                 id: toolButtonGraphics
                 icon.source: "icons/loop.svg"
@@ -1408,6 +1409,7 @@ ApplicationWindow {
                 ToolTip.visible: hovered
                 ToolTip.text: sciteQt.getLocalisedText(qsTr("Show graphics output dialog"))
             }
+            */
         }
     }
 
