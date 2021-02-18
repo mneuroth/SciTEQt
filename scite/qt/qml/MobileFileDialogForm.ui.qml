@@ -7,7 +7,6 @@
  ***************************************************************************/
 import QtQuick 2.0
 import QtQuick.Controls 2.1
-import QtQuick.Dialogs 1.2
 import Qt.labs.folderlistmodel 2.1
 import QtQuick.Layouts 1.3
 
@@ -77,7 +76,7 @@ Page {
 
         Button {
             id: btnSDCard
-            text: qsTr("SD Card")
+            text: localiseText(qsTr("SD Card"))
             Layout.rowSpan: 1
             Layout.columnSpan: 1
             Layout.rightMargin: 0
@@ -106,9 +105,6 @@ Page {
 
     Label {
         id: lblDirectoryName
-        x: 16
-        width: 418
-        height: 40
         text: localiseText(qsTr("Show current directory here"))
         anchors.top: columnLayout.bottom
         anchors.topMargin: 5
@@ -121,13 +117,13 @@ Page {
         orientation: ListView.Vertical
         clip: true
         anchors.bottom: lblMFDInput.top
-        anchors.bottomMargin: 5
+        anchors.bottomMargin: 10
         anchors.left: parent.left
         anchors.leftMargin: 10
         anchors.right: parent.right
         anchors.rightMargin: 10
         anchors.top: lblDirectoryName.bottom
-        anchors.topMargin: 5
+        anchors.topMargin: 10
         Keys.onEscapePressed: btnCancel.clicked()
         Keys.onBackPressed: btnCancel.clicked()
 
@@ -168,9 +164,9 @@ Page {
         x: txtMFDInput.x
         y: txtMFDInput.y
     }
+
     TextInput {
         id: txtMFDInput
-        //y: 323
         height: lblMFDInput.height
         text: ""
         anchors.bottom: btnCancel.top

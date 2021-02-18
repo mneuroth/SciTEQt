@@ -7,7 +7,6 @@
  ***************************************************************************/
 import QtQuick 2.0
 import QtQuick.Controls 2.1
-import QtQuick.Dialogs 1.2
 
 MobileFileDialogForm {
     id: root
@@ -260,15 +259,13 @@ MobileFileDialogForm {
     }
 
     btnCancel {
-        onClicked: {
-            rejected()
-        }
+        onClicked: rejected()
     }
 
     btnUp {
         onClicked: {
             // stop with moving up when home directory is reached
-            if( root.bIsAdminModus || applicationData.getNormalizedPath(currentDirectory) !== applicationData.getNormalizedPath(applicationData.homePath) )
+            if( root.bIsAdminModus || (applicationData.getNormalizedPath(currentDirectory) !== applicationData.getNormalizedPath(applicationData.homePath)) )
             {
                 root.setDirectory(currentDirectory + "/..")
                 root.setCurrentName("")
@@ -317,8 +314,6 @@ MobileFileDialogForm {
             {
                 storageAccess.openFile()
             }
-
-            //root.close()
         }
     }
 }
