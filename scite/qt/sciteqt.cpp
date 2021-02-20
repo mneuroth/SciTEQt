@@ -2118,7 +2118,20 @@ void SciTEQt::cmdClean()
 
 void SciTEQt::cmdGo()
 {
-    MenuCommand(IDM_GO);
+    // first try to use the builtin interpreters
+    QString sExtension = CurrentBuffer()->file.Extension().AsUTF8().c_str();
+    if( sExtension=="js" )
+    {
+        cmdRunCurrentAsJavaScriptFile();
+    }
+    else if( sExtension=="lua" )
+    {
+        cmdRunCurrentAsLuaFile();
+    }
+    else
+    {
+        MenuCommand(IDM_GO);
+    }
 }
 
 void SciTEQt::cmdStopExecuting()
