@@ -2323,6 +2323,13 @@ void SciTEQt::cmdSciteHelp()
     //MenuCommand(IDM_HELP_SCITE);
 }
 
+void SciTEQt::cmdMoreScriptingLanguages()
+{
+#ifdef Q_OS_ANDROID
+    QDesktopServices::openUrl(QUrl(URL_VISISCRIPTEXTENSIONS));
+#endif
+}
+
 void SciTEQt::cmdAboutScite()
 {
     MenuCommand(IDM_ABOUT);
@@ -2658,7 +2665,7 @@ int SciTEQt::ExecuteOne(const Job &jobToRun)
 
 	//return m_aScriptExecution.DoScriptExecution(cmd, args, workingDirectory);
 
-	ScriptExecution tempScriptExecution;
+    ScriptExecution tempScriptExecution(isMobilePlatform());
     m_pCurrentScriptExecution = &tempScriptExecution;
     connect(&tempScriptExecution,SIGNAL(AddToOutput(QString)),this,SLOT(OnAddToOutput(QString)));
     int ret = tempScriptExecution.DoScriptExecution(cmd, args, workingDirectory);

@@ -19,6 +19,8 @@
 #include <QString>
 #include <QProcess>
 
+#define URL_VISISCRIPTEXTENSIONS "https://play.google.com/store/apps/details?id=de.mneuroth.visiscriptextensions"
+
 // ************************************************************************
 
 class ScriptExecution : public QObject
@@ -26,7 +28,7 @@ class ScriptExecution : public QObject
     Q_OBJECT
 
 public:
-    ScriptExecution();
+    ScriptExecution(bool isMobilePlatform);
     virtual ~ScriptExecution();
 
     int DoScriptExecution(const QString & sScriptCmd, const QString & sScriptArguments, const QString & sWorkingDirectory);
@@ -61,6 +63,7 @@ private:
     QString                 m_sLastCurrentDir;  // temp
 
     bool                    m_bMeasureExecutionTime;
+    bool                    m_bIsMobilePlatform;
     qint64                  m_iElapsedTime;
 };
 

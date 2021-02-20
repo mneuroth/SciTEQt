@@ -50,6 +50,13 @@ AutoSizingMenu {
         visible: sciteQt.mobilePlatform && !sciteQt.isWebassemblyPlatform()
         height: visible ? actionAboutQt.heigh : 0
     }
+    MenuItem {
+        id: actionMoreScriptingLanguages
+        text: processMenuItem2(actions.actionMoreScriptingLanguages.text, actionMoreScriptingLanguages)
+        action: actions.actionMoreScriptingLanguages
+        visible: sciteQt.mobilePlatform && !sciteQt.isWebassemblyPlatform()
+        height: visible ? actionAboutQt.heigh : 0
+    }
 
 /* for debugging only:
 

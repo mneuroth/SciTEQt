@@ -91,8 +91,9 @@ static QStringList SplitString( const QString & s )
 
 // ************************************************************************
 
-ScriptExecution::ScriptExecution()
+ScriptExecution::ScriptExecution(bool isMobilePlatform)
     : m_bMeasureExecutionTime(false),
+      m_bIsMobilePlatform(isMobilePlatform),
       m_iElapsedTime(0)
 {
     ConnectScriptProcessSignals();
@@ -299,6 +300,11 @@ void ScriptExecution::sltErrorScript(QProcess::ProcessError error)
     {
         case QProcess::FailedToStart:
             errText = tr(">Error: failed to start script.\n");
+            if( m_bIsMobilePlatform )
+            {
+                errText += tr(">You can install the VisiScriptExtensions app from Google Play for additional scripting languages.\n");
+                errText += tr(">See help menu or this link: ")+URL_VISISCRIPTEXTENSIONS+"\n";
+            }
             break;
         case QProcess::Crashed:
             errText = tr(">Error: script crashed.\n");

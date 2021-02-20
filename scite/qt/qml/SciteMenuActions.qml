@@ -867,6 +867,7 @@ Item {
     property alias actionAboutSciteQt: actionAboutSciteQt
     property alias actionAboutQt: actionAboutQt
     property alias actionSupportSciteQt: actionSupportSciteQt
+    property alias actionMoreScriptingLanguages: actionMoreScriptingLanguages
     property alias actionAboutCurrentFile: actionAboutCurrentFile
     property alias actionRunCurrentAsJavaScript: actionRunCurrentAsJavaScript
     property alias actionIsMobilePlatfrom: actionIsMobilePlatfrom
@@ -903,6 +904,12 @@ Item {
         text: qsTr("Su&pport SciteQt")
         enabled: sciteQt.mobilePlatform
         onTriggered: sciteQt.cmdSupportSciteQt()
+    }
+    Action {
+        id: actionMoreScriptingLanguages
+        text: qsTr("&More Scripting Languages")
+        enabled: sciteQt.mobilePlatform
+        onTriggered: sciteQt.cmdMoreScriptingLanguages()
     }
 
     Action {

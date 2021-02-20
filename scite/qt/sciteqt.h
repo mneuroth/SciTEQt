@@ -397,6 +397,7 @@ public:
     Q_INVOKABLE void cmdLastOpenedFiles(int index);
     Q_INVOKABLE void cmdHelp();
     Q_INVOKABLE void cmdSciteHelp();
+    Q_INVOKABLE void cmdMoreScriptingLanguages();
     Q_INVOKABLE void cmdAboutScite();
     Q_INVOKABLE void cmdAboutSciteQt();
     Q_INVOKABLE void cmdAboutCurrentFile();
