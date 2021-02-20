@@ -50,7 +50,7 @@
 
 //*************************************************************************
 
-#define __SCITE_QT_VERSION__   "0.99.13"
+#define __SCITE_QT_VERSION__   "0.99.14"
 
 enum {
     WORK_EXECUTE = WORK_PLATFORM + 1,
@@ -3073,6 +3073,10 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
         sFileName += QDir::separator();
         sFileName += "plotdemo.js";
         Open(ConvertQStringToGuiString(sFileName));
+        sFileName = FILES_DIR;
+        sFileName += QDir::separator();
+        sFileName += "about_sciteqt.txt";
+        Open(ConvertQStringToGuiString(sFileName));
 #elif defined(Q_OS_WASM)
         New();
         FilePath demoFileName(ConvertQStringToGuiString("demo.js"), ConvertQStringToGuiString("demo.js"));
@@ -3084,9 +3088,14 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
         SetFileName(plotdemoFileName, true);
         QString plotdemoScript = ApplicationData::simpleReadFileContent(":/plotdemo.js");
         emit setTextToCurrent(plotdemoScript);
-#endif
-
+        New();
+        FilePath aboutSciteQtFileName(ConvertQStringToGuiString("about_sciteqt.txt"), ConvertQStringToGuiString("about_sciteqt.txt"));
+        SetFileName(aboutSciteQtFileName, true);
+        QString aboutSciteQt = ApplicationData::simpleReadFileContent(":/about_sciteqt.txt");
+        emit setTextToCurrent(aboutSciteQt);
+#else
         cmdAboutSciteQt();
+#endif
     }
 }
 

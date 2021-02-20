@@ -39,6 +39,7 @@
 #define SCITE_SCITE_DOC_HTML        "SciTEDoc.html"
 #define SCITE_DEMO_JS               "demo.js"
 #define SCITE_PLOTDEMO_JS           "plotdemo.js"
+#define ABOUT_SCITEQT_TXT           "about_sciteqt.txt"
 #define SCITE_LOCALE_DE_PROPERTIES  "locale.de.properties"
 #define SCITE_LOCALE_NL_PROPERTIES  "locale.nl.properties"
 #define SCITE_LOCALE_FR_PROPERTIES  "locale.fr.properties"

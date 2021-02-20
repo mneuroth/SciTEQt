@@ -247,6 +247,8 @@ android {
     deployment100.path=/assets/files
     deployment101.files=plotdemo.js
     deployment101.path=/assets/files
+    deployment102.files=about_sciteqt.txt
+    deployment102.path=/assets/files
 
     deployment1.files=../src/SciTE.properties
     deployment1.path=/assets/files
@@ -465,6 +467,7 @@ android {
 
     INSTALLS += deployment100
     INSTALLS += deployment101
+    INSTALLS += deployment102
 }
 
 RESOURCES += sciteqt.qrc

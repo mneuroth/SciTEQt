@@ -103,6 +103,9 @@ void UnpackFiles()
     sAsset = QString(ASSETS_DIR)+QString(SCITE_PLOTDEMO_JS);
     sOutput = QString(FILES_DIR)+QString(SCITE_PLOTDEMO_JS);
     extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString(ABOUT_SCITEQT_TXT);
+    sOutput = QString(FILES_DIR)+QString(ABOUT_SCITEQT_TXT);
+    extractAssetFile(sAsset,sOutput,false);
     sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_DE_PROPERTIES);
     sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_DE_PROPERTIES);
     extractAssetFile(sAsset,sOutput,false);
