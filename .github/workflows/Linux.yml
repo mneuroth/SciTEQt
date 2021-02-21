@@ -31,7 +31,7 @@ jobs:
         # Additional Qt modules to install
         modules: 'qtscript qtscripttools' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
         # Force a Qt mirror in case the default is not working
-        mirror: # optional
+        #mirror: # optional
         # Whether or not to actually download Qt
         cached: # optional, default is false
         # Version of aqtinstall to use in case of issues
@@ -79,7 +79,7 @@ jobs:
         # Additional Qt modules to install
         modules: 'qtscript qtscripttools' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
         # Force a Qt mirror in case the default is not working
-        mirror: # optional
+        #mirror: # optional
         # Whether or not to actually download Qt
         cached: # optional, default is false
         # Version of aqtinstall to use in case of issues
@@ -121,7 +121,7 @@ jobs:
         # Additional Qt modules to install
         modules: 'qtscript qtscripttools' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
         # Force a Qt mirror in case the default is not working
-        mirror: # optional
+        #mirror: # optional
         # Whether or not to actually download Qt
         cached: # optional, default is false
         # Version of aqtinstall to use in case of issues
@@ -163,7 +163,7 @@ jobs:
         # Additional Qt modules to install
         modules: 'qtscript qtscripttools' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
         # Force a Qt mirror in case the default is not working
-        mirror: # optional
+        #mirror: # optional
         # Whether or not to actually download Qt
         cached: # optional, default is false
         # Version of aqtinstall to use in case of issues
@@ -205,7 +205,7 @@ jobs:
         # Additional Qt modules to install
         modules: 'qtscript qtscripttools' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
         # Force a Qt mirror in case the default is not working
-        mirror: # optional
+        #mirror: # optional
         # Whether or not to actually download Qt
         cached: # optional, default is false
         # Version of aqtinstall to use in case of issues
