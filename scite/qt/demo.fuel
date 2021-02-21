@@ -1,0 +1,22 @@
+;; Demo Fuel/Lisp script for SciteQt.
+;; To enable support to run Fuel/Lisp scripts please purchase
+;; a support level for this app. See help menu for more details.
+;; For more information about Fuel see github project page:
+;;   https://github.com/mneuroth/fuel-lang
+
+(defn f (x)
+  (do
+    (def y (+ x x))
+    (return (+ y 3))
+  )
+)
+
+(def y (/ (f 9) 2))
+(println "hello Fuel world! value=" y)
+(def i 0)
+(while (< i 100)
+  (do 
+     (println i (f i))
+     (setf i (+ i 1))
+  )
+)

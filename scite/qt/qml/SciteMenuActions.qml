@@ -647,7 +647,7 @@ Item {
         shortcut: "F5"
         //checkable: true
         //checked: false
-        onTriggered: sciteQt.cmdGo()
+        onTriggered: sciteQt.cmdGo(settings.supportLevel)
     }
     Action {
         id: actionStopExecuting

@@ -41,6 +41,10 @@ SupportDialogForm {
         onLinkActivated: Qt.openUrlExternally(link)
     }
 
+    lblGithubHomePage {
+        onLinkActivated: Qt.openUrlExternally(link)
+    }
+
     btnClose {
         onClicked:  {
             closed()

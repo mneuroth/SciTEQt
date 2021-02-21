@@ -2116,7 +2116,7 @@ void SciTEQt::cmdClean()
     MenuCommand(IDM_CLEAN);
 }
 
-void SciTEQt::cmdGo()
+void SciTEQt::cmdGo(int supportLevel)
 {
     // first try to use the builtin interpreters
     QString sExtension = CurrentBuffer()->file.Extension().AsUTF8().c_str();
@@ -2128,6 +2128,34 @@ void SciTEQt::cmdGo()
     {
         cmdRunCurrentAsLuaFile();
     }
+#ifdef Q_OS_ANDROID
+    else if( sExtension=="fuel" )
+    {
+        if( supportLevel >= 0 )
+        {
+            cmdRunCurrentAsFuelFile();
+        }
+        else
+        {
+            OnAddLineToOutput(tr("Sorry, can't execute Fuel/Lisp script, please purchase a support level for this app (see Help menu for details)."));
+        }
+    }
+    else if( sExtension=="lisp" || sExtension=="lsp" )
+    {
+        if( QFile::exists(_NEWLISP_PATH) )
+        {
+            MenuCommand(IDM_GO);
+        }
+        else if( supportLevel >= 0 )
+        {
+            cmdRunCurrentAsFuelFile();
+        }
+        else
+        {
+            OnAddLineToOutput(tr("Sorry, can't execute Fuel/Lisp script, please purchase a support level for this app (see Help menu for details)."));
+        }
+    }
+#endif
     else
     {
         MenuCommand(IDM_GO);
@@ -2386,6 +2414,25 @@ void SciTEQt::cmdRunCurrentAsJavaScriptFile()
 void SciTEQt::cmdRunCurrentAsLuaFile()
 {
     ToolsMenu(0);   // call: dofile <filename.lua>
+}
+
+#ifdef Q_OS_ANDROID
+#include "../../CppLispInterpreter/fuel.h"
+#include "../../CppLispInterpreter/cstypes.h"
+#include "../../CppLispInterpreter/Variant.h"
+#endif
+
+void SciTEQt::cmdRunCurrentAsFuelFile()
+{
+#ifdef Q_OS_ANDROID
+    CppLisp::string sScript = wEditor.GetText(wEditor.TextLength()+1).c_str();
+
+    std::shared_ptr<CppLisp::TextWriter> stdOut = std::make_shared<CppLisp::TextWriter>(true);
+    std::shared_ptr<CppLisp::LispVariant> aResult = CppLisp::Lisp::SaveEval(sScript, "main", true, false, stdOut);
+
+    OnAddLineToOutput(stdOut->GetContent().c_str());
+    OnAddLineToOutput(QString(tr("Result=%1")).arg(aResult->ToString().c_str()));
+#endif
 }
 
 void SciTEQt::cmdShare()
@@ -3255,7 +3302,7 @@ QString SciTEQt::getSciteQtInfos() const
 
 void SciTEQt::logToDebug(const QString & text)
 {
-    qDebug() << text << endl;
+    qDebug() << text << Qt::endl;
 }
 
 void SciTEQt::testFunction(const QString & text)

@@ -106,6 +106,12 @@ void UnpackFiles()
     sAsset = QString(ASSETS_DIR)+QString(ABOUT_SCITEQT_TXT);
     sOutput = QString(FILES_DIR)+QString(ABOUT_SCITEQT_TXT);
     extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString(SCITE_DEMO_FUEL);
+    sOutput = QString(FILES_DIR)+QString(SCITE_DEMO_FUEL);
+    extractAssetFile(sAsset,sOutput,false);
+    sAsset = QString(ASSETS_DIR)+QString(SCITE_FUELLIB_FUEL);
+    sOutput = QString(LIBRARY_FILES_DIR)+QString(SCITE_FUELLIB_FUEL);
+    extractAssetFile(sAsset,sOutput,false);
     sAsset = QString(ASSETS_DIR)+QString(SCITE_LOCALE_DE_PROPERTIES);
     sOutput = QString(LOCALISATIONS_DIR)+QString(SCITE_LOCALE_DE_PROPERTIES);
     extractAssetFile(sAsset,sOutput,false);

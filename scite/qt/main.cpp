@@ -147,6 +147,7 @@ int main(int argc, char *argv[])
     UnpackFilesWasm();
 #ifdef Q_OS_ANDROID
     qputenv(SCITE_HOME, FILES_DIR);
+    qputenv(FUELPATH_ENV, FUELPATH_DIR);
 #endif
 #ifdef Q_OS_WASM
     //qputenv(SCITE_HOME, "/");

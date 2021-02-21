@@ -249,6 +249,10 @@ android {
     deployment101.path=/assets/files
     deployment102.files=about_sciteqt.txt
     deployment102.path=/assets/files
+    deployment103.files=demo.fuel
+    deployment103.path=/assets/files
+    deployment104.files=../../CppLispInterpreter/Library/fuellib.fuel
+    deployment104.path=/assets/files
 
     deployment1.files=../src/SciTE.properties
     deployment1.path=/assets/files
@@ -468,6 +472,8 @@ android {
     INSTALLS += deployment100
     INSTALLS += deployment101
     INSTALLS += deployment102
+    INSTALLS += deployment103
+    INSTALLS += deployment104
 }
 
 RESOURCES += sciteqt.qrc
@@ -497,3 +503,6 @@ ANDROID_ABIS = arm64-v8a
 
 LIBS += -L$$OUT_PWD/../../scintilla/bin-$${ARCH_PATH}/ -lScintillaEditBase
 
+android {
+    LIBS += -L$$OUT_PWD/../../CppLispInterpreter/bin-$${ARCH_PATH}/ -lFuelInterpreter
+}

@@ -361,7 +361,7 @@ public:
     Q_INVOKABLE void cmdCompile();
     Q_INVOKABLE void cmdBuild();
     Q_INVOKABLE void cmdClean();
-    Q_INVOKABLE void cmdGo();
+    Q_INVOKABLE void cmdGo(int supportLevel);
     Q_INVOKABLE void cmdStopExecuting();
     Q_INVOKABLE void cmdNextMessage();
     Q_INVOKABLE void cmdPreviousMessage();
@@ -403,6 +403,7 @@ public:
     Q_INVOKABLE void cmdAboutCurrentFile();
     Q_INVOKABLE void cmdRunCurrentAsJavaScriptFile();
     Q_INVOKABLE void cmdRunCurrentAsLuaFile();
+    Q_INVOKABLE void cmdRunCurrentAsFuelFile();
     Q_INVOKABLE void cmdShare();
     Q_INVOKABLE void cmdUpdateApplicationActive(bool active);
 

@@ -24,6 +24,7 @@ Page {
     property alias lblLevel1: lblLevel1
     property alias lblLevel2: lblLevel2
     property alias lblGooglePlay: lblGooglePlay
+    property alias lblGithubHomePage: lblGithubHomePage
 
     property var fcnLocalisation: undefined
 
@@ -123,8 +124,6 @@ Page {
 
         Button {
             id: btnClose
-            x: 156
-            y: 352
             text: qsTr("Close")
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
@@ -133,7 +132,8 @@ Page {
 
         Text {
             id: lblSupportInfo
-            text: qsTr("The development of this app can be supported in various ways:\n\n* giving feedback and rating via the store enty in Google Play\n* purchasing a support level item via in app purchase (button below)\n\nPurchasing any support level will give you some more features:\n\n- graphics output for scripts\n- feature 2\n- feature 3\n")
+            //text: qsTr("The development of this app can be supported in various ways:\n\n* giving feedback and rating via the store enty in Google Play\n* giving feedback on the github project page (https://github.com/mneuroth/SciTEQt)\n* purchasing a support level item via in app purchase (button below)\n\nPurchasing any support level will give you some more features:\n\n- graphics output for scripts\n- feature 2\n- feature 3\n")
+            text: qsTr("The development of this app can be supported in various ways:\n\n* giving feedback and rating via the store enty in Google Play\n* giving feedback on the github project page (https://github.com/mneuroth/SciTEQt)\n* purchasing a support level item via in app purchase (button below)\n\nPurchasing any support level will give you some more features:\n\n- allows executing of lisp scripts via fuel interpreter\n- graphics output for scripts (comming soon)\n")
             wrapMode: Text.WordWrap
             enabled: false
             //horizontalAlignment: Text.AlignHCenter
@@ -147,7 +147,6 @@ Page {
 
         Text {
             id: lblGooglePlay
-            //y: 18
             text: "<a href='https://play.google.com/store/apps/details?id=org.scintilla.sciteqt'>SciteQt in Google Play</a>"
             //anchors.horizontalCenter: parent.horizontalCenter
             anchors.left: parent.left
@@ -155,6 +154,18 @@ Page {
             anchors.right: parent.right
             anchors.rightMargin: 5
             anchors.top: row2.bottom
+            anchors.topMargin: 15
+        }
+
+        Text {
+            id: lblGithubHomePage
+            text: "<a href='https://github.com/mneuroth/SciTEQt'>SciteQt Github project page</a>"
+            //anchors.horizontalCenter: parent.horizontalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 5
+            anchors.right: parent.right
+            anchors.rightMargin: 5
+            anchors.top: lblGooglePlay.bottom
             anchors.topMargin: 15
         }
     }

@@ -24,8 +24,13 @@
 #define LOG_NAME "/sdcard/Texte/sciteqt_quick_qdebug.log"
 #endif
 
+#define FUELPATH_ENV                "FUELPATH"
+#define FUELPATH_DIR                "/data/data/org.scintilla.sciteqt/files/library/"
+#define _NEWLISP_PATH               "/data/data/de.mneuroth.visiscriptextensions/files/newlisp"
+
 #define ASSETS_DIR                  "assets:/files/"
 #define FILES_DIR                   "/data/data/org.scintilla.sciteqt/files/"
+#define LIBRARY_FILES_DIR           "/data/data/org.scintilla.sciteqt/files/library/"
 #define LOCALISATIONS_DIR           "/data/data/org.scintilla.sciteqt/files/localisations/"
 #define QT_TRANSLATIONS_DIR         "/data/data/org.scintilla.sciteqt/translations/"
 #define SCRIPTS_DIR                 "/data/data/org.scintilla.sciteqt/files/scripts/"
@@ -39,6 +44,8 @@
 #define SCITE_SCITE_DOC_HTML        "SciTEDoc.html"
 #define SCITE_DEMO_JS               "demo.js"
 #define SCITE_PLOTDEMO_JS           "plotdemo.js"
+#define SCITE_DEMO_FUEL             "demo.fuel"
+#define SCITE_FUELLIB_FUEL          "fuellib.fuel"
 #define ABOUT_SCITEQT_TXT           "about_sciteqt.txt"
 #define SCITE_LOCALE_DE_PROPERTIES  "locale.de.properties"
 #define SCITE_LOCALE_NL_PROPERTIES  "locale.nl.properties"

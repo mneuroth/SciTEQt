@@ -1370,7 +1370,7 @@ ApplicationWindow {
                 icon.width: toolBarButtonContainer.iconWidth
                 //text: "Go"
                 visible: sciteQt.showToolBar
-                onClicked: sciteQt.cmdGo()
+                onClicked: sciteQt.cmdGo(settings.supportLevel)
 
                 ToolTip.delay: toolTipDelay
                 ToolTip.timeout: toolTipTimeout
