@@ -132,8 +132,7 @@ Page {
 
         Text {
             id: lblSupportInfo
-            //text: qsTr("The development of this app can be supported in various ways:\n\n* giving feedback and rating via the store enty in Google Play\n* giving feedback on the github project page (https://github.com/mneuroth/SciTEQt)\n* purchasing a support level item via in app purchase (button below)\n\nPurchasing any support level will give you some more features:\n\n- graphics output for scripts\n- feature 2\n- feature 3\n")
-            text: qsTr("The development of this app can be supported in various ways:\n\n* giving feedback and rating via the store enty in Google Play\n* giving feedback on the github project page (https://github.com/mneuroth/SciTEQt)\n* purchasing a support level item via in app purchase (button below)\n\nPurchasing any support level will give you some more features:\n\n- allows executing of lisp scripts via fuel interpreter\n- graphics output for scripts (comming soon)\n")
+            text: qsTr("The development of this app can be supported in various ways:\n\n* giving feedback and rating via Google Play\n* giving feedback on the github project page\n* purchasing a support level item via in app purchase\n\nPurchasing any support level will give you some more features:\n\n- allows executing of lisp scripts via fuel interpreter\n- graphics output for scripts (comming soon)\n")
             wrapMode: Text.WordWrap
             enabled: false
             //horizontalAlignment: Text.AlignHCenter

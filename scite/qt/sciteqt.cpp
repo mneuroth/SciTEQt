@@ -3302,7 +3302,7 @@ QString SciTEQt::getSciteQtInfos() const
 
 void SciTEQt::logToDebug(const QString & text)
 {
-    qDebug() << text << Qt::endl;
+    qDebug() << text << /*Qt::*/endl;   // Qt::endl valid since Qt 5.14.x
 }
 
 void SciTEQt::testFunction(const QString & text)
