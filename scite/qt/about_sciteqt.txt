@@ -42,3 +42,7 @@ Added features (compared to original SciTE):
   * Allow selection of styles via JavaScript function: style("StyleName")
   * Save and restore of extensions and paths in find in files dialog
   * Select word under cursor (Ctr+W)
+
+Known problems:
+
+  * Android: some keyboard apps do not work properly with the SciteQt app, please try the Hacker's Keyboard app.
