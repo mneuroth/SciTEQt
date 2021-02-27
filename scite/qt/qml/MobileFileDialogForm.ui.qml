@@ -116,7 +116,7 @@ Page {
         id: listView
         orientation: ListView.Vertical
         clip: true
-        anchors.bottom: lblMFDInput.top
+        anchors.bottom: chbExtendedInfos.top
         anchors.bottomMargin: 10
         anchors.left: parent.left
         anchors.leftMargin: 10
@@ -141,6 +141,17 @@ Page {
         focus: true
         model: folderModel
         delegate: fileDelegate
+    }
+
+    CheckBox {
+        id: chbExtendedInfos
+        text: qsTr("Show date and size")
+        checked: isExtendedInfos
+        onClicked: isExtendedInfos = chbExtendedInfos.checked
+        anchors.left: parent.left
+        anchors.leftMargin: 5
+        anchors.bottom: lblMFDInput.top
+        anchors.bottomMargin: 5
     }
 
     Label {

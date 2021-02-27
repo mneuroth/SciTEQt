@@ -7,6 +7,7 @@
  ***************************************************************************/
 import QtQuick 2.0
 import QtQuick.Controls 2.1
+import QtQuick.Layouts 1.3
 
 MobileFileDialogForm {
     id: root
@@ -15,6 +16,9 @@ MobileFileDialogForm {
     property bool isSaveACopyModus: false
     property bool isDeleteModus: false
     property bool isDirectoryModus: false
+    property bool isSaveAsImage: false
+    property bool isExtendedInfos: false
+    property bool isMobilePlatform: false //applicationData.isAndroid
     property var textControl: null
 
     property var fcnLocalisation: undefined
@@ -170,6 +174,18 @@ MobileFileDialogForm {
         }
     }
 
+    function formatSize(fileSize) {
+        var value = Math.round(fileSize/1024*10)/10
+        if( value>1000 ) {
+            var valueMB = Math.round(fileSize/(1024*1024)*10)/10
+            return valueMB + " MBytes"
+        } else if( value>0 ) {
+            return value + " kBytes"
+        } else {
+            return fileSize + "  Bytes"
+        }
+    }
+
     Component {
         id: fileDelegate
         Rectangle {
@@ -194,25 +210,54 @@ MobileFileDialogForm {
                     }
                  }
             }
-            Row {
+
+            GridLayout {
                 anchors.fill: parent
-                spacing: 5
+
+                columns: 4
 
                 Image {
                     id: itemIcon
-                    anchors.left: parent.Left
-                    height: itemLabel.height - 8
-                    width: itemLabel.height - 8
                     source: fileIsDir ? "icons/directory.svg" : "icons/file.svg"
+
+                    Layout.row: 0
+                    Layout.column: 0
+                    Layout.maximumHeight: itemLabel.height
+                    Layout.maximumWidth: itemLabel.height
                 }
                 Label {
                     id: itemLabel
-                    anchors.left: itemIcon.Right
-                    anchors.right: parent.Right
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
+
                     verticalAlignment: Text.AlignVCenter
                     text: /*(fileIsDir ? "DIR_" : "FILE") + " | " +*/ fileName
+
+                    Layout.fillWidth: true
+                    Layout.row: 0
+                    Layout.column: 1
+                }
+                Label {
+                    id: itemDate
+                    visible: isExtendedInfos
+                    font.pointSize: isMobilePlatform ? itemLabel.font.pointSize*0.75 : itemLabel.font.pointSize
+
+                    verticalAlignment: Text.AlignVCenter
+                    text: fileModified.toLocaleString(Qt.locale(),Locale.ShortFormat)
+
+                    Layout.row: 0
+                    Layout.column: 2
+                }
+                Label {
+                    id: itemSize
+                    visible: isExtendedInfos
+                    font.pointSize: isMobilePlatform ? itemLabel.font.pointSize*0.75 : itemLabel.font.pointSize
+
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignRight
+                    text: fileIsDir ? "" : formatSize(fileSize)
+
+                    Layout.row: 0
+                    Layout.column: 3
+                    Layout.minimumWidth: parent.width*0.2  //(isMobilePlatform ? 0.2 : 0.2)
                 }
             }
             MouseArea {
