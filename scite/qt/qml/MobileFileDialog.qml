@@ -18,7 +18,7 @@ MobileFileDialogForm {
     property bool isDirectoryModus: false
     property bool isSaveAsImage: false
     property bool isExtendedInfos: false
-    property bool isMobilePlatform: false //applicationData.isAndroid
+    property bool isMobilePlatform: sciteQt.mobilePlatform //applicationData.isAndroid
     property var textControl: null
 
     property var fcnLocalisation: undefined
