@@ -176,10 +176,10 @@ MobileFileDialogForm {
 
     function formatSize(fileSize) {
         var value = Math.round(fileSize/1024*10)/10
-        if( value>1000 ) {
+        if( value>=1000 ) {
             var valueMB = Math.round(fileSize/(1024*1024)*10)/10
             return valueMB + " MBytes"
-        } else if( value>0 ) {
+        } else if( value>=1 ) {
             return value + " kBytes"
         } else {
             return fileSize + "  Bytes"
