@@ -353,32 +353,32 @@ android {
     deployment31.path=/assets/files
     deployment32.files=qt_tr.qm
     deployment32.path=/assets/files
-    //deployment33.files=qt_id.qm
-    //deployment33.path=/assets/files
-    //deployment34.files=qt_el.qm
-    //deployment34.path=/assets/files
+    #//deployment33.files=qt_id.qm
+    #//deployment33.path=/assets/files
+    #//deployment34.files=qt_el.qm
+    #//deployment34.path=/assets/files
     deployment35.files=qt_fi.qm
     deployment35.path=/assets/files
-    //deployment36.files=qt_hu.qm
-    //deployment36.path=/assets/files
+    #//deployment36.files=qt_hu.qm
+    #//deployment36.path=/assets/files
     deployment37.files=qt_sv.qm
     deployment37.path=/assets/files
     deployment38.files=qt_sl.qm
     deployment38.path=/assets/files
-    //deployment39.files=qt_ro.qm
-    //deployment39.path=/assets/files
+    #//deployment39.files=qt_ro.qm
+    #//deployment39.path=/assets/files
     deployment60.files=qt_bg.qm
     deployment60.path=/assets/files
-    //deployment61.files=qt_th.qm
-    //deployment61.path=/assets/files
+    #//deployment61.files=qt_th.qm
+    #//deployment61.path=/assets/files
     deployment62.files=qt_uk.qm
     deployment62.path=/assets/files
-    //deployment63.files=qt_et.qm
-    //deployment63.path=/assets/files
-    //deployment64.files=qt_sr.qm
-    //deployment64.path=/assets/files
-    //deployment65.files=qt_ms.qm
-    //deployment65.path=/assets/files
+    #//deployment63.files=qt_et.qm
+    #//deployment63.path=/assets/files
+    #//deployment64.files=qt_sr.qm
+    #//deployment64.path=/assets/files
+    #//deployment65.files=qt_ms.qm
+    #//deployment65.path=/assets/files
 
 # for qt available:
 #qt_ar.qm
@@ -438,10 +438,10 @@ android {
     INSTALLS += deployment30
     INSTALLS += deployment31
     INSTALLS += deployment32
-    //INSTALLS += deployment33
-    //INSTALLS += deployment34
+    #//INSTALLS += deployment33
+    #//INSTALLS += deployment34
     INSTALLS += deployment35
-    //INSTALLS += deployment36
+    #//INSTALLS += deployment36
     INSTALLS += deployment37
     INSTALLS += deployment38
     INSTALLS += deployment39
@@ -463,11 +463,11 @@ android {
     INSTALLS += deployment54
 
     INSTALLS += deployment60
-    //INSTALLS += deployment61
+    #//INSTALLS += deployment61
     INSTALLS += deployment62
-    //INSTALLS += deployment63
-    //INSTALLS += deployment64
-    //INSTALLS += deployment65
+    #//INSTALLS += deployment63
+    #//INSTALLS += deployment64
+    #//INSTALLS += deployment65
 
     INSTALLS += deployment100
     INSTALLS += deployment101
