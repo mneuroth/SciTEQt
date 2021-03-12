@@ -358,21 +358,22 @@ QString ApplicationData::getNormalizedPath(const QString & path) const
 }
 
 
-QString ApplicationData::simpleReadFileContent(const QString & fileName)
+bool ApplicationData::simpleReadFileContent(const QString & fileName, QString & content)
 {
     QFile file(fileName);
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        return QString(tr("Error reading ") + fileName);
+        content = "";
+        return false;
     }
 
     QTextStream stream(&file);
-    auto text = stream.readAll();
+    content = stream.readAll();
 
     file.close();
 
-    return text;
+    return true;
 }
 
 bool ApplicationData::simpleWriteFileContent(const QString & fileName, const QString & content)
@@ -406,12 +407,21 @@ QString ApplicationData::readFileContent(const QString & fileName) const
         }
         else
         {
-            return QString(tr("Error reading ") + fileName);
+            return QString(READ_ERROR_OUTPUT);
         }
     }
     else
     {
-        return simpleReadFileContent(translatedFileName);
+        QString content;
+        bool ok = simpleReadFileContent(translatedFileName, content);
+        if( ok )
+        {
+            return content;
+        }
+        else
+        {
+            return QString(READ_ERROR_OUTPUT);
+        }
     }
 }
 
@@ -450,6 +460,11 @@ QQmlApplicationEngine & ApplicationData::GetQmlApplicationEngine()
 Extension * ApplicationData::GetExtension()
 {
     return m_pExtension;
+}
+
+QString ApplicationData::getErrorContent() const
+{
+    return READ_ERROR_OUTPUT;
 }
 
 QString ApplicationData::getFilesPath() const

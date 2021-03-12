@@ -108,6 +108,8 @@ Page {
         text: localiseText(qsTr("Show current directory here"))
         anchors.top: columnLayout.bottom
         anchors.topMargin: 5
+        anchors.left: parent.left
+        anchors.leftMargin: 10
         horizontalAlignment: Text.AlignLeft
         verticalAlignment: Text.AlignVCenter
     }

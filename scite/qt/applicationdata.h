@@ -24,6 +24,8 @@
 #define LOG_NAME "/sdcard/Texte/sciteqt_quick_qdebug.log"
 #endif
 
+#define READ_ERROR_OUTPUT           "<#READ_ERROR#>"
+
 #define FUELPATH_ENV                "FUELPATH"
 #define FUELPATH_DIR                "/data/data/org.scintilla.sciteqt/files/library/"
 #define _NEWLISP_PATH               "/data/data/de.mneuroth.visiscriptextensions/files/newlisp"
@@ -93,6 +95,8 @@ class ApplicationData : public QObject
     Q_PROPERTY(QString homePath READ getHomePath)
     Q_PROPERTY(QString sdCardPath READ getSDCardPath)
 
+    Q_PROPERTY(QString errorContent READ getErrorContent)
+
     Q_PROPERTY(bool isAppStoreSupported READ isAppStoreSupported NOTIFY isAppStoreSupportedChanged)
     Q_PROPERTY(bool isShareSupported READ isShareSupported NOTIFY isShareSupportedChanged)
 
@@ -117,10 +121,12 @@ public:
     QString getHomePath() const;
     QString getSDCardPath() const;
 
+    QString getErrorContent() const;
+
     bool isAppStoreSupported() const;
     bool isShareSupported() const;
 
-    static QString simpleReadFileContent(const QString & fileName);
+    static bool simpleReadFileContent(const QString & fileName, QString & content);
     static bool simpleWriteFileContent(const QString & fileName, const QString & content);
 
     QQmlApplicationEngine & GetQmlApplicationEngine();

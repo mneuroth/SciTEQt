@@ -37,6 +37,9 @@ ApplicationWindow {
 
     signal stripFindVisible(bool val)
 
+    property int defaultIconSize: 40
+    property int iconSize: 40
+
     property string urlPrefix: "file://"
 
     // for context menu on tabButton
@@ -1077,10 +1080,21 @@ ApplicationWindow {
     ToolBar {
         id: toolBarButtonContainer
         visible: sciteQt.showToolBar
-        height: visible ? implicitHeight : 0
+        //height: visible ? implicitHeight : 0
+        height: visible ? flow.implicitHeight : 0
 
-        property int iconWidth: 16  /* org: 24 */
-        property int iconHeight: 16
+        property int iconWidth: iconSize //16  /* org: 24 */
+        property int iconHeight: iconSize //16
+
+        onHeightChanged: {
+            if( toolBarButtonContainer.height>2*iconSize+flow.spacing ) {
+                iconSize -= 2
+            } else if ( toolBarButtonContainer.height<defaultIconSize ) {
+                if( iconSize<defaultIconSize ) {
+                    iconSize += 1
+                }
+            }
+        }
 
         Flow {
             id: flow
@@ -1165,6 +1179,7 @@ ApplicationWindow {
             }
             ToolSeparator {
                 visible:  sciteQt.showTabBar
+                height: iconSize
             }
             ToolButton {
                 id: toolButtonPrint
@@ -1199,6 +1214,7 @@ ApplicationWindow {
             }
             ToolSeparator {
                 visible:  sciteQt.showTabBar
+                height: iconSize
             }
             ToolButton {
                 id: toolButtonCut
@@ -1258,6 +1274,7 @@ ApplicationWindow {
             }
             ToolSeparator {
                 visible:  sciteQt.showTabBar
+                height: iconSize
             }
             ToolButton {
                 id: toolButtonUndo
@@ -1289,6 +1306,7 @@ ApplicationWindow {
             }
             ToolSeparator {
                 visible:  sciteQt.showTabBar
+                height: iconSize
             }
             ToolButton {
                 id: toolButtonFind
@@ -1348,6 +1366,7 @@ ApplicationWindow {
             }
             ToolSeparator {
                 visible:  sciteQt.showTabBar
+                height: iconSize
             }
             ToolButton {
                 id: toolButtonBuild

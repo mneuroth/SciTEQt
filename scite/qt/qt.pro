@@ -494,12 +494,13 @@ DISTFILES += \
     android/src/org/scintilla/activity/sharex/QShareActivity.java \
     android/src/org/scintilla/utils/QSharePathResolver.java \
     android/src/org/scintilla/utils/QShareUtils.java \
-    android/src/org/scintilla/utils/QStorageAccess.java
+    android/src/org/scintilla/utils/QStorageAccess.java \
+    android/src/org/scintilla/utils/Tuple.java
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
-#ANDROID_ABIS = armeabi-v7a arm64-v8a x86 x86_64
-ANDROID_ABIS = arm64-v8a
+ANDROID_ABIS = armeabi-v7a arm64-v8a x86 x86_64
+#ANDROID_ABIS = arm64-v8a
 
 LIBS += -L$$OUT_PWD/../../scintilla/bin-$${ARCH_PATH}/ -lScintillaEditBase
 

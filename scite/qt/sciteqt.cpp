@@ -188,11 +188,12 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
     FilePath emptyPath;
     ImportFilter importFilter;
     FilePathSet filePathSet;
-    QString dataAsText(ApplicationData::simpleReadFileContent(":/SciTEGlobal.properties"));
+    QString dataAsText;
+    bool ok1 = ApplicationData::simpleReadFileContent(":/SciTEGlobal.properties", dataAsText);
     propsBase.ReadFromMemory(dataAsText.toStdString().c_str(), dataAsText.toStdString().length(), /*directoryForImports*/emptyPath, /*filter*/importFilter, /*imports*/&filePathSet, /*depth*/0);
 
     propsUser.Clear();
-    dataAsText = ApplicationData::simpleReadFileContent(":/SciTEUser.properties");
+    bool ok2 = ApplicationData::simpleReadFileContent(":/SciTEUser.properties", dataAsText);
     propsUser.ReadFromMemory(dataAsText.toStdString().c_str(), dataAsText.toStdString().length(), /*directoryForImports*/emptyPath, /*filter*/importFilter, /*imports*/&filePathSet, /*depth*/0);
 
     // disable save position for WASM, this fixes the resize problem
@@ -375,7 +376,8 @@ QString TriggerActionAndReadResultFile(std::function<void(QString)> action)
 
     action(QString(FULL_TEMP_FILENAME));
 
-    QString content = ApplicationData::simpleReadFileContent(FULL_TEMP_FILENAME);
+    QString content;
+    bool ok = ApplicationData::simpleReadFileContent(FULL_TEMP_FILENAME, content);
 
     if(QFile::exists(FULL_TEMP_FILENAME))
     {
@@ -2366,7 +2368,8 @@ void SciTEQt::cmdAboutScite()
 void SciTEQt::cmdAboutSciteQt()
 {
     New();
-    QString aboutSciteQt = ApplicationData::simpleReadFileContent(":/about_sciteqt.txt");
+    QString aboutSciteQt;
+    bool ok = ApplicationData::simpleReadFileContent(":/about_sciteqt.txt", aboutSciteQt);
     emit setTextToCurrent(getSciteQtInfos()+"\n\n"+aboutSciteQt);
 }
 
@@ -2854,6 +2857,11 @@ bool SciTEQt::Open(const FilePath &file, OpenFlags of)
         QString sFileName = ConvertGuiCharToQString(file.AsNonLocalInternal());
         QString sDecodedFileName = ConvertGuiCharToQString(file.AsInternal());
         QString sContent = m_pApplicationData->readFileContent(sFileName);
+        if( sContent == m_pApplicationData->getErrorContent() )
+        {
+            // error reading file...
+            return false;
+        }
 
         OnAddFileContent(sFileName, sDecodedFileName, sContent, false, false);
 
@@ -3128,17 +3136,20 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
         New();
         FilePath demoFileName(ConvertQStringToGuiString("demo.js"), ConvertQStringToGuiString("demo.js"));
         SetFileName(demoFileName, true);
-        QString demoScript = ApplicationData::simpleReadFileContent(":/demo.js");
+        QString demoScript;
+        bool ok1 = ApplicationData::simpleReadFileContent(":/demo.js", demoScript);
         emit setTextToCurrent(demoScript);
         New();
         FilePath plotdemoFileName(ConvertQStringToGuiString("plotdemo.js"), ConvertQStringToGuiString("plotdemo.js"));
         SetFileName(plotdemoFileName, true);
-        QString plotdemoScript = ApplicationData::simpleReadFileContent(":/plotdemo.js");
+        QString plotdemoScript;
+        bool ok2 = ApplicationData::simpleReadFileContent(":/plotdemo.js", plotdemoScript);
         emit setTextToCurrent(plotdemoScript);
         New();
         FilePath aboutSciteQtFileName(ConvertQStringToGuiString("about_sciteqt.txt"), ConvertQStringToGuiString("about_sciteqt.txt"));
         SetFileName(aboutSciteQtFileName, true);
-        QString aboutSciteQt = ApplicationData::simpleReadFileContent(":/about_sciteqt.txt");
+        QString aboutSciteQt:
+        bool ok3 = ApplicationData::simpleReadFileContent(":/about_sciteqt.txt", aboutSciteQt);
         emit setTextToCurrent(aboutSciteQt);
 #else
         cmdAboutSciteQt();

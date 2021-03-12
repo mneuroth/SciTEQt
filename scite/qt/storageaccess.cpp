@@ -94,21 +94,28 @@ void StorageAccess::openFile()
 jbyteArray QByteArray2jbyteArray(const QByteArray & buf)
 {
     QAndroidJniEnvironment env;
-    jbyteArray array = env->NewByteArray(buf.length());
-    env->SetByteArrayRegion(array, 0, buf.length(), reinterpret_cast<jbyte*>((char *)buf.data()));
+    // Bugfix 12.3.2021: copy terminating 0 to buffer
+    jbyteArray array = env->NewByteArray(buf.size()+1);
+    env->SetByteArrayRegion(array, 0, buf.size()+1, reinterpret_cast<jbyte*>((char *)buf.data()));
     return array;
 }
 
-QByteArray jbyteArray2QByteArray(jbyteArray buf)
+/*
+inline QByteArray jbyteArray2QByteArray(jbyteArray buf)
 {
-    QAndroidJniEnvironment env;
-    int len = env->GetArrayLength(buf);
     QByteArray array;
-    array.resize(len);
-    env->GetByteArrayRegion(buf, 0, len, reinterpret_cast<jbyte*>(array.data()));
+
+    QAndroidJniEnvironment env;
+    jclass jclass_of_bytearray = env->FindClass("[B");
+    if( env->IsInstanceOf(buf,jclass_of_bytearray) )
+    {
+        int len = env->GetArrayLength(buf);     // see code: https://android.googlesource.com/platform/art/+/kitkat-dev/runtime/jni_internal.cc
+        array.resize(len);
+        env->GetByteArrayRegion(buf, 0, len, reinterpret_cast<jbyte*>(array.data()));
+    }
     return array;
 }
-
+*/
 /*
 QJNIObjectPrivate QJNIObjectPrivate::fromString(const QString &string)
 {
@@ -161,17 +168,73 @@ bool StorageAccess::readFile(const QString & fileUri, QByteArray & fileContent)
 
     // see: https://forum.qt.io/topic/42497/solved-android-how-to-get-a-byte-array-from-java/4
 
+#ifndef OLD_STORAGE_ACCESS_HANDLING
+    QAndroidJniObject contentExt = QAndroidJniObject::callStaticObjectMethod("org/scintilla/utils/QStorageAccess",
+                                              "readFileExt",
+                                              "(Ljava/lang/String;)Lorg/scintilla/utils/Tuple;",
+                                              jniFileUri.object<jstring>());
+
+    // improved robustness of access to storage framework, because of exceptions reported via google play --> check data before using it
+    if( contentExt.isValid() )
+    {
+        jboolean ok = contentExt.callMethod<jboolean>("GetSuccessFlag");
+        QAndroidJniObject contentArrayTemp = contentExt.callObjectMethod<jbyteArray>("GetContent");
+        jbyteArray contentArray = contentArrayTemp.object<jbyteArray>();
+
+        if( ok )
+        {
+            QByteArray qContent;
+            QAndroidJniEnvironment env;
+            jclass jclass_of_bytearray = env->FindClass("[B");
+            if( env->IsInstanceOf(contentArray,jclass_of_bytearray) )
+            {
+                int len = env->GetArrayLength(contentArray);     // see code: https://android.googlesource.com/platform/art/+/kitkat-dev/runtime/jni_internal.cc
+                qContent.resize(len);
+                env->GetByteArrayRegion(contentArray, 0, len, reinterpret_cast<jbyte*>(qContent.data()));
+            }
+
+            fileContent = qContent;
+
+            return ok;
+        }
+
+        return false;
+    }
+
+    return false;
+
+#else
     QAndroidJniObject content = QAndroidJniObject::callStaticObjectMethod("org/scintilla/utils/QStorageAccess",
                                               "readFile",
                                               "(Ljava/lang/String;)[B",
                                               jniFileUri.object<jstring>());
 
-    jbyteArray contentArray = content.object<jbyteArray>();
+    if( content.isValid() )
+    {
+        jbyteArray contentArray = content.object<jbyteArray>();
 
-    QByteArray qContent = jbyteArray2QByteArray(contentArray);
-    fileContent = qContent;
-//TODO working: check if release is needed:   env->ReleaseByteArrayElements(contentArray, icon, JNI_ABORT);
-    return qContent.length()>0;
+        //QByteArray qContent = jbyteArray2QByteArray(contentArray);
+
+        // inline the method above
+        QByteArray qContent;
+        QAndroidJniEnvironment env;
+        jclass jclass_of_bytearray = env->FindClass("[B");
+        if( env->IsInstanceOf(contentArray,jclass_of_bytearray) )
+        {
+            int len = env->GetArrayLength(contentArray);     // PROBLEM ! buf==byte[0] ? // Code: https://android.googlesource.com/platform/art/+/kitkat-dev/runtime/jni_internal.cc
+            qContent.resize(len);
+            env->GetByteArrayRegion(contentArray, 0, len, reinterpret_cast<jbyte*>(qContent.data()));
+        }
+
+
+        fileContent = qContent;
+    //TODO working: check if release is needed:       env->ReleaseByteArrayElements(contentArray, icon, JNI_ABORT);
+    // WARNING: this makes problems with files of length 0 !!!! --> use new implementation above
+        return qContent.length()>0;
+    }
+
+    return false;
+#endif
 #else
     Q_UNUSED(fileUri)
     Q_UNUSED(fileContent)

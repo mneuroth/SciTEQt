@@ -137,7 +137,7 @@ MobileFileDialogForm {
     function deleteCurrentFileNow() {
         var fullPath = currentDirectory + "/" + currentFileName
         var ok = applicationData.deleteFile(fullPath)
-        stackView.pop()
+        accepted()
         if( !ok )
         {
             var msg= localiseText(qsTr("ERROR: Can not delete file ")) + fullPath

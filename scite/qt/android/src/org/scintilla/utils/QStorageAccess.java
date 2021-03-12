@@ -101,6 +101,28 @@ public static byte[] readFile(String fileUri) {
     return new byte[0];
 }
 
+// read file from storage framework with success flag in tuple
+public static Tuple readFileExt(String fileUri) {
+    if (QtNative.activity() == null)
+        return new Tuple(false, new byte[0]);
+
+    try {
+        ParcelFileDescriptor pfd = QtNative.activity().getContentResolver().openFileDescriptor(Uri.parse(fileUri), "r");
+        FileInputStream fileInputStream = new FileInputStream(pfd.getFileDescriptor());
+        byte[] content = new byte[fileInputStream.available()];
+        fileInputStream.read(content);
+        // Let the document provider know you're done by closing the stream.
+        fileInputStream.close();
+        pfd.close();
+        return new Tuple(true, content);
+    } catch (FileNotFoundException e) {
+        e.printStackTrace();
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    return new Tuple(false, new byte[0]);
+}
+
 private static boolean alterDocument(Uri uri, byte[] content) {
     try {
         ParcelFileDescriptor pfd = QtNative.activity().getContentResolver().openFileDescriptor(uri, "w");
