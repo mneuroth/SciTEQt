@@ -3148,7 +3148,7 @@ void SciTEQt::setApplicationData(ApplicationData * pApplicationData)
         New();
         FilePath aboutSciteQtFileName(ConvertQStringToGuiString("about_sciteqt.txt"), ConvertQStringToGuiString("about_sciteqt.txt"));
         SetFileName(aboutSciteQtFileName, true);
-        QString aboutSciteQt:
+        QString aboutSciteQt;
         bool ok3 = ApplicationData::simpleReadFileContent(":/about_sciteqt.txt", aboutSciteQt);
         emit setTextToCurrent(aboutSciteQt);
 #else
