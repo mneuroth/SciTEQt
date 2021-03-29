@@ -2,8 +2,8 @@
 <Package>
     <DisplayName>SciTEQt</DisplayName>
     <Description>Install SciTEQt editor application.</Description>
-    <Version>4.4.4-1</Version>
-    <ReleaseDate>2020-08-02</ReleaseDate>
+    <Version>4.4.6-1</Version>
+    <ReleaseDate>2021-02-28</ReleaseDate>
     <Licenses>
         <License name="Scintilla License" file="license.txt" />
     </Licenses>

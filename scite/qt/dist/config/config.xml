@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Installer>
     <Name>SciTEQt</Name>
-    <Version>4.4.4</Version>
+    <Version>4.4.6</Version>
     <Title>Qt port of SciTE Editor</Title>
     <Publisher>Michael Neuroth</Publisher>
     <StartMenuDir>SciteQt</StartMenuDir>
