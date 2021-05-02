@@ -2,7 +2,8 @@
 
 SciteQt is a port of the [SciTE editor](https://www.scintilla.org/SciTE.html) to the [Qt QML/Quick platform](https://www.qt.io/), which is optimized for touch devices.
 
-All target platforms of the Qt framework are supported (Windows, Mac, Linux, Android, IOS and Webassembly). The application runs even in a [browser via Webassembly](https://mneuroth.github.io/SciTEQtWASM/).
+All target platforms of the Qt framework are supported (Windows, Mac, Linux, [Android](https://play.google.com/store/apps/details?id=org.scintilla.sciteqt), IOS and Webassembly). 
+The application runs even in a [browser via Webassembly](https://mneuroth.github.io/SciTEQtWASM/). A Android app is also available in the [Google Play Store](https://play.google.com/store/apps/details?id=org.scintilla.sciteqt).
 The minimum Qt version needed to compile SciteQt is Qt 5.11.3. Technical details can be found on the [SciteQt project page](scite/qt/README.md).
 
 <img src="scite/qt/doc/sciteqt_new_win.png" alt="SciTEQt screenshot" >
