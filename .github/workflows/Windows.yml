@@ -396,6 +396,82 @@ jobs:
         asset_content_type: application/zip
 
   # this is a copy of the content MacOS.yml used only to upload binary for release
+  macos_5_15_2_build:
+
+    runs-on: macos-latest
+    needs: create_release
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: jurplel/install-qt-action@v2
+      with:
+        # Directory to install Qt
+        dir: # optional
+        # Version of Qt to install
+        version: '5.15.2'
+        # Host platform
+        host: 'mac'
+        # Target platform for build
+        target: 'desktop'
+        # Architecture for Windows/Android
+        arch: # optional
+        # Whether or not to install Qt dependencies on Linux
+        install-deps: 'true'
+        # Additional Qt modules to install
+        modules: 'qtscript qtscripttools'
+        # Force a Qt mirror in case the default is not working
+        #mirror: # optional
+        # Whether or not to actually download Qt
+        cached: # optional, default is false
+        # Version of aqtinstall to use in case of issues
+        aqtversion: # optional, default is ==0.8
+        # Version of py7zr to use in case of issues
+        py7zrversion: # optional, default is ==0.6
+        # Any extra arguments to append to the back
+        extra: # optional
+    - name: Install Qt and compile
+      if: contains(github.ref, 'release')
+      run: |
+        pwd 
+        ls -lrt
+        ls -lrt ..
+        ls -lrt ../Qt
+        #ls -lrt ../Qt/Tools
+        #python3 -m aqt tool -O ../Qt mac tools_ifw 3.2.2 mac-x64
+        #ls -lrt ../Qt/Tools
+        which qmake
+        qmake -r sciteqt.pro
+        clang++ --version
+        sw_vers
+        ls -lrt
+        make
+        ls -lrt
+        ls -lrt scite/qt
+
+        #make -j 4
+        ls -lrt
+        ls -lrt scite
+        ls -lrt scite/qt
+        cd scite/qt
+        which macdeployqt
+        macdeployqt sciteqt.app -dmg -verbose=2 -qmldir=qml
+        ls -lrt
+        cp sciteqt.dmg sciteqt_5_15_2.dmg
+        ls -lrt        
+    # this step is added for the release    
+    - name: Upload Release Asset
+      if: contains(github.ref, 'release')
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+        asset_path: scite/qt/sciteqt_5_15_2.dmg
+        asset_name: sciteqt_5_15_2.dmg
+        asset_content_type: application/exe
+        
+  # this is a copy of the content MacOS.yml used only to upload binary for release
   macos_5_14_2_build:
 
     runs-on: macos-latest
