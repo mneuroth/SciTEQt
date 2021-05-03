@@ -66,6 +66,8 @@ void ScintillaQt::UpdateInfos(int winId)
 	SetCtrlID(winId);
 }
 
+#include <wctype.h>
+
 void ScintillaQt::selectCurrentWord()
 {
     auto pos = CurrentPosition();

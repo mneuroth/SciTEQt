@@ -1847,6 +1847,8 @@ void SciTEQt::cmdSelectAll()
     MenuCommand(IDM_SELECTALL);
 }
 
+#include <wctype.h>
+
 void SciTEQt::cmdSelectWord()
 {
     auto pos = wEditor.CurrentPos();
