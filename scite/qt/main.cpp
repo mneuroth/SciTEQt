@@ -132,6 +132,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName("scintilla.org");
     app.setOrganizationDomain("scintilla.org");
     app.setApplicationName("SciTEQt");
+    app.setWindowIcon(QIcon(":/scite_logo.png"));
 
     QSettings aSettings;
     SciTEQt::SetAdmin(aSettings.value(KEY_ADMIN, false).toBool());
