@@ -1087,7 +1087,8 @@ ApplicationWindow {
         property int iconHeight: iconSize //16
 
         onHeightChanged: {
-            if( toolBarButtonContainer.height>2*iconSize+flow.spacing ) {
+            if( toolBarButtonContainer.height>2*(iconSize+12)+flow.spacing ) {
+                // flow has to contain more than two icon rows -> try to make icons smaller to fit into two rows
                 iconSize -= 2
             } else if ( toolBarButtonContainer.height<defaultIconSize ) {
                 if( iconSize<defaultIconSize ) {
