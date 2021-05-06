@@ -638,8 +638,12 @@ FilePath GetSciTEPath(const QByteArray & home)
         buf[count] = 0;
 #elif defined(Q_OS_ANDROID)
         strcpy(buf,FILES_DIR);
+#elif defined(Q_OS_UNIX)
+        strcpy(buf,QDir::toNativeSeparators("/usr/share/sciteqt");
 #else
-        strcpy(buf,QDir::toNativeSeparators(QCoreApplication::applicationDirPath()).toStdString().c_str());
+        //QString dataDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);    // -> /usr/share/ + sciteqt/...
+        //strcpy(buf,QDir::toNativeSeparators(dataDir).toStdString().c_str());
+        strcpy(buf,QDir::toNativeSeparators(QCoreApplication::dapplicationDirPath()).toStdString().c_str());
 #endif
     }
     return FilePath(buf);

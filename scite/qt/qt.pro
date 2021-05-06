@@ -173,6 +173,41 @@ win32 {
     QMAKE_POST_LINK +=$$quote($$escape_expand(\n\t)$${QMAKE_COPY} \"$${PWD}\\..\\doc\\*.*\" \"$${PWD}/dist/packages/org.scintilla.sciteqt/data\")
 }
 
+unix {
+    target.path = /usr/local/bin
+    INSTALLS += target
+
+    properties.path = /usr/share/sciteqt
+    properties.files += ./SciTEUser.properties
+    properties.files += ./SciTEGlobal.properties
+    properties.files += ../src/SciTE.properties
+    properties.files += ../src/abbrev.properties
+
+    localisations.path = /usr/share/sciteqt/localisations
+    localisations.files += translations/locale.de.properties
+    localisations.files += translations/locale.nl.properties
+    localisations.files += translations/locale.fr.properties
+    localisations.files += translations/locale.es.properties
+    localisations.files += translations/locale.pt_PT.properties
+    localisations.files += translations/locale.it.properties
+    localisations.files += translations/locale.ru.properties
+    localisations.files += translations/locale.ja.properties
+    localisations.files += translations/locale.ko_KR.properties
+    localisations.files += translations/locale.zh_t.properties
+    localisations.files += translations/locale.ar.properties
+    localisations.files += translations/locale.pl.properties
+    localisations.files += translations/locale.da.properties
+    localisations.files += translations/locale.tr.properties
+    localisations.files += translations/locale.id.properties
+    localisations.files += translations/locale.el.properties
+    localisations.files += translations/locale.fi.properties
+    localisations.files += translations/locale.nb.properties
+    localisations.files += translations/locale.hu.properties
+
+    INSTALLS += localisations
+    INSTALLS += properties
+}
+
 macx {
     properties.path = Contents/MacOS
     properties.files += ./SciTEUser.properties
