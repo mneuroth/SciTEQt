@@ -48,8 +48,8 @@ jobs:
         ls -lrt ..
         ls -lrt ../Qt
         ls -lrt ../Qt/Tools
-        python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
-        ls -lrt ../Qt/Tools
+        #python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
+        #ls -lrt ../Qt/Tools
         qmake -r sciteqt.pro
         ls -lrt
         make
@@ -90,7 +90,7 @@ jobs:
         extra: # optional
     - name: Install Qt and compile
       run: |
-        python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
+        #python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
         which qmake
         qmake -r sciteqt.pro
         ls -lrt
@@ -132,7 +132,7 @@ jobs:
         extra: # optional
     - name: Install Qt and compile
       run: |
-        python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
+        #python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
         which qmake
         qmake -r sciteqt.pro
         ls -lrt
@@ -174,7 +174,7 @@ jobs:
         extra: # optional
     - name: Install Qt and compile
       run: |
-        python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
+        #python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
         which qmake
         qmake -r sciteqt.pro
         ls -lrt
@@ -216,7 +216,7 @@ jobs:
         extra: # optional
     - name: Install Qt and compile
       run: |
-        python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
+        #python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
         which qmake
         qmake -r sciteqt.pro
         ls -lrt
