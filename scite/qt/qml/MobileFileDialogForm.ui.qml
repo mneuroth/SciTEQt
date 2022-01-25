@@ -7,8 +7,8 @@
  ***************************************************************************/
 import QtQuick 2.0
 import QtQuick.Controls 2.1
+import QtQuick.Layouts 1.3
 import Qt.labs.folderlistmodel 2.1
-import QtQuick.Layouts 1.0
 
 Page {
     id: root
@@ -20,25 +20,30 @@ Page {
 
     property alias btnCancel: btnCancel
     property alias btnOpen: btnOpen
-    property alias txtMFDInput: txtMFDInput
-    property alias lblMFDInput: lblMFDInput
-    property alias listView: listView
-    property alias lblDirectoryName: lblDirectoryName
     property alias btnStorage: btnStorage
     property alias btnSDCard: btnSDCard
     property alias btnHome: btnHome
-    property alias btnUp: btnUp    
+    property alias btnUp: btnUp
+    property alias rbnName: rbnName
+    property alias rbnSize: rbnSize
+    property alias rbnDate: rbnDate
+    property alias txtMFDInput: txtMFDInput
+    property alias lblMFDInput: lblMFDInput
+    property alias lblDirectoryName: lblDirectoryName
+    property alias listView: listView
 
     property string currentDirectory: "."
     property string currentFileName: ""
     property bool bShowFiles: true
     property bool bIsAdminModus: false
+    property int iSortField: FolderListModel.Unsorted
+    property bool isReverseOrder: false
 
     title: localiseText(qsTr("Select file"))
 
     RowLayout {
         id: columnLayout
-        width: 440
+        //width: 440
         height: 40
         anchors.right: parent.right
         anchors.rightMargin: 5
@@ -118,6 +123,7 @@ Page {
         id: listView
         orientation: ListView.Vertical
         clip: true
+        keyNavigationEnabled: true
         anchors.bottom: chbExtendedInfos.top
         anchors.bottomMargin: 10
         anchors.left: parent.left
@@ -134,6 +140,8 @@ Page {
             showFiles: bShowFiles
             showHidden: bIsAdminModus
             nameFilters: ["*"]
+            sortReversed: isReverseOrder
+            sortField: iSortField
         }
 
         highlight: Rectangle {
@@ -147,7 +155,7 @@ Page {
 
     CheckBox {
         id: chbExtendedInfos
-        text: qsTr("Show date and size")
+        text: localiseText(qsTr("Show date and size"))
         checked: isExtendedInfos
         onClicked: isExtendedInfos = chbExtendedInfos.checked
         anchors.left: parent.left
@@ -156,9 +164,64 @@ Page {
         anchors.bottomMargin: 5
     }
 
+    ButtonGroup {
+        buttons: rbnOrder.children
+    }
+
+//    Frame {
+
+    RowLayout {
+        id: rbnOrder
+
+        anchors.left: chbExtendedInfos.right
+        anchors.leftMargin: 15
+        anchors.bottom: lblMFDInput.top
+        anchors.bottomMargin: 5
+
+        Label {
+                text: localiseText(qsTr("Sort after:"))
+            }
+        RadioButton {
+            id: rbnUnsorted
+            checked: iSortField == FolderListModel.Unsorted
+            onClicked: iSortField = FolderListModel.Unsorted
+            text: localiseText(qsTr("Unsorted"))
+        }
+        RadioButton {
+            id: rbnName
+            checked: iSortField == FolderListModel.Name
+            onClicked: iSortField = FolderListModel.Name
+            text: localiseText(qsTr("Name"))
+        }
+        RadioButton {
+            id: rbnSize
+            checked: iSortField == FolderListModel.Size
+            onClicked: iSortField = FolderListModel.Size
+            text: localiseText(qsTr("Size"))
+        }
+        RadioButton {
+            id: rbnDate
+            checked: iSortField == FolderListModel.Time
+            onClicked: iSortField = FolderListModel.Time
+            text: localiseText(qsTr("Date"))
+        }
+    }
+//    }
+
+    CheckBox {
+        id: chbRevertOrder
+        text: localiseText(qsTr("Revert order"))
+        checked: isReverseOrder
+        onClicked: isReverseOrder = chbRevertOrder.checked
+        anchors.left: rbnOrder.right
+        anchors.leftMargin: 15
+        anchors.bottom: lblMFDInput.top
+        anchors.bottomMargin: 5
+    }
+
+
     Label {
         id: lblMFDInput
-        //width: 221
         height: 40
         text: localiseText(qsTr("Any input"))
         anchors.left: parent.left
