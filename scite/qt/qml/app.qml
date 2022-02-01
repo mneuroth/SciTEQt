@@ -1085,7 +1085,7 @@ ApplicationWindow {
 
         property int iconWidth: iconSize //16  /* org: 24 */
         property int iconHeight: iconSize //16
-
+/*
         onHeightChanged: {
             if( toolBarButtonContainer.height>2*(iconSize+12)+flow.spacing ) {
                 // flow has to contain more than two icon rows -> try to make icons smaller to fit into two rows
@@ -1096,7 +1096,7 @@ ApplicationWindow {
                 }
             }
         }
-
+*/
         Flow {
             id: flow
             anchors.fill: parent
