@@ -123,7 +123,7 @@ Page {
         id: listView
         orientation: ListView.Vertical
         clip: true
-        keyNavigationEnabled: true
+        //keyNavigationEnabled: true
         anchors.bottom: chbExtendedInfos.top
         anchors.bottomMargin: 10
         anchors.left: parent.left
