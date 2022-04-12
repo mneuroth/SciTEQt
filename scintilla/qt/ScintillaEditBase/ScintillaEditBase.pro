@@ -190,6 +190,7 @@ small {
     QMAKE_PKGCONFIG_DESTDIR = pkgconfig
     QMAKE_PKGCONFIG_PREFIX = $${PREFIX}
     QMAKE_PKGCONFIG_VERSION = 1.0
+    QMAKE_PKGCONFIG_CFLAGS = -DQT_QML
 
     INSTALLS += header_files target
 }
