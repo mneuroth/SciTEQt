@@ -139,6 +139,7 @@ HEADERS  += \
     ../../include/SciLexer.h \
     ../../include/Platform.h \
     ../../include/ILexer.h \
+    ../../include/Sci_Position.h \
     ../../lexlib/WordList.h \
     ../../lexlib/StyleContext.h \
     ../../lexlib/SparseState.h \
