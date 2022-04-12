@@ -1,0 +1,12 @@
+.qmake.stash
+Makefile
+scintilla/bin-x86/
+scintilla/lib/
+scintilla/qt/ScintillaEditBase/*.o
+scintilla/qt/ScintillaEditBase/moc_*
+scite/qt/*.o
+scite/qt/config.h
+scite/qt/moc_*
+scite/qt/qrc_sciteqt.cpp
+scite/qt/sciteqt
+sciteqt.pro.user
