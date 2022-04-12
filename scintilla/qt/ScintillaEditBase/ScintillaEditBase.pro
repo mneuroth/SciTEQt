@@ -1,3 +1,5 @@
+include(../../../config.pri)
+
 #-------------------------------------------------
 #
 # Project created by QtCreator 2011-05-05T12:41:23
@@ -7,10 +9,21 @@
 QT       += qml quick core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = ScintillaEditBase
+!small {
+    TARGET = ScintillaEditBase
+}
+
+small {
+    TARGET = QuickScintillaEditBase
+}
+
 TEMPLATE = lib
 #CONFIG += lib_bundle
-CONFIG += staticlib
+
+!small {
+    CONFIG += staticlib
+}
+
 CONFIG += c++1z
 
 VERSION = 4.4.6
@@ -149,7 +162,18 @@ CONFIG(release, debug|release) {
     DEFINES += NDEBUG=1
 }
 
-DESTDIR = ../../bin-$${ARCH_PATH}
+!small {
+    DESTDIR = ../../bin-$${ARCH_PATH}
+}
+
+small {
+    DESTDIR = ../../lib
+    header_files.path = $${PREFIX}/include/QuickScintillaEditBase
+    header_files.files = $$HEADERS
+    target.path = $${PREFIX}/lib
+
+    INSTALLS += header_files target
+}
 
 macx {
 	QMAKE_LFLAGS_SONAME = -Wl,-install_name,@executable_path/../Frameworks/
