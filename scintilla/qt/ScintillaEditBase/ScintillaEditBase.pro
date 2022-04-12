@@ -167,10 +167,22 @@ CONFIG(release, debug|release) {
 }
 
 small {
+    CONFIG += compile_libtool create_libtool
+    CONFIG += create_pc create_prl no_install_prl
+
     DESTDIR = ../../lib
     header_files.path = $${PREFIX}/include/QuickScintillaEditBase
     header_files.files = $$HEADERS
     target.path = $${PREFIX}/lib
+
+    QMAKE_PKGCONFIG_FILE = $${TARGET}
+    QMAKE_PKGCONFIG_NAME = $${TARGET}
+    QMAKE_PKGCONFIG_DESCRIPTION = A QML version of QScintilla
+    QMAKE_PKGCONFIG_LIBDIR = $$target.path
+    QMAKE_PKGCONFIG_INCDIR = $$header_files.path
+    QMAKE_PKGCONFIG_DESTDIR = pkgconfig
+    QMAKE_PKGCONFIG_PREFIX = $${PREFIX}
+    QMAKE_PKGCONFIG_VERSION = 1.0
 
     INSTALLS += header_files target
 }
