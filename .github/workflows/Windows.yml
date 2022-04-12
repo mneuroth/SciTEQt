@@ -85,7 +85,7 @@ jobs:
         #py7zrversion: '==0.11.0'
         #extra: '--external 7z'
         # REMARK: see: https://download.qt.io/online/qtsdkrepository/ for new versions of ifw and for (version) real name
-        tools: 'tools_ifw,4.2.0-0-202111080926,qt.tools.ifw.42'
+        tools: 'tools_ifw,4.3.0-0-202202240618,qt.tools.ifw.43'
     - name: Install Qt and compile
       run: |
         d:
@@ -237,7 +237,7 @@ jobs:
         #aqtversion: '==0.10.0'
         #py7zrversion: '==0.11.0'
         #extra: '--external 7z'
-        tools: 'tools_ifw,4.2.0-0-202111080926,qt.tools.ifw.42'
+        tools: 'tools_ifw,4.3.0-0-202202240618,qt.tools.ifw.43'
     - name: Install 7Zip PowerShell Module
       shell: powershell
       run: Install-Module 7Zip4PowerShell -Force -Verbose
@@ -335,7 +335,8 @@ jobs:
         py7zrversion: # optional, default is ==0.6
         # Any extra arguments to append to the back
         extra: # optional
-        tools: 'tools_ifw,4.2.0-0-202111080926,qt.tools.ifw.42'
+        # see: https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/tools_ifw/qt.tools.ifw.43/ for latest version
+        tools: 'tools_ifw,4.3.0-0-202202240618,qt.tools.ifw.43'
     - name: Install 7Zip PowerShell Module
       shell: powershell
       run: Install-Module 7Zip4PowerShell -Force -Verbose
