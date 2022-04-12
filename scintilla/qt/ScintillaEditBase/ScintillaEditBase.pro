@@ -135,9 +135,15 @@ HEADERS  += \
     ../../src/CaseConvert.h \
     ../../src/CallTip.h \
     ../../src/AutoComplete.h \
+    ../../src/Position.h \
+    ../../src/UniqueString.h \
+    ../../src/EditModel.h \
+    ../../src/MarginView.h \
+    ../../src/EditView.h \
     ../../include/Scintilla.h \
     ../../include/SciLexer.h \
     ../../include/Platform.h \
+    ../../include/ILoader.h \
     ../../include/ILexer.h \
     ../../include/Sci_Position.h \
     ../../lexlib/WordList.h \
