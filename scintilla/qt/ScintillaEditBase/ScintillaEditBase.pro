@@ -1,3 +1,5 @@
+include(../../../config.pri)
+
 #-------------------------------------------------
 #
 # Project created by QtCreator 2011-05-05T12:41:23
@@ -7,10 +9,21 @@
 QT       += qml quick core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = ScintillaEditBase
+!small {
+    TARGET = ScintillaEditBase
+}
+
+small {
+    TARGET = QuickScintillaEditBase
+}
+
 TEMPLATE = lib
 #CONFIG += lib_bundle
-CONFIG += staticlib
+
+!small {
+    CONFIG += staticlib
+}
+
 CONFIG += c++1z
 
 VERSION = 4.4.6
@@ -122,10 +135,17 @@ HEADERS  += \
     ../../src/CaseConvert.h \
     ../../src/CallTip.h \
     ../../src/AutoComplete.h \
+    ../../src/Position.h \
+    ../../src/UniqueString.h \
+    ../../src/EditModel.h \
+    ../../src/MarginView.h \
+    ../../src/EditView.h \
     ../../include/Scintilla.h \
     ../../include/SciLexer.h \
     ../../include/Platform.h \
+    ../../include/ILoader.h \
     ../../include/ILexer.h \
+    ../../include/Sci_Position.h \
     ../../lexlib/WordList.h \
     ../../lexlib/StyleContext.h \
     ../../lexlib/SparseState.h \
@@ -149,7 +169,31 @@ CONFIG(release, debug|release) {
     DEFINES += NDEBUG=1
 }
 
-DESTDIR = ../../bin-$${ARCH_PATH}
+!small {
+    DESTDIR = ../../bin-$${ARCH_PATH}
+}
+
+small {
+    CONFIG += compile_libtool create_libtool
+    CONFIG += create_pc create_prl no_install_prl
+
+    DESTDIR = ../../lib
+    header_files.path = $${PREFIX}/include/QuickScintillaEditBase
+    header_files.files = $$HEADERS
+    target.path = $${PREFIX}/lib
+
+    QMAKE_PKGCONFIG_FILE = $${TARGET}
+    QMAKE_PKGCONFIG_NAME = $${TARGET}
+    QMAKE_PKGCONFIG_DESCRIPTION = A QML version of QScintilla
+    QMAKE_PKGCONFIG_LIBDIR = $$target.path
+    QMAKE_PKGCONFIG_INCDIR = $$header_files.path
+    QMAKE_PKGCONFIG_DESTDIR = pkgconfig
+    QMAKE_PKGCONFIG_PREFIX = $${PREFIX}
+    QMAKE_PKGCONFIG_VERSION = 1.0
+    QMAKE_PKGCONFIG_CFLAGS = -DQT_QML
+
+    INSTALLS += header_files target
+}
 
 macx {
 	QMAKE_LFLAGS_SONAME = -Wl,-install_name,@executable_path/../Frameworks/

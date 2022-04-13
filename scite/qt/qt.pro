@@ -1,3 +1,5 @@
+include(../../config.pri)
+
 QT += qml quick quickcontrols2 widgets printsupport svg
 
 android {
@@ -9,6 +11,8 @@ TARGET = sciteqt
 DEFINES += QT_QML
 
 CONFIG += c++1z
+
+QMAKE_SUBSTITUTES += config.h.in
 
 wasm {
     QMAKE_CXXFLAGS += "-s ASYNCIFY=1 -s ASSERTIONS=1"
@@ -174,16 +178,16 @@ win32 {
 }
 
 unix {
-    target.path = /usr/local/bin
+    target.path = $${PREFIX}/bin
     INSTALLS += target
 
-    properties.path = /usr/share/sciteqt
+    properties.path = $${PREFIX}/share/sciteqt
     properties.files += ./SciTEUser.properties
     properties.files += ./SciTEGlobal.properties
     properties.files += ../src/SciTE.properties
     properties.files += ../src/abbrev.properties
 
-    localisations.path = /usr/share/sciteqt/localisations
+    localisations.path = $${PREFIX}/share/sciteqt/localisations
     localisations.files += translations/locale.de.properties
     localisations.files += translations/locale.nl.properties
     localisations.files += translations/locale.fr.properties
@@ -537,7 +541,13 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 ANDROID_ABIS = armeabi-v7a arm64-v8a x86 x86_64
 #ANDROID_ABIS = arm64-v8a
 
-LIBS += -L$$OUT_PWD/../../scintilla/bin-$${ARCH_PATH}/ -lScintillaEditBase
+!small {
+    LIBS += -L$$OUT_PWD/../../scintilla/bin-$${ARCH_PATH}/ -lScintillaEditBase
+}
+
+small {
+    LIBS += -L$$OUT_PWD/../../scintilla/lib -lQuickScintillaEditBase
+}
 
 android {
     LIBS += -L$$OUT_PWD/../../CppLispInterpreter/bin-$${ARCH_PATH}/ -lFuelInterpreter

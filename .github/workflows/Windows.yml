@@ -85,7 +85,7 @@ jobs:
         #py7zrversion: '==0.11.0'
         #extra: '--external 7z'
         # REMARK: see: https://download.qt.io/online/qtsdkrepository/ for new versions of ifw and for (version) real name
-        tools: 'tools_ifw,4.2.0-0-202111080926,qt.tools.ifw.42'
+        tools: 'tools_ifw,4.3.0-0-202202240618,qt.tools.ifw.43'
     - name: Install Qt and compile
       run: |
         d:
@@ -117,7 +117,7 @@ jobs:
         cd ..\..\..
         dir
         #binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw_5_14_2_broken.exe
-        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw_5_14_2_broken.exe
+        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.3\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw_5_14_2_broken.exe
         dir 
     - name: Upload Release Asset
       if: contains(github.ref, 'release')
@@ -237,7 +237,7 @@ jobs:
         #aqtversion: '==0.10.0'
         #py7zrversion: '==0.11.0'
         #extra: '--external 7z'
-        tools: 'tools_ifw,4.2.0-0-202111080926,qt.tools.ifw.42'
+        tools: 'tools_ifw,4.3.0-0-202202240618,qt.tools.ifw.43'
     - name: Install 7Zip PowerShell Module
       shell: powershell
       run: Install-Module 7Zip4PowerShell -Force -Verbose
@@ -273,7 +273,7 @@ jobs:
         cd ..\..\..
         dir
         #binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_14_2.exe
-        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_14_2.exe
+        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.3\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_14_2.exe
         dir 
         powershell Compress-7Zip "SciTEQtInstallerMsc_5_14_2.exe" -ArchiveFileName "SciTEQtInstallerMsc_5_14_2.zip" -Format Zip
         dir 
@@ -335,7 +335,8 @@ jobs:
         py7zrversion: # optional, default is ==0.6
         # Any extra arguments to append to the back
         extra: # optional
-        tools: 'tools_ifw,4.2.0-0-202111080926,qt.tools.ifw.42'
+        # see: https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/tools_ifw/qt.tools.ifw.43/ for latest version
+        tools: 'tools_ifw,4.3.0-0-202202240618,qt.tools.ifw.43'
     - name: Install 7Zip PowerShell Module
       shell: powershell
       run: Install-Module 7Zip4PowerShell -Force -Verbose
@@ -367,7 +368,7 @@ jobs:
         cd ..\..\..
         dir
         #binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_15_2.exe
-        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_15_2.exe
+        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.3\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_15_2.exe
         dir
         powershell Compress-7Zip "SciTEQtInstallerMsc_5_15_2.exe" -ArchiveFileName "SciTEQtInstallerMsc_5_15_2.zip" -Format Zip
         #7z a -t7z SciTEQtInstallerMsc_5_15_2.7z SciTEQtInstallerMsc_5_15_2.exe
