@@ -3,9 +3,9 @@ include(config.pri)
 TEMPLATE 	= subdirs
 SUBDIRS		= scintilla/qt/ScintillaEditBase
 
-#!small {
+!small {
     SUBDIRS         += scite/qt
-#}
+}
 
 android {
     SUBDIRS	+= CppLispInterpreter/CppLispInterpreter.pro
