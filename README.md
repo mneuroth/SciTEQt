@@ -12,6 +12,8 @@ Some more screenshots for different platforms are available here: [Screenshot ga
 
 Binary releases are available via the [releases](https://github.com/mneuroth/SciTEQt/releases) of the github page of this project.
 
+See [QuickScintilla Project Page](https://github.com/mneuroth/QuickScintilla) for the Qt/QML implementation of the Scintilla Editor Control.
+
 Build status: 
 
 [![Linux CI](https://github.com/mneuroth/SciTEQt/workflows/Linux%20CI/badge.svg)](https://github.com/mneuroth/SciTEQt/actions)
