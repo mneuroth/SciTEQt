@@ -210,7 +210,11 @@ protected:
 	void focusInEvent(QFocusEvent *event) override;
 	void focusOutEvent(QFocusEvent *event) override;
 #ifdef PLAT_QT_QML
-	void geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry) override;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    void geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry) override;
+#else
+    void geometryChange(const QRectF &newGeometry, const QRectF &oldGeometry) override;
+#endif
 	void hoverMoveEvent(QHoverEvent *event) override;
 #else
 	void resizeEvent(QResizeEvent *event) override;

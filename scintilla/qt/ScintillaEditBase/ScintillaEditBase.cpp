@@ -282,7 +282,11 @@ void ScintillaEditBase::paintEvent(QPaintEvent *event)
 
 void ScintillaEditBase::wheelEvent(QWheelEvent *event)
 {
-	if (event->orientation() == Qt::Horizontal) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    if (event->orientation() == Qt::Horizontal) {
+#else
+    if (event->angleDelta().x() != 0) {
+#endif
 #ifndef PLAT_QT_QML
 		if (horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
 			event->ignore();
@@ -295,7 +299,11 @@ void ScintillaEditBase::wheelEvent(QWheelEvent *event)
 		if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
 			// Zoom! We play with the font sizes in the styles.
 			// Number of steps/line is ignored, we just care if sizing up or down
-			if (event->delta() > 0) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            if (event->delta() > 0) {
+#else
+            if (event->angleDelta().y() > 0) {
+#endif
 				sqt->KeyCommand(SCI_ZOOMIN);
 			} else {
 				sqt->KeyCommand(SCI_ZOOMOUT);
@@ -311,12 +319,20 @@ void ScintillaEditBase::wheelEvent(QWheelEvent *event)
 				// Scroll
 				int linesToScroll = 3;
 				//QQuickPaintedItem::wheelEvent(event);
-				if (event->delta() > 0) {
-					sqt->ScrollTo(sqt->topLine-linesToScroll);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                if (event->delta() > 0) {
+#else
+                if (event->angleDelta().y() > 0) {
+#endif
+                    sqt->ScrollTo(sqt->topLine-linesToScroll);
 				} else {
 					sqt->ScrollTo(sqt->topLine+linesToScroll);
 				}
 				QQuickPaintedItem::wheelEvent(event);
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                update();
+#endif
 #else
 				QAbstractScrollArea::wheelEvent(event);
 			}
@@ -349,7 +365,11 @@ void ScintillaEditBase::focusOutEvent(QFocusEvent *event)
 
 #ifdef PLAT_QT_QML
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 void ScintillaEditBase::geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry)
+#else
+void ScintillaEditBase::geometryChange(const QRectF &newGeometry, const QRectF &oldGeometry)
+#endif
 {
 	// trigger resize handling only if the size of the control has changed
 	// no update is needed for a position change
@@ -358,7 +378,11 @@ void ScintillaEditBase::geometryChanged(const QRectF &newGeometry, const QRectF 
 		sqt->ChangeSize();
 		emit resized();
 
-		QQuickPaintedItem::geometryChanged(newGeometry, oldGeometry);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        QQuickPaintedItem::geometryChanged(newGeometry, oldGeometry);
+#else
+        QQuickPaintedItem::geometryChange(newGeometry, oldGeometry);
+#endif
 	}
 }
 
@@ -484,7 +508,7 @@ void ScintillaEditBase::mousePressEvent(QMouseEvent *event)
 
     emit buttonPressed(event);
 
-	if (event->button() == Qt::MidButton &&
+    if (event->button() == Qt::MiddleButton &&
 	    QApplication::clipboard()->supportsSelection()) {
 		SelectionPosition selPos = sqt->SPositionFromLocation(
 					pos, false, false, sqt->UserVirtualSpace());

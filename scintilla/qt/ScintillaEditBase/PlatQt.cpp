@@ -39,7 +39,9 @@
 #include <QListWidget>
 #include <QVarLengthArray>
 #include <QScrollBar>
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
 #include <QDesktopWidget>
+#endif
 #include <QTextLayout>
 #include <QTextLine>
 #include <QLibrary>
@@ -587,7 +589,11 @@ XYPOSITION SurfaceImpl::WidthText(Font &font, std::string_view text)
 	QFontMetricsF metrics(*FontPointer(font), device);
 	SetCodec(font);
 	QString su = UnicodeFromText(codec, text);
-	return metrics.width(su);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    return metrics.width(su);
+#else
+    return metrics.horizontalAdvance(su);
+#endif
 }
 
 XYPOSITION SurfaceImpl::Ascent(Font &font)
@@ -847,9 +853,14 @@ PRectangle Window::GetMonitorRect(Point pt)
 	QPoint posGlobal = window(wid)->mapToGlobal(QPoint(pt.x, pt.y));
 #endif
 #ifdef PLAT_QT_QML
-	QDesktopWidget *desktop = QApplication::desktop();
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+    QDesktopWidget *desktop = QApplication::desktop();
 	QRect rectScreen = desktop->availableGeometry(QPoint(posGlobal.x(),posGlobal.y()));
 	//QRect rectScreen = QGuiApplication::screenAt(QPoint(posGlobal.x(),posGlobal.y()))->geometry();    // available since Qt 5.10
+#else
+    const QScreen *screen = QGuiApplication::screenAt(QPoint(posGlobal.x(),posGlobal.y()));
+    QRect rectScreen = screen->availableGeometry();
+#endif
 #else
 	QDesktopWidget *desktop = QApplication::desktop();
 	QRect rectScreen = desktop->availableGeometry(posGlobal);
@@ -871,7 +882,9 @@ public:
 protected:
 	void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) override;
 	void mouseDoubleClickEvent(QMouseEvent *event) override;
-	QStyleOptionViewItem viewOptions() const override;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QStyleOptionViewItem viewOptions() const override;
+#endif
 
 private:
 	IListBoxDelegate *delegate;
@@ -1192,12 +1205,15 @@ void ListWidget::mouseDoubleClickEvent(QMouseEvent * /* event */)
 	}
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 QStyleOptionViewItem ListWidget::viewOptions() const
 {
 	QStyleOptionViewItem result = QListWidget::viewOptions();
 	result.state |= QStyle::State_Active;
 	return result;
 }
+#endif
+
 //----------------------------------------------------------------------
 Menu::Menu() noexcept : mid(nullptr) {}
 void Menu::CreatePopUp()
