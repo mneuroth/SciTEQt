@@ -4,6 +4,7 @@ SciteQt is a port of the [SciTE editor](https://www.scintilla.org/SciTE.html) to
 
 All target platforms of the Qt framework are supported (Windows, Mac, Linux, [Android](https://play.google.com/store/apps/details?id=org.scintilla.sciteqt), IOS and Webassembly). 
 The application runs even in a [browser via Webassembly](https://mneuroth.github.io/SciTEQtWASM/). A Android app is also available in the [Google Play Store](https://play.google.com/store/apps/details?id=org.scintilla.sciteqt).
+
 **This is the [branch for Qt 5](https://github.com/mneuroth/SciTEQt/tree/qt5_branch)**. The minimum Qt version needed to compile SciteQt is Qt 5.11.3. Technical details can be found on the [SciteQt project page](scite/qt/README.md).
 
 For the Qt 6 implementation switch to the [master branch](https://github.com/mneuroth/SciTEQt/tree/master).
