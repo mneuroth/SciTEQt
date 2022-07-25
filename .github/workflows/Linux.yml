@@ -2,9 +2,13 @@ name: Linux CI
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
+      - qt5_branch
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
+      - qt5_branch
 
 jobs:
     
