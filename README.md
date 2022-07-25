@@ -9,9 +9,6 @@ The application runs even in a [browser via Webassembly](https://mneuroth.github
 
 For the Qt 5 implementation switch to the [Qt 5 branch](https://github.com/mneuroth/SciTEQt/tree/qt5_branch).
 
-
-The minimum Qt version needed to compile SciteQt is Qt 5.11.3. Technical details can be found on the [SciteQt project page](scite/qt/README.md).
-
 <img src="scite/qt/doc/sciteqt_new_win.png" alt="SciTEQt screenshot" >
 
 Some more screenshots for different platforms are available here: [Screenshot gallery](scite/qt/doc/README.md), [Windows](scite/qt/doc/sciteqt_new_menu_win.png), [Linux](scite/qt/doc/sciteqt_ubuntu.png), [MacOS](scite/qt/doc/sciteqt_macos.png) and [Android](scite/qt/doc/sciteqt_android.png)
