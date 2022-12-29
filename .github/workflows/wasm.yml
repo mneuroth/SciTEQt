@@ -256,7 +256,7 @@ jobs:
         # Version of Qt to install
         version: '6.2.4'
         # Host platform
-        host: # optional
+        host: 'linux' # optional
         # Target platform for build
         target: 'desktop'
         # Architecture for Windows/Android
@@ -264,13 +264,13 @@ jobs:
         # Whether or not to install Qt dependencies on Linux
         install-deps: 'true'
         # Additional Qt modules to install
-        modules: 'qtscript' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
+        modules: # 'qtscript' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
         # Force a Qt mirror in case the default is not working
         #mirror: # optional
         # Whether or not to actually download Qt
         cached: # optional, default is false
         # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
+        aqtversion: '==3.1.0' # optional, default is ==0.8
         # Version of py7zr to use in case of issues
         py7zrversion: # optional, default is ==0.6
         # Any extra arguments to append to the back
