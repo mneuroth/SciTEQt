@@ -287,14 +287,13 @@ jobs:
         . $EMSDK/emsdk_env.sh
         em++ --version
         which em++
-
         pwd
         ls -lrt
         ls -lrt ..
         cd ../Qt
         aqt install-qt linux desktop 6.2.4 gcc_64
         #aqt list-qt linux desktop --arch 6.2.4
-        cd /home/runner/work/sciteqt/sciteqt
+        cd /home/runner/work/SciTEQt/SciTEQt
         pwd
         ls -lrt
         which qmake
