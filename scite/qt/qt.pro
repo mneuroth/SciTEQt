@@ -249,7 +249,7 @@ macx {
 
     ICON = SciteQt_512x512.icns
     QMAKE_INFO_PLIST = dist/Info.plist
-    QT += macextras
+    #QT += macextras
 }
 
 ARCH_PATH = x86

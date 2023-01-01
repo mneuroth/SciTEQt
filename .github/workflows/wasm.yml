@@ -42,7 +42,6 @@ jobs:
         # Any extra arguments to append to the back
         extra: # optional
     - name: Install Qt and compile
-      if: contains(github.ref, 'release')
       run: |
         em++ --version
         which em++
