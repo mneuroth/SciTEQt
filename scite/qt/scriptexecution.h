@@ -17,7 +17,9 @@
 
 #include <QObject>
 #include <QString>
+#if !defined(Q_OS_WASM)
 #include <QProcess>
+#endif
 
 #define URL_VISISCRIPTEXTENSIONS "https://play.google.com/store/apps/details?id=de.mneuroth.visiscriptextensions"
 
@@ -35,16 +37,20 @@ public:
     void TerminateExecution();
     void KillExecution();
 
+#if !defined(Q_OS_WASM)
     QProcess & GetCurrentProcess();
+#endif
 
     bool GetMeasureExecutionFlag() const;
     void SetMeasureExecutionFlag(bool value);
     qint64 GetLastExecutionTimeInMs() const;
 
 private slots:
+#if !defined(Q_OS_WASM)
     void sltErrorScript(QProcess::ProcessError error);
     void sltFinishedScript(int exitValue, QProcess::ExitStatus status);
     void sltStateChanged(QProcess::ProcessState state);
+#endif
     void sltReadyReadStandardErrorScript();
     void sltReadyReadStandardOutputScript();
 

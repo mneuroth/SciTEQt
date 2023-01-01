@@ -104,10 +104,12 @@ ScriptExecution::~ScriptExecution()
     DisconnectScriptProcessSignals();
 }
 
+#if !defined(Q_OS_WASM)
 QProcess & ScriptExecution::GetCurrentProcess()
 {
     return m_aScriptProcess;
 }
+#endif
 
 bool ScriptExecution::GetMeasureExecutionFlag() const
 {
@@ -126,21 +128,25 @@ qint64 ScriptExecution::GetLastExecutionTimeInMs() const
 
 void ScriptExecution::ConnectScriptProcessSignals()
 {
+#if !defined(Q_OS_WASM)
     connect(&m_aScriptProcess,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(sltFinishedScript(int,QProcess::ExitStatus)));
     connect(&m_aScriptProcess,SIGNAL(errorOccurred(QProcess::ProcessError)),this,SLOT(sltErrorScript(QProcess::ProcessError)));
+    connect(&m_aScriptProcess,SIGNAL(stateChanged(QProcess::ProcessState)),this,SLOT(sltStateChanged(QProcess::ProcessState)));
+#endif
     connect(&m_aScriptProcess,SIGNAL(readyReadStandardError()),this,SLOT(sltReadyReadStandardErrorScript()));
     connect(&m_aScriptProcess,SIGNAL(readyReadStandardOutput()),this,SLOT(sltReadyReadStandardOutputScript()));
-    connect(&m_aScriptProcess,SIGNAL(stateChanged(QProcess::ProcessState)),this,SLOT(sltStateChanged(QProcess::ProcessState)));
     //connect(&m_aScriptProcess,SIGNAL(readyRead()),this,SLOT(sltReadyRead()));
 }
 
 void ScriptExecution::DisconnectScriptProcessSignals()
 {
+#if !defined(Q_OS_WASM)
     disconnect(&m_aScriptProcess,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(sltFinishedScript(int,QProcess::ExitStatus)));
     disconnect(&m_aScriptProcess,SIGNAL(errorOccurred(QProcess::ProcessError)),this,SLOT(sltErrorScript(QProcess::ProcessError)));
+    disconnect(&m_aScriptProcess,SIGNAL(stateChanged(QProcess::ProcessState)),this,SLOT(sltStateChanged(QProcess::ProcessState)));
+#endif
     disconnect(&m_aScriptProcess,SIGNAL(readyReadStandardError()),this,SLOT(sltReadyReadStandardErrorScript()));
     disconnect(&m_aScriptProcess,SIGNAL(readyReadStandardOutput()),this,SLOT(sltReadyReadStandardOutputScript()));
-    disconnect(&m_aScriptProcess,SIGNAL(stateChanged(QProcess::ProcessState)),this,SLOT(sltStateChanged(QProcess::ProcessState)));
     //disconnect(&m_aScriptProcess,SIGNAL(readyRead()),this,SLOT(sltReadyRead()));
 }
 
@@ -153,6 +159,7 @@ void ScriptExecution::ProcessScriptFinished()
 {
 }
 
+#if !defined(Q_OS_WASM)
 void AddToEnvironmentVariable(QProcessEnvironment & env, const QString & key, const QString & valueToAdd)
 {
     if( env.contains(key) )
@@ -166,6 +173,7 @@ void AddToEnvironmentVariable(QProcessEnvironment & env, const QString & key, co
         }
     }
 }
+#endif
 
 int ScriptExecution::DoScriptExecution(const QString & sScriptCmd, const QString & sScriptArguments, const QString & sWorkingDirectory)
 {
@@ -210,6 +218,7 @@ int ScriptExecution::DoScriptExecution(const QString & sScriptCmd, const QString
             }
         }
 
+#if !defined(Q_OS_WASM)
         // set system environment to find all available script engines
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
         //QFileInfo aScriptInfo(sScriptCommand);
@@ -264,6 +273,7 @@ int ScriptExecution::DoScriptExecution(const QString & sScriptCmd, const QString
     {
         sOutput += tr(">Warning: could not start script because script is already running !");
     }
+#endif
 
     // show the output of the script in any case
     if( sOutput.length()>0 )
@@ -288,6 +298,7 @@ void ScriptExecution::KillExecution()
     m_aScriptProcess.kill();
 }
 
+#if !defined(Q_OS_WASM)
 void ScriptExecution::sltErrorScript(QProcess::ProcessError error)
 {
     QString errText = m_aScriptProcess.readAllStandardError();
@@ -368,6 +379,7 @@ void ScriptExecution::sltStateChanged(QProcess::ProcessState state)
 {
     Q_UNUSED(state);
 }
+#endif
 
 void ScriptExecution::sltReadyReadStandardErrorScript()
 {

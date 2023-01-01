@@ -1790,7 +1790,9 @@ static bool OpenContainingFolder( const QString & sFullFileName )
 
     if( sCommand.length()>0 )
     {
+#if !defined(Q_OS_WASM)
         return QProcess::startDetached( sCommand, args );
+#endif
     }
 
     return !bNotSupported;

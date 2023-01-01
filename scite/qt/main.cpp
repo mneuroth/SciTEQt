@@ -199,8 +199,10 @@ int main(int argc, char *argv[])
     qRegisterMetaType<SCNotification>("SCNotification");
     qRegisterMetaType<SCNotification>("uptr_t");
     qRegisterMetaType<SCNotification>("sptr_t");
+#if !defined(Q_OS_WASM)
     qRegisterMetaType<QProcess::ProcessState>("QProcess::ProcessState");
     qRegisterMetaType<QProcess::ExitStatus>("QProcess::ExitStatus");
+#endif
     qmlRegisterType<SciTEQt>("org.scintilla.sciteqt", 1, 0, "SciTEQt");
     // need external function to register for mingw, otherwise we get an unresolved external errror when linking
     //qmlRegisterType<ScintillaEditBase>("org.scintilla.scintilla", 1, 0, "ScintillaEditBase");
