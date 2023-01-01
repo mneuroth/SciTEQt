@@ -64,7 +64,9 @@ private:
     void ProcessScriptFinished();
     QString GetExecutionTimeStrg() const;
 
+#if !defined(Q_OS_WASM)
     QProcess                m_aScriptProcess;
+#endif
 
     QString                 m_sLastCurrentDir;  // temp
 
