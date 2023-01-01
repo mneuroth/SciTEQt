@@ -24,6 +24,6 @@ Window {
     Connections {
         target: dialog
 
-        onClosed: root.closed()
+        function onClosed() { root.closed() }
     }
 }

@@ -178,8 +178,8 @@ AutoSizingMenu {
             }
         }
 
-        onObjectAdded: fileMenu.insertItem(index+19, object)
-        onObjectRemoved: fileMenu.removeItem(object)
+        onObjectAdded: (index, object) => { fileMenu.insertItem(index+19, object) }
+        onObjectRemoved: (object) => { fileMenu.removeItem(object) }
     }
     MenuSeparator {
         visible: lastOpenedFilesModel.count>0

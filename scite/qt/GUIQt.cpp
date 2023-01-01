@@ -66,6 +66,10 @@
 #include <QtQuick/QQuickItem>
 #include <QThread>
 
+#ifdef Q_OS_WIN
+#include <qt_windows.h>
+#endif
+
 extern QString ConvertGuiCharToQString(const GUI::gui_char * s);
 
 namespace GUI {

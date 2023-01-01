@@ -50,8 +50,8 @@ AutoSizingMenu {
             }
         }
 
-        onObjectAdded: toolsMenu.insertItem(index+4, object)
-        onObjectRemoved: toolsMenu.removeItem(object)
+        onObjectAdded: (index, object) => { toolsMenu.insertItem(index+4, object) }
+        onObjectRemoved: (object) => { toolsMenu.removeItem(object) }
     }
     MenuItem {
         id: actionStopExecuting

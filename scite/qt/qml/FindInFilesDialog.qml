@@ -8,8 +8,6 @@
 
 import QtQuick 2.4
 import QtQuick.Controls 2.1
-import QtQuick.Layouts 1.0
-import QtQuick.Dialogs 1.2
 
 import Qt.labs.platform 1.0 as Platform
 
@@ -78,7 +76,7 @@ FindInFilesDialogForm {
     Connections {
         target: folderDialog
 
-        onAccepted: {
+        function onAccepted() {
             var newDirectory = sciteQt.cmdUrlToLocalPath(folderDialog.folder)
             directoryModel.append({"text":newDirectory})
             directoryInput.currentIndex = directoryModel.count - 1
@@ -88,7 +86,7 @@ FindInFilesDialogForm {
     Connections {
         target: mobileFileDialog
 
-        onDirectorySelected: {
+        function onDirectorySelected() {
             var newDirectory = sciteQt.cmdUrlToLocalPath(directory)
             directoryModel.append({"text":newDirectory})
             directoryInput.currentIndex = directoryModel.count - 1

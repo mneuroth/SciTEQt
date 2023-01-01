@@ -34,8 +34,8 @@ Window {
     Connections {
         target: dialog
 
-        onAccepted: root.accepted()
-        onCanceled: root.canceled()
-        onConvert: root.convert()
+        function onAccepted() { root.accepted() }
+        function onCanceled() { root.canceled() }
+        function onConvert()  { root.convert() }
     }
 }

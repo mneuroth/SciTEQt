@@ -241,7 +241,7 @@ MobileFileDialogForm {
                     font.pointSize: isMobilePlatform ? itemLabel.font.pointSize*0.75 : itemLabel.font.pointSize
 
                     verticalAlignment: Text.AlignVCenter
-                    text: fileModified.toLocaleString(Qt.locale(),Locale.ShortFormat)
+                    text: fileModified.toLocaleString(Qt.locale())  // ,Locale.ShortFormat
 
                     Layout.row: 0
                     Layout.column: 2

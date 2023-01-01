@@ -35,8 +35,8 @@ public:
 		return (pt.x >= left) && (pt.x <= right) &&
 		       (pt.y >= top) && (pt.y <= bottom);
 	}
-	int Width() const noexcept { return right - left; }
-	int Height() const noexcept { return bottom - top; }
+	int Width() const noexcept { return abs(right - left); }        // PATCH 31.12.2022 for Qt6
+	int Height() const noexcept { return abs(bottom - top); }       // PATCH 31.12.2022 for Qt6
 	bool operator==(const Rectangle &other) const noexcept {
 		return (left == other.left) &&
 		       (top == other.top) &&

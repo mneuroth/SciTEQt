@@ -45,30 +45,30 @@ jobs:
         name: release_url
         path: release_url.txt        
 
-  windows_5_14_2_gcc_build:
+  windows_6_4_1_gcc_build:
 
     runs-on: windows-latest
     needs: create_release
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
     # see: https://github.com/jurplel/install-qt-action
-    - uses: jurplel/install-qt-action@v2
+    - uses: jurplel/install-qt-action@v3
       with:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '5.14.2'
+        version: '6.4.1'
         # Host platform
         host: # optional
         # Target platform for build
         target: 'desktop'
         # Architecture for Windows/Android
-        arch: 'win64_mingw73'
+        arch: 'win64_mingw'
         # Whether or not to install Qt dependencies on Linux
         install-deps: 'true'
         # Additional Qt modules to install
-        modules: 'qtscript'
+        modules: #'qtscript'
         # Force a Qt mirror in case the default is not working
         #mirror: # optional
         # Whether or not to actually download Qt
@@ -85,7 +85,7 @@ jobs:
         #py7zrversion: '==0.11.0'
         #extra: '--external 7z'
         # REMARK: see: https://download.qt.io/online/qtsdkrepository/ for new versions of ifw and for (version) real name
-        tools: 'tools_ifw,4.4.1-0-202206210642,qt.tools.ifw.44'
+        tools: 'tools_ifw'
     - name: Install Qt and compile
       run: |
         d:
@@ -97,9 +97,9 @@ jobs:
         dir d:\a
         dir d:\a\SciteQt
         dir d:\a\SciteQt\Qt
-        dir d:\a\SciteQt\Qt\5.14.2
-        dir d:\a\SciteQt\Qt\5.14.2\mingw73_64
-        dir d:\a\SciteQt\Qt\5.14.2\mingw73_64\bin
+        dir d:\a\SciteQt\Qt\6.4.1
+        dir d:\a\SciteQt\Qt\6.4.1\mingw_64
+        dir d:\a\SciteQt\Qt\6.4.1\mingw_64\bin
         dir d:\a\SciteQt\Qt\Tools
         dir d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\
         gcc -v
@@ -117,7 +117,7 @@ jobs:
         cd ..\..\..
         dir
         #binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw_5_14_2_broken.exe
-        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.4\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw_5_14_2_broken.exe
+        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.5\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw_5_14_2_broken.exe        
         dir 
     - name: Upload Release Asset
       if: contains(github.ref, 'release')
@@ -127,100 +127,34 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/dist/SciTEQtInstallerMingw_5_14_2_broken.exe
-        asset_name: SciTEQtInstallerMingw_5_14_2_broken.exe
+        asset_path: scite/qt/dist/SciTEQtInstallerMingw_6_4_1_broken.exe
+        asset_name: SciTEQtInstallerMingw_6_4_1_broken.exe
         asset_content_type: application/exe
 
-  #~ windows_gcc_5_14_2_32bit_build:
-
-    #~ runs-on: windows-latest
-    #~ needs: create_release
-
-    #~ steps:
-    #~ - uses: actions/checkout@v1
-    #~ - uses: jurplel/install-qt-action@v2
-      #~ with:
-        #~ # Directory to install Qt
-        #~ dir: # optional
-        #~ # Version of Qt to install
-        #~ version: '5.14.2'
-        #~ # Host platform
-        #~ host: # optional
-        #~ # Target platform for build
-        #~ target: 'desktop'
-        #~ # Architecture for Windows/Android
-        #~ arch: 'win32_mingw73'
-        #~ # Whether or not to install Qt dependencies on Linux
-        #~ install-deps: 'true'
-        #~ # Additional Qt modules to install
-        #~ modules: 'qtscript'
-        #~ # Force a Qt mirror in case the default is not working
-        #~ mirror: # optional
-        #~ # Whether or not to actually download Qt
-        #~ cached: # optional, default is false
-        #~ # Version of aqtinstall to use in case of issues
-        #~ aqtversion: # optional, default is ==0.8
-        #~ # Version of py7zr to use in case of issues
-        #~ py7zrversion: # optional, default is ==0.6
-        #~ # Any extra arguments to append to the back
-        #~ extra: # optional
-    #~ - name: Install Qt and compile
-      #~ run: |
-        #~ d:
-        #~ dir 
-        #~ python -m aqt tool -O d:\a\SciTEQt/Qt windows tools_ifw 3.2.2 win-x86
-        #~ gcc -v
-        #~ qmake -r sciteqt.pro
-        #~ dir
-        #~ mingw32-make
-        #~ dir
-        #~ dir scite\bin
-        #~ dir scite\qt
-        #~ dir scite\qt\release
-        #~ dir scintilla\bin
-        #~ cd scite\qt\dist\packages\org.scintilla.sciteqt\data
-        #~ windeployqt --release --qmldir ..\..\..\..\qml sciteqt.exe
-        #~ dir
-        #~ cd ..\..\..
-        #~ dir
-        #~ d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\3.2\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstaller32bitMingw.exe
-        #~ dir
-    #~ - name: Upload Release Asset
-      #~ if: contains(github.ref, 'release')
-      #~ id: upload-release-asset
-      #~ uses: actions/upload-release-asset@v1
-      #~ env:
-        #~ GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #~ with:
-        #~ upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        #~ asset_path: scite/qt/dist/SciTEQtInstaller32bitMingw.exe
-        #~ asset_name: SciTEQtInstaller32bitMingw.exe
-        #~ asset_content_type: application/exe
-
-  windows_5_14_2_msc_build:
+  windows_6_4_1_msc_build:
 
     runs-on: windows-latest
     needs: create_release
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
     - uses: ilammy/msvc-dev-cmd@v1
-    - uses: jurplel/install-qt-action@v2
+    - uses: jurplel/install-qt-action@v3
       with:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '5.14.2'
+        version: '6.4.1'
         # Host platform
         host: # optional
         # Target platform for build
         target: 'desktop'
         # Architecture for Windows/Android
-        arch: 'win64_msvc2017_64'
+        arch: 'win64_msvc2019_64'
         # Whether or not to install Qt dependencies on Linux
         install-deps: 'true'
         # Additional Qt modules to install
-        modules: 'qtscript'
+        modules: #'qtscript'
         # Force a Qt mirror in case the default is not working
         #mirror: # optional
         # Whether or not to actually download Qt
@@ -237,7 +171,7 @@ jobs:
         #aqtversion: '==0.10.0'
         #py7zrversion: '==0.11.0'
         #extra: '--external 7z'
-        tools: 'tools_ifw,4.4.1-0-202206210642,qt.tools.ifw.44'
+        tools: 'tools_ifw'
     - name: Install 7Zip PowerShell Module
       shell: powershell
       run: Install-Module 7Zip4PowerShell -Force -Verbose
@@ -251,9 +185,9 @@ jobs:
         dir d:\a
         dir d:\a\SciteQt
         dir d:\a\SciteQt\Qt
-        dir d:\a\SciteQt\Qt\5.14.2
-        dir d:\a\SciteQt\Qt\5.14.2\msvc2017_64
-        dir d:\a\SciteQt\Qt\5.14.2\msvc2017_64\bin
+        dir d:\a\SciteQt\Qt\6.4.1
+        dir d:\a\SciteQt\Qt\6.4.1\msvc2019_64
+        dir d:\a\SciteQt\Qt\6.4.1\msvc2019_64\bin
         dir d:\a\SciteQt\Qt\Tools
         dir d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\
         cl
@@ -272,10 +206,10 @@ jobs:
         dir
         cd ..\..\..
         dir
-        #binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_14_2.exe
-        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.4\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_14_2.exe
+        #binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_6_4_1.exe
+        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.5\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_6_4_1.exe
         dir 
-        powershell Compress-7Zip "SciTEQtInstallerMsc_5_14_2.exe" -ArchiveFileName "SciTEQtInstallerMsc_5_14_2.zip" -Format Zip
+        powershell Compress-7Zip "SciTEQtInstallerMsc_6_4_1.exe" -ArchiveFileName "SciTEQtInstallerMsc_6_4_1.zip" -Format Zip
         dir 
     - name: Upload Release Asset
       if: contains(github.ref, 'release')
@@ -285,8 +219,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/dist/SciTEQtInstallerMsc_5_14_2.exe
-        asset_name: SciTEQtInstallerMsc_5_14_2.exe
+        asset_path: scite/qt/dist/SciTEQtInstallerMsc_6_4_1.exe
+        asset_name: SciTEQtInstallerMsc_6_4_1.exe
         asset_content_type: application/exe
     - name: Upload zip Release Asset
       if: contains(github.ref, 'release')
@@ -296,119 +230,24 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/dist/SciTEQtInstallerMsc_5_14_2.zip
-        asset_name: SciTEQtInstallerMsc_5_14_2.zip
-        asset_content_type: application/zip
-
-  windows_5_15_2_msc_build:
-
-    runs-on: windows-latest
-    needs: create_release
-
-    steps:
-    - uses: actions/checkout@v1
-    - uses: ilammy/msvc-dev-cmd@v1
-    #- uses: edgarrc/action-7z@v1.0.4
-    - uses: jurplel/install-qt-action@v2
-      with:
-        # Directory to install Qt
-        dir: # optional
-        # Version of Qt to install
-        version: '5.15.2'
-        # Host platform
-        host: # optional
-        # Target platform for build
-        target: 'desktop'
-        # Architecture for Windows/Android
-        arch: 'win64_msvc2019_64'
-        # Whether or not to install Qt dependencies on Linux
-        install-deps: 'true'
-        # Additional Qt modules to install
-        modules: 'qtscript'
-        # Force a Qt mirror in case the default is not working
-        #mirror: # optional
-        # Whether or not to actually download Qt
-        cached: # optional, default is false
-        # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
-        # Version of py7zr to use in case of issues
-        py7zrversion: # optional, default is ==0.6
-        # Any extra arguments to append to the back
-        extra: # optional
-        tools: 'tools_ifw,4.4.1-0-202206210642,qt.tools.ifw.44'
-    - name: Install 7Zip PowerShell Module
-      shell: powershell
-      run: Install-Module 7Zip4PowerShell -Force -Verbose
-    - name: Install Qt and compile
-      run: |
-        cd 
-        dir
-        d:
-        dir 
-        #python -m aqt tool windows tools_ifw 4.0.1 win-x86 --outputdir d:\a\SciTEQt\Qt 
-        dir d:\a\SciteQt\Qt
-        dir d:\a\SciteQt\Qt\5.15.2
-        dir d:\a\SciteQt\Qt\Tools
-        dir d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\
-        cl
-        where qmake
-        qmake -r sciteqt.pro
-        dir
-        nmake
-        dir
-        dir scite
-        dir scite\qt
-        dir scite\qt\release
-        dir scite\bin
-        dir scintilla\bin
-        cd scite\qt\dist\packages\org.scintilla.sciteqt\data
-        windeployqt --release --qmldir ..\..\..\..\qml sciteqt.exe
-        dir
-        cd ..\..\..
-        dir
-        #binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_15_2.exe
-        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.4\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_5_15_2.exe
-        dir
-        powershell Compress-7Zip "SciTEQtInstallerMsc_5_15_2.exe" -ArchiveFileName "SciTEQtInstallerMsc_5_15_2.zip" -Format Zip
-        #7z a -t7z SciTEQtInstallerMsc_5_15_2.7z SciTEQtInstallerMsc_5_15_2.exe
-        dir 
-    - name: Upload Release Asset
-      if: contains(github.ref, 'release')
-      id: upload-release-asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/dist/SciTEQtInstallerMsc_5_15_2.exe
-        asset_name: SciTEQtInstallerMsc_5_15_2.exe
-        asset_content_type: application/exe
-    - name: Upload zip Release Asset
-      if: contains(github.ref, 'release')
-      id: upload-zip-release-asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/dist/SciTEQtInstallerMsc_5_15_2.zip
-        asset_name: SciTEQtInstallerMsc_5_15_2.zip
+        asset_path: scite/qt/dist/SciTEQtInstallerMsc_6_4_1.zip
+        asset_name: SciTEQtInstallerMsc_6_4_1.zip
         asset_content_type: application/zip
 
   # this is a copy of the content MacOS.yml used only to upload binary for release
-  macos_5_15_2_build:
+  macos_6_4_1_build:
 
     runs-on: macos-latest
     needs: create_release
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: jurplel/install-qt-action@v2
+    - uses: actions/checkout@v3
+    - uses: jurplel/install-qt-action@v3
       with:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '5.15.2'
+        version: '6.4.1'
         # Host platform
         host: 'mac'
         # Target platform for build
@@ -418,7 +257,7 @@ jobs:
         # Whether or not to install Qt dependencies on Linux
         install-deps: 'true'
         # Additional Qt modules to install
-        modules: 'qtscript'
+        modules: #'qtscript'
         # Force a Qt mirror in case the default is not working
         #mirror: # optional
         # Whether or not to actually download Qt
@@ -456,7 +295,7 @@ jobs:
         which macdeployqt
         macdeployqt sciteqt.app -dmg -verbose=2 -qmldir=qml
         ls -lrt
-        cp sciteqt.dmg sciteqt_5_15_2.dmg
+        cp sciteqt.dmg sciteqt_6_4_1.dmg
         ls -lrt        
     # this step is added for the release    
     - name: Upload Release Asset
@@ -467,177 +306,25 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/sciteqt_5_15_2.dmg
-        asset_name: sciteqt_5_15_2.dmg
+        asset_path: scite/qt/sciteqt_6_4_1.dmg
+        asset_name: sciteqt_6_4_1.dmg
         asset_content_type: application/exe
         
   # this is a copy of the content MacOS.yml used only to upload binary for release
-  macos_5_14_2_build:
-
-    runs-on: macos-latest
-    needs: create_release
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: jurplel/install-qt-action@v2
-      with:
-        # Directory to install Qt
-        dir: # optional
-        # Version of Qt to install
-        version: '5.14.2'
-        # Host platform
-        host: 'mac'
-        # Target platform for build
-        target: 'desktop'
-        # Architecture for Windows/Android
-        arch: # optional
-        # Whether or not to install Qt dependencies on Linux
-        install-deps: 'true'
-        # Additional Qt modules to install
-        modules: 'qtscript'
-        # Force a Qt mirror in case the default is not working
-        #mirror: # optional
-        # Whether or not to actually download Qt
-        cached: # optional, default is false
-        # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
-        # Version of py7zr to use in case of issues
-        py7zrversion: # optional, default is ==0.6
-        # Any extra arguments to append to the back
-        extra: # optional
-    - name: Install Qt and compile
-      if: contains(github.ref, 'release')
-      run: |
-        pwd 
-        ls -lrt
-        ls -lrt ..
-        ls -lrt ../Qt
-        #ls -lrt ../Qt/Tools
-        #python3 -m aqt tool -O ../Qt mac tools_ifw 3.2.2 mac-x64
-        #ls -lrt ../Qt/Tools
-        which qmake
-        qmake -r sciteqt.pro
-        clang++ --version
-        sw_vers
-        ls -lrt
-        make
-        ls -lrt
-        ls -lrt scite/qt
-
-        #make -j 4
-        ls -lrt
-        ls -lrt scite
-        ls -lrt scite/qt
-        cd scite/qt
-        which macdeployqt
-        macdeployqt sciteqt.app -dmg -verbose=2 -qmldir=qml
-        ls -lrt
-        cp sciteqt.dmg sciteqt_5_14_2.dmg
-        ls -lrt        
-    # this step is added for the release    
-    - name: Upload Release Asset
-      if: contains(github.ref, 'release')
-      id: upload-release-asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/sciteqt_5_14_2.dmg
-        asset_name: sciteqt_5_14_2.dmg
-        asset_content_type: application/exe
-        
-  # this is a copy of the content MacOS.yml used only to upload binary for release
-  macos_5_11_3_build:
-
-    runs-on: macos-latest #macos-11.0
-    needs: create_release
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: jurplel/install-qt-action@v2
-      with:
-        # Directory to install Qt
-        dir: # optional
-        # Version of Qt to install
-        version: '5.11.3'
-        # Host platform
-        host: 'mac'
-        # Target platform for build
-        target: 'desktop'
-        # Architecture for Windows/Android
-        arch: # optional
-        # Whether or not to install Qt dependencies on Linux
-        install-deps: 'true'
-        # Additional Qt modules to install
-        modules: 'qtscript'
-        # Force a Qt mirror in case the default is not working
-        #mirror: # optional
-        # Whether or not to actually download Qt
-        cached: # optional, default is false
-        # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
-        # Version of py7zr to use in case of issues
-        py7zrversion: # optional, default is ==0.6
-        # Any extra arguments to append to the back
-        extra: # optional
-    - name: Install Qt and compile
-      if: contains(github.ref, 'release')
-      run: |
-        pwd 
-        ls -lrt
-        ls -lrt ..
-        ls -lrt ../Qt
-        #ls -lrt ../Qt/Tools
-        #python3 -m aqt tool -O ../Qt mac tools_ifw 3.2.2 mac-x64
-        #ls -lrt ../Qt/Tools
-        clang++ --version
-        sw_vers
-        which qmake
-        qmake -r sciteqt.pro
-        ls -lrt
-        make
-        ls -lrt
-        ls -lrt scite/qt
-
-        #make -j 4
-        ls -lrt
-        ls -lrt scite
-        ls -lrt scite/qt
-        cd scite/qt
-        which macdeployqt
-        macdeployqt sciteqt.app -dmg -verbose=2 -qmldir=qml
-        ls -lrt        
-        cp sciteqt.dmg sciteqt_5_11_3.dmg
-        ls -lrt        
-    # this step is added for the release    
-    - name: Upload Release Asset
-      if: contains(github.ref, 'release')
-      id: upload-release-asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/sciteqt_5_11_3.dmg
-        asset_name: sciteqt_5_11_3.dmg
-        asset_content_type: application/exe
-
-  # this is a copy of the content MacOS.yml used only to upload binary for release
-  linux_wasm_5_14_2:
+  linux_wasm_6_2_4:
   
     runs-on: ubuntu-latest
     needs: create_release
       
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: mymindstorm/setup-emsdk@v7
-    - uses: jurplel/install-qt-action@v2
+    - uses: jurplel/install-qt-action@v3
       with:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '5.14.2'
+        version: '6.2.4'
         # Host platform
         host: # optional
         # Target platform for build
@@ -647,7 +334,7 @@ jobs:
         # Whether or not to install Qt dependencies on Linux
         install-deps: 'true'
         # Additional Qt modules to install
-        modules: 'qtscript' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info, qtscripttools
+        modules: #'qtscript' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info, qtscripttools
         # Force a Qt mirror in case the default is not working
         #mirror: # optional
         # Whether or not to actually download Qt
@@ -665,8 +352,8 @@ jobs:
         which em++
         echo $PATH
         #python3 -m aqt install -O /home/runner/work/SciTEQt/Qt 5.14.2 linux desktop wasm_32 -m qtscript qtscripttools
-        emsdk install sdk-fastcomp-1.38.27-64bit
-        emsdk activate sdk-fastcomp-1.38.27-64bit
+        emsdk install 2.0.14
+        emsdk activate --embedded 2.0.14
         echo $PATH
         echo $EMSDK
         . $EMSDK/emsdk_env.sh
@@ -675,10 +362,13 @@ jobs:
         ls -lrt
         ls -lrt ..
         ls -lrt ../Qt
+        cd ../Qt
+        aqt install-qt linux desktop 6.2.4 gcc_64
+        cd /home/runner/work/SciTEQt/SciTEQt
         which qmake
         qmake -v
-        ../Qt/5.14.2/wasm_32/bin/qmake -v
-        ../Qt/5.14.2/wasm_32/bin/qmake -r sciteqt.pro
+        ../Qt/6.2.4/wasm_32/bin/qmake -v
+        ../Qt/6.2.4/wasm_32/bin/qmake -r sciteqt.pro
         ls -lrt
         make
         ls -lrt
@@ -686,9 +376,9 @@ jobs:
         ls -lrt scite/qt
         ls -lrt scite/bin
         cd scite/qt
-        zip sciteqt_wasm_5_14_2.zip sciteqt.js sciteqt.wasm sciteqt.html qtlogo.svg qtloader.js
+        zip sciteqt_wasm_6_2_4.zip sciteqt.js sciteqt.wasm sciteqt.html qtlogo.svg qtloader.js
         ls -lrt
-        unzip -v sciteqt_wasm_5_14_2.zip
+        unzip -v sciteqt_wasm_6_2_4.zip
         pwd
     # this step is added for the release    
     - name: Upload Release Asset
@@ -699,88 +389,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/sciteqt_wasm_5_14_2.zip
-        asset_name: sciteqt_wasm_5_14_2.zip
+        asset_path: scite/qt/sciteqt_wasm_6_2_4.zip
+        asset_name: sciteqt_wasm_6_2_4.zip
         asset_content_type: application/zip
-
-  linux_wasm_5_15_2:
-  
-    runs-on: ubuntu-latest
-    needs: create_release
-      
-    steps:
-    - uses: actions/checkout@v2
-    - uses: mymindstorm/setup-emsdk@v7
-    - uses: jurplel/install-qt-action@v2
-      with:
-        # Directory to install Qt
-        dir: # optional
-        # Version of Qt to install
-        version: '5.15.2'
-        # Host platform
-        host: # optional
-        # Target platform for build
-        target: 'desktop'
-        # Architecture for Windows/Android
-        arch: 'wasm_32' # optional
-        # Whether or not to install Qt dependencies on Linux
-        install-deps: 'true'
-        # Additional Qt modules to install
-        modules: 'qtscript' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
-        # Force a Qt mirror in case the default is not working
-        #mirror: # optional
-        # Whether or not to actually download Qt
-        cached: # optional, default is false
-        # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
-        # Version of py7zr to use in case of issues
-        py7zrversion: # optional, default is ==0.6
-        # Any extra arguments to append to the back
-        extra: # optional
-    - name: Install Qt and compile
-      if: contains(github.ref, 'release')
-      run: |
-        em++ --version
-        which em++
-        echo $PATH
-        #python3 -m aqt install -O /home/runner/work/SciTEQt/Qt 5.15.2 linux desktop wasm_32 -m qtscript qtscripttools
-        #emsdk install sdk-fastcomp-1.39.8-64bit
-        #emsdk activate sdk-fastcomp-1.39.8-64bit
-        emsdk install 1.39.8
-        emsdk activate --embedded 1.39.8
-        echo $PATH
-        echo $EMSDK
-        . $EMSDK/emsdk_env.sh
-        em++ --version
-        which em++
-        ls -lrt
-        ls -lrt ..
-        ls -lrt ../Qt
-        which qmake
-        qmake -v
-        ../Qt/5.15.2/wasm_32/bin/qmake -v
-        ../Qt/5.15.2/wasm_32/bin/qmake -r sciteqt.pro
-        ls -lrt
-        make
-        ls -lrt
-        ls -lrt scintilla/bin
-        ls -lrt scite/qt
-        ls -lrt scite/bin
-        cd scite/qt
-        zip sciteqt_wasm_5_15_2.zip sciteqt.js sciteqt.wasm sciteqt.html qtlogo.svg qtloader.js
-        ls -lrt
-        unzip -v sciteqt_wasm_5_15_2.zip
-        pwd
-    # this step is added for the release    
-    - name: Upload Release Asset
-      if: contains(github.ref, 'release')
-      id: upload-release-asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/sciteqt_wasm_5_15_2.zip
-        asset_name: sciteqt_wasm_5_15_2.zip
-        asset_content_type: application/zip
-       

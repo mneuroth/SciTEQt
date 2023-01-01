@@ -8,7 +8,6 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.0
-import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.9
 import org.scintilla.scintilla 1.0
 

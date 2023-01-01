@@ -30,7 +30,7 @@ Window {
     Connections {
         target: dialog
 
-        onAccepted: root.accepted()
-        onCanceled: root.canceled()
+        function onAccepted() { root.accepted() }
+        function onCanceled() { root.canceled() }
     }
 }

@@ -140,7 +140,7 @@ AutoSizingMenu {
             }
         }
 
-        onObjectAdded: optionsMenu.insertItem(index+21, object)
-        onObjectRemoved: optionsMenu.removeItem(object)
+        onObjectAdded: (index, object) => { optionsMenu.insertItem(index+21, object) }
+        onObjectRemoved: (object) => { optionsMenu.removeItem(object) }
     }
 }

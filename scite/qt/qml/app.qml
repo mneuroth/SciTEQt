@@ -6,11 +6,12 @@
  *
  ***************************************************************************/
 
-import QtQuick 2.9
-import QtQuick.Controls 2.3     // for MenuBar (Qt 5.10)
-import QtQuick.Dialogs 1.2
+import QtQuick 2.9                // 6.x for Qt 6
+//import QtQuick.Controls 2.3     // for MenuBar (Qt 5.10)
+//import QtQuick.Controls 1.4 as Controls1
+import QtQuick.Controls //6.2       // see: https://doc.qt.io/qt-6/qtquickcontrols-index.html
+import QtQuick.Dialogs //6.2 //1.3
 import QtQml.Models 2.1
-import QtQuick.Controls 1.4 as Controls1
 import QtQuick.Layouts 1.0
 import Qt.labs.settings 1.0
 //import QtQuick.Controls.Material 2.12
@@ -52,9 +53,9 @@ ApplicationWindow {
         sciteQt.cmdUpdateApplicationActive(active)
     }
 
-    onClosing: {
+    onClosing: (close) => {
         sciteQt.cmdExit()
-        close.accepted = false
+        close.accepted = false // close will be handled in close dialog...
     }
 
     //onFocusObjectChanged: {
@@ -64,6 +65,7 @@ ApplicationWindow {
 
     Component.onCompleted: {
 // TODO: gibt es besseren weg scintilla controls bei sciteqt zu registrieren?
+        //console.log("========== APP START ============")
         sciteQt.setScintilla(quickScintillaEditor.scintilla)
         sciteQt.setOutput(quickScintillaOutput.scintilla)
         var aboutDlg = sciteQt.useMobileDialogHandling ? aboutSciteDialog : aboutSciteDialogWin
@@ -71,14 +73,14 @@ ApplicationWindow {
         sciteQt.setContent(splitView)
         sciteQt.setMainWindow(applicationWindow)
         sciteQt.setApplicationData(applicationData)
-        //splitView.restoreState(settings.splitView)
-        console.log("========== APP START ============")
+        //splitView.restoreState(settings.splitView)              // TODO: check initial splitter width after new installation !
+        //console.log("========== APP START done. ============")
     }
     //Component.onDestruction: {
     //    //settings.splitView = splitView.saveState()
     //}
 
-    onTitleChanged: {
+    function onTitleChanged(title) {
         labelTitel.text = title
     }
 
@@ -162,7 +164,7 @@ ApplicationWindow {
             {
                 //fileDialog.selectExisting = bAsOpenDialog
                 fileDialog.openMode = bAsOpenDialog
-                fileDialog.folder = sDirectory
+                //fileDialog.folder = sDirectory
                 if( sTitle !== undefined && sTitle.length > 0 ) {
                     fileDialog.title = sciteQt.getLocalisedText(sTitle)
                 }
@@ -251,15 +253,15 @@ ApplicationWindow {
         var dlg = sciteQt.isWebassemblyPlatform() ? infoDialogPage : infoDialog
         if((style & 7) === 4)
         {
-            dlg.standardButtons = StandardButton.Yes | StandardButton.No
+            dlg.buttons = Labs.MessageDialog.Yes | Labs.MessageDialog.No
         }
         else if((style & 7) === 3)
         {
-            dlg.standardButtons = StandardButton.Yes | StandardButton.No | StandardButton.Cancel
+            dlg.buttons = Labs.MessageDialog.Yes | Labs.MessageDialog.No | Labs.MessageDialog.Cancel
         }
         else
         {
-            dlg.standardButtons = StandardButton.Ok
+            dlg.buttons = Labs.MessageDialog.Ok
         }
 
         dlg.text = infoText
@@ -396,6 +398,8 @@ ApplicationWindow {
         }
         dlg.findWhatInput.selectAll()
         dlg.findWhatInput.focus = true
+        dlg.findWhatInput.forceActiveFocus()
+        dlg.requestActivate()
     }
 
     function doExecuteFind(findDialog, markAll, useDown) {
@@ -611,7 +615,7 @@ ApplicationWindow {
     Connections {
         target: htmlFileAccess
 
-        onFsFileReady: {
+        function onFsFileReady() {
             readCurrentDoc("file://" + tmpFilePath)
             //loadProject("file://" + tmpFilePath)
         }
@@ -853,30 +857,30 @@ ApplicationWindow {
     Connections {
         target: sciteQt
 
-        onSetMenuChecked:             handleMenuChecked(menuID, val)
-        onSetMenuEnable:              handleMenuEnable(menuID, val)
+        function onSetMenuChecked(menuID, val) { handleMenuChecked(menuID, val) }
+        function onSetMenuEnable(menuID, val)  { handleMenuEnable(menuID, val) }
 
-        onSetInBuffersModel:          writeInMenuModel(buffersModel, index, txt, checked, ashortcut)
-        onRemoveInBuffersModel:       removeInMenuModel(buffersModel, index)
-        onCheckStateInBuffersModel:   setCheckStateInMenuModel(buffersModel, index, checked)
+        function onSetInBuffersModel(index, txt, checked, ashortcut)   { writeInMenuModel(buffersModel, index, txt, checked, ashortcut) }
+        function onRemoveInBuffersModel(index)                         { removeInMenuModel(buffersModel, index) }
+        function onCheckStateInBuffersModel(index, checked)            { setCheckStateInMenuModel(buffersModel, index, checked) }
 
-        onSetInLanguagesModel:        writeInMenuModel(languagesModel, index, txt, checked, ashortcut)
-        onRemoveInLanguagesModel:     removeInMenuModel(languagesModel, index)
-        onCheckStateInLanguagesModel: setCheckStateInMenuModel(languagesModel, index, checked)
+        function onSetInLanguagesModel(index, txt, checked, ashortcut) { writeInMenuModel(languagesModel, index, txt, checked, ashortcut) }
+        function onRemoveInLanguagesModel(index)                       { removeInMenuModel(languagesModel, index) }
+        function onCheckStateInLanguagesModel(index, checked)          { setCheckStateInMenuModel(languagesModel, index, checked) }
 
-        onSetInToolsModel:            writeInMenuModel(toolsModel, index, txt, checked, ashortcut)
-        onRemoveInToolsModel:         removeInMenuModel(toolsModel, index)
-        onCheckStateInToolsModel:     setCheckStateInMenuModel(toolsModel, index, checked)
+        function onSetInToolsModel(index, txt, checked, ashortcut)     { writeInMenuModel(toolsModel, index, txt, checked, ashortcut) }
+        function onRemoveInToolsModel(index)                           { removeInMenuModel(toolsModel, index) }
+        function onCheckStateInToolsModel(index, checked)              { setCheckStateInMenuModel(toolsModel, index, checked) }
 
-        onSetInLastOpenedFilesModel:         writeInMenuModel(lastOpenedFilesModel, index, txt, checked, ashortcut)
-        onRemoveInLastOpenedFilesModel:      removeInMenuModel(lastOpenedFilesModel, index)
-        onCheckStateInLastOpenedFilesModel:  setCheckStateInMenuModel(lastOpenedFilesModel, index, checked)
+        function onSetInLastOpenedFilesModel(index, txt, checked, ashortcut) { writeInMenuModel(lastOpenedFilesModel, index, txt, checked, ashortcut) }
+        function onRemoveInLastOpenedFilesModel(index)                       { removeInMenuModel(lastOpenedFilesModel, index) }
+        function onCheckStateInLastOpenedFilesModel(index, checked)          { setCheckStateInMenuModel(lastOpenedFilesModel, index, checked) }
 
-        onSetInImportModel:            writeInMenuModel(importModel, index, txt, checked, ashortcut)
-        onRemoveInImportModel:         removeInMenuModel(importModel, index)
-        onCheckStateInImportModel:     setCheckStateInMenuModel(importModel, index, checked)
+        function onSetInImportModel(index, txt, checked, ashortcut)    { writeInMenuModel(importModel, index, txt, checked, ashortcut) }
+        function onRemoveInImportModel(index)                          { removeInMenuModel(importModel, index) }
+        function onCheckStateInImportModel(index, checked)             { setCheckStateInMenuModel(importModel, index, checked) }
 
-        onAdmin:                       mobileFileDialog.setAdminModus(value)
+        function onAdmin(value)                                        { mobileFileDialog.setAdminModus(value) }
     }
 
     // desktop modus menu bar
@@ -934,20 +938,20 @@ ApplicationWindow {
     Connections {
         target: applicationWindow
 
-        onReadOnlyChanged: {
+        function onReadOnlyChanged(value) {
             toolButtonReadonly.checked = value
         }
-        onRunningChanged: {
+        function onRunningChanged(value) {
             toolButtonGo.enabled = !value
             toolButtonGo.checked = value
             toolButtonStop.enabled = value
             toolButtonStop.checked = !value
         }
-        onBuildChanged: {
+        function onBuildChanged(value) {
             toolButtonBuild.enabled = !value
             toolButtonBuild.checked = value
         }
-        onCopyCutChanged: {
+        function onCopyCutChanged(value) {
             toolButtonCopy.enabled = !value
             toolButtonCopy.checked = value
             toolButtonCut.enabled = !value
@@ -955,15 +959,15 @@ ApplicationWindow {
             toolButtonDelete.enabled = !value
             toolButtonDelete.checked = value
         }
-        onPasteChanged: {
+        function onPasteChanged(value) {
             toolButtonPaste.enabled = !value
             toolButtonPaste.checked = value
         }
-        onUndoChanged: {
+        function onUndoChanged(value) {
             toolButtonUndo.enabled = !value
             toolButtonUndo.checked = value
         }
-        onRedoChanged: {
+        function onRedoChanged(value) {
             toolButtonRedo.enabled = !value
             toolButtonRedo.checked = value
         }
@@ -1638,8 +1642,8 @@ ApplicationWindow {
                 onTriggered: menuCommandDelegate !== undefined ? menuCommandDelegate(model.menuId) : sciteQt.cmdContextMenu(model.menuId)
             }
 
-            onObjectAdded: tabBarContextMenu.insertItem(index, object)
-            onObjectRemoved: tabBarContextMenu.removeItem(object)
+            onObjectAdded: (index, object) => { tabBarContextMenu.insertItem(index, object) }
+            onObjectRemoved: (object) => { tabBarContextMenu.removeItem(object) }
         }
     }
 
@@ -1648,17 +1652,17 @@ ApplicationWindow {
         objectName: "sciteContextMenu"
     }
 
-    Controls1.SplitView {
+    /*Controls1.*/SplitView {
         id: splitView        
         objectName: "SplitView"
         visible: true
 
-        resizing: true
+        //resizing: true
 
         orientation: verticalSplit ? Qt.Horizontal : Qt.Vertical
 
         property int outputHeight: 0
-        property bool verticalSplit: true
+        property bool verticalSplit: false
 
         //anchors.fill: parent
 
@@ -1670,6 +1674,13 @@ ApplicationWindow {
         anchors.leftMargin: 5
         anchors.topMargin: 5
         anchors.bottomMargin: 5
+
+        handle: Rectangle {
+            id: handleDelegate
+            implicitWidth: 4
+            implicitHeight: 4
+            color: SplitHandle.pressed ? "#888888" : (SplitHandle.hovered ? "#bbbbbb" : "#000000")
+        }
 
 /* TODO: improve splitter...
 
@@ -1738,10 +1749,10 @@ ApplicationWindow {
 
             focus: true
 
-            //SplitView.fillWidth: true
-            //SplitView.fillHeight: true
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+            SplitView.fillWidth: true
+            SplitView.fillHeight: true
+            //Layout.fillWidth: true
+            //Layout.fillHeight: true
 
             //menuCommandDelegate: sciteQt.cmdContextMenu
 
@@ -1756,10 +1767,10 @@ ApplicationWindow {
 
             focus: false
 
-            //SplitView.preferredWidth: splitView.outputHeight
-            //SplitView.preferredHeight: splitView.outputHeight
-            width: splitView.outputHeight               // user draging of splitter will brake the binding !!!
-            height: splitView.outputHeight
+            SplitView.preferredWidth: splitView.outputHeight
+            SplitView.preferredHeight: splitView.outputHeight
+            //width: splitView.outputHeight               // user draging of splitter will brake the binding !!!
+            //height: splitView.outputHeight
             //implicitWidth: splitView.outputHeight
             //implicitHeight: splitView.outputHeight
 
@@ -2205,67 +2216,67 @@ ApplicationWindow {
     Connections {
         target: sciteQt
 
-        onTriggerUpdateCurrentWindowPosAndSize: updateCurrentWindowPosAndSize()
-        onSetWindowPosAndSize:                  setWindowPosAndSize(left, top, width, height, maximize)
-        onSetTextToCurrent:                     setTextToCurrent(text)
-        onAddTextToOutput:                      addTextToOutput(text)
+        function onTriggerUpdateCurrentWindowPosAndSize() { updateCurrentWindowPosAndSize() }
+        function onSetWindowPosAndSize(left, top, width, height, maximize) { setWindowPosAndSize(left, top, width, height, maximize) }
+        function onSetTextToCurrent(text) { setTextToCurrent(text) }
+        function onAddTextToOutput(text)  { addTextToOutput(text) }
 
-        onStartFileDialog:            startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog, bSaveACopyModus, bDeleteModus, sDefaultSaveAsName)
-        onShowInfoDialog:             showInfoDialog(sInfoText, style)
-        onShowAboutSciteDialog:       showAboutSciteDialog()
-        onShowSupportSciteQtDialog:   showSupportSciteQtDialog()
+        function onStartFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog, bSaveACopyModus, bDeleteModus, sDefaultSaveAsName) { startFileDialog(sDirectory, sFilter, sTitle, bAsOpenDialog, bSaveACopyModus, bDeleteModus, sDefaultSaveAsName) }
+        function onShowInfoDialog(sInfoText, style) { showInfoDialog(sInfoText, style) }
+        function onShowAboutSciteDialog() { showAboutSciteDialog() }
+        function onShowSupportSciteQtDialog() { showSupportSciteQtDialog() }
 
-        onShowFindInFilesDialog:      showFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory, wholeWord, caseSensitive, regularExpression)
-        onShowFindStrip:              showFindStrip(findHistory, replaceHistory, text, incremental, withReplace, closeOnFind)
-        onShowFind:                   showFind(findHistory, text, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down)
-        onShowReplace:                showReplace(findHistory, replaceHistory, text, replace, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down)
-        onShowGoToDialog:             showGoToDialog(currentLine, currentColumn, maxLine)
-        onShowTabSizeDialog:          showTabSizeDialog(tabSize, indentSize, useTabs)
-        onShowAbbreviationDialog:     showAbbreviationDialog(items)
-        onShowParametersDialog:       showParametersDialog(modal, parameters)
-        onCloseFindReplaceDialog:     closeFindReplaceDialog()
+        function onShowFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory, wholeWord, caseSensitive, regularExpression) { showFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory, wholeWord, caseSensitive, regularExpression) }
+        function onShowFindStrip(findHistory, replaceHistory, text, incremental, withReplace, closeOnFind) { showFindStrip(findHistory, replaceHistory, text, incremental, withReplace, closeOnFind) }
+        function onShowFind(findHistory, text, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down) { showFind(findHistory, text, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down) }
+        function onShowReplace(findHistory, replaceHistory, text, replace, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down) { showReplace(findHistory, replaceHistory, text, replace, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down) }
+        function onShowGoToDialog(currentLine, currentColumn, maxLine) { showGoToDialog(currentLine, currentColumn, maxLine) }
+        function onShowTabSizeDialog(tabSize, indentSize, useTabs) { showTabSizeDialog(tabSize, indentSize, useTabs) }
+        function onShowAbbreviationDialog(items) { showAbbreviationDialog(items) }
+        function onShowParametersDialog(modal, parameters) { showParametersDialog(modal, parameters) }
+        function onCloseFindReplaceDialog() { closeFindReplaceDialog() }
 
-        onSetVerticalSplit:           setVerticalSplit(verticalSplit)
-        onSetOutputHeight:            setOutputHeight(heightOutput)
+        function onSetVerticalSplit(verticalSplit) { setVerticalSplit(verticalSplit) }
+        function onSetOutputHeight(heightOutput) { setOutputHeight(heightOutput) }
 
-        onInsertTab:                  insertTab(index, title, fullPath)
-        onSelectTab:                  selectTab(index)
-        onRemoveAllTabs:              removeAllTabs()
+        function onInsertTab(index, title, fullPath) { insertTab(index, title, fullPath) }
+        function onSelectTab(index) { selectTab(index) }
+        function onRemoveAllTabs() { removeAllTabs() }
 
-        onSaveCurrentForWasm:         htmlSave(fileName,sTempFile)
+        function onSaveCurrentForWasm() { htmlSave(fileName,sTempFile) }
 
-        onDismissMenu:                dismissMenu()
+        function onDismissMenu() { dismissMenu() }
     }
 
     // **********************************************************************
 
-    FileDialog {
+   /*Labs.*/FileDialog {
         id: fileDialog
         objectName: "fileDialog"
         visible: false
         modality: Qt.ApplicationModal
-        //fileMode: openMode ? FileDialog.OpenFile : FileDialog.SaveFile
+        fileMode: openMode ? FileDialog.OpenFile : FileDialog.SaveFile
         title: openMode ? qsTr("Choose a file") : qsTr("Save as")
-        folder: "."
+        //folder: "."
 
         property bool openMode: true
 
-        selectExisting: openMode ? true : false
-        selectMultiple: false
-        selectFolder: false
+        //selectExisting: openMode ? true : false
+        //selectMultiple: false
+        //selectFolder: false
 
         onAccepted: {
             if(sciteQt.isWebassemblyPlatform()) {
                 if(!fileDialog.openMode) {
-                    writeCurrentDoc(fileUrl)
+                    writeCurrentDoc(fileDialog.currentFile)
                 }
                 else {
                     //Android: quickScintillaEditor.text = fileUrl
-                    readCurrentDoc(fileUrl)
+                    readCurrentDoc(fileDialog.currentFile)
                 }
             }
             else {
-                sciteQt.updateCurrentSelectedFileUrl(fileUrl)
+                sciteQt.updateCurrentSelectedFileUrl(fileDialog.currentFile)
             }
             fileDialog.close()
             focusToEditor()
@@ -2304,38 +2315,38 @@ ApplicationWindow {
     Connections {
         target: mobileFileDialog
 
-        onOpenSelectedFile: {
+        function onOpenSelectedFile() {
             //readCurrentDoc(fileName)
             sciteQt.updateCurrentSelectedFileUrl(buildValidUrl(fileName))
         }
-        onSaveSelectedFile: {
+        function onSaveSelectedFile() {
             //writeCurrentDoc(buildValidUrl(fileName))
             sciteQt.updateCurrentSelectedFileUrl(buildValidUrl(fileName))
         }
 
-        onRejected: {
+        function onRejected() {
             stackView.pop()
             focusToEditor()
         }
-        onAccepted: {
+        function onAccepted() {
             stackView.pop()
             focusToEditor()
         }
 
-        onErrorMessage: {
+        function onErrorMessage() {
             logToOutput(message)
             focusToEditor()
         }
     }
 
-    MessageDialog {
+    Labs.MessageDialog {
         id: infoDialog
         objectName: "infoDialog"
         visible: false
         title: sciteQt.getLocalisedText(qsTr("Info"))
         //modal: true
         modality: Qt.ApplicationModal
-        standardButtons: StandardButton.Ok
+        buttons: Labs.MessageDialog.Ok
         /*
         onAccepted: {
             focusToEditor()
@@ -2370,7 +2381,7 @@ ApplicationWindow {
         signal yes()
         signal no()
 
-        property var standardButtons: StandardButton.Ok
+        //property var standardButtons: Labs.MessageDialog.Ok
         property string text: ""
 
         Label {
@@ -2398,7 +2409,7 @@ ApplicationWindow {
             Button {
                 id: buttonYes
                 text: sciteQt.getLocalisedText(qsTr("Yes"))
-                visible: (infoDialogPage.standardButtons & StandardButton.Yes) === StandardButton.Yes
+                visible: (infoDialogPage.buttons & Labs.MessageDialog.Yes) === Labs.MessageDialog.Yes
                 Keys.onEscapePressed: buttonCancel.clicked()
                 Keys.onBackPressed: buttonCancel.clicked()
 
@@ -2407,7 +2418,7 @@ ApplicationWindow {
             Button {
                 id: buttonNo
                 text: sciteQt.getLocalisedText(qsTr("No"))
-                visible: (infoDialogPage.standardButtons & StandardButton.No) === StandardButton.No
+                visible: (infoDialogPage.buttons & Labs.MessageDialog.No) === Labs.MessageDialog.No
                 Keys.onEscapePressed: buttonCancel.clicked()
                 Keys.onBackPressed: buttonCancel.clicked()
 
@@ -2416,7 +2427,7 @@ ApplicationWindow {
             Button {
                 id: buttonOk
                 text: sciteQt.getLocalisedText(qsTr("Ok"))
-                visible: (infoDialogPage.standardButtons & StandardButton.Ok) === StandardButton.Ok
+                visible: (infoDialogPage.buttons & Labs.MessageDialog.Ok) === Labs.MessageDialog.Ok
                 highlighted: !sciteQt.mobilePlatform
                 Keys.onEscapePressed: buttonCancel.clicked()
                 Keys.onBackPressed: buttonCancel.clicked()
@@ -2426,7 +2437,7 @@ ApplicationWindow {
             Button {
                 id: buttonCancel
                 text: sciteQt.getLocalisedText(qsTr("Cancel"))
-                visible: (infoDialogPage.standardButtons & StandardButton.Cancel) === StandardButton.Cancel
+                visible: (infoDialogPage.buttons & Labs.MessageDialog.Cancel) === Labs.MessageDialog.Cancel
                 highlighted: !sciteQt.mobilePlatform
                 Keys.onEscapePressed: buttonCancel.clicked()
                 Keys.onBackPressed: buttonCancel.clicked()
@@ -2439,22 +2450,22 @@ ApplicationWindow {
     Connections {
         target: infoDialogPage
 
-        onYes: {
+        function onYes() {
             stackView.pop()
             focusToEditor()
         }
 
-        onNo: {
+        function onNo() {
             stackView.pop()
             focusToEditor()
         }
 
-        onAccepted: {
+        function onAccepted() {
             stackView.pop()
             focusToEditor()
         }
 
-        onCanceled: {
+        function onCanceled() {
             stackView.pop()
             focusToEditor()
         }
@@ -2570,7 +2581,7 @@ ApplicationWindow {
     Connections {
         target: supportDialog
 
-        onClosed: {
+        function onClosed() {
             stackView.pop()
             focusToEditor()
         }
@@ -2592,7 +2603,7 @@ ApplicationWindow {
     Connections {
         target: supportDialogWin
 
-        onClosed: {
+        function onClosed() {
             supportDialogWin.close()
             focusToEditor()
         }
@@ -2616,7 +2627,7 @@ ApplicationWindow {
     Connections {
         target: aboutSciteDialog
 
-        onClosed: {
+        function onClosed() {
             stackView.pop()
             focusToEditor()
         }
@@ -2635,7 +2646,7 @@ ApplicationWindow {
     Connections {
         target: aboutSciteDialogWin
 
-        onClosed: {
+        function onClosed() {
             aboutSciteDialogWin.close()
             focusToEditor()
         }
@@ -2654,14 +2665,14 @@ ApplicationWindow {
     Connections {
         target: findDialog
 
-        onCanceled: {
+        function onCanceled() {
             stackView.pop()
             focusToEditor()
         }
 
-        onAccepted: doExecuteFind(findDialog, false, true)
+        function onAccepted() { doExecuteFind(findDialog, false, true) }
 
-        onMarkAll:  doExecuteFind(findDialog, true, true)
+        function onMarkAll()  { doExecuteFind(findDialog, true, true) }
     }
 
     FindDialogWindow {
@@ -2674,8 +2685,11 @@ ApplicationWindow {
         height: grid.implicitHeight+10
 
         // Window is not resizable !
-        maximumHeight: height
-        minimumHeight: height
+        minimumHeight: grid.implicitHeight+10
+        minimumWidth: grid.implicitWidth+10
+
+//        maximumHeight: grid.implicitWidth+10
+//        minimumHeight: grid.implicitWidth+10 //height
 
         fcnLocalisation: sciteQt.getLocalisedText
 
@@ -2685,11 +2699,11 @@ ApplicationWindow {
     Connections {
         target: findDialogWin
 
-        onCanceled: findDialogWin.close()
+        function onCanceled() { findDialogWin.close() }
 
-        onAccepted: doExecuteFind(findDialogWin, false, true)
+        function onAccepted() { doExecuteFind(findDialogWin, false, true) }
 
-        onMarkAll:  doExecuteFind(findDialogWin, true, true)
+        function onMarkAll() {  doExecuteFind(findDialogWin, true, true) }
     }
 
     ReplaceDialog {
@@ -2705,12 +2719,12 @@ ApplicationWindow {
     Connections {
         target: replaceDialog
 
-        onCanceled:         stackView.pop()
-        onAccepted:         doExecuteFind(replaceDialog, false, false)
+        function onCanceled() {         stackView.pop() }
+        function onAccepted() {         doExecuteFind(replaceDialog, false, false) }
 
-        onReplace:          doExecuteReplace(replaceDialog,false,false)
-        onReplaceAll:       doExecuteReplace(replaceDialog,true,false)
-        onReplaceInSection: doExecuteReplace(replaceDialog,false,true)
+        function onReplace() {          doExecuteReplace(replaceDialog,false,false) }
+        function onReplaceAll() {       doExecuteReplace(replaceDialog,true,false) }
+        function onReplaceInSection() { doExecuteReplace(replaceDialog,false,true) }
     }
 
     ReplaceDialogWindow {
@@ -2723,8 +2737,8 @@ ApplicationWindow {
         height: grid.implicitHeight+10
 
         // Window is not resizable !
-        maximumHeight: height
-        minimumHeight: height
+        minimumHeight: grid.implicitHeight+10
+        minimumWidth: grid.implicitWidth+10
 
         fcnLocalisation: sciteQt.getLocalisedText
 
@@ -2734,18 +2748,18 @@ ApplicationWindow {
     Connections {
         target: replaceDialogWin
 
-        onCanceled:         replaceDialogWin.close()
-        onAccepted:         doExecuteFind(replaceDialogWin, false, false)
+        function onCanceled()         { replaceDialogWin.close() }
+        function onAccepted()         { doExecuteFind(replaceDialogWin, false, false) }
 
-        onReplace:          doExecuteReplace(replaceDialogWin,false,false)
-        onReplaceAll:       doExecuteReplace(replaceDialogWin,true,false)
-        onReplaceInSection: doExecuteReplace(replaceDialogWin,false,true)
+        function onReplace()          { doExecuteReplace(replaceDialogWin,false,false) }
+        function onReplaceAll()       { doExecuteReplace(replaceDialogWin,true,false) }
+        function onReplaceInSection() { doExecuteReplace(replaceDialogWin,false,true) }
     }
 
     Connections {
         target: sciteQt
 
-        onUpdateReplacementCount: {
+        function onUpdateReplacementCount() {
             replaceDialog.countReplacementsLabel.text = count
         }
     }
@@ -2763,11 +2777,11 @@ ApplicationWindow {
     Connections {
         target: findInFilesDialog
 
-        onCanceled: {
+        function onCanceled() {
             stackView.pop()
             focusToEditor()
         }
-        onAccepted: {
+        function onAccepted() {
             stackView.pop()
             var findWhatInput = findInFilesDialog.findWhatInput.editText.length > 0 ? findInFilesDialog.findWhatInput.editText : findInFilesDialog.findWhatInput.currentText
             var filesExtensionsInput = findInFilesDialog.filesExtensionsInput.editText.length > 0 ? findInFilesDialog.filesExtensionsInput.editText : findInFilesDialog.filesExtensionsInput.currentText
@@ -2790,8 +2804,8 @@ ApplicationWindow {
         height: grid.implicitHeight+10
 
         // Window is not resizable !
-        maximumHeight: height
-        minimumHeight: height
+        minimumHeight: grid.implicitHeight+10
+        minimumWidth: grid.implicitWidth+10
 
         fcnLocalisation: sciteQt.getLocalisedText
 
@@ -2801,11 +2815,11 @@ ApplicationWindow {
     Connections {
         target: findInFilesDialogWin
 
-        onCanceled: {
+        function onCanceled() {
             findInFilesDialogWin.close()
             focusToEditor()
         }
-        onAccepted: {
+        function onAccepted() {
             findInFilesDialogWin.close()
             var findWhatInput = findInFilesDialogWin.findWhatInput.editText.length > 0 ? findInFilesDialogWin.findWhatInput.editText : findInFilesDialogWin.findWhatInput.currentText
             var filesExtensionsInput = findInFilesDialogWin.filesExtensionsInput.editText.length > 0 ? findInFilesDialogWin.filesExtensionsInput.editText : findInFilesDialogWin.filesExtensionsInput.currentText
@@ -2832,11 +2846,11 @@ ApplicationWindow {
     Connections {
         target: gotoDialog
 
-        onCanceled: {
+        function onCanceled() {
             stackView.pop()
             focusToEditor()
         }
-        onAccepted: {
+        function onAccepted() {
             stackView.pop()
             sciteQt.cmdGotoLine(parseInt(gotoDialog.destinationLineInput.text), parseInt(gotoDialog.columnInput.text))
             focusToEditor()
@@ -2853,10 +2867,8 @@ ApplicationWindow {
         width: grid.implicitWidth+10
         height: grid.implicitHeight+10
 
-        maximumHeight: height
-        maximumWidth: width
-        minimumHeight: height
-        minimumWidth: width
+        minimumHeight: grid.implicitHeight+10
+        minimumWidth: grid.implicitWidth+10
 
         fcnLocalisation: sciteQt.getLocalisedText
 
@@ -2866,11 +2878,11 @@ ApplicationWindow {
     Connections {
         target: gotoDialogWin
 
-        onCanceled: {
+        function onCanceled() {
             gotoDialogWin.close()
             focusToEditor()
         }
-        onAccepted: {
+        function onAccepted() {
             gotoDialogWin.close()
             sciteQt.cmdGotoLine(parseInt(gotoDialogWin.destinationLineInput.text), parseInt(gotoDialogWin.columnInput.text))
             focusToEditor()
@@ -2890,16 +2902,16 @@ ApplicationWindow {
     Connections {
         target: tabSizeDialog
 
-        onCanceled: {
+        function onCanceled() {
             stackView.pop()
             focusToEditor()
         }
-        onAccepted: {
+        function onAccepted() {
             stackView.pop()
             sciteQt.cmdUpdateTabSizeValues(parseInt(tabSizeDialog.tabSizeInput.text), parseInt(tabSizeDialog.indentSizeInput.text), tabSizeDialog.useTabsCheckBox.checked, false)
             focusToEditor()
         }
-        onConvert: {
+        function onConvert() {
             stackView.pop()
             sciteQt.cmdUpdateTabSizeValues(parseInt(tabSizeDialog.tabSizeInput.text), parseInt(tabSizeDialog.indentSizeInput.text), tabSizeDialog.useTabsCheckBox.checked, true)
             focusToEditor()
@@ -2916,10 +2928,8 @@ ApplicationWindow {
         height: grid.implicitHeight+10
 
         // Window is not resizable !
-        maximumHeight: height
-        maximumWidth: width
-        minimumHeight: height
-        minimumWidth: width
+        minimumHeight: grid.implicitHeight+10
+        minimumWidth: grid.implicitWidth+10
 
         fcnLocalisation: sciteQt.getLocalisedText
 
@@ -2929,16 +2939,16 @@ ApplicationWindow {
     Connections {
         target: tabSizeDialogWin
 
-        onCanceled: {
+        function onCanceled() {
             tabSizeDialogWin.close()
             focusToEditor()
         }
-        onAccepted: {
+        function onAccepted() {
             tabSizeDialogWin.close()
             sciteQt.cmdUpdateTabSizeValues(parseInt(tabSizeDialogWin.tabSizeInput.text), parseInt(tabSizeDialogWin.indentSizeInput.text), tabSizeDialogWin.useTabsCheckBox.checked, false)
             focusToEditor()
         }
-        onConvert: {
+        function onConvert() {
             tabSizeDialogWin.close()
             sciteQt.cmdUpdateTabSizeValues(parseInt(tabSizeDialogWin.tabSizeInput.text), parseInt(tabSizeDialogWin.indentSizeInput.text), tabSizeDialogWin.useTabsCheckBox.checked, true)
             focusToEditor()
@@ -2958,11 +2968,11 @@ ApplicationWindow {
     Connections {
         target: abbreviationDialog
 
-        onCanceled: {
+        function onCanceled() {
             stackView.pop()
             focusToEditor()
         }
-        onAccepted: {
+        function onAccepted() {
             stackView.pop()
             sciteQt.cmdSetAbbreviationText(abbreviationDialog.abbreviationInput.currentText)
             focusToEditor()
@@ -2979,10 +2989,8 @@ ApplicationWindow {
         height: grid.implicitHeight+10
 
         // Window is not resizable !
-        maximumHeight: height
-        maximumWidth: width
-        minimumHeight: height
-        minimumWidth: width
+        minimumHeight: grid.implicitHeight+10
+        minimumWidth: grid.implicitWidth+10
 
         fcnLocalisation: sciteQt.getLocalisedText
 
@@ -2992,11 +3000,11 @@ ApplicationWindow {
     Connections {
         target: abbreviationDialogWin
 
-        onCanceled: {
+        function onCanceled() {
             abbreviationDialogWin.close()
             focusToEditor()
         }
-        onAccepted: {
+        function onAccepted() {
             abbreviationDialogWin.close()
             sciteQt.cmdSetAbbreviationText(abbreviationDialogWin.abbreviationInput.currentText)
             focusToEditor()
@@ -3016,12 +3024,12 @@ ApplicationWindow {
     Connections {
         target: parametersDialog
 
-        onCanceled: {
+        function onCanceled() {
             stackView.pop()
             focusToEditor()
             sciteQt.cmdParametersDialogClosed()
         }
-        onAccepted: {
+        function onAccepted() {
             stackView.pop()
             sciteQt.cmdSetParameters(parametersDialog.cmdInput.text, parametersDialog.parameter1Input.text, parametersDialog.parameter2Input.text, parametersDialog.parameter3Input.text, parametersDialog.parameter4Input.text)
             sciteQt.cmdParametersDialogClosed()
@@ -3039,10 +3047,8 @@ ApplicationWindow {
         height: grid.implicitHeight+10
 
         // Window is not resizable !
-        maximumHeight: height
-        maximumWidth: width
-        minimumHeight: height
-        minimumWidth: width
+        minimumHeight: grid.implicitHeight+10
+        minimumWidth: grid.implicitWidth+10
 
         fcnLocalisation: sciteQt.getLocalisedText
 
@@ -3052,12 +3058,12 @@ ApplicationWindow {
     Connections {
         target: parametersDialogWin
 
-        onCanceled: {
+        function onCanceled() {
             parametersDialogWin.close()
             focusToEditor()
             sciteQt.cmdParametersDialogClosed()
         }
-        onAccepted: {
+        function onAccepted() {
             parametersDialogWin.close()
             sciteQt.cmdSetParameters(parametersDialogWin.cmdInput.text, parametersDialogWin.parameter1Input.text, parametersDialogWin.parameter2Input.text, parametersDialogWin.parameter3Input.text, parametersDialogWin.parameter4Input.text)
             sciteQt.cmdParametersDialogClosed()
@@ -3068,17 +3074,17 @@ ApplicationWindow {
     Connections {
         target: storageAccess
 
-        onOpenFileContentReceived: {    // fileUri, decodedFileUri, content
+        function onOpenFileContentReceived(fileUri, decodedFileUri, content) {    // fileUri, decodedFileUri, content
             sciteQt.OnAddFileContent(fileUri, decodedFileUri, content, false, mobileFileDialog.isSaveACopyModus)
             mobileFileDialog.rejected()   // because loading and showing loaded document is already processed here (in QML)
         }
-        onOpenFileCanceled: {
+        function onOpenFileCanceled() {
             mobileFileDialog.rejected()
         }
-        onOpenFileError: {
+        function onOpenFileError() {
             mobileFileDialog.rejected()
         }
-        onCreateFileReceived: {  // fileUri, decodedFileUri
+        function onCreateFileReceived(fileUri, decodedFileUri) {  // fileUri, decodedFileUri
             sciteQt.OnAddFileContent(fileUri, decodedFileUri, "<create file received data>", true, mobileFileDialog.isSaveACopyModus)
             mobileFileDialog.rejected()
         }

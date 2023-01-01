@@ -20,6 +20,7 @@
 #include <QTextStream>
 #include <QThread>
 #include <QPair>
+#include <QRegularExpression>
 
 #include "findinfiles.h"
 
@@ -129,10 +130,12 @@ static QPair<bool, QString> SingleFileSearch( const QString & sFileName,
         QTextStream aInStream( &aFile );
         //aInStream.setEncoding(QTextStream::UnicodeUTF8);
 
-        QRegExp * pRegExpr = 0;
+        QRegularExpression * pRegExpr = 0;
         if( bRegExpr )
         {
-            pRegExpr = new QRegExp(sSearch, bCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive, bWildcard ? QRegExp::Wildcard : QRegExp::RegExp/*FixedString*/);
+            //pRegExpr = new QRegExp(sSearch, bCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive, bWildcard ? QRegExp::Wildcard : QRegExp::RegExp/*FixedString*/);
+            QRegularExpression::PatternOptions flags = (bCaseSensitive ? QRegularExpression::CaseInsensitiveOption : QRegularExpression::NoPatternOption);
+            pRegExpr = new QRegularExpression( sSearch, flags );
         }
 
         int iCount = 0;
@@ -144,7 +147,9 @@ static QPair<bool, QString> SingleFileSearch( const QString & sFileName,
             int iFoundPos = -1;
             if( bRegExpr && pRegExpr )
             {
-                iFoundPos = pRegExpr->indexIn(strLine);
+                //iFoundPos = pRegExpr->indexIn(strLine);
+                QRegularExpressionMatch aMatch = pRegExpr->match(strLine);
+                iFoundPos = aMatch.capturedStart();
             }
             else
             {
@@ -172,7 +177,9 @@ static QPair<bool, QString> SingleFileSearch( const QString & sFileName,
 
                     if( bRegExpr && pRegExpr )
                     {
-                        iFoundPos = pRegExpr->indexIn(strLine, iFoundPos+1/*pRegExpr->matchedLength()*/);
+                        //iFoundPos = pRegExpr->indexIn(strLine, iFoundPos+1/*pRegExpr->matchedLength()*/);
+                        QRegularExpressionMatch aMatch = pRegExpr->match(strLine, iFoundPos+1);
+                        iFoundPos = aMatch.capturedStart();
                     }
                     else
                     {

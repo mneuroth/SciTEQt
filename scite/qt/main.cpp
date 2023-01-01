@@ -52,7 +52,8 @@
 #elif defined(Q_OS_IOS)
 #define DEFAULT_STYLE "Material"
 #elif defined(Q_OS_WIN) || defined(Q_OS_MACOS) || defined(Q_OS_LINUX)
-#define DEFAULT_STYLE "FUSION"
+//#define DEFAULT_STYLE "FUSION"
+#define DEFAULT_STYLE "Default"
 // "Default"
 // "Material"
 // "Universal"

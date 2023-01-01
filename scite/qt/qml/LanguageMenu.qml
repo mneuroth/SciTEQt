@@ -32,8 +32,8 @@ Menu {
             }
         }
 
-        onObjectAdded: languageMenu.insertItem(index, object)
-        onObjectRemoved: languageMenu.removeItem(object)
+        onObjectAdded: (index, object) => { languageMenu.insertItem(index, object) }
+        onObjectRemoved: (object) => { languageMenu.removeItem(object) }
     }
 }
 

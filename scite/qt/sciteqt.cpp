@@ -23,7 +23,9 @@
 #include <QPrintDialog>
 #include <QPageSetupDialog>
 #include <QGuiApplication>
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
 #include <QDesktopWidget>
+#endif
 #include <QScreen>
 #include <QApplication>
 #include <QSettings>
@@ -753,14 +755,14 @@ void SciTEQt::Find()
 SciTEQt::MessageBoxChoice SciTEQt::ProcessModalWindowSynchronious(const QString & objectName)
 {
     m_iMessageDialogAccepted = MSGBOX_RESULT_EMPTY;
-    QObject * pMessageBox = getDialog(objectName);
+    QObject * pMessageBox = getDialog(objectName);   
     connect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnAcceptedClicked()));
     connect(pMessageBox,SIGNAL(rejected()),this,SLOT(OnRejectedClicked()));
-    connect(pMessageBox,SIGNAL(canceled()),this,SLOT(OnRejectedClicked()));
+    connect(pMessageBox,SIGNAL(cancelClicked()),this,SLOT(OnRejectedClicked()));
     //connect(pMessageBox,SIGNAL(okClicked()), this, SLOT(OnOkClicked()));
     //connect(pMessageBox,SIGNAL(cancelClicked()),this,SLOT(OnCancelClicked()));
-    connect(pMessageBox,SIGNAL(yes()),this,SLOT(OnYesClicked()));
-    connect(pMessageBox,SIGNAL(no()),this,SLOT(OnNoClicked()));
+    connect(pMessageBox,SIGNAL(yesClicked()),this,SLOT(OnYesClicked()));
+    connect(pMessageBox,SIGNAL(noClicked()),this,SLOT(OnNoClicked()));
 
     // simulate a synchronious call: wait for signal from MessageBox and then return with result
     m_bWaitDoneFlag = false;
@@ -775,11 +777,11 @@ SciTEQt::MessageBoxChoice SciTEQt::ProcessModalWindowSynchronious(const QString 
 
     disconnect(pMessageBox,SIGNAL(accepted()),this,SLOT(OnAcceptedClicked()));
     disconnect(pMessageBox,SIGNAL(rejected()),this,SLOT(OnRejectedClicked()));
-    disconnect(pMessageBox,SIGNAL(canceled()),this,SLOT(OnRejectedClicked()));
+    disconnect(pMessageBox,SIGNAL(cancelClicked()),this,SLOT(OnRejectedClicked()));
     //disconnect(pMessageBox,SIGNAL(ok()), this, SLOT(OnOkClicked()));
     //disconnect(pMessageBox,SIGNAL(cancel()),this,SLOT(OnCancelClicked()));
-    disconnect(pMessageBox,SIGNAL(yes()),this,SLOT(OnYesClicked()));
-    disconnect(pMessageBox,SIGNAL(no()),this,SLOT(OnNoClicked()));
+    disconnect(pMessageBox,SIGNAL(yesClicked()),this,SLOT(OnYesClicked()));
+    disconnect(pMessageBox,SIGNAL(noClicked()),this,SLOT(OnNoClicked()));
 
     if ((m_iMessageDialogAccepted & MSGBOX_RESULT_NO) == MSGBOX_RESULT_NO)
         return SciTEQt::MessageBoxChoice::mbNo;
@@ -3322,7 +3324,7 @@ QString SciTEQt::getSciteQtInfos() const
 
 void SciTEQt::logToDebug(const QString & text)
 {
-    qDebug() << text << /*Qt::*/endl;   // Qt::endl valid since Qt 5.14.x
+    qDebug() << text << Qt::endl;   // Qt::endl valid since Qt 5.14.x
 }
 
 void SciTEQt::testFunction(const QString & text)

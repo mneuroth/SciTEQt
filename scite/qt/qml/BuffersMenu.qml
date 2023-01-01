@@ -55,7 +55,7 @@ AutoSizingMenu {
             }
         }
 
-        onObjectAdded: buffersMenu.insertItem(index+5, object)
-        onObjectRemoved: buffersMenu.removeItem(object)
+        onObjectAdded: (index, object) => { buffersMenu.insertItem(index+5, object) }
+        onObjectRemoved: (object) => { buffersMenu.removeItem(object) }
     }
 }

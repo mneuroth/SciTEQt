@@ -8,18 +8,18 @@ on:
 
 jobs:
             
-  macos_5_15_2_build:
+  macos_6_4_1_build:
 
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: jurplel/install-qt-action@v2
+    - uses: actions/checkout@v3
+    - uses: jurplel/install-qt-action@v3
       with:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '5.15.2'
+        version: '6.4.1'
         # Host platform
         host: 'mac'
         # Target platform for build
@@ -29,125 +29,7 @@ jobs:
         # Whether or not to install Qt dependencies on Linux
         install-deps: 'true'
         # Additional Qt modules to install
-        modules: 'qtscript'
-        # Force a Qt mirror in case the default is not working
-        #mirror: # optional
-        # Whether or not to actually download Qt
-        cached: # optional, default is false
-        # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
-        # Version of py7zr to use in case of issues
-        py7zrversion: # optional, default is ==0.6
-        # Any extra arguments to append to the back
-        extra: # optional
-    - name: Install Qt and compile
-      run: |
-        pwd 
-        ls -lrt
-        ls -lrt ..
-        ls -lrt ../Qt
-        #ls -lrt ../Qt/Tools
-        #python3 -m aqt tool -O ../Qt mac tools_ifw 3.2.2 mac-x64
-        #ls -lrt ../Qt/Tools
-        clang++ --version
-        sw_vers
-        which qmake
-        qmake -r sciteqt.pro
-        ls -lrt
-        make
-        ls -lrt
-        ls -lrt scite/qt
-
-        #make -j 4
-        ls -lrt
-        ls -lrt scite
-        ls -lrt scite/qt
-        cd scite/qt
-        which macdeployqt
-        macdeployqt sciteqt.app -dmg -qmldir=qml -verbose=2
-        ls -lrt        
-
-  macos_5_14_2_build:
-
-    runs-on: macos-latest     # macos-latest = 10.5 --> clang++ 12.0 ! (since 29.10.2020) see: https://docs.github.com/en/free-pro-team@latest/actions/reference/specifications-for-github-hosted-runners
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: jurplel/install-qt-action@v2
-      with:
-        # Directory to install Qt
-        dir: # optional
-        # Version of Qt to install
-        version: '5.14.2'
-        # Host platform
-        host: 'mac'
-        # Target platform for build
-        target: 'desktop'
-        # Architecture for Windows/Android
-        arch: # optional
-        # Whether or not to install Qt dependencies on Linux
-        install-deps: 'true'
-        # Additional Qt modules to install
-        modules: 'qtscript'
-        # Force a Qt mirror in case the default is not working
-        #mirror: # optional
-        # Whether or not to actually download Qt
-        cached: # optional, default is false
-        # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
-        # Version of py7zr to use in case of issues
-        py7zrversion: # optional, default is ==0.6
-        # Any extra arguments to append to the back
-        extra: # optional
-    - name: Install Qt and compile
-      run: |
-        pwd 
-        ls -lrt
-        ls -lrt ..
-        ls -lrt ../Qt
-        #ls -lrt ../Qt/Tools
-        #python3 -m aqt tool -O ../Qt mac tools_ifw 3.2.2 mac-x64
-        #ls -lrt ../Qt/Tools
-        clang++ --version
-        sw_vers
-        which qmake
-        qmake -r sciteqt.pro
-        ls -lrt
-        make
-        ls -lrt
-        ls -lrt scite/qt
-
-        #make -j 4
-        ls -lrt
-        ls -lrt scite
-        ls -lrt scite/qt
-        cd scite/qt
-        which macdeployqt
-        macdeployqt sciteqt.app -dmg -qmldir=qml -verbose=2
-        ls -lrt        
-
-  macos_5_11_3_build:
-
-    runs-on: macos-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: jurplel/install-qt-action@v2
-      with:
-        # Directory to install Qt
-        dir: # optional
-        # Version of Qt to install
-        version: '5.11.3'
-        # Host platform
-        host: 'mac'
-        # Target platform for build
-        target: 'desktop'
-        # Architecture for Windows/Android
-        arch: # optional
-        # Whether or not to install Qt dependencies on Linux
-        install-deps: 'true'
-        # Additional Qt modules to install
-        modules: 'qtscript'
+        modules: #'qtscript'
         # Force a Qt mirror in case the default is not working
         #mirror: # optional
         # Whether or not to actually download Qt

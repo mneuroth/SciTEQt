@@ -1023,7 +1023,7 @@ Item {
     Connections {
         target: sciteQt
 
-        onUpdateEolMenus:             handeEolMenus(enumEol)
-        onUpdateEncodingMenus:        handleEncodingMenus(enumEncoding)
+        function onUpdateEolMenus(enumEol)           { handeEolMenus(enumEol) }
+        function onUpdateEncodingMenus(enumEncoding) { handleEncodingMenus(enumEncoding) }
     }
 }

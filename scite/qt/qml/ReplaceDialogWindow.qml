@@ -45,10 +45,10 @@ Window {
     Connections {
         target: dialog
 
-        onAccepted: root.accepted()
-        onCanceled: root.canceled()
-        onReplace: root.replace()
-        onReplaceAll: root.replaceAll()
-        onReplaceInSection: root.replaceInSection()
+        function onAccepted() { root.accepted() }
+        function onCanceled() { root.canceled() }
+        function onReplace() { root.replace() }
+        function onReplaceAll() { root.replaceAll() }
+        function onReplaceInSection() { root.replaceInSection() }
     }
 }

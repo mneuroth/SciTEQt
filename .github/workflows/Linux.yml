@@ -8,18 +8,18 @@ on:
 
 jobs:
     
-  linux_build_5_14_2:
+  linux_build_6_4_1:
 
     runs-on: ubuntu-latest
       
     steps:
-    - uses: actions/checkout@v2
-    - uses: jurplel/install-qt-action@v2
+    - uses: actions/checkout@v3
+    - uses: jurplel/install-qt-action@v3
       with:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '5.14.2'
+        version: '6.4.1'
         # Host platform
         host: # optional
         # Target platform for build
@@ -29,7 +29,7 @@ jobs:
         # Whether or not to install Qt dependencies on Linux
         install-deps: 'true'
         # Additional Qt modules to install
-        modules: 'qtscript' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info, qtscripttools
+        modules: #'qtscript' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info, qtscripttools
         # Force a Qt mirror in case the default is not working
         #mirror: # optional
         # Whether or not to actually download Qt
@@ -56,170 +56,3 @@ jobs:
         ls -lrt
         ls -lrt scite/qt
 
-  linux_build_5_13_2:
-
-    runs-on: ubuntu-latest
-      
-    steps:
-    - uses: actions/checkout@v2
-    - uses: jurplel/install-qt-action@v2
-      with:
-        # Directory to install Qt
-        dir: # optional
-        # Version of Qt to install
-        version: '5.13.2'
-        # Host platform
-        host: # optional
-        # Target platform for build
-        target: 'desktop'
-        # Architecture for Windows/Android
-        arch: # optional
-        # Whether or not to install Qt dependencies on Linux
-        install-deps: 'true'
-        # Additional Qt modules to install
-        modules: 'qtscript' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
-        # Force a Qt mirror in case the default is not working
-        #mirror: # optional
-        # Whether or not to actually download Qt
-        cached: # optional, default is false
-        # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
-        # Version of py7zr to use in case of issues
-        py7zrversion: # optional, default is ==0.6
-        # Any extra arguments to append to the back
-        extra: # optional
-    - name: Install Qt and compile
-      run: |
-        #python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
-        which qmake
-        qmake -r sciteqt.pro
-        ls -lrt
-        make
-        ls -lrt
-        ls -lrt scite/qt
-
-  linux_build_5_12_9:
-
-    runs-on: ubuntu-latest
-      
-    steps:
-    - uses: actions/checkout@v2
-    - uses: jurplel/install-qt-action@v2
-      with:
-        # Directory to install Qt
-        dir: # optional
-        # Version of Qt to install
-        version: '5.12.9'
-        # Host platform
-        host: # optional
-        # Target platform for build
-        target: 'desktop'
-        # Architecture for Windows/Android
-        arch: # optional
-        # Whether or not to install Qt dependencies on Linux
-        install-deps: 'true'
-        # Additional Qt modules to install
-        modules: 'qtscript' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
-        # Force a Qt mirror in case the default is not working
-        #mirror: # optional
-        # Whether or not to actually download Qt
-        cached: # optional, default is false
-        # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
-        # Version of py7zr to use in case of issues
-        py7zrversion: # optional, default is ==0.6
-        # Any extra arguments to append to the back
-        extra: # optional
-    - name: Install Qt and compile
-      run: |
-        #python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
-        which qmake
-        qmake -r sciteqt.pro
-        ls -lrt
-        make
-        ls -lrt
-        ls -lrt scite/qt
-
-  linux_build_5_11_3:
-
-    runs-on: ubuntu-latest
-      
-    steps:
-    - uses: actions/checkout@v2
-    - uses: jurplel/install-qt-action@v2
-      with:
-        # Directory to install Qt
-        dir: # optional
-        # Version of Qt to install
-        version: '5.11.3'
-        # Host platform
-        host: # optional
-        # Target platform for build
-        target: 'desktop'
-        # Architecture for Windows/Android
-        arch: # optional
-        # Whether or not to install Qt dependencies on Linux
-        install-deps: 'true'
-        # Additional Qt modules to install
-        modules: 'qtscript' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
-        # Force a Qt mirror in case the default is not working
-        #mirror: # optional
-        # Whether or not to actually download Qt
-        cached: # optional, default is false
-        # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
-        # Version of py7zr to use in case of issues
-        py7zrversion: # optional, default is ==0.6
-        # Any extra arguments to append to the back
-        extra: # optional
-    - name: Install Qt and compile
-      run: |
-        #python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
-        which qmake
-        qmake -r sciteqt.pro
-        ls -lrt
-        make
-        ls -lrt
-        ls -lrt scite/qt
-
-  linux_build_5_15_2:
-
-    runs-on: ubuntu-latest
-      
-    steps:
-    - uses: actions/checkout@v2
-    - uses: jurplel/install-qt-action@v2
-      with:
-        # Directory to install Qt
-        dir: # optional
-        # Version of Qt to install
-        version: '5.15.2'
-        # Host platform
-        host: # optional
-        # Target platform for build
-        target: 'desktop'
-        # Architecture for Windows/Android
-        arch: # optional
-        # Whether or not to install Qt dependencies on Linux
-        install-deps: 'true'
-        # Additional Qt modules to install
-        modules: 'qtscript' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info
-        # Force a Qt mirror in case the default is not working
-        #mirror: # optional
-        # Whether or not to actually download Qt
-        cached: # optional, default is false
-        # Version of aqtinstall to use in case of issues
-        aqtversion: # optional, default is ==0.8
-        # Version of py7zr to use in case of issues
-        py7zrversion: # optional, default is ==0.6
-        # Any extra arguments to append to the back
-        extra: # optional
-    - name: Install Qt and compile
-      run: |
-        #python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
-        which qmake
-        qmake -r sciteqt.pro
-        ls -lrt
-        make
-        ls -lrt
-        ls -lrt scite/qt
