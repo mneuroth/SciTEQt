@@ -109,7 +109,7 @@ jobs:
         dir
         dir scite\bin
         dir scite\qt
-        dir scite\qt\release
+        #dir scite\qt\release
         dir scintilla\bin
         cd scite\qt\dist\packages\org.scintilla.sciteqt\data
         windeployqt --release --qmldir ..\..\..\..\qml sciteqt.exe
@@ -198,7 +198,7 @@ jobs:
         dir
         dir scite
         dir scite\qt
-        dir scite\qt\release
+        #dir scite\qt\release
         dir scite\bin
         dir scintilla\bin
         cd scite\qt\dist\packages\org.scintilla.sciteqt\data

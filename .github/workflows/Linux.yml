@@ -29,7 +29,7 @@ jobs:
         # Whether or not to install Qt dependencies on Linux
         install-deps: 'true'
         # Additional Qt modules to install
-        modules: #'qtscript' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info, qtscripttools
+        modules: 'core5compat' #'qtscript' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info, qtscripttools
         # Force a Qt mirror in case the default is not working
         #mirror: # optional
         # Whether or not to actually download Qt
@@ -47,7 +47,6 @@ jobs:
         ls -lrt
         ls -lrt ..
         ls -lrt ../Qt
-        ls -lrt ../Qt/Tools
         #python3 -m aqt tool -O ../Qt linux tools_ifw 3.2.2 linux-x64
         #ls -lrt ../Qt/Tools
         qmake -r sciteqt.pro
