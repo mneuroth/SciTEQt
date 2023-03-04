@@ -22,6 +22,7 @@
 #include <map>
 #include <set>
 #include <algorithm>
+#include <optional>
 #include <memory>
 #include <chrono>
 #include <atomic>
@@ -51,6 +52,8 @@
 #include "Extender.h"
 #include "SciTE.h"
 #include "JobQueue.h"
+#include "Searcher.h"
+#include "Geometry.h"
 
 #include "Cookie.h"
 #include "Worker.h"
@@ -80,12 +83,12 @@ enum { SURROGATE_TRAIL_LAST = 0xDFFF };
 
 intptr_t ScintillaPrimitive::Send(unsigned int msg, uintptr_t wParam, intptr_t lParam) {
 
-    Scintilla::ScintillaQt * scintilla = reinterpret_cast<Scintilla::ScintillaQt *>(GetID());
-    return scintilla->WndProc(msg, wParam, lParam);
+    Scintilla::Internal::ScintillaQt * scintilla = reinterpret_cast<Scintilla::Internal::ScintillaQt *>(GetID());
+    return scintilla->WndProc((Scintilla::Message)msg, wParam, lParam);
 }
 
 bool IsDBCSLeadByte(int codePage, char ch) {
-    if (Scintilla::API::CpUtf8 == codePage)
+    if (Scintilla::CpUtf8 == codePage)
         // For lexing, all characters >= 0x80 are treated the
         // same so none is considered a lead byte.
         return false;
@@ -109,7 +112,7 @@ inline QObject * GetQObject(WindowID winID)
 
 inline QQuickItem * GetQuickItem(QObject * qObj)
 {
-    Scintilla::ScintillaQt * pScintilla = qobject_cast<Scintilla::ScintillaQt *>(qObj);
+    Scintilla::Internal::ScintillaQt * pScintilla = qobject_cast<Scintilla::Internal::ScintillaQt *>(qObj);
     if( pScintilla!=0 )
     {
         return pScintilla->GetScrollArea();
@@ -135,7 +138,27 @@ inline QQuickWindow * GetQuickWindow(QObject * qObj)
 #if defined(WIN32)
 
 // from GUIWin.cxx
-
+/*
+static unsigned int UTF8Length(const char *uptr, size_t tlen) noexcept {
+    unsigned int len = 0;
+    for (size_t i = 0; i < tlen && uptr[i];) {
+        const unsigned int uch = uptr[i];
+        if (uch < 0x80) {
+            len++;
+        } else if (uch < 0x800) {
+            len += 2;
+        } else if ((uch >= SURROGATE_LEAD_FIRST) &&
+                (uch <= SURROGATE_TRAIL_LAST)) {
+            len += 4;
+            i++;
+        } else {
+            len += 3;
+        }
+        i++;
+    }
+    return len;
+}
+*/
 static unsigned int UTF8Length(const wchar_t *uptr, size_t tlen) noexcept {
     unsigned int len = 0;
     for (size_t i = 0; i < tlen && uptr[i];) {
@@ -155,7 +178,34 @@ static unsigned int UTF8Length(const wchar_t *uptr, size_t tlen) noexcept {
     }
     return len;
 }
-
+/*
+static void UTF8FromUTF16(const char *uptr, size_t tlen, char *putf) noexcept {
+    int k = 0;
+    for (size_t i = 0; i < tlen && uptr[i];) {
+        const unsigned int uch = uptr[i];
+        if (uch < 0x80) {
+            putf[k++] = static_cast<char>(uch);
+        } else if (uch < 0x800) {
+            putf[k++] = static_cast<char>(0xC0 | (uch >> 6));
+            putf[k++] = static_cast<char>(0x80 | (uch & 0x3f));
+        } else if ((uch >= SURROGATE_LEAD_FIRST) &&
+                (uch <= SURROGATE_TRAIL_LAST)) {
+            // Half a surrogate pair
+            i++;
+            const unsigned int xch = 0x10000 + ((uch & 0x3ff) << 10) + (uptr[i] & 0x3ff);
+            putf[k++] = static_cast<char>(0xF0 | (xch >> 18));
+            putf[k++] = static_cast<char>(0x80 | ((xch >> 12) & 0x3f));
+            putf[k++] = static_cast<char>(0x80 | ((xch >> 6) & 0x3f));
+            putf[k++] = static_cast<char>(0x80 | (xch & 0x3f));
+        } else {
+            putf[k++] = static_cast<char>(0xE0 | (uch >> 12));
+            putf[k++] = static_cast<char>(0x80 | ((uch >> 6) & 0x3f));
+            putf[k++] = static_cast<char>(0x80 | (uch & 0x3f));
+        }
+        i++;
+    }
+}
+*/
 static void UTF8FromUTF16(const wchar_t *uptr, size_t tlen, char *putf) noexcept {
     int k = 0;
     for (size_t i = 0; i < tlen && uptr[i];) {
@@ -261,7 +311,18 @@ gui_string StringFromUTF8(const std::string &s) {
     UTF16FromUTF8(s.c_str(), sLen, &vgc[0], wideLen);
     return gui_string(&vgc[0], wideLen);
 }
-
+/*
+std::string UTF8FromString(const std::string &s) {
+    if (s.empty()) {
+        return std::string();
+    }
+    const size_t sLen = s.size();
+    const size_t narrowLen = UTF8Length(s.c_str(), sLen);
+    std::vector<char> vc(narrowLen);
+    UTF8FromUTF16(s.c_str(), sLen, &vc[0]);
+    return std::string(&vc[0], narrowLen);
+}
+*/
 std::string UTF8FromString(const gui_string &s) {
     if (s.empty()) {
         return std::string();
@@ -370,7 +431,7 @@ void Window::Destroy()
 	// nothing to do...
 }
 
-bool Window::HasFocus()
+bool Window::HasFocus() const noexcept
 {
     QQuickItem * window = GetQuickItem(GetQObject(GetID()));
     if( window != 0 )
@@ -440,11 +501,22 @@ void Window::SetTitle(const gui_char *s)
     }
 }
 
+void Window::SetRedraw(bool redraw) {
+// TODO gulp !!!
+    /*
+    ::SendMessage(static_cast<HWND>(GetID()), WM_SETREDRAW, redraw, 0);
+    if (redraw) {
+        ::RedrawWindow(static_cast<HWND>(GetID()), nullptr, {},
+            RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN);
+    }
+    */
+}
+
 void Menu::CreatePopUp()
 {
 }
 
-void Menu::Destroy()
+void Menu::Destroy() noexcept
 {
 }
 

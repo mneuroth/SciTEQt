@@ -13,7 +13,9 @@
 #include <cstdarg>
 #include <ctime>
 
+#include <tuple>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <map>
 #include <set>
@@ -35,21 +37,21 @@
 
 JobSubsystem SubsystemFromChar(char c) noexcept {
 	if (c == '1')
-		return jobGUI;
+		return JobSubsystem::gui;
 	else if (c == '2')
-		return jobShell;
+		return JobSubsystem::shell;
 	else if (c == '3')
-		return jobExtension;
+		return JobSubsystem::extension;
 	else if (c == '4')
-		return jobHelp;
+		return JobSubsystem::help;
 	else if (c == '5')
-		return jobOtherHelp;
+		return JobSubsystem::otherHelp;
 	else if (c == '7')
-		return jobImmediate;
-	return jobCLI;
+		return JobSubsystem::immediate;
+	return JobSubsystem::cli;
 }
 
-JobMode::JobMode(PropSetFile &props, int item, const char *fileNameExt) : jobType(jobCLI), saveBefore(0), isFilter(false), flags(0) {
+JobMode::JobMode(PropSetFile &props, int item, const char *fileNameExt) : jobType(JobSubsystem::cli), saveBefore(0), isFilter(false), flags(0) {
 	bool quiet = false;
 	int repSel = 0;
 	bool groupUndo = false;
@@ -73,19 +75,19 @@ JobMode::JobMode(PropSetFile &props, int item, const char *fileNameExt) : jobTyp
 
 		if (opt == "subsystem" && !value.empty()) {
 			if (value[0] == '0' || value == "console")
-				jobType = jobCLI;
+				jobType = JobSubsystem::cli;
 			else if (value[0] == '1' || value == "windows")
-				jobType = jobGUI;
+				jobType = JobSubsystem::gui;
 			else if (value[0] == '2' || value == "shellexec")
-				jobType = jobShell;
+				jobType = JobSubsystem::shell;
 			else if (value[0] == '3' || value == "lua" || value == "director")
-				jobType = jobExtension;
+				jobType = JobSubsystem::extension;
 			else if (value[0] == '4' || value == "htmlhelp")
-				jobType = jobHelp;
+				jobType = JobSubsystem::help;
 			else if (value[0] == '5' || value == "winhelp")
-				jobType = jobOtherHelp;
+				jobType = JobSubsystem::otherHelp;
 			else if (value[0] == '7' || value == "immediate")
-				jobType = jobImmediate;
+				jobType = JobSubsystem::immediate;
 		}
 
 		if (opt == "quiet") {
@@ -179,7 +181,7 @@ JobMode::JobMode(PropSetFile &props, int item, const char *fileNameExt) : jobTyp
 		flags |= jobGroupUndo;
 }
 
-Job::Job() noexcept : jobType(jobCLI), flags(0) {
+Job::Job() noexcept : jobType(JobSubsystem::cli), flags(0) {
 	Clear();
 }
 
@@ -190,7 +192,7 @@ Job::Job(const std::string &command_, const FilePath &directory_, JobSubsystem j
 void Job::Clear() noexcept {
 	command.clear();
 	directory.Init();
-	jobType = jobCLI;
+	jobType = JobSubsystem::cli;
 	input.clear();
 	flags = 0;
 }
@@ -258,8 +260,8 @@ void JobQueue::AddCommand(const std::string &command, const FilePath &directory,
 			jobUsesOutputPane = false;
 		jobQueue[commandCurrent] = Job(command, directory, jobType, input, flags);
 		commandCurrent++;
-		if (jobType == jobCLI && !(flags & jobQuiet))
+		if (jobType == JobSubsystem::cli && !(flags & jobQuiet))
 			jobUsesOutputPane = true;
-		// For jobExtension, the Trace() method shows output pane on demand.
+		// For JobSubsystem::extension, the Trace() method shows output pane on demand.
 	}
 }

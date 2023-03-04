@@ -6,8 +6,6 @@
 #     nmake -f scite.mak
 # For debug versions define DEBUG on the command line.
 # For a build without Lua, define NO_LUA on the command line.
-# For a build with no lexers, loading Scintilla.DLL instead of SciLexer.DLL,
-# define LOAD_SCINTILLA on the command line.
 # The main makefile uses mingw32 gcc and may be more current than this file.
 
 .SUFFIXES: .cxx .properties .dll
@@ -15,10 +13,12 @@
 DIR_BIN=..\bin
 DIR_SCINTILLA=..\..\scintilla
 DIR_SCINTILLA_BIN=$(DIR_SCINTILLA)\bin
+DIR_LEXILLA=..\..\lexilla
+DIR_LEXILLA_BIN=$(DIR_LEXILLA)\bin
 
 PROG=$(DIR_BIN)\SciTE.exe
 PROGSTATIC=$(DIR_BIN)\Sc1.exe
-DLLS=$(DIR_BIN)\Scintilla.dll $(DIR_BIN)\SciLexer.dll $(DIR_BIN)\Lexilla.dll
+DLLS=$(DIR_BIN)\Scintilla.dll $(DIR_BIN)\Lexilla.dll
 
 WIDEFLAGS=-DUNICODE -D_UNICODE
 
@@ -33,23 +33,22 @@ SUBSYSTEM=-SUBSYSTEM:WINDOWS,5.02
 !ELSE
 SUBSYSTEM=-SUBSYSTEM:WINDOWS,5.01
 !ENDIF
-!ELSEIFDEF ARM64
+!ELSE
+CETCOMPAT=-CETCOMPAT
+!IFDEF ARM64
 ADD_DEFINE=-D_ARM64_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE=1
 SUBSYSTEM=-SUBSYSTEM:WINDOWS,10.00
+!ENDIF
 !ENDIF
 
 CXXFLAGS=-Zi -TP -MP -W4 -EHsc -Zc:forScope -Zc:wchar_t -std:c++17 -D_CRT_SECURE_NO_DEPRECATE=1 -D_CRT_NONSTDC_NO_DEPRECATE $(WIDEFLAGS) $(ADD_DEFINE)
 CCFLAGS=-TC -MP -W3 -wd4244 -D_CRT_SECURE_NO_DEPRECATE=1 -DLUA_USER_H=\"scite_lua_win.h\" $(ADD_DEFINE)
 
-!IFDEF LOAD_SCINTILLA
-CXXFLAGS=$(CXXFLAGS) -DLOAD_SCINTILLA
-!ENDIF
-
 CXXDEBUG=-Od -MTd -DDEBUG
 # Don't use "-MD", even with "-D_STATIC_CPPLIB" because it links to MSVCR71.DLL
-CXXNDEBUG=-O1 -Oi -MT -DNDEBUG -GL
+CXXNDEBUG=-O2 -Oi -MT -DNDEBUG -GL
 NAME=-Fo
-LDFLAGS=-OPT:REF -LTCG -DEBUG $(SUBSYSTEM)
+LDFLAGS=-OPT:REF -LTCG -DEBUG $(SUBSYSTEM) $(CETCOMPAT)
 LDDEBUG=
 LIBS=KERNEL32.lib USER32.lib GDI32.lib MSIMG32.lib COMDLG32.lib COMCTL32.lib ADVAPI32.lib IMM32.lib SHELL32.LIB OLE32.LIB OLEAUT32.LIB UXTHEME.LIB
 NOLOGO=-nologo
@@ -70,7 +69,7 @@ CXXFLAGS=$(CXXFLAGS) $(CXXNDEBUG)
 CCFLAGS=$(CCFLAGS) $(CXXNDEBUG)
 !ENDIF
 
-INCLUDEDIRS=-I../../scintilla/include -I../src
+INCLUDEDIRS=-I../../lexilla/include -I../../lexilla/access -I../../scintilla/include -I../src
 
 SHAREDOBJS=\
 	Cookie.obj \
@@ -87,9 +86,10 @@ SHAREDOBJS=\
 	GUIWin.obj \
 	IFaceTable.obj \
 	JobQueue.obj \
-	LexillaLibrary.obj \
+	LexillaAccess.obj \
 	MatchMarker.obj \
 	MultiplexExtension.obj \
+	PathMatch.obj \
 	PropSetFile.obj \
 	ScintillaCall.obj \
 	ScintillaWindow.obj \
@@ -112,7 +112,7 @@ OBJS=\
 	SciTEWin.obj
 
 LIBSCI=$(DIR_SCINTILLA_BIN)\libscintilla.lib
-LIBLEX=$(DIR_SCINTILLA_BIN)\liblexilla.lib
+LIBLEX=$(DIR_LEXILLA_BIN)\liblexilla.lib
 
 OBJSSTATIC=$(SHAREDOBJS) Sc1.obj
 
@@ -120,24 +120,26 @@ OBJSSTATIC=$(SHAREDOBJS) Sc1.obj
 #**LEXPROPS=\\\n\($(DIR_BIN)\\\* \)
 LEXPROPS=\
 $(DIR_BIN)\abaqus.properties $(DIR_BIN)\ada.properties \
-$(DIR_BIN)\asl.properties $(DIR_BIN)\asm.properties $(DIR_BIN)\asn1.properties \
-$(DIR_BIN)\au3.properties $(DIR_BIN)\ave.properties $(DIR_BIN)\avs.properties \
-$(DIR_BIN)\baan.properties $(DIR_BIN)\blitzbasic.properties \
-$(DIR_BIN)\bullant.properties $(DIR_BIN)\caml.properties \
-$(DIR_BIN)\cil.properties $(DIR_BIN)\cmake.properties \
-$(DIR_BIN)\cobol.properties $(DIR_BIN)\coffeescript.properties \
-$(DIR_BIN)\conf.properties $(DIR_BIN)\cpp.properties \
-$(DIR_BIN)\csound.properties $(DIR_BIN)\css.properties $(DIR_BIN)\d.properties \
+$(DIR_BIN)\asciidoc.properties $(DIR_BIN)\asl.properties \
+$(DIR_BIN)\asm.properties $(DIR_BIN)\asn1.properties $(DIR_BIN)\au3.properties \
+$(DIR_BIN)\ave.properties $(DIR_BIN)\avs.properties $(DIR_BIN)\baan.properties \
+$(DIR_BIN)\blitzbasic.properties $(DIR_BIN)\bullant.properties \
+$(DIR_BIN)\caml.properties $(DIR_BIN)\cil.properties \
+$(DIR_BIN)\cmake.properties $(DIR_BIN)\cobol.properties \
+$(DIR_BIN)\coffeescript.properties $(DIR_BIN)\conf.properties \
+$(DIR_BIN)\cpp.properties $(DIR_BIN)\csound.properties \
+$(DIR_BIN)\css.properties $(DIR_BIN)\d.properties \
 $(DIR_BIN)\dataflex.properties $(DIR_BIN)\ecl.properties \
 $(DIR_BIN)\eiffel.properties $(DIR_BIN)\erlang.properties \
 $(DIR_BIN)\escript.properties $(DIR_BIN)\flagship.properties \
 $(DIR_BIN)\forth.properties $(DIR_BIN)\fortran.properties \
-$(DIR_BIN)\freebasic.properties $(DIR_BIN)\gap.properties \
-$(DIR_BIN)\haskell.properties $(DIR_BIN)\hex.properties \
-$(DIR_BIN)\html.properties $(DIR_BIN)\inno.properties \
-$(DIR_BIN)\json.properties $(DIR_BIN)\kix.properties \
-$(DIR_BIN)\latex.properties $(DIR_BIN)\lisp.properties \
-$(DIR_BIN)\lot.properties $(DIR_BIN)\lout.properties $(DIR_BIN)\lua.properties \
+$(DIR_BIN)\freebasic.properties $(DIR_BIN)\fsharp.properties \
+$(DIR_BIN)\gap.properties $(DIR_BIN)\haskell.properties \
+$(DIR_BIN)\hex.properties $(DIR_BIN)\html.properties \
+$(DIR_BIN)\inno.properties $(DIR_BIN)\json.properties \
+$(DIR_BIN)\kix.properties $(DIR_BIN)\latex.properties \
+$(DIR_BIN)\lisp.properties $(DIR_BIN)\lot.properties \
+$(DIR_BIN)\lout.properties $(DIR_BIN)\lua.properties \
 $(DIR_BIN)\markdown.properties $(DIR_BIN)\matlab.properties \
 $(DIR_BIN)\maxima.properties $(DIR_BIN)\metapost.properties \
 $(DIR_BIN)\mmixal.properties $(DIR_BIN)\modula3.properties \
@@ -151,14 +153,15 @@ $(DIR_BIN)\ps.properties $(DIR_BIN)\purebasic.properties \
 $(DIR_BIN)\python.properties $(DIR_BIN)\r.properties \
 $(DIR_BIN)\raku.properties $(DIR_BIN)\rebol.properties \
 $(DIR_BIN)\registry.properties $(DIR_BIN)\ruby.properties \
-$(DIR_BIN)\rust.properties $(DIR_BIN)\scriptol.properties \
-$(DIR_BIN)\smalltalk.properties $(DIR_BIN)\sorcins.properties \
-$(DIR_BIN)\specman.properties $(DIR_BIN)\spice.properties \
-$(DIR_BIN)\sql.properties $(DIR_BIN)\tacl.properties $(DIR_BIN)\tal.properties \
-$(DIR_BIN)\tcl.properties $(DIR_BIN)\tex.properties \
-$(DIR_BIN)\txt2tags.properties $(DIR_BIN)\vb.properties \
-$(DIR_BIN)\verilog.properties $(DIR_BIN)\vhdl.properties \
-$(DIR_BIN)\visualprolog.properties $(DIR_BIN)\yaml.properties
+$(DIR_BIN)\rust.properties $(DIR_BIN)\sas.properties \
+$(DIR_BIN)\scriptol.properties $(DIR_BIN)\smalltalk.properties \
+$(DIR_BIN)\sorcins.properties $(DIR_BIN)\specman.properties \
+$(DIR_BIN)\spice.properties $(DIR_BIN)\sql.properties \
+$(DIR_BIN)\tacl.properties $(DIR_BIN)\tal.properties $(DIR_BIN)\tcl.properties \
+$(DIR_BIN)\tex.properties $(DIR_BIN)\txt2tags.properties \
+$(DIR_BIN)\vb.properties $(DIR_BIN)\verilog.properties \
+$(DIR_BIN)\vhdl.properties $(DIR_BIN)\visualprolog.properties \
+$(DIR_BIN)\yaml.properties
 #--Autogenerated -- end of automatically generated section
 
 PROPS=$(DIR_BIN)\SciTEGlobal.properties $(DIR_BIN)\abbrev.properties $(LEXPROPS)
@@ -195,6 +198,9 @@ depend:
 {$(DIR_SCINTILLA_BIN)}.dll{$(DIR_BIN)}.dll:
 	copy $< $@
 
+{$(DIR_LEXILLA_BIN)}.dll{$(DIR_BIN)}.dll:
+	copy $< $@
+
 {..\src}.properties{$(DIR_BIN)}.properties:
 	copy $< $@
 
@@ -220,6 +226,10 @@ $(PROGSTATIC): $(OBJSSTATIC) $(LIBSCI) $(LIBLEX) Sc1Res.res
 
 {..\src}.cxx.obj::
 	$(CXX) $(CXXFLAGS) -c $<
+{..\..\lexilla\access}.cxx.obj::
+	$(CXX) $(CXXFLAGS) -c $<
+{..\..\scintilla\call}.cxx.obj::
+	$(CXX) $(CXXFLAGS) -c $<
 {.}.cxx.obj::
 	$(CXX) $(CXXFLAGS) -c $<
 
@@ -233,7 +243,7 @@ Sc1.obj: SciTEWin.cxx
 
 !IF EXISTS(nmdeps.mak)
 
-# Protect with !IF EXISTS to handle accidental deletion - just 'nmake -f scite.mak deps'
+# Protect with !IF EXISTS to handle accidental deletion - just 'nmake -f scite.mak depend'
 
 !INCLUDE nmdeps.mak
 

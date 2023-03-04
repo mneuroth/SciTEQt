@@ -9,10 +9,12 @@
 #define SCITE_H
 
 // Version numbers and dates
-#define VERSION_SCITE "4.4.6"
-#define VERSION_WORDS 4, 4, 6, 0
-#define COPYRIGHT_DATES "December 1998-December 2020"
-#define COPYRIGHT_YEARS "1998-2020"
+#define VERSION_SCITE "5.3.2"
+#define VERSION_WORDS 5, 3, 2, 0
+#define COPYRIGHT_DATES "December 1998-December 2022"
+#define COPYRIGHT_YEARS "1998-2022"
+#define VERSION_SCINTILLA "5.3.2"
+#define VERSION_LEXILLA "5.2.1"
 
 // Menu IDs.
 // These are located 100 apart. No one will want more than 100 in each menu ;)
@@ -106,6 +108,7 @@
 #define IDM_ENTERSELECTION  256
 #define IDM_SELECTIONADDNEXT  257
 #define IDM_SELECTIONADDEACH  258
+#define IDM_FILTER 		259
 
 #define IDC_INCFINDTEXT     253
 #define IDC_INCFINDBTNOK	254
@@ -123,7 +126,6 @@
 #define IDM_BUILD			302
 #define IDM_GO				303
 #define IDM_STOPEXECUTE		304
-#define IDM_FINISHEDEXECUTE	305
 #define IDM_NEXTMSG			306
 #define IDM_PREVMSG			307
 #define IDM_CLEAN			308
@@ -200,6 +202,8 @@
 #define IDM_UNSLASH				804
 #define IDM_DIRECTIONUP			805
 #define IDM_DIRECTIONDOWN	806
+#define IDM_FILTERSTATE		807
+#define IDM_CONTEXTVISIBLE	808
 
 // Help
 #define IDM_HELP			901
@@ -235,6 +239,8 @@
 #define IDREPLACEINSEL		238
 #define IDREGEXP			239
 #define IDWRAP			240
+#define IDFILTERSTATE		255
+#define IDCONTEXTVISIBLE	256
 
 #define IDUNSLASH			241
 #define IDCMD			242
@@ -267,14 +273,17 @@
 
 // Resource IDs
 #define IDR_CLOSEFILE 100
+#define IDR_CLOSEFILE24 107
 #define IDC_DRAGDROP        401
+
 #define IDBM_WORD 101
 #define IDBM_CASE 102
 #define IDBM_REGEX 103
 #define IDBM_BACKSLASH 104
 #define IDBM_AROUND 105
 #define IDBM_UP 106
-#define IDR_CLOSEFILE24 107
+#define IDBM_FILTER 108
+#define IDBM_CONTEXT 109
 
 #define IDBM_20_WORD 201
 #define IDBM_20_CASE 202
@@ -282,6 +291,8 @@
 #define IDBM_20_BACKSLASH 204
 #define IDBM_20_AROUND 205
 #define IDBM_20_UP 206
+#define IDBM_20_FILTER 208
+#define IDBM_20_CONTEXT 209
 
 #define IDBM_24_WORD 301
 #define IDBM_24_CASE 302
@@ -289,6 +300,8 @@
 #define IDBM_24_BACKSLASH 304
 #define IDBM_24_AROUND 305
 #define IDBM_24_UP 306
+#define IDBM_24_FILTER 308
+#define IDBM_24_CONTEXT 309
 
 #define IDBM_32_WORD 401
 #define IDBM_32_CASE 402
@@ -296,5 +309,7 @@
 #define IDBM_32_BACKSLASH 404
 #define IDBM_32_AROUND 405
 #define IDBM_32_UP 406
+#define IDBM_32_FILTER 408
+#define IDBM_32_CONTEXT 409
 
 #endif

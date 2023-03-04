@@ -8,6 +8,9 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <set>
+#include <optional>
+#include <algorithm>
 #include <chrono>
 
 #include "ScintillaTypes.h"
@@ -17,7 +20,7 @@
 
 #include "MatchMarker.h"
 
-namespace SA = Scintilla::API;
+namespace SA = Scintilla;
 
 std::vector<LineRange> LinesBreak(SA::ScintillaCall *pSci) {
 	std::vector<LineRange> lineRanges;
@@ -47,7 +50,7 @@ MatchMarker::MatchMarker() :
 
 void MatchMarker::StartMatch(SA::ScintillaCall *pSci_,
 			     const std::string &textMatch_, SA::FindOption flagsMatch_, int styleMatch_,
-			     int indicator_, int bookMark_) {
+			     int indicator_, int bookMark_, std::optional<Scintilla::Line> showContext_) {
 	lineRanges.clear();
 	pSci = pSci_;
 	textMatch = textMatch_;
@@ -55,7 +58,9 @@ void MatchMarker::StartMatch(SA::ScintillaCall *pSci_,
 	styleMatch = styleMatch_;
 	indicator = indicator_;
 	bookMark = bookMark_;
+	showContext = showContext_;
 	lineRanges = LinesBreak(pSci);
+	matches.clear();
 	// Perform the initial marking immediately to avoid flashing
 	Continue();
 }
@@ -65,7 +70,7 @@ bool MatchMarker::Complete() const noexcept {
 }
 
 void MatchMarker::Continue() {
-	constexpr int segment = 200;
+	constexpr int segment = 2000;
 
 	// Remove old indicators if any exist.
 	pSci->SetIndicatorCurrent(indicator);
@@ -78,14 +83,14 @@ void MatchMarker::Continue() {
 	pSci->SetSearchFlags(flagsMatch);
 	const SA::Position positionStart = pSci->LineStart(rangeSearch.lineStart);
 	const SA::Position positionEnd = pSci->LineStart(lineEndSegment);
-	pSci->SetTarget(SA::Range(positionStart, positionEnd));
+	pSci->SetTarget(SA::Span(positionStart, positionEnd));
 	pSci->IndicatorClearRange(positionStart, positionEnd - positionStart);
 
 	//Monitor the amount of time took by the search.
 	GUI::ElapsedTime searchElapsedTime;
 
 	// Find the first occurrence of word.
-	SA::Range rangeFound = pSci->RangeSearchInTarget(textMatch);
+	SA::Span rangeFound = pSci->SpanSearchInTarget(textMatch);
 	while (rangeFound.start >= 0) {
 		// Limit the search duration to 250 ms. Avoid to freeze editor for huge lines.
 		if (searchElapsedTime.Duration() > 0.25) {
@@ -97,9 +102,12 @@ void MatchMarker::Continue() {
 
 		if ((styleMatch < 0) || (styleMatch == pSci->UnsignedStyleAt(rangeFound.start))) {
 			pSci->IndicatorFillRange(rangeFound.start, rangeFound.Length());
-			if (bookMark >= 0) {
-				pSci->MarkerAdd(
-					pSci->LineFromPosition(rangeFound.start), bookMark);
+			const SA::Line line = pSci->LineFromPosition(rangeFound.start);
+			if ((bookMark >= 0) && (showContext != 0)) {
+				pSci->MarkerAdd(line, bookMark);
+			}
+			if (showContext >= 0) {
+				matches.insert(line);
 			}
 		}
 		if (rangeFound.Length() == 0) {
@@ -107,8 +115,8 @@ void MatchMarker::Continue() {
 			rangeFound.end = pSci->PositionAfter(rangeFound.end);
 		}
 		// Try to find next occurrence of word.
-		pSci->SetTarget(SA::Range(rangeFound.end, positionEnd));
-		rangeFound = pSci->RangeSearchInTarget(textMatch);
+		pSci->SetTarget(SA::Span(rangeFound.end, positionEnd));
+		rangeFound = pSci->SpanSearchInTarget(textMatch);
 	}
 
 	// Retire searched lines
@@ -118,6 +126,40 @@ void MatchMarker::Continue() {
 			lineRanges.erase(lineRanges.begin());
 		} else {
 			lineRanges[0].lineStart = lineEndSegment;
+		}
+	}
+	if (lineRanges.empty() && showContext) {
+		// Hide / show lines so that matches and their context are visible
+		// Could do this incrementally but there are problems near segment edges
+		const SA::Line lineCount = pSci->LineCount();
+		std::vector<bool> visible(lineCount);
+		for (const SA::Line line : matches) {
+			for (SA::Line context = line - *showContext; context <= line + *showContext; context++) {
+				if (context >= 0 && context < lineCount) {
+					visible[context] = true;
+				}
+			}
+		}
+		// Batch up show to minimize calls
+		// Seems a bit smoother to show/hide each group instead of
+		// hiding all then showing groups even though that means more calls
+		SA::Line startGroup = 0;
+		bool state = true;
+		for (SA::Line line = 0; line < lineCount; line++) {
+			if (state != visible[line]) {
+				if (state) {
+					pSci->ShowLines(startGroup, line - 1);
+				} else {
+					pSci->HideLines(startGroup, line - 1);
+				}
+				startGroup = line;
+				state = visible[line];
+			}
+		}
+		if (state) {
+			pSci->ShowLines(startGroup, lineCount - 1);
+		} else {
+			pSci->HideLines(startGroup, lineCount - 1);
 		}
 	}
 }

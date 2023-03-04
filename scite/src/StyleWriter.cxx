@@ -17,7 +17,7 @@
 #include "GUI.h"
 #include "StyleWriter.h"
 
-namespace SA = Scintilla::API;
+namespace SA = Scintilla;
 
 TextReader::TextReader(SA::ScintillaCall &sc_) noexcept :
 	startPos(extremePosition),
@@ -43,7 +43,7 @@ void TextReader::Fill(SA::Position position) {
 	endPos = startPos + bufferSize;
 	if (endPos > lenDoc)
 		endPos = lenDoc;
-	sc.SetTarget(SA::Range(startPos, endPos));
+	sc.SetTarget(SA::Span(startPos, endPos));
 	sc.TargetText(buf);
 }
 
@@ -93,8 +93,8 @@ void StyleWriter::SetLineState(SA::Line line, int state) {
 	sc.SetLineState(line, state);
 }
 
-void StyleWriter::StartAt(SA::Position start, char chMask) {
-	sc.StartStyling(start, chMask);
+void StyleWriter::StartAt(SA::Position start) {
+	sc.StartStyling(start, 0);
 }
 
 void StyleWriter::StartSegment(SA::Position pos) noexcept {

@@ -13,11 +13,14 @@
 #include <ctime>
 
 #include <stdexcept>
+#include <tuple>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <map>
 #include <set>
 #include <algorithm>
+#include <memory>
 #include <chrono>
 #include <sstream>
 
@@ -33,7 +36,9 @@
 
 #include "StringHelpers.h"
 #include "FilePath.h"
+#include "PathMatch.h"
 #include "PropSetFile.h"
+#include "EditorConfig.h"
 
 // The comparison and case changing functions here assume ASCII
 // or extended ASCII such as the normal Windows code page.
@@ -66,30 +71,17 @@ bool PropSetFile::caseSensitiveFilenames = false;
 PropSetFile::PropSetFile(bool lowerKeys_) : lowerKeys(lowerKeys_), superPS(nullptr) {
 }
 
-PropSetFile::PropSetFile(const PropSetFile &copy) : lowerKeys(copy.lowerKeys), props(copy.props), superPS(copy.superPS) {
-}
-
-PropSetFile::~PropSetFile() {
-	superPS = nullptr;
-	Clear();
-}
-
-PropSetFile &PropSetFile::operator=(const PropSetFile &assign) {
-	if (this != &assign) {
-		lowerKeys = assign.lowerKeys;
-		superPS = assign.superPS;
-		props = assign.props;
-	}
-	return *this;
-}
-
 void PropSetFile::Set(std::string_view key, std::string_view val) {
 	if (key.empty())	// Empty keys are not supported
 		return;
 	props[std::string(key)] = std::string(val);
 }
 
-void PropSetFile::SetLine(const char *keyVal) {
+void PropSetFile::SetPath(std::string_view key, const FilePath &path) {
+	Set(key, path.AsUTF8());
+}
+
+void PropSetFile::SetLine(const char *keyVal, bool unescape) {
 	while (IsASpace(*keyVal))
 		keyVal++;
 	const char *endVal = keyVal;
@@ -103,7 +95,14 @@ void PropSetFile::SetLine(const char *keyVal) {
 		}
 		const ptrdiff_t lenVal = endVal - eqAt - 1;
 		const ptrdiff_t lenKey = pKeyEnd - keyVal + 1;
-		Set(std::string_view(keyVal, lenKey), std::string_view(eqAt + 1, lenVal));
+		const std::string_view key(keyVal, lenKey);
+		const std::string_view value(eqAt + 1, lenVal);
+		if (unescape && (key.find("\\") != std::string_view::npos)) {
+			const std::string keyUnescaped = UnicodeUnEscape(key);
+			Set(keyUnescaped, value);
+		} else {
+			Set(key, value);
+		}
 	} else if (*keyVal) {	// No '=' so assume '=1'
 		Set(keyVal, "1");
 	}
@@ -242,7 +241,7 @@ std::string PropSetFile::Evaluate(const char *key) const {
 // for that, through a recursive function and a simple chain of pointers.
 
 struct VarChain {
-	VarChain(const char *var_=nullptr, const VarChain *link_=nullptr) noexcept : var(var_), link(link_) {}
+	explicit VarChain(const char *var_=nullptr, const VarChain *link_=nullptr) noexcept : var(var_), link(link_) {}
 
 	bool contains(const char *testVar) const {
 		return (var && (0 == strcmp(var, testVar)))
@@ -269,7 +268,7 @@ static int ExpandAllInPlace(const PropSetFile &props, std::string &withVars, int
 			innerVarStart = withVars.find("$(", varStart+2);
 		}
 
-		std::string var(withVars.c_str(), varStart + 2, varEnd - (varStart + 2));
+		std::string var(withVars, varStart + 2, varEnd - (varStart + 2));
 		std::string val = props.Evaluate(var.c_str());
 
 		if (blankVars.contains(var.c_str())) {
@@ -353,7 +352,7 @@ static bool GetFullLine(const char *&fpc, size_t &lenData, char *s, size_t len) 
 	return false;
 }
 
-static bool IsSpaceOrTab(char ch) noexcept {
+static constexpr bool IsSpaceOrTab(char ch) noexcept {
 	return (ch == ' ') || (ch == '\t');
 }
 
@@ -382,31 +381,36 @@ void PropSetFile::Import(const FilePath &filename, const FilePath &directoryForI
 
 PropSetFile::ReadLineState PropSetFile::ReadLine(const char *lineBuffer, ReadLineState rls, const FilePath &directoryForImports,
 		const ImportFilter &filter, FilePathSet *imports, size_t depth) {
-	//UnSlash(lineBuffer);
-	if ((rls == rlConditionFalse) && (!IsSpaceOrTab(lineBuffer[0])))    // If clause ends with first non-indented line
-		rls = rlActive;
+	if ((rls == ReadLineState::conditionFalse) && (!IsSpaceOrTab(lineBuffer[0])))    // If clause ends with first non-indented line
+		rls = ReadLineState::active;
 	if (isprefix(lineBuffer, "module ")) {
 		std::string module = lineBuffer + strlen("module") + 1;
 		if (module.empty() || filter.IsValid(module)) {
-			rls = rlActive;
+			rls = ReadLineState::active;
 		} else {
-			rls = rlExcludedModule;
+			rls = ReadLineState::excludedModule;
 		}
 		return rls;
 	}
-	if (rls != rlActive) {
+	if (rls != ReadLineState::active) {
 		return rls;
 	}
 	if (isprefix(lineBuffer, "if ")) {
 		const char *expr = lineBuffer + strlen("if") + 1;
 		std::string value = Expand(expr);
 		if (value == "0" || value == "") {
-			rls = rlConditionFalse;
+			rls = ReadLineState::conditionFalse;
 		} else if (value == "1") {
-			rls = rlActive;
+			rls = ReadLineState::active;
 		} else {
-			rls = (GetInt(value.c_str()) != 0) ? rlActive : rlConditionFalse;
+			rls = (GetInt(value.c_str()) != 0) ? ReadLineState::active : ReadLineState::conditionFalse;
 		}
+	} else if (superPS && isprefix(lineBuffer, "match ")) {
+		// Don't match on stand-alone property sets like localiser
+		const std::string pattern = lineBuffer + strlen("match") + 1;
+		const std::string relPath = GetString("RelativePath");
+		const bool matches = PathMatch(pattern, relPath);
+		rls = matches ? ReadLineState::active : ReadLineState::conditionFalse;
 	} else if (isprefix(lineBuffer, "import ")) {
 		if (directoryForImports.IsSet()) {
 			std::string importName(lineBuffer + strlen("import") + 1);
@@ -430,7 +434,7 @@ PropSetFile::ReadLineState PropSetFile::ReadLine(const char *lineBuffer, ReadLin
 			}
 		}
 	} else if (!IsCommentLine(lineBuffer)) {
-		SetLine(lineBuffer);
+		SetLine(lineBuffer, true);
 	}
 	return rls;
 }
@@ -439,14 +443,12 @@ void PropSetFile::ReadFromMemory(const char *data, size_t len, const FilePath &d
 				 const ImportFilter &filter, FilePathSet *imports, size_t depth) {
 	const char *pd = data;
 	std::vector<char> lineBuffer(len+1);	// +1 for NUL
-	ReadLineState rls = rlActive;
+	ReadLineState rls = ReadLineState::active;
 	while (len > 0) {
 		GetFullLine(pd, len, &lineBuffer[0], lineBuffer.size());
 		if (lowerKeys) {
 			for (int i=0; lineBuffer[i] && (lineBuffer[i] != '='); i++) {
-				if ((lineBuffer[i] >= 'A') && (lineBuffer[i] <= 'Z')) {
-					lineBuffer[i] = static_cast<char>(lineBuffer[i] - 'A' + 'a');
-				}
+				lineBuffer[i] = MakeLowerCase(lineBuffer[i]);
 			}
 		}
 		rls = ReadLine(&lineBuffer[0], rls, directoryForImports, filter, imports, depth);
@@ -599,8 +601,8 @@ std::string PropSetFile::GetNewExpandString(const char *keybase, const char *fil
 /**
  * Initiate enumeration.
  */
-bool PropSetFile::GetFirst(const char *&key, const char *&val) {
-	mapss::iterator it = props.begin();
+bool PropSetFile::GetFirst(const char *&key, const char *&val) const {
+	mapss::const_iterator it = props.begin();
 	if (it != props.end()) {
 		key = it->first.c_str();
 		val = it->second.c_str();
@@ -613,8 +615,8 @@ bool PropSetFile::GetFirst(const char *&key, const char *&val) {
 /**
  * Continue enumeration.
  */
-bool PropSetFile::GetNext(const char *&key, const char *&val) {
-	mapss::iterator it = props.find(key);
+bool PropSetFile::GetNext(const char *&key, const char *&val) const {
+	mapss::const_iterator it = props.find(key);
 	if (it != props.end()) {
 		++it;
 		if (it != props.end()) {

@@ -17,11 +17,11 @@ void ComboBoxAppend(HWND hWnd, const GUI::gui_string &gs) noexcept;
 
 class BaseWin : public GUI::Window {
 protected:
-	ILocalize *localiser = nullptr;
+	const ILocalize *localiser = nullptr;
 public:
 	BaseWin() noexcept {
 	}
-	void SetLocalizer(ILocalize *localiser_) noexcept {
+	void SetLocalizer(const ILocalize *localiser_) noexcept {
 		localiser = localiser_;
 	}
 	HWND Hwnd() const noexcept {
@@ -40,7 +40,7 @@ protected:
 	int space;
 	bool capturedMouse;
 	SIZE closeSize;
-	enum stripCloseState { csNone, csOver, csClicked, csClickedOver } closeState;
+	enum class StripCloseState { none, over, clicked, clickedOver } closeState;
 	GUI::Window wToolTip;
 	int entered;
 	int lineHeight;
@@ -60,6 +60,7 @@ protected:
 	GUI::Rectangle LineArea(int line);
 	virtual int Lines() const noexcept;
 	void InvalidateClose();
+	void Redraw() noexcept;
 	bool MouseInClose(GUI::Point pt);
 	void TrackMouse(GUI::Point pt);
 	void SetTheme() noexcept;
@@ -70,23 +71,26 @@ protected:
 	virtual void ShowPopup();
 public:
 	bool visible;
-	Strip() : fontText(0), hTheme(0), scale(96), space(2), capturedMouse(false), closeState(csNone), entered(0), lineHeight(20), visible(false) {
+	Strip() noexcept : fontText(0), hTheme(0), scale(96), space(2), capturedMouse(false), closeState(StripCloseState::none), entered(0), lineHeight(20), visible(false) {
 		closeSize.cx = 11;
 		closeSize.cy = 11;
 	}
+	// Deleted so Strip objects can not be copied.
+	Strip(const Strip &) = delete;
+	Strip(Strip &&) = delete;
+	Strip &operator=(const Strip &) = delete;
+	Strip &operator=(Strip &&) = delete;
 	virtual ~Strip() = default;
 	virtual int Height() noexcept {
 		return lineHeight * Lines() + space - 1;
 	}
+	void CloseIfOpen();
 };
 
 class BackgroundStrip : public Strip {
 	GUI::Window wExplanation;
 	GUI::Window wProgress;
 public:
-	BackgroundStrip() {
-	}
-	virtual ~BackgroundStrip() = default;
 	void Creation() override;
 	void Destruction() noexcept override;
 	void Close() override;
@@ -104,9 +108,6 @@ protected:
 	Searcher *pSearcher = nullptr;
 	HBRUSH hbrNoMatch {};
 public:
-	SearchStripBase() {
-	}
-	virtual ~SearchStripBase() = default;
 	void SetSearcher(Searcher *pSearcher_) noexcept {
 		pSearcher = pSearcher_;
 	}
@@ -120,9 +121,6 @@ class SearchStrip : public SearchStripBase {
 	GUI::Window wText;
 	GUI::Window wButton;
 public:
-	SearchStrip() {
-	}
-	virtual ~SearchStrip() = default;
 	void Creation() override;
 	void Destruction() noexcept override;
 	void Close() override;
@@ -138,22 +136,22 @@ public:
 
 class FindReplaceStrip : public SearchStripBase {
 protected:
+	bool performFilter = true;
 	GUI::Window wStaticFind;
 	GUI::Window wText;
 	GUI::Window wCheckWord;
 	GUI::Window wCheckCase;
 	GUI::Window wCheckRE;
 	GUI::Window wCheckBE;
-	GUI::Window wCheckWrap;
-	enum IncrementalBehaviour { simple, incremental, showAllMatches };
+	enum class IncrementalBehaviour { simple, incremental, showAllMatches };
 	IncrementalBehaviour incrementalBehaviour;
-	FindReplaceStrip() noexcept : incrementalBehaviour(simple) {
+	FindReplaceStrip() noexcept : incrementalBehaviour(IncrementalBehaviour::simple) {
 	}
 	LRESULT EditColour(HWND hwnd, HDC hdc) noexcept override;
-	enum ChangingSource { changingEdit, changingCombo };
+	enum class ChangingSource { edit, combo };
+	void SetFindFromSource(ChangingSource source);
 	void NextIncremental(ChangingSource source);
 public:
-	virtual ~FindReplaceStrip() = default;
 	void Close() override;
 	void SetIncrementalBehaviour(int behaviour) noexcept;
 	void MarkIncremental();
@@ -162,11 +160,12 @@ public:
 class FindStrip : public FindReplaceStrip {
 	GUI::Window wButton;
 	GUI::Window wButtonMarkAll;
+	GUI::Window wCheckWrap;
 	GUI::Window wCheckUp;
 public:
 	FindStrip() noexcept {
+		performFilter = false;
 	}
-	virtual ~FindStrip() = default;
 	void Creation() override;
 	void Destruction() noexcept override;
 	void Focus() noexcept;
@@ -187,10 +186,12 @@ class ReplaceStrip : public FindReplaceStrip {
 	GUI::Window wReplace;
 	GUI::Window wButtonReplace;
 	GUI::Window wButtonReplaceInSelection;
+	GUI::Window wCheckWrap;
+	GUI::Window wCheckFilter;
+	GUI::Window wCheckContext;
 public:
 	ReplaceStrip() noexcept {
 	}
-	virtual ~ReplaceStrip() = default;
 	void Creation() override;
 	void Destruction() noexcept override;
 	int Lines() const noexcept override;
@@ -205,6 +206,25 @@ public:
 	void ShowStrip();
 };
 
+class FilterStrip : public FindReplaceStrip {
+	GUI::Window wCheckContext;
+public:
+	FilterStrip() noexcept {
+	}
+	void Creation() override;
+	void Destruction() noexcept override;
+	void Focus() noexcept;
+	bool KeyDown(WPARAM key) override;
+	void Filter(ChangingSource source);
+	void ShowPopup() override;
+	bool Command(WPARAM wParam) override;
+	void Size() override;
+	void Paint(HDC hDC) override;
+	void CheckButtons() noexcept;
+	void ShowStrip();
+	void Close() override;
+};
+
 class StripDefinition;
 
 class UserStrip : public Strip {
@@ -215,7 +235,6 @@ public:
 	UserStrip() noexcept : extender(nullptr), pSciTEWin(nullptr) {
 		lineHeight = 26;
 	}
-	virtual ~UserStrip() = default;
 	void Creation() override;
 	void Destruction() noexcept override;
 	void Close() override;

@@ -6,9 +6,9 @@
  *
  ***************************************************************************/
 
-#include "sciteqtenvironmentforjavascript.h"
-
 #include "sciteqt.h"
+
+#include "sciteqtenvironmentforjavascript.h"
 
 SciteQtEnvironmentForJavaScript::SciteQtEnvironmentForJavaScript(bool & bIsAdmin, QString & sStyle, QString & sLanguage, SciTEQt * pSciteQt, QObject *parent)
     : QObject(parent), m_pSciteQt(pSciteQt), m_bIsAdmin(bIsAdmin), m_sStyle(sStyle), m_sLanguage(sLanguage)
@@ -101,7 +101,7 @@ int SciteQtEnvironmentForJavaScript::messageBox(const QString & text, int style)
 {
     if( m_pSciteQt != 0 )
     {
-        return m_pSciteQt->ShowWindowMessageBox(text, style);
+        return (int)m_pSciteQt->ShowWindowMessageBox(text, style);
     }
     return -1;
 }

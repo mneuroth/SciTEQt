@@ -34,7 +34,6 @@ public:
 class Utf16_Iter : public Utf8_16 {
 public:
 	Utf16_Iter() noexcept;
-	void reset() noexcept;
 	void set(const ubyte *pBuf, size_t nLen, encodingType eEncoding, ubyte *endSurrogate) noexcept;
 	utf8 get() const noexcept {
 		return m_nCur;
@@ -55,37 +54,7 @@ protected:
 	eState m_eState;
 	utf8 m_nCur;
 	int m_nCur16;
-	const ubyte *m_pBuf;
-	const ubyte *m_pRead;
-	const ubyte *m_pEnd;
-};
-
-// Reads UTF-8 and outputs UTF-16
-class Utf8_Iter : public Utf8_16 {
-public:
-	Utf8_Iter() noexcept;
-	void reset() noexcept;
-	void set(const ubyte *pBuf, size_t nLen, encodingType eEncoding);
-	int get() const noexcept {
-		assert(m_eState == eStart);
-		return m_nCur;
-	}
-	bool canGet() const noexcept { return m_eState == eStart; }
-	void operator++() noexcept;
-	operator bool() const noexcept { return m_pRead <= m_pEnd; }
-
-protected:
-	void toStart() noexcept; // Put to start state
-	enum eState {
-		eStart,
-		eSecondOf4Bytes,
-		ePenultimate,
-		eFinal
-	};
-protected:
-	encodingType m_eEncoding;
-	eState m_eState;
-	int m_nCur;
+	// These 3 pointers are for externally allocated memory passed to set
 	const ubyte *m_pBuf;
 	const ubyte *m_pRead;
 	const ubyte *m_pEnd;
@@ -94,8 +63,15 @@ protected:
 // Reads UTF16 and outputs UTF8
 class Utf8_16_Read : public Utf8_16 {
 public:
-	Utf8_16_Read();
-	~Utf8_16_Read();
+	Utf8_16_Read() noexcept;
+
+	// Deleted so Utf8_16_Read objects can not be copied.
+	Utf8_16_Read(const Utf8_16_Read &) = delete;
+	Utf8_16_Read(Utf8_16_Read &&) = delete;
+	Utf8_16_Read &operator=(const Utf8_16_Read &) = delete;
+	Utf8_16_Read &operator=(Utf8_16_Read &&) = delete;
+
+	~Utf8_16_Read() noexcept;
 
 	size_t convert(char *buf, size_t len);
 	char *getNewBuf() noexcept { return reinterpret_cast<char *>(m_pNewBuf); }
@@ -105,7 +81,10 @@ protected:
 	int determineEncoding() noexcept;
 private:
 	encodingType m_eEncoding;
+	// m_pBuf refers to externally allocated memory
 	ubyte *m_pBuf;
+	// Depending on encoding, m_pNewBuf may be allocated by Utf8_16_Read::convert or
+	// refer to an externally allocated block passed to convert.
 	ubyte *m_pNewBuf;
 	size_t m_nBufSize;
 	bool m_bFirstRead;
@@ -117,8 +96,15 @@ private:
 // Read in a UTF-8 buffer and write out to UTF-16 or UTF-8
 class Utf8_16_Write : public Utf8_16 {
 public:
-	Utf8_16_Write();
-	~Utf8_16_Write();
+	Utf8_16_Write() noexcept;
+
+	// Deleted so Utf8_16_Write objects can not be copied.
+	Utf8_16_Write(const Utf8_16_Write &) = delete;
+	Utf8_16_Write(Utf8_16_Write &&) = delete;
+	Utf8_16_Write &operator=(const Utf8_16_Write &) = delete;
+	Utf8_16_Write &operator=(Utf8_16_Write &&) = delete;
+
+	~Utf8_16_Write() noexcept;
 
 	void setEncoding(encodingType eType) noexcept;
 
@@ -128,7 +114,7 @@ public:
 protected:
 	encodingType m_eEncoding;
 	FILE *m_pFile;
-	utf16 *m_pBuf;
+	std::unique_ptr<utf16 []>m_buf16;
 	size_t m_nBufSize;
 	bool m_bFirstWrite;
 };

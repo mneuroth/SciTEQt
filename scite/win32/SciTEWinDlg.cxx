@@ -153,6 +153,8 @@ bool SciTEWin::ModelessHandler(MSG *pmsg) {
 			return true;
 		if (replaceStrip.KeyDown(pmsg->wParam))
 			return true;
+		if (filterStrip.KeyDown(pmsg->wParam))
+			return true;
 		if (userStrip.KeyDown(pmsg->wParam))
 			return true;
 	}
@@ -206,7 +208,7 @@ GUI::gui_string SciTEWin::DialogFilterFromProperty(const GUI::gui_char *filterPr
 				GUI::gui_string localised = localiser.Text(GUI::UTF8FromString(filterName).c_str(), false);
 				if (localised.size()) {
 					filterText.erase(start, wcslen(filterName));
-					filterText.insert(start, localised.c_str());
+					filterText.insert(start, localised);
 				}
 				start += wcslen(filterText.c_str() + start) + 1;
 				start += wcslen(filterText.c_str() + start) + 1;
@@ -228,6 +230,14 @@ void SciTEWin::CheckCommonDialogError() {
 bool SciTEWin::OpenDialog(const FilePath &directory, const GUI::gui_char *filesFilter) {
 	enum {maxBufferSize=2048};
 
+	DWORD filterDefault = 1;
+	std::vector<GUI::gui_string> filters = StringSplit(GUI::gui_string(filesFilter), L'|');
+	if (!openFilterDefault.empty()) {
+		std::vector<GUI::gui_string>::iterator itFilter = std::find(filters.begin(), filters.end(), openFilterDefault);
+		if (itFilter != filters.end()) {
+			filterDefault = static_cast<DWORD>(std::distance(filters.begin(), itFilter)) / 2 + 1;
+		}
+	}
 	GUI::gui_string openFilter = DialogFilterFromProperty(filesFilter);
 
 	if (!openWhat[0]) {
@@ -238,8 +248,7 @@ bool SciTEWin::OpenDialog(const FilePath &directory, const GUI::gui_char *filesF
 	}
 
 	bool succeeded = false;
-	GUI::gui_char openName[maxBufferSize]; // maximum common dialog buffer size (says mfc..)
-	openName[0] = '\0';
+	GUI::gui_char openName[maxBufferSize] = GUI_TEXT(""); // maximum common dialog buffer size (says mfc..)
 
 	OPENFILENAMEW ofn {};
 	ofn.lStructSize = sizeof(ofn);
@@ -267,7 +276,9 @@ bool SciTEWin::OpenDialog(const FilePath &directory, const GUI::gui_char *filesF
 	}
 	if (::GetOpenFileNameW(&ofn)) {
 		succeeded = true;
-		filterDefault = ofn.nFilterIndex;
+		if (!filters.empty()) {
+			openFilterDefault = filters[(ofn.nFilterIndex - 1) * 2];
+		}
 		// if single selection then have path+file
 		if (wcslen(openName) > static_cast<size_t>(ofn.nFileOffset)) {
 			Open(openName);
@@ -447,14 +458,9 @@ void SciTEWin::Print(
 	pdlg.hDevMode = hDevMode;
 	pdlg.hDevNames = hDevNames;
 
-	// This code will not work for documents > 2GB
-
 	// See if a range has been selected
-	const SA::Range rangeSelection = GetSelection();
-	const LONG startPos = static_cast<LONG>(rangeSelection.start);
-	const LONG endPos = static_cast<LONG>(rangeSelection.end);
-
-	if (startPos == endPos) {
+	const SA::Span rangeSelection = GetSelection();
+	if (rangeSelection.start == rangeSelection.end) {
 		pdlg.Flags |= PD_NOSELECTION;
 	} else {
 		pdlg.Flags |= PD_SELECTION;
@@ -530,10 +536,10 @@ void SciTEWin::Print(
 		}
 
 		// Don't reduce margins below the minimum printable area
-		rectMargins.left	= Maximum(rectPhysMargins.left, rectSetup.left);
-		rectMargins.top	= Maximum(rectPhysMargins.top, rectSetup.top);
-		rectMargins.right	= Maximum(rectPhysMargins.right, rectSetup.right);
-		rectMargins.bottom	= Maximum(rectPhysMargins.bottom, rectSetup.bottom);
+		rectMargins.left	= std::max(rectPhysMargins.left, rectSetup.left);
+		rectMargins.top	= std::max(rectPhysMargins.top, rectSetup.top);
+		rectMargins.right	= std::max(rectPhysMargins.right, rectSetup.right);
+		rectMargins.bottom	= std::max(rectPhysMargins.bottom, rectSetup.bottom);
 	} else {
 		rectMargins.left	= rectPhysMargins.left;
 		rectMargins.top	= rectPhysMargins.top;
@@ -607,28 +613,16 @@ void SciTEWin::Print(
 		return;
 	}
 
-	LONG lengthDoc = static_cast<LONG>(wEditor.Length());
-	const LONG lengthDocMax = lengthDoc;
-	LONG lengthPrinted = 0;
+	const SA::Position lengthDocMax = wEditor.Length();
+	// PD_SELECTION -> requested to print selection.
+	const SA::Position lengthDoc = (pdlg.Flags & PD_SELECTION) ? rangeSelection.end : lengthDocMax;
+	SA::Position lengthPrinted = (pdlg.Flags & PD_SELECTION) ? rangeSelection.start : 0;
 
-	// Requested to print selection
-	if (pdlg.Flags & PD_SELECTION) {
-		if (startPos > endPos) {
-			lengthPrinted = endPos;
-			lengthDoc = startPos;
-		} else {
-			lengthPrinted = startPos;
-			lengthDoc = endPos;
-		}
-
-		if (lengthPrinted < 0)
-			lengthPrinted = 0;
-		if (lengthDoc > lengthDocMax)
-			lengthDoc = lengthDocMax;
-	}
+	assert(lengthPrinted >= 0);
+	assert(lengthDoc <= lengthDocMax);
 
 	// We must subtract the physical margins from the printable area
-	Sci_RangeToFormat frPrint;
+	Sci_RangeToFormatFull frPrint {};
 	frPrint.hdc = hdc;
 	frPrint.hdcTarget = hdc;
 	frPrint.rc.left = rectMargins.left - rectPhysMargins.left;
@@ -688,7 +682,7 @@ void SciTEWin::Print(
 		frPrint.chrg.cpMin = lengthPrinted;
 		frPrint.chrg.cpMax = lengthDoc;
 
-		lengthPrinted = static_cast<LONG>(wEditor.FormatRange(printPage, &frPrint));
+		lengthPrinted = wEditor.FormatRangeFull(printPage, &frPrint);
 
 		if (printPage) {
 			if (footerFormat.size()) {
@@ -819,7 +813,7 @@ public:
 	void FillComboFromMemory(int id, const ComboMemory &mem, bool useTop = false) {
 		HWND combo = Item(id);
 		ComboBox_ResetContent(combo);
-		for (int i = 0; i < mem.Length(); i++) {
+		for (size_t i = 0; i < mem.Length(); i++) {
 			GUI::gui_string gs = GUI::StringFromUTF8(mem.At(i));
 			ComboBoxAppend(combo, gs);
 		}
@@ -830,16 +824,20 @@ public:
 
 };
 
-static void FillComboFromProps(HWND combo, PropSetFile &props) {
+static void FillComboFromProps(HWND combo, const PropSetFile &props) {
 	const char *key = nullptr;
 	const char *val = nullptr;
 	if (props.GetFirst(key, val)) {
+		SetWindowRedraw(combo, FALSE);
 		GUI::gui_string wkey = GUI::StringFromUTF8(key);
 		ComboBoxAppend(combo, wkey);
 		while (props.GetNext(key, val)) {
 			wkey = GUI::StringFromUTF8(key);
 			ComboBoxAppend(combo, wkey);
 		}
+		SetWindowRedraw(combo, TRUE);
+		::RedrawWindow(combo, nullptr, {},
+			RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN);
 	}
 }
 
@@ -890,9 +888,9 @@ public:
 };
 
 void DialogFindReplace::GrabFields() {
-	pSearcher->SetFind(ItemTextU(IDFINDWHAT).c_str());
+	pSearcher->SetFind(ItemTextU(IDFINDWHAT));
 	if (pSearcher->replacing) {
-		pSearcher->SetReplace(ItemTextU(IDREPLACEWITH).c_str());
+		pSearcher->SetReplace(ItemTextU(IDREPLACEWITH));
 	}
 	pSearcher->wholeWord = Checked(IDWHOLEWORD);
 	pSearcher->matchCase = Checked(IDMATCHCASE);
@@ -902,6 +900,8 @@ void DialogFindReplace::GrabFields() {
 	if (!pSearcher->replacing) {
 		pSearcher->reverseFind = Checked(IDDIRECTIONUP);
 	}
+	pSearcher->filterState = Checked(IDFILTERSTATE);
+	pSearcher->contextVisible = Checked(IDCONTEXTVISIBLE);
 	if (advanced) {
 		pSearcher->findInStyle = Checked(IDFINDINSTYLE);
 		pSearcher->findStyle = atoi(ItemTextU(IDFINDSTYLE).c_str());
@@ -963,7 +963,7 @@ BOOL SciTEWin::FindMessage(HWND hDlg, UINT message, WPARAM wParam) {
 				(ControlIDOfWParam(wParam) == IDMARKALL)) {
 			dlg.GrabFields();
 			if (ControlIDOfWParam(wParam) == IDMARKALL) {
-				MarkAll(markWithBookMarks);
+				MarkAll(MarkPurpose::withBookMarks);
 			}
 			// Holding the Shift key inverts the current reverse flag
 			const bool found = FindNext(reverseFind != IsKeyDown(VK_SHIFT)) >= 0;
@@ -1083,16 +1083,26 @@ void SciTEWin::UIClosed() {
 		bands[SciTEWin::bandFind].visible = false;
 	if (!replaceStrip.visible)
 		bands[SciTEWin::bandReplace].visible = false;
+	if (!filterStrip.visible)
+		bands[SciTEWin::bandFilter].visible = false;
 	UpdateStatusBar(false);
 	SizeSubWindows();
 	WindowSetFocus(wEditor);
 }
 
+void SciTEWin::CloseOtherFinders(int cmdID) {
+	if (cmdID != IDM_FIND)
+		findStrip.CloseIfOpen();
+	if (cmdID != IDM_REPLACE)
+		replaceStrip.CloseIfOpen();
+	if (cmdID != IDM_INCSEARCH)
+		searchStrip.CloseIfOpen();
+	if (cmdID != IDM_FILTER)
+		filterStrip.CloseIfOpen();
+}
+
 void SciTEWin::FindIncrement() {
-	if (findStrip.visible)
-		findStrip.Close();
-	if (replaceStrip.visible)
-		replaceStrip.Close();
+	CloseOtherFinders(IDM_INCSEARCH);
 	searchStrip.visible = !searchStrip.visible;
 	failedfind = false;
 	SizeSubWindows();
@@ -1103,6 +1113,25 @@ void SciTEWin::FindIncrement() {
 	} else {
 		WindowSetFocus(wEditor);
 	}
+}
+
+void SciTEWin::Filter() {
+	if (!FilterShowing()) {
+		// Save current folds
+		SaveFolds(CurrentBuffer()->foldState);
+		// Then unfold them all so filtering is only source of line hiding
+		wEditor.FoldAll(SA::FoldAction::Expand);
+	}
+	SelectionIntoFind();
+	CloseOtherFinders(IDM_FILTER);
+	filterStrip.visible = true;
+	failedfind = false;
+	SizeSubWindows();
+	filterStrip.ShowStrip();
+}
+
+bool SciTEWin::FilterShowing() {
+	return filterStrip.visible || (replaceStrip.visible && filterState);
 }
 
 void SciTEWin::Find() {
@@ -1119,10 +1148,7 @@ void SciTEWin::Find() {
 	SelectionIntoFind();
 
 	if (props.GetInt("find.use.strip")) {
-		if (searchStrip.visible)
-			searchStrip.Close();
-		if (replaceStrip.visible)
-			replaceStrip.Close();
+		CloseOtherFinders(IDM_FIND);
 		findStrip.visible = true;
 		SizeSubWindows();
 		findStrip.SetIncrementalBehaviour(props.GetInt("find.strip.incremental"));
@@ -1172,12 +1198,14 @@ void SciTEWin::PerformGrep() {
 		searchParams.append("\0", 1);
 		searchParams.append(props.GetString("find.files"));
 		searchParams.append("\0", 1);
+		searchParams.append(props.GetString("find.exclude"));
+		searchParams.append("\0", 1);
 		searchParams.append(props.GetString("find.what"));
-		AddCommand(searchParams, props.GetString("find.directory"), jobGrep, findInput, flags);
+		AddCommand(searchParams, props.GetString("find.directory"), JobSubsystem::grep, findInput, flags);
 	} else {
 		AddCommand(findCommand,
 			   props.GetString("find.directory"),
-			   jobCLI, findInput, flags);
+			   JobSubsystem::cli, findInput, flags);
 	}
 	if (jobQueue.HasCommandToRun()) {
 		Execute();
@@ -1229,15 +1257,15 @@ BOOL SciTEWin::GrepMessage(HWND hDlg, UINT message, WPARAM wParam) {
 				return FALSE;
 			}
 			findWhat = dlg.ItemTextU(IDFINDWHAT);
-			props.Set("find.what", findWhat.c_str());
+			props.Set("find.what", findWhat);
 			InsertFindInMemory();
 
 			std::string files = dlg.ItemTextU(IDFILES);
-			props.Set("find.files", files.c_str());
+			props.Set("find.files", files);
 			memFiles.Insert(files);
 
 			std::string directory = dlg.ItemTextU(IDDIRECTORY);
-			props.Set("find.directory", directory.c_str());
+			props.Set("find.directory", directory);
 			memDirectory.Insert(directory);
 
 			wholeWord = dlg.Checked(IDWHOLEWORD);
@@ -1329,10 +1357,9 @@ void SciTEWin::FindInFiles() {
 
 	std::string directory = props.GetString("find.in.directory");
 	if (directory.length()) {
-		props.Set("find.directory", directory.c_str());
+		props.Set("find.directory", directory);
 	} else {
-		FilePath findInDir = filePath.Directory();
-		props.Set("find.directory", findInDir.AsUTF8().c_str());
+		props.SetPath("find.directory", filePath.Directory());
 	}
 	wFindInFiles = CreateParameterisedDialog(TEXT("Grep"), GrepDlg);
 	wFindInFiles.Show();
@@ -1352,10 +1379,10 @@ void SciTEWin::Replace() {
 	SelectionIntoFind(false); // don't strip EOL at end of selection
 
 	if (props.GetInt("replace.use.strip")) {
-		if (searchStrip.visible)
-			searchStrip.Close();
-		if (findStrip.visible)
-			findStrip.Close();
+		CloseOtherFinders(IDM_REPLACE);
+		if (filterState) {
+			wEditor.FoldAll(SA::FoldAction::Expand);
+		}
 		replaceStrip.visible = true;
 		SizeSubWindows();
 		replaceStrip.SetIncrementalBehaviour(props.GetInt("replace.strip.incremental"));
@@ -1476,6 +1503,7 @@ BOOL SciTEWin::AbbrevMessage(HWND hDlg, UINT message, WPARAM wParam) {
 			return FALSE;
 		} else if (ControlIDOfWParam(wParam) == IDOK) {
 			abbrevInsert = dlg.ItemTextU(IDABBREV);
+			PerformInsertAbbreviation();
 			::EndDialog(hDlg, IDOK);
 			return TRUE;
 		}
@@ -1488,8 +1516,8 @@ INT_PTR CALLBACK SciTEWin::AbbrevDlg(HWND hDlg, UINT message, WPARAM wParam, LPA
 	return Caller(hDlg, message, lParam)->AbbrevMessage(hDlg, message, wParam);
 }
 
-bool SciTEWin::AbbrevDialog() {
-	return DoDialog(TEXT("InsAbbrev"), AbbrevDlg) == IDOK;
+void SciTEWin::AbbrevDialog() {
+	DoDialog(TEXT("InsAbbrev"), AbbrevDlg);
 }
 
 BOOL SciTEWin::TabSizeMessage(HWND hDlg, UINT message, WPARAM wParam) {
@@ -1562,9 +1590,9 @@ void SciTEWin::ParamGrab() {
 		HWND hDlg = HwndOf(wParameters);
 		Dialog dlg(hDlg);
 		for (int param = 0; param < maxParam; param++) {
-			std::string paramVal = GUI::UTF8FromString(dlg.ItemTextG(IDPARAMSTART + param));
-			std::string paramText = StdStringFromInteger(param + 1);
-			props.Set(paramText.c_str(), paramVal.c_str());
+			const std::string paramVal = GUI::UTF8FromString(dlg.ItemTextG(IDPARAMSTART + param));
+			const std::string paramText = StdStringFromInteger(param + 1);
+			props.Set(paramText, paramVal);
 		}
 		UpdateStatusBar(true);
 	}
@@ -1645,15 +1673,15 @@ SciTEBase::MessageBoxChoice SciTEWin::WindowMessageBox(GUI::Window &w, const GUI
 	dialogsOnScreen--;
 	switch (ret) {
 	case IDOK:
-		return mbOK;
+		return MessageBoxChoice::ok;
 	case IDCANCEL:
-		return mbCancel;
+		return MessageBoxChoice::cancel;
 	case IDYES:
-		return mbYes;
+		return MessageBoxChoice::yes;
 	case IDNO:
-		return mbNo;
+		return MessageBoxChoice::no;
 	default:
-		return mbOK;
+		return MessageBoxChoice::ok;
 	}
 }
 

@@ -9,26 +9,28 @@
 #define MATCHMARKER_H
 
 struct LineRange {
-	Scintilla::API::Line lineStart;
-	Scintilla::API::Line lineEnd;
-	LineRange(Scintilla::API::Line lineStart_, Scintilla::API::Line lineEnd_) noexcept : lineStart(lineStart_), lineEnd(lineEnd_) {}
+	Scintilla::Line lineStart;
+	Scintilla::Line lineEnd;
+	LineRange(Scintilla::Line lineStart_, Scintilla::Line lineEnd_) noexcept : lineStart(lineStart_), lineEnd(lineEnd_) {}
 };
 
-std::vector<LineRange> LinesBreak(Scintilla::API::ScintillaCall *pSci);
+std::vector<LineRange> LinesBreak(Scintilla::ScintillaCall *pSci);
 
 class MatchMarker {
-	Scintilla::API::ScintillaCall *pSci;
+	Scintilla::ScintillaCall *pSci;
 	std::string textMatch;
 	int styleMatch;
-	Scintilla::API::FindOption flagsMatch;
+	Scintilla::FindOption flagsMatch;
 	int indicator;
 	int bookMark;
+	std::optional<Scintilla::Line> showContext;
 	std::vector<LineRange> lineRanges;
+	std::set<Scintilla::Line> matches;
 public:
 	MatchMarker();	// Not noexcept as std::vector constructor throws
-	void StartMatch(Scintilla::API::ScintillaCall *pSci_,
-			const std::string &textMatch_, Scintilla::API::FindOption flagsMatch_, int styleMatch_,
-			int indicator_, int bookMark_);
+	void StartMatch(Scintilla::ScintillaCall *pSci_,
+			const std::string &textMatch_, Scintilla::FindOption flagsMatch_, int styleMatch_,
+			int indicator_, int bookMark_, std::optional<Scintilla::Line> showContext_={});
 	bool Complete() const noexcept;
 	void Continue();
 	void Stop() noexcept;

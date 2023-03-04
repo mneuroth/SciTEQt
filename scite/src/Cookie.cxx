@@ -8,7 +8,9 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <tuple>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <chrono>
 
@@ -66,11 +68,11 @@ UniMode CookieValue(std::string_view s) noexcept {
 			}
 			s.remove_suffix(s.length() - endCoding);
 			if (EqualCaseInsensitive(s, utf8Name)) {
-				return uniCookie;
+				return UniMode::cookie;
 			}
 		}
 	}
-	return uni8Bit;
+	return UniMode::uni8Bit;
 }
 
 }
@@ -78,7 +80,7 @@ UniMode CookieValue(std::string_view s) noexcept {
 UniMode CodingCookieValue(std::string_view sv) noexcept {
 	const std::string_view l1 = ExtractLine(sv);
 	UniMode unicodeMode = CookieValue(l1);
-	if (unicodeMode == uni8Bit) {
+	if (unicodeMode == UniMode::uni8Bit) {
 		sv.remove_prefix(l1.length());
 		const std::string_view l2 = ExtractLine(sv);
 		unicodeMode = CookieValue(l2);

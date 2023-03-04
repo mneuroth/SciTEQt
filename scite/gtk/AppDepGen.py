@@ -15,8 +15,8 @@ from scripts import Dependencies
 topComment = "# Created by AppDepGen.py. To recreate, run AppDepGen.py.\n"
 
 def Generate():
-	sciteSources = ["../src/*.cxx", "../lua/src/*.c"]
-	sciteIncludes = ["../../scintilla/include", "../src", "../lua/src"]
+	sciteSources = ["../src/*.cxx", "../lua/src/*.c", "../../lexilla/access/*.cxx", "../../scintilla/call/*.cxx"]
+	sciteIncludes = ["../../lexilla/include", "../../lexilla/access", "../../scintilla/include", "../src", "../lua/src"]
 
 	deps = Dependencies.FindDependencies(["../gtk/*.cxx"] + sciteSources,  ["../gtk"] + sciteIncludes, ".o", "../gtk/")
 	Dependencies.UpdateDependencies("../gtk/deps.mak", deps, topComment)

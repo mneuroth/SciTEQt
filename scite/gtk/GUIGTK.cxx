@@ -6,9 +6,10 @@
 // Copyright 1998-2010 by Neil Hodgson <neilh@scintilla.org>
 // The License.txt file describes the conditions under which this software may be distributed.
 
-#include <time.h>
+#include <ctime>
 
 #include <string>
+#include <string_view>
 #include <chrono>
 #include <sstream>
 
@@ -32,8 +33,12 @@ gui_string StringFromUTF8(const std::string &s) {
 	return s;
 }
 
-std::string UTF8FromString(const gui_string &s) {
-	return s;
+gui_string StringFromUTF8(std::string_view sv) {
+	return gui_string(sv);
+}
+
+std::string UTF8FromString(gui_string_view sv) {
+	return std::string(sv);
 }
 
 gui_string StringFromInteger(long i) {
@@ -71,7 +76,7 @@ void Window::Destroy() {
 	wid = 0;
 }
 
-bool Window::HasFocus() {
+bool Window::HasFocus() const noexcept {
 	return gtk_widget_has_focus(GTK_WIDGET(wid));
 }
 
@@ -120,13 +125,18 @@ void Window::SetTitle(const char *s) {
 	gtk_window_set_title(GTK_WINDOW(wid), s);
 }
 
+void Window::SetRedraw(bool /* redraw */) {
+	// Could call gdk_window_freeze_updates / gdk_window_thaw_updates here
+	// but unsure what the side effects will be.
+}
+
 void Menu::CreatePopUp() {
 	Destroy();
 	mid = gtk_menu_new();
 	g_object_ref_sink(G_OBJECT(mid));
 }
 
-void Menu::Destroy() {
+void Menu::Destroy() noexcept {
 	if (mid)
 		g_object_unref(mid);
 	mid = 0;

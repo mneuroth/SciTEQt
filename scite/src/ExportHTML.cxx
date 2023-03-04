@@ -12,11 +12,13 @@
 #include <cstdio>
 #include <ctime>
 
+#include <tuple>
 #include <string>
 #include <string_view>
 #include <vector>
 #include <map>
 #include <set>
+#include <optional>
 #include <memory>
 #include <chrono>
 #include <sstream>
@@ -46,6 +48,7 @@
 #include "Cookie.h"
 #include "Worker.h"
 #include "MatchMarker.h"
+#include "Searcher.h"
 #include "SciTEBase.h"
 
 //---------- Save to HTML ----------
@@ -154,7 +157,11 @@ void SciTEBase::SaveToHTML(const FilePath &saveName) {
 
 				if (sd.specified != StyleDefinition::sdNone) {
 					if (istyle == StyleDefault) {
-						fprintf(fp, "span {\n");
+						if (wysiwyg) {
+							fprintf(fp, "span {\n");
+						} else {
+							fprintf(fp, "pre {\n");
+						}
 					} else {
 						fprintf(fp, ".S%0d {\n", istyle);
 					}

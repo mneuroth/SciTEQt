@@ -13,6 +13,8 @@
 #include <cstring>
 #include <cstdio>
 
+#include <memory>
+
 #include "Utf8_16.h"
 
 const Utf8_16::utf8 Utf8_16::k_Boms[][3] = {
@@ -28,9 +30,44 @@ enum { SURROGATE_TRAIL_FIRST = 0xDC00 };
 enum { SURROGATE_TRAIL_LAST = 0xDFFF };
 enum { SURROGATE_FIRST_VALUE = 0x10000 };
 
+namespace {
+
+// Reads UTF-8 and outputs UTF-16
+class Utf8_Iter : public Utf8_16 {
+public:
+	Utf8_Iter() noexcept;
+	void set(const ubyte *pBuf, size_t nLen, encodingType eEncoding) noexcept;
+	int get() const noexcept {
+		assert(m_eState == eStart);
+		return m_nCur;
+	}
+	bool canGet() const noexcept { return m_eState == eStart; }
+	void operator++() noexcept;
+	operator bool() const noexcept { return m_pRead <= m_pEnd; }
+
+protected:
+	void toStart() noexcept; // Put to start state
+	enum eState {
+		eStart,
+		eSecondOf4Bytes,
+		ePenultimate,
+		eFinal
+	};
+protected:
+	encodingType m_eEncoding;
+	eState m_eState;
+	int m_nCur;
+	// These 3 pointers are for externally allocated memory passed to set
+	const ubyte *m_pBuf;
+	const ubyte *m_pRead;
+	const ubyte *m_pEnd;
+};
+
+}
+
 // ==================================================================
 
-Utf8_16_Read::Utf8_16_Read() {
+Utf8_16_Read::Utf8_16_Read() noexcept {
 	m_eEncoding = eUnknown;
 	m_nBufSize = 0;
 	m_pBuf = nullptr;
@@ -41,7 +78,7 @@ Utf8_16_Read::Utf8_16_Read() {
 	m_leadSurrogate[1] = 0;
 }
 
-Utf8_16_Read::~Utf8_16_Read() {
+Utf8_16_Read::~Utf8_16_Read() noexcept {
 	if ((m_eEncoding != eUnknown) && (m_eEncoding != eUtf8)) {
 		delete [] m_pNewBuf;
 		m_pNewBuf = nullptr;
@@ -131,15 +168,14 @@ int Utf8_16_Read::determineEncoding() noexcept {
 
 // ==================================================================
 
-Utf8_16_Write::Utf8_16_Write() {
+Utf8_16_Write::Utf8_16_Write() noexcept {
 	m_eEncoding = eUnknown;
 	m_pFile = nullptr;
-	m_pBuf = nullptr;
 	m_bFirstWrite = true;
 	m_nBufSize = 0;
 }
 
-Utf8_16_Write::~Utf8_16_Write() {
+Utf8_16_Write::~Utf8_16_Write() noexcept {
 	if (m_pFile) {
 		fclose();
 	}
@@ -175,8 +211,7 @@ size_t Utf8_16_Write::fwrite(const void *p, size_t _size) {
 
 	if (_size > m_nBufSize) {
 		m_nBufSize = _size;
-		delete [] m_pBuf;
-		m_pBuf = new utf16[_size + 1];
+		m_buf16 = std::make_unique<utf16[]>(m_nBufSize + 1);
 	}
 
 	if (m_bFirstWrite) {
@@ -191,7 +226,7 @@ size_t Utf8_16_Write::fwrite(const void *p, size_t _size) {
 	Utf8_Iter iter8;
 	iter8.set(static_cast<const ubyte *>(p), _size, m_eEncoding);
 
-	utf16 *pCur = m_pBuf;
+	utf16 *pCur = m_buf16.get();
 
 	for (; iter8; ++iter8) {
 		if (iter8.canGet()) {
@@ -211,16 +246,15 @@ size_t Utf8_16_Write::fwrite(const void *p, size_t _size) {
 		}
 	}
 
-	const size_t ret = ::fwrite(m_pBuf,
-				    reinterpret_cast<const char *>(pCur) - reinterpret_cast<const char *>(m_pBuf),
+	const size_t ret = ::fwrite(m_buf16.get(),
+				    reinterpret_cast<const char *>(pCur) - reinterpret_cast<const char *>(m_buf16.get()),
 				    1, m_pFile);
 
 	return ret;
 }
 
 int Utf8_16_Write::fclose() noexcept {
-	delete [] m_pBuf;
-	m_pBuf = nullptr;
+	m_buf16.reset();
 
 	const int ret = ::fclose(m_pFile);
 	m_pFile = nullptr;
@@ -234,10 +268,6 @@ void Utf8_16_Write::setEncoding(Utf8_16::encodingType eType) noexcept {
 
 //=================================================================
 Utf8_Iter::Utf8_Iter() noexcept {
-	reset();
-}
-
-void Utf8_Iter::reset() noexcept {
 	m_pBuf = nullptr;
 	m_pRead = nullptr;
 	m_pEnd = nullptr;
@@ -247,7 +277,7 @@ void Utf8_Iter::reset() noexcept {
 }
 
 void Utf8_Iter::set
-(const ubyte *pBuf, size_t nLen, encodingType eEncoding) {
+(const ubyte *pBuf, size_t nLen, encodingType eEncoding) noexcept {
 	m_pBuf = pBuf;
 	m_pRead = pBuf;
 	m_pEnd = pBuf + nLen;
@@ -295,10 +325,6 @@ void Utf8_Iter::toStart() noexcept {
 
 //==================================================
 Utf16_Iter::Utf16_Iter() noexcept {
-	reset();
-}
-
-void Utf16_Iter::reset() noexcept {
 	m_pBuf = nullptr;
 	m_pRead = nullptr;
 	m_pEnd = nullptr;

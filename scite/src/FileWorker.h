@@ -32,12 +32,11 @@ struct FileWorker : public Worker {
 
 class FileLoader : public FileWorker {
 public:
-	ILoader *pLoader;
+	Scintilla::ILoader *pLoader;
 	size_t readSoFar;
 	UniMode unicodeMode;
 
-	FileLoader(WorkerListener *pListener_, ILoader *pLoader_, const FilePath &path_, size_t size_, FILE *fp_);
-	~FileLoader() override;
+	FileLoader(WorkerListener *pListener_, Scintilla::ILoader *pLoader_, const FilePath &path_, size_t size_, FILE *fp_);
 	void Execute() override;
 	void Cancel() override;
 	bool IsLoading() const noexcept override {
@@ -52,9 +51,8 @@ public:
 	UniMode unicodeMode;
 	bool visibleProgress;
 
-	FileStorer(WorkerListener *pListener_, const char *documentBytes_, const FilePath &path_,
-		   size_t size_, FILE *fp_, UniMode unicodeMode_, bool visibleProgress_);
-	~FileStorer() override;
+	FileStorer(WorkerListener *pListener_, std::string_view bytes_, const FilePath &path_,
+		   FILE *fp_, UniMode unicodeMode_, bool visibleProgress_);
 	void Execute() override;
 	void Cancel() override;
 	bool IsLoading() const noexcept override {

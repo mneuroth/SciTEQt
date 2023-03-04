@@ -14,7 +14,7 @@ void SciTEWin::SetFileProperties(
 	PropSetFile &ps) {			///< Property set to update.
 
 	constexpr int TEMP_LEN = 100;
-	char temp[TEMP_LEN] = "";
+	wchar_t temp[TEMP_LEN] = L"";
 	HANDLE hf = ::CreateFileW(filePath.AsInternal(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hf != INVALID_HANDLE_VALUE) {
 		FILETIME ft = FILETIME();
@@ -25,15 +25,15 @@ void SciTEWin::SetFileProperties(
 		SYSTEMTIME st = SYSTEMTIME();
 		if (::FileTimeToSystemTime(&lft, &st) == 0)
 			st = SYSTEMTIME();
-		::GetTimeFormatA(LOCALE_USER_DEFAULT,
+		::GetTimeFormatW(LOCALE_USER_DEFAULT,
 				 0, &st,
 				 nullptr, temp, TEMP_LEN);
-		ps.Set("FileTime", temp);
+		ps.Set("FileTime", GUI::UTF8FromString(temp));
 
-		::GetDateFormatA(LOCALE_USER_DEFAULT,
+		::GetDateFormatW(LOCALE_USER_DEFAULT,
 				 DATE_SHORTDATE, &st,
 				 nullptr, temp, TEMP_LEN);
-		ps.Set("FileDate", temp);
+		ps.Set("FileDate", GUI::UTF8FromString(temp));
 
 		const DWORD attr = ::GetFileAttributesW(filePath.AsInternal());
 		std::string fa;
@@ -46,7 +46,7 @@ void SciTEWin::SetFileProperties(
 		if (attr & FILE_ATTRIBUTE_SYSTEM) {
 			fa += "S";
 		}
-		ps.Set("FileAttr", fa.c_str());
+		ps.Set("FileAttr", fa);
 	} else {
 		/* Reset values for new buffers with no file */
 		ps.Set("FileTime", "");
@@ -54,15 +54,15 @@ void SciTEWin::SetFileProperties(
 		ps.Set("FileAttr", "");
 	}
 
-	::GetDateFormatA(LOCALE_USER_DEFAULT,
+	::GetDateFormatW(LOCALE_USER_DEFAULT,
 			 DATE_SHORTDATE, nullptr,     	// Current date
 			 nullptr, temp, TEMP_LEN);
-	ps.Set("CurrentDate", temp);
+	ps.Set("CurrentDate", GUI::UTF8FromString(temp));
 
-	::GetTimeFormatA(LOCALE_USER_DEFAULT,
+	::GetTimeFormatW(LOCALE_USER_DEFAULT,
 			 0, nullptr,     	// Current time
 			 nullptr, temp, TEMP_LEN);
-	ps.Set("CurrentTime", temp);
+	ps.Set("CurrentTime", GUI::UTF8FromString(temp));
 }
 
 /**
@@ -74,20 +74,75 @@ void SciTEWin::SetStatusBarText(const char *s) {
 		      SB_SETTEXT, 0, reinterpret_cast<LPARAM>(barText.c_str()));
 }
 
-void SciTEWin::TabInsert(int index, const GUI::gui_char *title, const GUI::gui_char *fullPath) {
-	TCITEMW tie;
+void SciTEWin::UpdateTabs(const std::vector<GUI::gui_string> &tabNames) {
+	// Synchronize the tab control titles with those passed in.
+
+	// Find the first element that differs between the two vectors.
+	const auto [misNames, misNamesCurrent] = std::mismatch(
+		tabNames.begin(), tabNames.end(),
+		tabNamesCurrent.begin(), tabNamesCurrent.end());
+	size_t tabChange = std::distance(tabNames.begin(), misNames);
+
+	if (tabNames.size() == tabNamesCurrent.size() && tabNames.size() == tabChange) {
+		// Most updates change nothing on the tabs so return early.
+		return;
+	}
+
+	// Avoiding drawing with WM_SETREDRAW here does not improve speed or flashing.
+
+	while (tabNames.size() < tabNamesCurrent.size()) {
+		// Remove extra tabs
+		TabCtrl_DeleteItem(HwndOf(wTabBar), tabChange);
+		tabNamesCurrent.erase(tabNamesCurrent.begin() + tabChange);
+	}
+
+	while (tabNames.size() > tabNamesCurrent.size()) {
+		// Add new tabs
+		GUI::gui_string tabNameNext = tabNames.at(tabChange);
+		TCITEMW tie {};
+		tie.mask = TCIF_TEXT | TCIF_IMAGE;
+		tie.iImage = -1;
+		tie.pszText = tabNameNext.data();
+		TabCtrl_InsertItem(HwndOf(wTabBar), tabChange, &tie);
+		tabNamesCurrent.insert(tabNamesCurrent.begin() + tabChange, tabNameNext);
+		tabChange++;
+	}
+	assert(tabNames.size() == tabNamesCurrent.size());
+
+	while (tabChange < tabNames.size()) {
+		// Update tabs that are different
+		if (tabNames.at(tabChange) != tabNamesCurrent.at(tabChange)) {
+			GUI::gui_string tabNameCopy(tabNames.at(tabChange));
+			TCITEMW tie {};
+			tie.mask = TCIF_TEXT | TCIF_IMAGE;
+			tie.iImage = -1;
+			tie.pszText = tabNameCopy.data();
+			TabCtrl_SetItem(HwndOf(wTabBar), tabChange, &tie);
+			tabNamesCurrent.at(tabChange) = tabNameCopy;
+		}
+		tabChange++;
+	}
+	assert(tabNamesCurrent == tabNames);
+}
+
+void SciTEWin::TabInsert(int index, const GUI::gui_char *title) {
+	// This is no longer called as UpdateTabs performs all changes to tabs
+	TCITEMW tie {};
 	tie.mask = TCIF_TEXT | TCIF_IMAGE;
 	tie.iImage = -1;
-	GUI::gui_string titleCopy(title, title + wcslen(title) + 1);
-	tie.pszText = &titleCopy[0];
+	GUI::gui_string titleCopy(title);
+	tie.pszText = titleCopy.data();
 	TabCtrl_InsertItem(HwndOf(wTabBar), index, &tie);
 }
 
 void SciTEWin::TabSelect(int index) {
-	TabCtrl_SetCurSel(HwndOf(wTabBar), index);
+	if (index != TabCtrl_GetCurSel(HwndOf(wTabBar))) {
+		TabCtrl_SetCurSel(HwndOf(wTabBar), index);
+	}
 }
 
 void SciTEWin::RemoveAllTabs() {
+	// This is no longer called as UpdateTabs performs all changes to tabs
 	TabCtrl_DeleteAllItems(HwndOf(wTabBar));
 }
 
@@ -106,7 +161,7 @@ GUI::Point ClientFromScreen(HWND hWnd, GUI::Point ptScreen) noexcept {
 namespace {
 
 int TabAtPoint(HWND hWnd, GUI::Point pt) noexcept {
-	TCHITTESTINFO thti;
+	TCHITTESTINFO thti {};
 	thti.pt.x = pt.x;
 	thti.pt.y = pt.y;
 	thti.flags = 0;
@@ -123,7 +178,7 @@ void SciTEWin::Notify(SCNotification *notification) {
 	case TCN_SELCHANGE:
 		// Change of tab
 		if (notification->nmhdr.idFrom == IDM_TABWIN) {
-			const int index = TabCtrl_GetCurSel(HwndOf(wTabBar));
+			const BufferIndex index = TabCtrl_GetCurSel(HwndOf(wTabBar));
 			SetDocumentAt(index);
 			CheckReload();
 		}
@@ -396,6 +451,7 @@ void SciTEWin::SizeSubWindows() {
 	bands[bandSearch].visible = searchStrip.visible;
 	bands[bandFind].visible = findStrip.visible;
 	bands[bandReplace].visible = replaceStrip.visible;
+	bands[bandFilter].visible = filterStrip.visible;
 
 	const GUI::Rectangle rcSB = wStatusBar.GetPosition();
 	bands[bandStatus].height = rcSB.Height() - 2;	// -2 hides a top border
@@ -485,7 +541,7 @@ void SciTEWin::SetMenuItem(int menuNumber, int position, int itemID,
 	if (itemID >= IDM_TOOLS && itemID < IDM_TOOLS + toolMax) {
 		// Stow the keycode for later retrieval.
 		// Do this even if 0, in case the menu already existed (e.g. ModifyMenu)
-		MENUITEMINFO mii;
+		MENUITEMINFO mii {};
 		mii.cbSize = sizeof(MENUITEMINFO);
 		mii.fMask = MIIM_DATA;
 		mii.dwItemData = keycode;
@@ -517,10 +573,7 @@ void SciTEWin::CheckAMenuItem(int wIDCheckItem, bool val) {
 }
 
 void EnableButton(HWND wTools, int id, bool enable) noexcept {
-	if (wTools) {
-		::SendMessage(wTools, TB_ENABLEBUTTON, id,
-			      IntFromTwoShorts(enable ? TRUE : FALSE, 0));
-	}
+	::SendMessage(wTools, TB_ENABLEBUTTON, id, IntFromTwoShorts(enable, 0));
 }
 
 void SciTEWin::EnableAMenuItem(int wIDCheckItem, bool val) {
@@ -538,13 +591,12 @@ void SciTEWin::CheckMenus() {
 	::CheckMenuRadioItem(::GetMenu(MainHWND()), IDM_EOL_CRLF, IDM_EOL_LF,
 			     static_cast<int>(wEditor.EOLMode()) - static_cast<int>(SA::EndOfLine::CrLf) + IDM_EOL_CRLF, 0);
 	::CheckMenuRadioItem(::GetMenu(MainHWND()), IDM_ENCODING_DEFAULT, IDM_ENCODING_UCOOKIE,
-			     CurrentBuffer()->unicodeMode + IDM_ENCODING_DEFAULT, 0);
+			     static_cast<int>(CurrentBuffer()->unicodeMode) + IDM_ENCODING_DEFAULT, 0);
 }
 
 void SciTEWin::LocaliseMenu(HMENU hmenu) {
 	for (int i = 0; i <= ::GetMenuItemCount(hmenu); i++) {
-		GUI::gui_char buff[200];
-		buff[0] = '\0';
+		GUI::gui_char buff[200] {};
 		MENUITEMINFOW mii {};
 		mii.cbSize = sizeof(mii);
 		mii.fMask = MIIM_CHECKMARKS | MIIM_DATA | MIIM_ID |
@@ -567,7 +619,7 @@ void SciTEWin::LocaliseMenu(HMENU hmenu) {
 					} else {
 						accel = GUI_TEXT("");
 					}
-					text = localiser.Text(GUI::UTF8FromString(text.c_str()).c_str(), true);
+					text = localiser.Text(GUI::UTF8FromString(text).c_str(), true);
 					if (text.length()) {
 						if (accel != GUI_TEXT("")) {
 							text += GUI_TEXT("\t");
@@ -716,13 +768,13 @@ static LRESULT PASCAL TabWndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM
 				::SetCapture(hWnd);
 				hwndLastFocus = ::SetFocus(hWnd);
 				bDragBegin = true;
-				HCURSOR hcursor = ::LoadCursor(::GetModuleHandle(NULL),
+				HCURSOR hcursor = ::LoadCursor(::GetModuleHandle(nullptr),
 							       MAKEINTRESOURCE(IDC_DRAGDROP));
 				if (hcursor) ::SetCursor(hcursor);
 			} else {
 				if (bDragBegin) {
 					if (tab > -1 && iDraggingTab > -1 /*&& iDraggingTab != tab*/) {
-						HCURSOR hcursor = ::LoadCursor(::GetModuleHandle(NULL),
+						HCURSOR hcursor = ::LoadCursor(::GetModuleHandle(nullptr),
 									       MAKEINTRESOURCE(IDC_DRAGDROP));
 						if (hcursor) ::SetCursor(hcursor);
 					} else {
@@ -739,7 +791,7 @@ static LRESULT PASCAL TabWndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM
 				const GUI::Point ptClient = ClientFromScreen(hWnd, PointOfCursor());
 				const int tab = TabAtPoint(hWnd, ptClient);
 
-				RECT tabrc;
+				RECT tabrc {};
 				if (tab != -1 &&
 						tab != iDraggingTab &&
 						TabCtrl_GetItemRect(hWnd, tab, &tabrc)) {
@@ -792,6 +844,22 @@ static LRESULT PASCAL TabWndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM
 	return retResult;
 }
 
+void SciTEWin::CreateStrip(LPCWSTR stripName, LPVOID lpParam) {
+	const HWND hwnd = ::CreateWindowExW(
+		0,
+		classNameInternal,
+		stripName,
+		WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
+		0, 0,
+		100, 100,
+		MainHWND(),
+		HmenuID(2001),
+		hInstance,
+		lpParam);
+	if (!hwnd)
+		exit(FALSE);
+}
+
 /**
  * Create all the needed windows.
  */
@@ -820,7 +888,7 @@ void SciTEWin::Creation() {
 				     HwndOf(wContent),
 				     HmenuID(IDM_SRCWIN),
 				     hInstance,
-				     0));
+				     nullptr));
 	if (!wEditor.CanCall())
 		exit(FALSE);
 	wEditor.Show();
@@ -838,7 +906,7 @@ void SciTEWin::Creation() {
 				     HwndOf(wContent),
 				     HmenuID(IDM_RUNWIN),
 				     hInstance,
-				     0));
+				     nullptr));
 	if (!wOutput.CanCall())
 		exit(FALSE);
 	wOutput.Show();
@@ -860,7 +928,7 @@ void SciTEWin::Creation() {
 				   MainHWND(),
 				   HmenuID(IDM_TOOLWIN),
 				   hInstance,
-				   0);
+				   nullptr);
 	wToolBar = hwndToolBar;
 
 	::SendMessage(hwndToolBar, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
@@ -897,7 +965,7 @@ void SciTEWin::Creation() {
 
 	wToolBar.Show();
 
-	INITCOMMONCONTROLSEX icce;
+	INITCOMMONCONTROLSEX icce {};
 	icce.dwSize = sizeof(icce);
 	icce.dwICC = ICC_TAB_CLASSES;
 	InitCommonControlsEx(&icce);
@@ -924,7 +992,7 @@ void SciTEWin::Creation() {
 			  MainHWND(),
 			  HmenuID(IDM_TABWIN),
 			  hInstance,
-			  0);
+			  nullptr);
 
 	if (!wTabBar.Created())
 		exit(FALSE);
@@ -937,75 +1005,12 @@ void SciTEWin::Creation() {
 
 	wTabBar.Show();
 
-	HWND hwnd = ::CreateWindowEx(
-			    0,
-			    classNameInternal,
-			    TEXT("userStrip"),
-			    WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
-			    0, 0,
-			    100, 100,
-			    MainHWND(),
-			    HmenuID(2001),
-			    hInstance,
-			    &userStrip);
-	if (!hwnd)
-		exit(FALSE);
-
-	hwnd = ::CreateWindowEx(
-		       0,
-		       classNameInternal,
-		       TEXT("backgroundStrip"),
-		       WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
-		       0, 0,
-		       100, 100,
-		       MainHWND(),
-		       HmenuID(2001),
-		       hInstance,
-		       &backgroundStrip);
-	if (!hwnd)
-		exit(FALSE);
-
-	hwnd = ::CreateWindowEx(
-		       0,
-		       classNameInternal,
-		       TEXT("searchStrip"),
-		       WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
-		       0, 0,
-		       100, 100,
-		       MainHWND(),
-		       HmenuID(2001),
-		       hInstance,
-		       &searchStrip);
-	if (!hwnd)
-		exit(FALSE);
-
-	hwnd = ::CreateWindowEx(
-		       0,
-		       classNameInternal,
-		       TEXT("FindStrip"),
-		       WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
-		       0, 0,
-		       100, 100,
-		       MainHWND(),
-		       HmenuID(2002),
-		       hInstance,
-		       &findStrip);
-	if (!hwnd)
-		exit(FALSE);
-
-	hwnd = ::CreateWindowEx(
-		       0,
-		       classNameInternal,
-		       TEXT("ReplaceStrip"),
-		       WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
-		       0, 0,
-		       100, 100,
-		       MainHWND(),
-		       HmenuID(2003),
-		       hInstance,
-		       &replaceStrip);
-	if (!hwnd)
-		exit(FALSE);
+	CreateStrip(L"BackgroundStrip", &backgroundStrip);
+	CreateStrip(L"UserStrip", &userStrip);
+	CreateStrip(L"SearchStrip", &searchStrip);
+	CreateStrip(L"FindStrip", &findStrip);
+	CreateStrip(L"ReplaceStrip", &replaceStrip);
+	CreateStrip(L"FilterStrip", &filterStrip);
 
 	wStatusBar = ::CreateWindowEx(
 			     0,
@@ -1017,7 +1022,7 @@ void SciTEWin::Creation() {
 			     MainHWND(),
 			     HmenuID(IDM_STATUSWIN),
 			     hInstance,
-			     0);
+			     nullptr);
 	wStatusBar.Show();
 	const int widths[] = { 4000 };
 	// Perhaps we can define a syntax to create more parts,
@@ -1034,6 +1039,7 @@ void SciTEWin::Creation() {
 	bands.push_back(Band(true, searchStrip.Height(), false, searchStrip));
 	bands.push_back(Band(true, findStrip.Height(), false, findStrip));
 	bands.push_back(Band(true, replaceStrip.Height(), false, replaceStrip));
+	bands.push_back(Band(true, filterStrip.Height(), false, filterStrip));
 	bands.push_back(Band(true, heightStatus, false, wStatusBar));
 
 #ifndef NO_LUA

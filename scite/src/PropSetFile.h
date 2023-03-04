@@ -29,12 +29,10 @@ class PropSetFile {
 public:
 	PropSetFile *superPS;
 	explicit PropSetFile(bool lowerKeys_=false);
-	PropSetFile(const PropSetFile &copy);
-	PropSetFile &operator=(const PropSetFile &assign);
-	virtual ~PropSetFile();
 
 	void Set(std::string_view key, std::string_view val);
-	void SetLine(const char *keyVal);
+	void SetPath(std::string_view key, const FilePath &path);
+	void SetLine(const char *keyVal, bool unescape);
 	void Unset(std::string_view key);
 	bool Exists(const char *key) const;
 	std::string GetString(const char *key) const;
@@ -46,7 +44,7 @@ public:
 	long long GetLongLong(const char *key, long long defaultValue=0) const;
 	void Clear() noexcept;
 
-	enum ReadLineState { rlActive, rlExcludedModule, rlConditionFalse };
+	enum class ReadLineState { active, excludedModule, conditionFalse };
 	ReadLineState ReadLine(const char *lineBuffer, ReadLineState rls, const FilePath &directoryForImports, const ImportFilter &filter,
 			       FilePathSet *imports, size_t depth);
 	void ReadFromMemory(const char *data, size_t len, const FilePath &directoryForImports, const ImportFilter &filter,
@@ -57,8 +55,8 @@ public:
 		  FilePathSet *imports, size_t depth);
 	std::string GetWild(const char *keybase, const char *filename);
 	std::string GetNewExpandString(const char *keybase, const char *filename = "");
-	bool GetFirst(const char *&key, const char *&val);
-	bool GetNext(const char *&key, const char *&val);
+	bool GetFirst(const char *&key, const char *&val) const;
+	bool GetNext(const char *&key, const char *&val) const;
 	static void SetCaseSensitiveFilenames(bool caseSensitiveFilenames_) noexcept {
 		caseSensitiveFilenames = caseSensitiveFilenames_;
 	}

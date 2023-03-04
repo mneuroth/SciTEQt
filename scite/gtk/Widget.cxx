@@ -3,10 +3,12 @@
 // Copyright 2010 by Neil Hodgson <neilh@scintilla.org>
 // The License.txt file describes the conditions under which this software may be distributed.
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
+#include <tuple>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <chrono>
 
@@ -19,20 +21,11 @@
 #include "StringHelpers.h"
 #include "Widget.h"
 
-// Key names are longer for GTK 3
-#if GTK_CHECK_VERSION(3,0,0)
-#define GKEY_Escape GDK_KEY_Escape
-#define GKEY_Void GDK_KEY_VoidSymbol
-#else
-#define GKEY_Escape GDK_Escape
-#define GKEY_Void GDK_VoidSymbol
-#endif
-
 WBase::operator GtkWidget*() const {
 	return GTK_WIDGET(GetID());
 }
 
-GtkWidget* WBase::Pointer() {
+GtkWidget *WBase::Pointer() {
 	return GTK_WIDGET(GetID());
 }
 
@@ -40,7 +33,7 @@ bool WBase::Sensitive() {
 	return gtk_widget_get_sensitive(GTK_WIDGET(Pointer()));
 }
 
-void WStatic::Create(GUI::gui_string text) {
+void WStatic::Create(const GUI::gui_string &text) {
 	SetID(gtk_label_new_with_mnemonic(text.c_str()));
 }
 
@@ -52,10 +45,10 @@ void WStatic::SetMnemonicFor(WBase &w) {
 	gtk_label_set_mnemonic_widget(GTK_LABEL(Pointer()), w);
 }
 
-void WEntry::Create(const GUI::gui_char *text) {
+void WEntry::Create(const GUI::gui_string &text) {
 	SetID(gtk_entry_new());
-	if (text)
-		gtk_entry_set_text(GTK_ENTRY(GetID()), text);
+	if (!text.empty())
+		gtk_entry_set_text(GTK_ENTRY(GetID()), text.c_str());
 }
 
 void WEntry::ActivatesDefault() {
@@ -70,8 +63,8 @@ int WEntry::Value() {
 	return atoi(Text());
 }
 
-void WEntry::SetText(const GUI::gui_char *text) {
-	return gtk_entry_set_text(GTK_ENTRY(GetID()), text);
+void WEntry::SetText(GUI::gui_string text) {
+	return gtk_entry_set_text(GTK_ENTRY(GetID()), text.c_str());
 }
 
 void WEntry::SetValid(GtkEntry *entry, bool valid) {
@@ -97,7 +90,7 @@ void WComboBoxEntry::Create() {
 #endif
 }
 
-GtkEntry *WComboBoxEntry::Entry() {
+GtkEntry *WComboBoxEntry::Entry() const {
 	return GTK_ENTRY(gtk_bin_get_child(GTK_BIN(GetID())));
 }
 
@@ -109,11 +102,11 @@ const GUI::gui_char *WComboBoxEntry::Text() {
 	return gtk_entry_get_text(Entry());
 }
 
-void WComboBoxEntry::SetText(const GUI::gui_char *text) {
-	return gtk_entry_set_text(Entry(), text);
+void WComboBoxEntry::SetText(const GUI::gui_string &text) {
+	return gtk_entry_set_text(Entry(), text.c_str());
 }
 
-bool WComboBoxEntry::HasFocusOnSelfOrChild() {
+bool WComboBoxEntry::HasFocusOnSelfOrChild() const {
 	return HasFocus() || gtk_widget_has_focus(GTK_WIDGET(Entry()));
 }
 
@@ -125,14 +118,14 @@ void WComboBoxEntry::RemoveText(int position) {
 #endif
 }
 
-void WComboBoxEntry::AppendText(const char *text) {
+void WComboBoxEntry::AppendText(const GUI::gui_string &text) {
 #if GTK_CHECK_VERSION(3,0,0)
-	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(GetID()), text);
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(GetID()), text.c_str());
 #if GTK_CHECK_VERSION(3,14,0)
 	gtk_combo_box_set_button_sensitivity(GTK_COMBO_BOX(GetID()), GTK_SENSITIVITY_ON);
 #endif
 #else
-	gtk_combo_box_append_text(GTK_COMBO_BOX(GetID()), text);
+	gtk_combo_box_append_text(GTK_COMBO_BOX(GetID()), text.c_str());
 #endif
 }
 
@@ -152,20 +145,20 @@ void WComboBoxEntry::ClearList() {
 void WComboBoxEntry::FillFromMemory(const std::vector<std::string> &mem, bool useTop) {
 	ClearList();
 	for (const std::string &s : mem) {
-		AppendText(s.c_str());
+		AppendText(s);
 	}
 	if (useTop) {
 		gtk_entry_set_text(Entry(), mem[0].c_str());
 	}
 }
 
-void WButton::Create(GUI::gui_string text, GCallback func, gpointer data) {
+void WButton::Create(const GUI::gui_string &text, GCallback func, gpointer data) {
 	SetID(gtk_button_new_with_mnemonic(text.c_str()));
 	gtk_widget_set_can_default(GTK_WIDGET(GetID()), TRUE);
 	g_signal_connect(G_OBJECT(GetID()), "clicked", func, data);
 }
 
-void WButton::Create(GUI::gui_string text) {
+void WButton::Create(const GUI::gui_string &text) {
 	SetID(gtk_button_new_with_mnemonic(text.c_str()));
 	gtk_widget_set_can_default(GTK_WIDGET(GetID()), TRUE);
 }
@@ -173,7 +166,7 @@ void WButton::Create(GUI::gui_string text) {
 void WToggle::Create(const GUI::gui_string &text) {
 	SetID(gtk_check_button_new_with_mnemonic(text.c_str()));
 }
-bool WToggle::Active() {
+bool WToggle::Active() const {
 	return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(GetID()));
 }
 void WToggle::SetActive(bool active) {
@@ -184,7 +177,7 @@ void WProgress::Create() {
 	SetID(gtk_progress_bar_new());
 }
 
-WCheckDraw::WCheckDraw() : cdfn(NULL), user(NULL) {
+WCheckDraw::WCheckDraw() {
 }
 
 WCheckDraw::~WCheckDraw() {
@@ -208,7 +201,10 @@ static void GreyToAlpha(GdkPixbuf *ppb, GdkColor fore) {
 	}
 }
 
-void WCheckDraw::Create(const char **xpmImage, const GUI::gui_string &toolTip, GtkStyle *pStyle_) {
+void WCheckDraw::Create(int cmd_, const char **xpmImage, const GUI::gui_string &toolTip) {
+	cmd = cmd_;
+	label = toolTip;
+
 	GtkWidget *button = gtk_toggle_button_new();
 	gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), FALSE);
@@ -216,10 +212,10 @@ void WCheckDraw::Create(const char **xpmImage, const GUI::gui_string &toolTip, G
 	GdkPixbuf *pbGrey = gdk_pixbuf_new_from_xpm_data(xpmImage);
 	GdkPixbuf *pbAlpha = gdk_pixbuf_add_alpha(pbGrey, TRUE, 0xff, 0xff, 0);
 	g_object_unref(pbGrey);
-#if GTK_CHECK_VERSION(3, 4, 0)
-	(void)pStyle_;
-	GdkRGBA rgbaFore;
+
+#if GTK_CHECK_VERSION(3, 0, 0)
 	GtkStyleContext *context = gtk_widget_get_style_context(button);
+	GdkRGBA rgbaFore;
 	gtk_style_context_get_color(context, gtk_style_context_get_state(context), &rgbaFore);
 	GdkColor fore;
 	fore.red = rgbaFore.red * 65535;
@@ -227,8 +223,11 @@ void WCheckDraw::Create(const char **xpmImage, const GUI::gui_string &toolTip, G
 	fore.blue = rgbaFore.blue * 65535;
 	fore.pixel = 0;
 #else
-	GdkColor fore = pStyle_->fg[gtk_widget_get_state(button)];
+	gtk_widget_ensure_style(button);
+	GtkStyle *pStyle = button->style;
+	GdkColor fore = pStyle->fg[gtk_widget_get_state(button)];
 #endif
+
 	// Convert the grey to alpha and make black
 	GreyToAlpha(pbAlpha, fore);
 	GtkWidget *image = gtk_image_new_from_pixbuf(pbAlpha);
@@ -245,18 +244,28 @@ void WCheckDraw::Create(const char **xpmImage, const GUI::gui_string &toolTip, G
 	if (posMnemonic != GUI::gui_string::npos)
 		toolTipNoMnemonic.replace(posMnemonic, 1, "");
 	gtk_widget_set_tooltip_text(Pointer(), toolTipNoMnemonic.c_str());
+
+	key = KeyFromLabel(toolTip);
+}
+
+int WCheckDraw::Command() const {
+	return cmd;
+}
+
+const char *WCheckDraw::Label() const {
+	return label.c_str();
 }
 
 void WCheckDraw::Toggled(GtkWidget *, WCheckDraw *pcd) {
-	if (pcd->cdfn)
-		pcd->cdfn(pcd, pcd->user);
+	if (pcd->watcher)
+		pcd->watcher->CheckChanged();
 }
 
-GtkToggleButton *WCheckDraw::ToggleButton() {
+GtkToggleButton *WCheckDraw::ToggleButton() const {
 	return reinterpret_cast<GtkToggleButton*>(GetID());
 }
 
-bool WCheckDraw::Active() {
+bool WCheckDraw::Active() const {
 	return gtk_toggle_button_get_active(ToggleButton());
 }
 
@@ -268,9 +277,16 @@ void WCheckDraw::Toggle() {
 	SetActive(!Active());
 }
 
-void WCheckDraw::SetChangeFunction(ChangeFunction cdfn_, void *user_) {
-	cdfn = cdfn_;
-	user = user_;
+void WCheckDraw::SetChangeWatcher(CheckDrawWatcher *watcher_) {
+	watcher = watcher_;
+}
+
+bool WCheckDraw::ToggleMatchKey(int key_) {
+	if (key == key_) {
+		Toggle();
+		return true;
+	}
+	return false;
 }
 
 #if GTK_CHECK_VERSION(3,4,0)
@@ -283,8 +299,12 @@ WTable::WTable(int rows_, int columns_) :
 	rows(rows_), columns(columns_), next(0) {
 #if USE_GRID
 	SetID(gtk_grid_new());
+	gtk_grid_set_column_spacing(GTK_GRID(GetID()), 2);
+	gtk_grid_set_row_spacing(GTK_GRID(GetID()), 2);
 #else
 	SetID(gtk_table_new(rows, columns, FALSE));
+	gtk_table_set_col_spacings(GTK_TABLE(GetID()), 2);
+	gtk_table_set_row_spacings(GTK_TABLE(GetID()), 2);
 #endif
 }
 
@@ -344,12 +364,37 @@ void WTable::NextLine() {
 	next = ((next - 1) / columns + 1) * columns;
 }
 
-GUI::gui_char KeyFromLabel(GUI::gui_string label) {
+GUI::gui_char KeyFromLabel(const GUI::gui_string &label) {
 	if (!label.empty()) {
-		size_t posMnemonic = label.find('_');
-		return MakeLowerCase(label[posMnemonic + 1]);
+		const size_t posMnemonic = label.find('_');
+		if (posMnemonic != GUI::gui_string::npos) {
+			return MakeLowerCase(label[posMnemonic + 1]);
+		}
 	}
 	return 0;
+}
+
+std::string GtkFromWinCaption(const GUI::gui_string &text) {
+	std::string sCaption(text);
+	// Escape underlines
+	Substitute(sCaption, "_", "__");
+	// Replace Windows-style ampersands with GTK underlines
+	size_t posFound = sCaption.find("&");
+	while (posFound != std::string::npos) {
+		std::string nextChar = sCaption.substr(posFound + 1, 1);
+		if (nextChar == "&") {
+			// Escaped, move on
+			posFound += 2;
+		} else {
+			sCaption.erase(posFound, 1);
+			sCaption.insert(posFound, "_", 1);
+			posFound += 1;
+		}
+		posFound = sCaption.find("&", posFound);
+	}
+	// Unescape ampersands
+	Substitute(sCaption, "&&", "&");
+	return sCaption;
 }
 
 void Dialog::Create(const GUI::gui_string &title) {
@@ -409,7 +454,7 @@ void Strip::Close() {
 	visible = false;
 }
 
-bool Strip::KeyDown(GdkEventKey *event) {
+bool Strip::KeyDown(const GdkEventKey *event) {
 	bool retVal = false;
 
 	if (visible) {
@@ -421,15 +466,15 @@ bool Strip::KeyDown(GdkEventKey *event) {
 		if (event->state & GDK_MOD1_MASK) {
 			GList *childWidgets = gtk_container_get_children(GTK_CONTAINER(GetID()));
 			for (GList *child = g_list_first(childWidgets); child; child = g_list_next(child)) {
-				GtkWidget **w = (GtkWidget **)child;
-				std::string name = gtk_widget_get_name(*w);
+				GtkWidget **w = reinterpret_cast<GtkWidget **>(child);
+				const std::string name = gtk_widget_get_name(*w);
 				std::string label;
 				if (name == "GtkButton" || name == "GtkCheckButton") {
 					label = gtk_button_get_label(GTK_BUTTON(*w));
 				} else if (name == "GtkLabel") {
 					label = gtk_label_get_label(GTK_LABEL(*w));
 				}
-				char key = KeyFromLabel(label);
+				const char key = KeyFromLabel(label);
 				if (static_cast<unsigned int>(key) == event->keyval) {
 					//fprintf(stderr, "%p %s %s %c\n", *w, name.c_str(), label.c_str(), key);
 					if (name == "GtkButton" || name == "GtkCheckButton") {
@@ -456,9 +501,9 @@ void Strip::MenuSignal(GtkMenuItem *menuItem, Strip *pStrip) {
 	pStrip->MenuAction(cmd);
 }
 
-void Strip::AddToPopUp(GUI::Menu &popup, const char *label, int cmd, bool checked) {
+void Strip::AddToPopUp(GUI::Menu &popup, const GUI::gui_string &label, int cmd, bool checked) {
 	allowMenuActions = false;
-	GUI::gui_string localised = localiser->Text(label);
+	GUI::gui_string localised = localiser->Text(label.c_str());
 	GtkWidget *menuItem = gtk_check_menu_item_new_with_mnemonic(localised.c_str());
 	gtk_menu_shell_append(GTK_MENU_SHELL(popup.GetID()), menuItem);
 	g_object_set_data(G_OBJECT(menuItem), "CmdNum", GINT_TO_POINTER(cmd));

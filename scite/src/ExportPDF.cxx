@@ -12,11 +12,13 @@
 #include <cstdio>
 #include <ctime>
 
+#include <tuple>
 #include <string>
 #include <string_view>
 #include <vector>
 #include <map>
 #include <set>
+#include <optional>
 #include <memory>
 #include <chrono>
 #include <sstream>
@@ -46,6 +48,7 @@
 #include "Cookie.h"
 #include "Worker.h"
 #include "MatchMarker.h"
+#include "Searcher.h"
 #include "SciTEBase.h"
 
 //---------- Save to PDF ----------
@@ -124,10 +127,13 @@ void SciTEBase::SaveToPDF(const FilePath &saveName) {
 			fp = fp_;
 			index = 1;
 		}
+
 		// Deleted so PDFObjectTracker objects can not be copied.
 		PDFObjectTracker(const PDFObjectTracker &) = delete;
-		~PDFObjectTracker() {
-		}
+		PDFObjectTracker(PDFObjectTracker &&) = delete;
+		PDFObjectTracker &operator=(const PDFObjectTracker &) = delete;
+		PDFObjectTracker &operator=(PDFObjectTracker &&) = delete;
+
 		void write(const char *objectData) {
 			const size_t length = strlen(objectData);
 			// note binary write used, open with "wb"
@@ -211,8 +217,9 @@ void SciTEBase::SaveToPDF(const FilePath &saveName) {
 		}
 		// Deleted so PDFRender objects can not be copied.
 		PDFRender(const PDFRender &) = delete;
-		~PDFRender() {
-		}
+		PDFRender(PDFRender &&) = delete;
+		PDFRender &operator=(const PDFRender &) = delete;
+		PDFRender &operator=(PDFRender &&) = delete;
 		//
 		double fontToPoints(int thousandths) const {
 			return (double)fontSize * thousandths / 1000.0;
@@ -384,7 +391,7 @@ void SciTEBase::SaveToPDF(const FilePath &saveName) {
 						<< "<</Length "
 						<< (pageData.length() - 1 + 3)
 						<< ">>\nstream\n"
-						<< pageData.c_str()
+						<< pageData
 						<< "ET\nendstream\n";
 				const std::string textObj = osTextObj.str();
 				oT->add(textObj.c_str());

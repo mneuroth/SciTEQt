@@ -8,6 +8,7 @@
 
 srcdir ?= .
 SCINTILLA_DIR ?= $(srcdir)/../../scintilla
+LEXILLA_DIR ?= $(srcdir)/../../lexilla
 
 .SUFFIXES: .cxx .o .h .a .c
 
@@ -61,15 +62,15 @@ LEXILLA=$(srcdir)/../bin/liblexilla.$(SHAREDEXTENSION)
 
 all: $(PROG) $(COMPONENT) $(LEXILLA)
 
-vpath %.h $(srcdir) $(srcdir)/../src $(SCINTILLA_DIR)/include
-vpath %.cxx $(srcdir) $(srcdir)/../src
+vpath %.h $(srcdir) $(srcdir)/../src $(LEXILLA_DIR)/include $(SCINTILLA_DIR)/include
+vpath %.cxx $(srcdir) $(srcdir)/../src $(srcdir)/../../lexilla/access $(SCINTILLA_DIR)/call
 
-INCLUDES=-I $(SCINTILLA_DIR)/include -I $(srcdir)/../src
+INCLUDES=-I $(LEXILLA_DIR)/include  -I $(LEXILLA_DIR)/access -I $(SCINTILLA_DIR)/include -I $(srcdir)/../src
 DEFINES += -DGTK
 DEFINES += -DPIXMAP_PATH=\"$(pixmapdir)\" -DSYSCONF_PATH=\"$(SYSCONF_PATH)\"
 
 DEFINES += -D$(if $(DEBUG),DEBUG,NDEBUG)
-BASE_FLAGS += $(if $(DEBUG),-g,-Os)
+BASE_FLAGS += $(if $(DEBUG),-g,-O3)
 
 ifndef NO_LUA
 LUA_CORE_OBJS = lapi.o lcode.o lctype.o ldebug.o ldo.o ldump.o lfunc.o lgc.o llex.o \
@@ -118,6 +119,9 @@ depend deps.mak:
 ../bin/%.$(SHAREDEXTENSION):	../../scintilla/bin/%.$(SHAREDEXTENSION)
 	$(COPY) $< $(@D)
 
+../bin/%.$(SHAREDEXTENSION):	../../lexilla/bin/%.$(SHAREDEXTENSION)
+	$(COPY) $< $(@D)
+
 # To almost make lua.vers (needs header and footer added) which is only needed after updating Lua:
 # nm -g ../bin/SciTE | grep lua | awk '{print "\t\t" $3 ";"}' >lua2.vers
 
@@ -134,9 +138,10 @@ SRC_OBJS = \
 	FileWorker.o \
 	IFaceTable.o \
 	JobQueue.o \
-	LexillaLibrary.o \
+	LexillaAccess.o \
 	MatchMarker.o \
 	MultiplexExtension.o \
+	PathMatch.o \
 	PropSetFile.o \
 	ScintillaCall.o \
 	ScintillaWindow.o \
@@ -150,10 +155,10 @@ SRC_OBJS = \
 	StyleWriter.o \
 	Utf8_16.o
 
-$(PROG): SciTEGTK.o GUIGTK.o Widget.o DirectorExtension.o $(SRC_OBJS) $(LUA_OBJS)
+$(PROG): SciTEGTK.o Strips.o GUIGTK.o Widget.o DirectorExtension.o $(SRC_OBJS) $(LUA_OBJS)
 	$(CXX) $(BASE_FLAGS) $(LDFLAGS) -rdynamic -Wl,--as-needed -Wl,-rpath,'$${ORIGIN}' -Wl,--version-script $(srcdir)/lua.vers -Wl,-rpath,$(libdir) $^ -o $@ $(CONFIGLIB) $(LIBS) -L ../../scintilla/bin -lscintilla $(LDLIBS)
 
-# Automatically generate header dependencies with "make deps"
+# Automatically generate header dependencies with "make depend"
 include deps.mak
 
 # The two last install commands will fail if Gnome is not installed or is not at $(prefix).

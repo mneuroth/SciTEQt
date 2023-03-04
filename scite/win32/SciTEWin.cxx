@@ -5,14 +5,10 @@
 // Copyright 1998-2003 by Neil Hodgson <neilh@scintilla.org>
 // The License.txt file describes the conditions under which this software may be distributed.
 
-#include <time.h>
+#include <ctime>
 
 #include "SciTEWin.h"
 #include "DLLFunction.h"
-
-#ifndef WM_DPICHANGED
-#define WM_DPICHANGED 0x02E0
-#endif
 
 #ifndef NO_EXTENSIONS
 #include "MultiplexExtension.h"
@@ -31,11 +27,7 @@
 const GUI::gui_char appName[] = GUI_TEXT("Sc1");
 #else
 const GUI::gui_char appName[] = GUI_TEXT("SciTE");
-#ifdef LOAD_SCINTILLA
 static const GUI::gui_char scintillaName[] = GUI_TEXT("Scintilla.DLL");
-#else
-static const GUI::gui_char scintillaName[] = GUI_TEXT("SciLexer.DLL");
-#endif
 #endif
 
 static GUI::gui_string GetErrorMessage(DWORD nRet) {
@@ -203,10 +195,12 @@ SciTEWin::SciTEWin(Extension *ext) : SciTEBase(ext) {
 	findStrip.SetSearcher(this);
 	replaceStrip.SetLocalizer(&localiser);
 	replaceStrip.SetSearcher(this);
+	filterStrip.SetLocalizer(&localiser);
+	filterStrip.SetSearcher(this);
 
 	flatterUI = UIShouldBeFlat();
 
-	appearance = CurrentAppearance();
+	appearance = WindowsAppearance();
 
 	cmdShow = 0;
 	heightBar = 7;
@@ -221,7 +215,6 @@ SciTEWin::SciTEWin(Extension *ext) : SciTEBase(ext) {
 	tooltipText[0] = '\0';
 	tbLarge = false;
 	modalParameters = false;
-	filterDefault = 1;
 	staticBuild = false;
 	menuSource = 0;
 
@@ -266,6 +259,16 @@ SciTEWin::SciTEWin(Extension *ext) : SciTEBase(ext) {
 }
 
 SciTEWin::~SciTEWin() {
+	for (Buffer &buffer : buffers.buffers) {
+		// At this point, there should be no documents but sometimes there are
+		// which may be due to asynchronous I/O.
+		// wEditor has been closed so can't perform correct release of documents.
+		// Show debugger in this case.
+		assert(!buffer.doc);
+		// Drop ownership, leads to leak but exiting anyway.
+		buffer.doc.release();
+	}
+
 	if (hDevMode)
 		::GlobalFree(hDevMode);
 	if (hDevNames)
@@ -315,11 +318,14 @@ void SciTEWin::Register(HINSTANCE hInstance_) {
 		exit(FALSE);
 }
 
-static int CodePageFromName(const std::string &encodingName) {
+namespace {
+
+int CodePageFromName(const std::string &encodingName) {
 	struct Encoding {
 		const char *name;
 		int codePage;
-	} knownEncodings[] = {
+	};
+	const Encoding	knownEncodings[] = {
 		{ "ascii", CP_UTF8 },
 		{ "utf-8", CP_UTF8 },
 		{ "latin1", 1252 },
@@ -342,24 +348,24 @@ static int CodePageFromName(const std::string &encodingName) {
 	return CP_UTF8;
 }
 
-static std::string StringEncode(std::wstring s, int codePage) {
-	if (s.length()) {
-		const int sLength = static_cast<int>(s.length());
-		const int cchMulti = ::WideCharToMultiByte(codePage, 0, s.c_str(), sLength, nullptr, 0, nullptr, nullptr);
+std::string StringEncode(std::wstring_view wsv, int codePage) {
+	if (wsv.length()) {
+		const int sLength = static_cast<int>(wsv.length());
+		const int cchMulti = ::WideCharToMultiByte(codePage, 0, wsv.data(), sLength, nullptr, 0, nullptr, nullptr);
 		std::string sMulti(cchMulti, 0);
-		::WideCharToMultiByte(codePage, 0, s.c_str(), sLength, &sMulti[0], cchMulti, nullptr, nullptr);
+		::WideCharToMultiByte(codePage, 0, wsv.data(), sLength, &sMulti[0], cchMulti, nullptr, nullptr);
 		return sMulti;
 	} else {
 		return std::string();
 	}
 }
 
-static std::wstring StringDecode(std::string s, int codePage) {
-	if (s.length()) {
-		const int sLength = static_cast<int>(s.length());
-		const int cchWide = ::MultiByteToWideChar(codePage, 0, s.c_str(), sLength, nullptr, 0);
+std::wstring StringDecode(std::string_view sv, int codePage) {
+	if (sv.length()) {
+		const int sLength = static_cast<int>(sv.length());
+		const int cchWide = ::MultiByteToWideChar(codePage, 0, sv.data(), sLength, nullptr, 0);
 		std::wstring sWide(cchWide, 0);
-		::MultiByteToWideChar(codePage, 0, s.c_str(), sLength, &sWide[0], cchWide);
+		::MultiByteToWideChar(codePage, 0, sv.data(), sLength, &sWide[0], cchWide);
 		return sWide;
 	} else {
 		return std::wstring();
@@ -367,13 +373,15 @@ static std::wstring StringDecode(std::string s, int codePage) {
 }
 
 // Convert to UTF-8
-static std::string ConvertEncoding(const char *original, int codePage) {
+std::string ConvertEncoding(const char *original, int codePage) {
 	if (codePage == CP_UTF8) {
 		return original;
 	} else {
-		GUI::gui_string sWide = StringDecode(std::string(original), codePage);
+		GUI::gui_string sWide = StringDecode(original, codePage);
 		return GUI::UTF8FromString(sWide);
 	}
+}
+
 }
 
 void SciTEWin::ReadLocalization() {
@@ -387,9 +395,9 @@ void SciTEWin::ReadLocalization() {
 		// Get encoding
 		bool more = localiser.GetFirst(key, val);
 		while (more) {
-			std::string converted = ConvertEncoding(val, codePageNamed);
+			const std::string converted = ConvertEncoding(val, codePageNamed);
 			if (converted != "") {
-				localiser.Set(key, converted.c_str());
+				localiser.Set(key, converted);
 			}
 			more = localiser.GetNext(key, val);
 		}
@@ -468,14 +476,14 @@ void SciTEWin::ReadEmbeddedProperties() {
 			const void *pv = ::LockResource(hmem);
 			if (pv) {
 				propsEmbed.ReadFromMemory(
-					static_cast<const char *>(pv), size, FilePath(), filter, NULL, 0);
+					static_cast<const char *>(pv), size, FilePath(), filter, nullptr, 0);
 			}
 		}
 		::FreeResource(handProps);
 	}
 }
 
-SystemAppearance SciTEWin::CurrentAppearance() const noexcept {
+SystemAppearance SciTEWin::WindowsAppearance() const noexcept {
 	SystemAppearance currentAppearance{};
 
 	HKEY hkeyPersonalize{};
@@ -499,7 +507,7 @@ SystemAppearance SciTEWin::CurrentAppearance() const noexcept {
 		;
 	const BOOL status = SystemParametersInfoW(SPI_GETHIGHCONTRAST, 0, &info, 0);
 	if (status) {
-		currentAppearance.highContrast = (info.dwFlags & HCF_HIGHCONTRASTON) ? 1 : 0;
+		currentAppearance.highContrast = (info.dwFlags & HCF_HIGHCONTRASTON) != 0;
 		if (currentAppearance.highContrast) {
 			// With high contrast, AppsUseLightTheme not correct so examine system background colour
 			const DWORD dwWindowColour = ::GetSysColor(COLOR_WINDOW);
@@ -508,6 +516,10 @@ SystemAppearance SciTEWin::CurrentAppearance() const noexcept {
 	}
 
 	return currentAppearance;
+}
+
+SystemAppearance SciTEWin::CurrentAppearance() const noexcept {
+	return WindowsAppearance();
 }
 
 void SciTEWin::ReadPropertiesInitial() {
@@ -608,7 +620,7 @@ void SciTEWin::ExecuteHelp(const char *cmd) {
 			typedef HWND (WINAPI *HelpFn)(HWND, const wchar_t *, UINT, DWORD_PTR);
 			HelpFn fnHHW = reinterpret_cast<HelpFn>(::GetProcAddress(hHH, "HtmlHelpW"));
 			if (fnHHW) {
-				XHH_AKLINK ak;
+				XHH_AKLINK ak {};
 				ak.cbStruct = sizeof(ak);
 				ak.fReserved = FALSE;
 				ak.pszKeywords = topic.c_str();
@@ -628,7 +640,7 @@ void SciTEWin::ExecuteHelp(const char *cmd) {
 }
 
 void SciTEWin::CopyAsRTF() {
-	const SA::Range cr = GetSelection();
+	const SA::Span cr = GetSelection();
 	std::ostringstream oss;
 	SaveToStreamRTF(oss, cr.start, cr.end);
 	const std::string rtf = oss.str();
@@ -752,16 +764,6 @@ void SciTEWin::Command(WPARAM wParam, LPARAM lParam) {
 		Activate(lParam);
 		break;
 
-	case IDM_FINISHEDEXECUTE: {
-			jobQueue.SetExecuting(false);
-			if (needReadProperties)
-				ReadProperties();
-			CheckMenus();
-			jobQueue.ClearJobs();
-			CheckReload();
-		}
-		break;
-
 	case IDM_ONTOP:
 		topMost = (topMost ? false : true);
 		::SetWindowPos(MainHWND(), (topMost ? HWND_TOPMOST : HWND_NOTOPMOST), 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE);
@@ -805,8 +807,8 @@ static UINT CodePageFromCharSet(SA::CharacterSet characterSet, UINT documentCode
 }
 
 void SciTEWin::OutputAppendEncodedStringSynchronised(const GUI::gui_string &s, int codePageDocument) {
-	std::string sMulti = StringEncode(s, codePageDocument);
-	OutputAppendStringSynchronised(sMulti.c_str());
+	const std::string sMulti = StringEncode(s, codePageDocument);
+	OutputAppendStringSynchronised(sMulti.c_str(), sMulti.length());
 }
 
 CommandWorker::CommandWorker() noexcept : pSciTE(nullptr) {
@@ -835,7 +837,6 @@ void SciTEWin::ResetExecution() {
 	CheckReload();
 	CheckMenus();
 	jobQueue.ClearJobs();
-	::SendMessage(MainHWND(), WM_COMMAND, IDM_FINISHEDEXECUTE, 0);
 }
 
 void SciTEWin::ExecuteNext() {
@@ -845,6 +846,52 @@ void SciTEWin::ExecuteNext() {
 	} else {
 		ResetExecution();
 	}
+}
+
+void SciTEWin::ExecuteGrep(const Job &jobToRun) {
+	// jobToRun.command is "(w|~)(c|~)(d|~)(b|~)\0files\0excluded\0text"
+	std::string_view grepCmd = jobToRun.command;
+	GrepFlags gf = GrepFlags::none;
+	if (grepCmd.front() == 'w')
+		gf = gf | GrepFlags::wholeWord;
+	grepCmd.remove_prefix(1);
+	if (grepCmd.front() == 'c')
+		gf = gf | GrepFlags::matchCase;
+	grepCmd.remove_prefix(1);
+	if (grepCmd.front() == 'd')
+		gf = gf | GrepFlags::dot;
+	grepCmd.remove_prefix(1);
+	if (grepCmd.front() == 'b')
+		gf = gf | GrepFlags::binary;
+	grepCmd.remove_prefix(1);
+	assert(grepCmd.front() == '\0');
+	grepCmd.remove_prefix(1);
+
+	const size_t endFiles = grepCmd.find('\0');
+	if (endFiles == std::string_view::npos) {
+		// Failure - must have NUL to separate files and excluded
+		return;
+	}
+	const std::string_view files = grepCmd.substr(0, endFiles);
+	grepCmd.remove_prefix(endFiles + 1);
+
+	const size_t endExcluded = grepCmd.find('\0');
+	if (endExcluded == std::string_view::npos) {
+		// Failure - must have NUL to separate excluded and text
+		return;
+	}
+	const std::string_view excluded = grepCmd.substr(0, endExcluded);
+	grepCmd.remove_prefix(endExcluded + 1);
+
+	const std::string_view text = grepCmd;
+
+	if (cmdWorker.outputScroll == 1)
+		gf = gf | GrepFlags::scroll;
+	SA::Position positionEnd = wOutput.Send(SCI_GETCURRENTPOS);
+	InternalGrep(gf, jobToRun.directory, GUI::StringFromUTF8(files), GUI::StringFromUTF8(excluded),
+		text, positionEnd);
+	if (FlagIsSet(gf, GrepFlags::scroll) && returnOutputToCommand)
+		wOutput.Send(SCI_GOTOPOS, positionEnd);
 }
 
 /**
@@ -857,45 +904,24 @@ void SciTEWin::ExecuteNext() {
 DWORD SciTEWin::ExecuteOne(const Job &jobToRun) {
 	DWORD exitcode = 0;
 
-	if (jobToRun.jobType == jobShell) {
+	if (jobToRun.jobType == JobSubsystem::shell) {
 		ShellExec(jobToRun.command, jobToRun.directory.AsUTF8().c_str());
 		return exitcode;
 	}
 
-	if (jobToRun.jobType == jobHelp) {
+	if (jobToRun.jobType == JobSubsystem::help) {
 		ExecuteHelp(jobToRun.command.c_str());
 		return exitcode;
 	}
 
-	if (jobToRun.jobType == jobOtherHelp) {
+	if (jobToRun.jobType == JobSubsystem::otherHelp) {
 		ExecuteOtherHelp(jobToRun.command.c_str());
 		return exitcode;
 	}
 
-	if (jobToRun.jobType == jobGrep) {
-		// jobToRun.command is "(w|~)(c|~)(d|~)(b|~)\0files\0text"
-		const char *grepCmd = jobToRun.command.c_str();
-		if (*grepCmd) {
-			GrepFlags gf = grepNone;
-			if (*grepCmd == 'w')
-				gf = static_cast<GrepFlags>(gf | grepWholeWord);
-			grepCmd++;
-			if (*grepCmd == 'c')
-				gf = static_cast<GrepFlags>(gf | grepMatchCase);
-			grepCmd++;
-			if (*grepCmd == 'd')
-				gf = static_cast<GrepFlags>(gf | grepDot);
-			grepCmd++;
-			if (*grepCmd == 'b')
-				gf = static_cast<GrepFlags>(gf | grepBinary);
-			const char *findFiles = grepCmd + 2;
-			const char *findText = findFiles + strlen(findFiles) + 1;
-			if (cmdWorker.outputScroll == 1)
-				gf = static_cast<GrepFlags>(gf | grepScroll);
-			SA::Position positionEnd = wOutput.Send(SCI_GETCURRENTPOS);
-			InternalGrep(gf, jobToRun.directory.AsInternal(), GUI::StringFromUTF8(findFiles).c_str(), findText, positionEnd);
-			if ((gf & grepScroll) && returnOutputToCommand)
-				wOutput.Send(SCI_GOTOPOS, positionEnd);
+	if (jobToRun.jobType == JobSubsystem::grep) {
+		if (!jobToRun.command.empty()) {
+			ExecuteGrep(jobToRun);
 		}
 		return exitcode;
 	}
@@ -936,7 +962,7 @@ DWORD SciTEWin::ExecuteOne(const Job &jobToRun) {
 	STARTUPINFOW si = {};
 	si.cb = sizeof(STARTUPINFO);
 	si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
-	if (jobToRun.jobType == jobCLI)
+	if (jobToRun.jobType == JobSubsystem::cli)
 		si.wShowWindow = SW_HIDE;
 	else
 		si.wShowWindow = SW_SHOW;
@@ -964,7 +990,7 @@ DWORD SciTEWin::ExecuteOne(const Job &jobToRun) {
 
 	const DWORD errCode = ::GetLastError();
 	// if jobCLI "System can't find" - try calling with command processor
-	if ((!running) && (jobToRun.jobType == jobCLI) && (
+	if ((!running) && (jobToRun.jobType == JobSubsystem::cli) && (
 				(errCode == ERROR_FILE_NOT_FOUND) || (errCode == ERROR_BAD_EXE_FORMAT))) {
 
 		std::string runComLine = "cmd.exe /c ";
@@ -1029,7 +1055,7 @@ DWORD SciTEWin::ExecuteOne(const Job &jobToRun) {
 			std::vector<char> buffer(pipeBufferSize);
 
 			if (!::PeekNamedPipe(hPipeRead, &buffer[0],
-					     static_cast<DWORD>(buffer.size()), &bytesRead, &bytesAvail, NULL)) {
+					     static_cast<DWORD>(buffer.size()), &bytesRead, &bytesAvail, nullptr)) {
 				bytesAvail = 0;
 			}
 
@@ -1052,7 +1078,7 @@ DWORD SciTEWin::ExecuteOne(const Job &jobToRun) {
 
 				const int bTest = ::WriteFile(hWriteSubProcess,
 							      jobToRun.input.c_str() + writingPosition,
-							      static_cast<DWORD>(bytesToWrite), &bytesWrote, NULL);
+							      static_cast<DWORD>(bytesToWrite), &bytesWrote, nullptr);
 
 				if (bTest) {
 					if ((writingPosition + bytesToWrite) / 1024 > writingPosition / 1024) {
@@ -1076,7 +1102,7 @@ DWORD SciTEWin::ExecuteOne(const Job &jobToRun) {
 
 			} else if (bytesAvail > 0) {
 				const int bTest = ::ReadFile(hPipeRead, &buffer[0],
-							     static_cast<DWORD>(buffer.size()), &bytesRead, NULL);
+							     static_cast<DWORD>(buffer.size()), &bytesRead, nullptr);
 
 				if (bTest && bytesRead) {
 
@@ -1294,19 +1320,20 @@ void SciTEWin::Execute() {
 	cmdWorker.outputScroll = props.GetInt("output.scroll", 1);
 	cmdWorker.originalEnd = wOutput.Length();
 	cmdWorker.commandTime.Duration(true);
-	cmdWorker.flags = jobQueue.jobQueue[cmdWorker.icmd].flags;
+	const Job job = jobQueue.jobQueue[cmdWorker.icmd];
+	cmdWorker.flags = job.flags;
 	if (scrollOutput)
 		wOutput.GotoPos(wOutput.Length());
 
-	if (jobQueue.jobQueue[cmdWorker.icmd].jobType == jobExtension) {
+	if (job.jobType == JobSubsystem::extension) {
 		// Execute extensions synchronously
-		if (jobQueue.jobQueue[cmdWorker.icmd].flags & jobGroupUndo)
+		if (job.flags & jobGroupUndo)
 			wEditor.BeginUndoAction();
 
 		if (extender)
-			extender->OnExecute(jobQueue.jobQueue[cmdWorker.icmd].command.c_str());
+			extender->OnExecute(job.command.c_str());
 
-		if (jobQueue.jobQueue[cmdWorker.icmd].flags & jobGroupUndo)
+		if (job.flags & jobGroupUndo)
 			wEditor.EndUndoAction();
 
 		ExecuteNext();
@@ -1345,7 +1372,7 @@ void SciTEWin::StopExecute() {
 
 void SciTEWin::AddCommand(const std::string &cmd, const std::string &dir, JobSubsystem jobType, const std::string &input, int flags) {
 	if (cmd.length()) {
-		if ((jobType == jobShell) && ((flags & jobForceQueue) == 0)) {
+		if ((jobType == JobSubsystem::shell) && ((flags & jobForceQueue) == 0)) {
 			std::string pCmd = cmd;
 			parameterisedCommand = "";
 			if (pCmd[0] == '*') {
@@ -1382,7 +1409,7 @@ void SciTEWin::WorkerCommand(int cmd, Worker *pWorker) {
 
 void SciTEWin::QuitProgram() {
 	quitting = false;
-	if (SaveIfUnsureAll() != saveCancelled) {
+	if (SaveIfUnsureAll() != SaveResult::cancelled) {
 		if (fullScreen)	// Ensure tray visible on exit
 			FullScreenToggle();
 		quitting = true;
@@ -1468,7 +1495,7 @@ void SciTEWin::CreateUI() {
 	UIAvailable();
 }
 
-static bool IsSpaceOrTab(GUI::gui_char ch) noexcept {
+static constexpr bool IsSpaceOrTab(GUI::gui_char ch) noexcept {
 	return (ch == ' ') || (ch == '\t');
 }
 
@@ -1886,7 +1913,7 @@ LRESULT SciTEWin::KeyDown(WPARAM wParam) {
 	HMENU hMenu = ::GetMenu(MainHWND());
 	HMENU hToolsMenu = ::GetSubMenu(hMenu, menuTools);
 	for (int tool = 0; tool < toolMax; ++tool) {
-		MENUITEMINFO mii;
+		MENUITEMINFO mii {};
 		mii.cbSize = sizeof(MENUITEMINFO);
 		mii.fMask = MIIM_DATA;
 		if (::GetMenuItemInfo(hToolsMenu, IDM_TOOLS+tool, FALSE, &mii) && mii.dwItemData) {
@@ -1901,7 +1928,7 @@ LRESULT SciTEWin::KeyDown(WPARAM wParam) {
 	// exec it the command defined
 	for (const ShortcutItem &scut : shortCutItemList) {
 		if (KeyMatch(scut.menuKey, keyVal, modifierAsInt)) {
-			const int commandNum = SciTEBase::GetMenuCommandAsInt(scut.menuCommand.c_str());
+			const int commandNum = SciTEBase::GetMenuCommandAsInt(scut.menuCommand);
 			if (commandNum != -1) {
 				// its possible that the command is for scintilla directly
 				// all scintilla commands are larger then 2000
@@ -1965,19 +1992,18 @@ LRESULT SciTEWin::ContextMenuMessage(UINT iMessage, WPARAM wParam, LPARAM lParam
 	return 0;
 }
 
-void SciTEWin::CheckForScintillaFailure(SA::Status statusFailure) {
+void SciTEWin::CheckForScintillaFailure(SA::Status statusFailure) noexcept {
 	static int boxesVisible = 0;
 	if ((statusFailure > SA::Status::Ok) && (boxesVisible == 0)) {
 		boxesVisible++;
-		char buff[200] = "";
+		wchar_t buff[200] = L"";
 		if (statusFailure == SA::Status::BadAlloc) {
-			strcpy(buff, "Memory exhausted.");
+			wcscpy(buff, L"Memory exhausted.");
 		} else {
-			sprintf(buff, "Scintilla failed with status %d.", static_cast<int>(statusFailure));
+			swprintf(buff, std::size(buff), L"Scintilla failed with status %d.", static_cast<int>(statusFailure));
 		}
-		strcat(buff, " SciTE will now close.");
-		GUI::gui_string sMessage = GUI::StringFromUTF8(buff);
-		::MessageBox(MainHWND(), sMessage.c_str(), TEXT("Failure in Scintilla"), MB_OK | MB_ICONERROR | MB_APPLMODAL);
+		wcscat(buff, L" SciTE will now close.");
+		::MessageBox(MainHWND(), buff, TEXT("Failure in Scintilla"), MB_OK | MB_ICONERROR | MB_APPLMODAL);
 		exit(FALSE);
 	}
 }
@@ -2134,6 +2160,8 @@ LRESULT SciTEWin::WndProc(UINT iMessage, WPARAM wParam, LPARAM lParam) {
 					findStrip.Focus();
 				else if (replaceStrip.visible)
 					replaceStrip.Focus();
+				else if (filterStrip.visible)
+					filterStrip.Focus();
 				else if (userStrip.visible)
 					userStrip.Focus();
 				else
@@ -2254,33 +2282,32 @@ LRESULT ContentWin::WndProc(UINT iMessage, WPARAM wParam, LPARAM lParam) {
 
 // Convert String from UTF-8 to doc encoding
 std::string SciTEWin::EncodeString(const std::string &s) {
-	UINT codePageDocument = static_cast<UINT>(wEditor.CodePage());
+	UINT codePageDocument = wEditor.CodePage();
 
 	if (codePageDocument != SA::CpUtf8) {
 		codePageDocument = CodePageFromCharSet(characterSet, codePageDocument);
-		std::wstring sWide = StringDecode(std::string(s.c_str(), s.length()), CP_UTF8);
+		std::wstring sWide = StringDecode(s, CP_UTF8);
 		return StringEncode(sWide, codePageDocument);
 	}
 	return SciTEBase::EncodeString(s);
 }
 
 // Convert String from doc encoding to UTF-8
-std::string SciTEWin::GetRangeInUIEncoding(GUI::ScintillaWindow &win, SA::Range range) {
-	std::string s = SciTEBase::GetRangeInUIEncoding(win, range);
+std::string SciTEWin::GetRangeInUIEncoding(GUI::ScintillaWindow &win, SA::Span range) {
+	const std::string s = SciTEBase::GetRangeInUIEncoding(win, range);
 
 	UINT codePageDocument = wEditor.CodePage();
 
 	if (codePageDocument != SA::CpUtf8) {
 		codePageDocument = CodePageFromCharSet(characterSet, codePageDocument);
-		std::wstring sWide = StringDecode(std::string(s.c_str(), s.length()), codePageDocument);
-		std::string sMulti = StringEncode(sWide, CP_UTF8);
-		return std::string(sMulti.c_str(), 0, sMulti.length());
+		std::wstring sWide = StringDecode(s, codePageDocument);
+		return StringEncode(sWide, CP_UTF8);
 	}
 	return s;
 }
 
 uintptr_t SciTEWin::EventLoop() {
-	MSG msg;
+	MSG msg {};
 	msg.wParam = 0;
 	BOOL going = TRUE;
 	while (going) {
@@ -2357,13 +2384,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
 #endif
 
 	SciTEWin::Register(hInstance);
-	LexillaSetDefaultDirectory(GetSciTEPath(FilePath()).AsUTF8());
+	Lexilla::SetDefaultDirectory(GetSciTEPath(FilePath()).AsUTF8());
 #ifdef STATIC_BUILD
-	Scintilla_LinkLexers();
 	Scintilla_RegisterClasses(hInstance);
-	LexillaSetDefault([](const char *name) {
-		return CreateLexer(name);
-	});
+	Lexilla::SetDefault(CreateLexer);
 #else
 
 	HMODULE hmod = ::LoadLibrary(scintillaName);
@@ -2376,7 +2400,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
 #endif
 
 	uintptr_t result = 0;
-	{
+	try {
 #ifdef NO_EXTENSIONS
 		Extension *extender = 0;
 #else
@@ -2398,11 +2422,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
 			lptszCmdLine++;
 		try {
 			MainWind.Run(lptszCmdLine);
+			// Set the current directory always to the program directory
+			// to ensure a opened file directory is never locked.
+			GetSciTEPath(FilePath()).SetWorkingDirectory();
 			result = MainWind.EventLoop();
 		} catch (const SA::Failure &sf) {
 			MainWind.CheckForScintillaFailure(sf.status);
+		} catch (const std::bad_alloc &) {
+			::MessageBox({}, TEXT("Allocation failure"), TEXT("Failure in SciTE"), MB_OK | MB_ICONERROR | MB_APPLMODAL);
 		}
 		MainWind.Finalise();
+	} catch (std::bad_array_new_length &) {
+		::MessageBox({}, TEXT("Allocation failure"), TEXT("Failure to allocate SciTE at start up"), MB_OK | MB_ICONERROR | MB_APPLMODAL);
 	}
 
 #ifdef STATIC_BUILD

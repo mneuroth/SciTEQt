@@ -24,6 +24,13 @@ private:
 
 public:
 	UniqueInstance();
+
+	// Deleted so UniqueInstance objects can not be copied.
+	UniqueInstance(const UniqueInstance &) = delete;
+	UniqueInstance(UniqueInstance &&) = delete;
+	UniqueInstance &operator=(const UniqueInstance &) = delete;
+	UniqueInstance &operator=(UniqueInstance &&) = delete;
+
 	~UniqueInstance();
 
 	void Init(SciTEWin *stw_) noexcept;	///< To set the access to the SciTEWin interface
@@ -34,7 +41,7 @@ public:
 	LRESULT CheckMessage(UINT message, WPARAM wParam, LPARAM lParam);	///< Test if a given message is the identity message
 	void CheckOtherInstance();	///< Create mutex name and try to set it
 	bool FindOtherInstance();	///< Find another instance answering to the identity message
-	void WindowCopyData(const char *s, size_t len);	///< Send data to hOtherWindow
+	void WindowCopyData(std::string_view s);	///< Send data to hOtherWindow
 	void SendCommands(const char *cmdLine);	///< Send the command line to the other instance
 	static BOOL CALLBACK SearchOtherInstance(HWND hWnd, LPARAM lParam);	///< Callback in the window enumeration
 };

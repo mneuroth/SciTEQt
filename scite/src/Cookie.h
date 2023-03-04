@@ -9,9 +9,9 @@
 #define COOKIE_H
 
 // Related to Utf8_16::encodingType but with additional values at end
-enum UniMode {
-	uni8Bit = 0, uni16BE = 1, uni16LE = 2, uniUTF8 = 3,
-	uniCookie = 4
+enum class UniMode {
+	uni8Bit = 0, uni16BE = 1, uni16LE = 2, utf8 = 3,
+	cookie = 4
 };
 
 std::string_view ExtractLine(std::string_view sv) noexcept;

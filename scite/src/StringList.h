@@ -25,7 +25,7 @@ public:
 		sorted(false), sortedNoCase(false) {}
 	size_t Length() const noexcept { return words.size(); }
 	operator bool() const noexcept { return !words.empty(); }
-	char *operator[](size_t ind) { return words[ind]; }
+	char *operator[](size_t ind) noexcept { return words[ind]; }
 	void Clear() noexcept;
 	void Set(const char *s);
 	void Set(const std::vector<char> &data);
@@ -33,6 +33,21 @@ public:
 				   bool ignoreCase, const std::string &wordCharacters, int wordIndex);
 	std::string GetNearestWords(const char *wordStart, size_t searchLen,
 				    bool ignoreCase, char otherSeparator='\0', bool exactLen=false);
+};
+
+class AutoCompleteWordList {
+	std::set<std::string> words;
+	size_t totalLength = 0;
+	size_t minWordLength = SIZE_MAX;
+public:
+	size_t Count() const noexcept {
+		return words.size();
+	}
+	size_t MinWordLength() const noexcept {
+		return minWordLength;
+	}
+	bool Add(const std::string& word);
+	std::string Get() const;
 };
 
 #endif

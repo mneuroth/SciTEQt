@@ -30,9 +30,9 @@
     <table bgcolor="#CCCCCC" width="100%" cellspacing="0" cellpadding="8" border="0">
       <tr>
         <td>
-          <font size="4"> <a href="https://www.scintilla.org/scite446.zip">
+          <font size="4"> <a href="https://www.scintilla.org/scite532.zip">
 	Windows</a>&nbsp;&nbsp;
-	<a href="https://www.scintilla.org/scite446.tgz">
+	<a href="https://www.scintilla.org/scite532.tgz">
           GTK/Linux</a>&nbsp;&nbsp;</font>
         </td>
       </tr>
@@ -45,7 +45,7 @@
       containing very few restrictions.
     </p>
     <h2>
-       Release 4.4.6
+       Release 5.3.2
     </h2>
     <h3>
        Source Code
@@ -53,8 +53,8 @@
        The source code package contains all of the source code for Scintilla and SciTE but no binary
 	executable code and is available in
        <ul>
-       <li><a href="https://www.scintilla.org/scite446.zip">zip format</a> (3.1M) commonly used on Windows</li>
-       <li><a href="https://www.scintilla.org/scite446.tgz">tgz format</a> (2.6M) commonly used on Linux and compatible operating systems</li>
+       <li><a href="https://www.scintilla.org/scite532.zip">zip format</a> (3.9M) commonly used on Windows</li>
+       <li><a href="https://www.scintilla.org/scite532.tgz">tgz format</a> (3.3M) commonly used on Linux and compatible operating systems</li>
        </ul>
        Instructions for building on both Windows and Linux are included in the readme file.
     <h3>
@@ -68,21 +68,21 @@
        is no longer tested.
        <ul>
        <li>
-        <a href="https://www.scintilla.org/wscite446.zip">Full 64-bit download</a> (1.9M) includes the SciTE executable, any required DLLs,
+        <a href="https://www.scintilla.org/wscite532.zip">Full 64-bit download</a> (2.0M) includes the SciTE executable, any required DLLs,
         configuration files and documentation. After downloading the file, unzip it, and run
         SciTE.EXE. The files required to run SciTE are SciTE.EXE, SciLexer.DLL, and
         SciTEGlobal.properties.
        </li>
        <li>
-         <a href="https://www.scintilla.org/wscite32_446.zip">Full 32-bit download</a> (1.6M) is similar but will run on 32-bit Windows
-         with the executable called SciTE32.EXE .
+         <a href="https://www.scintilla.org/wscite32_532.zip">Full 32-bit download</a> (1.9M) is similar but will run on 32-bit Windows
+         with the executable called SciTE32.EXE. This is also the file to use on Windows XP.
        </li>
        <li>
-         <a href="https://www.scintilla.org/Sc446.exe">Single file 64-bit executable called Sc1</a> (3.0M) does not need any DLL or
+         <a href="https://www.scintilla.org/Sc532.exe">Single file 64-bit executable called Sc1</a> (3.1M) does not need any DLL or
          properties files as these are linked into the executable. You may still create properties files if you wish.
        </li>
        <li>
-         <a href="https://www.scintilla.org/Sc32_446.exe">Single file 32-bit download</a> (2.3M) is similar but will run on 32-bit Windows.
+         <a href="https://www.scintilla.org/Sc32_532.exe">Single file 32-bit download</a> (2.5M) is similar but will run on 32-bit Windows.
        </li>
        </ul>
     </p>
@@ -106,11 +106,15 @@
       If the target system is 32-bit, you will need to build SciTE from source.
     </p>
     <p>
-       A <a href="https://www.scintilla.org/gscite446.tgz">full download</a> (1.7M) includes the 64-bit SciTE executable,
+       A <a href="https://www.scintilla.org/gscite532.tgz">full download</a> (1.9M) includes the 64-bit SciTE executable,
+      shared libraries for Scintilla (libscintilla.so) and Lexilla (liblexilla.so)
       configuration files and documentation.
       After downloading the file, gunzip and untar it, and run
-      SciTE. The files required to run SciTE are SciTE which is best located on the path
-      (I put it in /usr/local/bin) 70 properties files which should be located in the
+      SciTE.
+      The files required to run SciTE are SciTE which is best located on the path
+      (I put it in /usr/bin),
+      the two shared libraries which go in /usr/lib/scite,
+      70 properties files which should be located in the
       /usr/share/scite directory, and Sci48M.png which should be copied to /usr/share/pixmaps.
     </p>
     <h4>

@@ -8,18 +8,21 @@
 
 class LuaExtension : public Extension {
 private:
-	LuaExtension(); // Singleton
+	LuaExtension() noexcept; // Singleton
 
 public:
-	static LuaExtension &Instance();
+	static LuaExtension &Instance() noexcept;
 
 	// Deleted so LuaExtension objects can not be copied.
 	LuaExtension(const LuaExtension &) = delete;
-	void operator=(const LuaExtension &) = delete;
+	LuaExtension(LuaExtension &&) = delete;
+	LuaExtension &operator=(const LuaExtension &) = delete;
+	LuaExtension &operator=(LuaExtension &&) = delete;
+
 	~LuaExtension() override;
 
 	bool Initialise(ExtensionAPI *host_) override;
-	bool Finalise() override;
+	bool Finalise() noexcept override;
 	bool Clear() override;
 	bool Load(const char *filename) override;
 
@@ -35,13 +38,13 @@ public:
 	bool OnExecute(const char *s) override;
 	bool OnSavePointReached() override;
 	bool OnSavePointLeft() override;
-	bool OnStyle(Scintilla::API::Position startPos, Scintilla::API::Position lengthDoc, int initStyle, StyleWriter *styler) override;
+	bool OnStyle(Scintilla::Position startPos, Scintilla::Position lengthDoc, int initStyle, StyleWriter *styler) override;
 	bool OnDoubleClick() override;
 	bool OnUpdateUI() override;
 	bool OnMarginClick() override;
 	bool OnUserListSelection(int listType, const char *selection) override;
 	bool OnKey(int keyval, int modifiers) override;
-	bool OnDwellStart(Scintilla::API::Position pos, const char *word) override;
+	bool OnDwellStart(Scintilla::Position pos, const char *word) override;
 	bool OnClose(const char *filename) override;
 	bool OnUserStrip(int control, int change) override;
 	bool NeedsOnClose() override;

@@ -165,6 +165,7 @@ SciTEQt::SciTEQt(QObject *parent, QQmlApplicationEngine * pEngine)
       m_maximize(false),
       m_bParametersDialogOpen(false)
 {
+    qDebug() << "INIT SciTEQt..." << Qt::endl;
 #if defined(Q_OS_WASM)
     //propsPlatform.Set("PLAT_GTK", "1");
     propsPlatform.Set("PLAT_WASM", "1");
@@ -784,15 +785,15 @@ SciTEQt::MessageBoxChoice SciTEQt::ProcessModalWindowSynchronious(const QString 
     disconnect(pMessageBox,SIGNAL(noClicked()),this,SLOT(OnNoClicked()));
 
     if ((m_iMessageDialogAccepted & MSGBOX_RESULT_NO) == MSGBOX_RESULT_NO)
-        return SciTEQt::MessageBoxChoice::mbNo;
+        return SciTEQt::MessageBoxChoice::no;
     if ((m_iMessageDialogAccepted & MSGBOX_RESULT_YES) == MSGBOX_RESULT_YES)
-        return SciTEQt::MessageBoxChoice::mbYes;
+        return SciTEQt::MessageBoxChoice::yes;
     if ((m_iMessageDialogAccepted & MSGBOX_RESULT_OK) == MSGBOX_RESULT_OK)
-        return SciTEQt::MessageBoxChoice::mbOK;
+        return SciTEQt::MessageBoxChoice::ok;
     if ((m_iMessageDialogAccepted & MSGBOX_RESULT_CANCEL) == MSGBOX_RESULT_CANCEL)
-        return SciTEQt::MessageBoxChoice::mbCancel;
+        return SciTEQt::MessageBoxChoice::cancel;
 
-    return SciTEQt::MessageBoxChoice::mbCancel;
+    return SciTEQt::MessageBoxChoice::cancel;
 }
 
 SciTEQt::MessageBoxChoice SciTEQt::ShowWindowMessageBox(const QString & msg, MessageBoxStyle style)
@@ -815,6 +816,11 @@ SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::g
 {
     Q_UNUSED(w);
     return ShowWindowMessageBox(ConvertGuiStringToQString(msg), style);
+}
+
+void SciTEQt::Filter()
+{
+// TODO gulp -> not implemented YET !!! new in scite 5.3.2
 }
 
 void SciTEQt::FindMessageBox(const std::string &msg, const std::string *findItem)
@@ -961,7 +967,7 @@ void SciTEQt::GoLineDialog()
     emit showGoToDialog(lineNumber, characterOnLine, wEditor.LineCount());
 }
 
-bool SciTEQt::AbbrevDialog()
+void SciTEQt::AbbrevDialog()
 {
     // create a list of abbrevs...
     QStringList items;
@@ -980,9 +986,10 @@ bool SciTEQt::AbbrevDialog()
 
     emit showAbbreviationDialog(items);
 
-    QString name = isUseMobileDialogHandling() ? "abbreviationDialog" : "abbreviationDialogWin";
-    MessageBoxChoice result = ProcessModalWindowSynchronious(name);
-    return result == SciTEQt::MessageBoxChoice::mbOK;
+// changed for scite v5.3.2
+//    QString name = isUseMobileDialogHandling() ? "abbreviationDialog" : "abbreviationDialogWin";
+//    MessageBoxChoice result = ProcessModalWindowSynchronious(name);
+//    return result == SciTEQt::MessageBoxChoice::mbOK;
 }
 
 void SciTEQt::TabSizeDialog()
@@ -1039,7 +1046,7 @@ bool SciTEQt::ParametersDialog(bool modal)
         QString name = isUseMobileDialogHandling() ? "parametersDialog" : "parametersDialogWin";
         MessageBoxChoice result = ProcessModalWindowSynchronious(name);
         m_bParametersDialogOpen = false;
-        return result == SciTEQt::MessageBoxChoice::mbOK;
+        return result == SciTEQt::MessageBoxChoice::ok;
     }
 
     return false;
@@ -1144,7 +1151,7 @@ void SciTEQt::LoadSettingsForQt()
 void SciTEQt::QuitProgram()
 {
     quitting = false;
-    if (SaveIfUnsureAll() != saveCancelled) {
+    if (SaveIfUnsureAll() != SaveResult::cancelled) {
 
         SaveSettingsForQt();
 
@@ -1536,7 +1543,7 @@ void SciTEQt::setScintilla(QObject * obj)
 {
     ScintillaEditBase * base = reinterpret_cast<ScintillaEditBase *>(obj);
 
-    SciFnDirect fn_ = reinterpret_cast<SciFnDirect>(base->send(SCI_GETDIRECTFUNCTION, 0, 0));
+    Scintilla::FunctionDirect fn_ = reinterpret_cast<Scintilla::FunctionDirect>(base->send(SCI_GETDIRECTFUNCTION, 0, 0));
     const sptr_t ptr_ = base->send(SCI_GETDIRECTPOINTER, 0, 0);
     wEditor.SetFnPtr(fn_, ptr_);
     wEditor.SetID(base->sqt);
@@ -1551,7 +1558,7 @@ void SciTEQt::setOutput(QObject * obj)
 {
     ScintillaEditBase * base = reinterpret_cast<ScintillaEditBase *>(obj);
 
-    SciFnDirect fn_ = reinterpret_cast<SciFnDirect>(base->send(SCI_GETDIRECTFUNCTION, 0, 0));
+    Scintilla::FunctionDirect fn_ = reinterpret_cast<Scintilla::FunctionDirect>(base->send(SCI_GETDIRECTFUNCTION, 0, 0));
     const sptr_t ptr_ = base->send(SCI_GETDIRECTPOINTER, 0, 0);
     wOutput.SetFnPtr(fn_, ptr_);
     wOutput.SetID(base->sqt);
@@ -1564,7 +1571,7 @@ void SciTEQt::setAboutScite(QObject * obj)
 {
     ScintillaEditBase * base = reinterpret_cast<ScintillaEditBase *>(obj);
 
-    SciFnDirect fn_ = reinterpret_cast<SciFnDirect>(base->send(SCI_GETDIRECTFUNCTION, 0, 0));
+    Scintilla::FunctionDirect fn_ = reinterpret_cast<Scintilla::FunctionDirect>(base->send(SCI_GETDIRECTFUNCTION, 0, 0));
     const sptr_t ptr_ = base->send(SCI_GETDIRECTPOINTER, 0, 0);
     wAboutScite.SetFnPtr(fn_, ptr_);
     wAboutScite.SetID(base->sqt);
@@ -1595,7 +1602,7 @@ QString SciTEQt::getLocalisedText(const QString & textInput, bool filterShortcut
     {
         s.remove("&");
     }
-    auto localisedText = localiser.Text(s.toUtf8()/*textInput.toStdString().c_str()*/,true);
+    auto localisedText = localiser.Text(s.toUtf8().toStdString()/*textInput.toStdString().c_str()*/,true);
     return ConvertGuiStringToQString(localisedText);
 }
 
@@ -2471,7 +2478,7 @@ void SciTEQt::cmdUpdateApplicationActive(bool active)
 
 void SciTEQt::cmdMarkAll()
 {
-    MarkAll(markWithBookMarks);
+    MarkAll(MarkPurpose::withBookMarks);
 }
 
 void SciTEQt::cmdTriggerReplace(const QString & find, const QString & replace, bool inSection)
@@ -2581,7 +2588,7 @@ bool SciTEQt::cmdExecuteFind(const QString & findWhatInput, bool wholeWord, bool
 
     if(markAll)
     {
-        MarkAll(markWithBookMarks);
+        MarkAll(MarkPurpose::withBookMarks);
     }
 
     bool found = FindNext(pSearcher->reverseFind);
@@ -2769,7 +2776,7 @@ void SciTEQt::Execute()
     if (scrollOutput)
         wOutput.GotoPos(wOutput.Length());
 
-    if (jobQueue.jobQueue[cmdWorker.icmd].jobType == jobExtension) {
+    if (jobQueue.jobQueue[cmdWorker.icmd].jobType == JobSubsystem::extension) {
         // Execute extensions synchronously
         if (jobQueue.jobQueue[cmdWorker.icmd].flags & jobGroupUndo)
             wEditor.BeginUndoAction();

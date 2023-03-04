@@ -39,7 +39,8 @@
 #include "Scintilla.h"
 //#include "SciLexer.h"
 #include "Lexilla.h"
-#include "LexillaLibrary.h"
+#include "LexillaAccess.h"
+//#include "LexillaLibrary.h"
 
 #define KEY_ADMIN "admin"
 #define KEY_STYLE "style"
@@ -203,7 +204,7 @@ int main(int argc, char *argv[])
     qRegisterMetaType<QProcess::ProcessState>("QProcess::ProcessState");
     qRegisterMetaType<QProcess::ExitStatus>("QProcess::ExitStatus");
 #endif
-    qmlRegisterType<SciTEQt>("org.scintilla.sciteqt", 1, 0, "SciTEQt");
+    /*int result =*/ qmlRegisterType<SciTEQt>("org.scintilla.sciteqt", 1, 0, "SciTEQt");
     // need external function to register for mingw, otherwise we get an unresolved external errror when linking
     //qmlRegisterType<ScintillaEditBase>("org.scintilla.scintilla", 1, 0, "ScintillaEditBase");
     RegisterScintillaType();
@@ -220,12 +221,14 @@ int main(int argc, char *argv[])
 #endif
 #endif
 
-    LexillaSetDefaultDirectory(/*GetSciTEPath(FilePath()).AsUTF8()*/".");
-    Scintilla_LinkLexers();
+//    LexillaSetDefaultDirectory(/*GetSciTEPath(FilePath()).AsUTF8()*/".");
+/*TODO SciteQt Patch*///    Scintilla_LinkLexers();
     //Scintilla_RegisterClasses(hInstance);
-    LexillaSetDefault([](const char *name) {
-        return CreateLexer(name);
-    });
+//    LexillaSetDefault([](const char *name) {
+//        return CreateLexer(name);
+//    });
+    Lexilla::SetDefaultDirectory(/*GetSciTEPath(FilePath()).AsUTF8()*/".");
+    Lexilla::SetDefault(CreateLexer);
 
 #if defined(Q_OS_ANDROID)
     ApplicationUI appui;

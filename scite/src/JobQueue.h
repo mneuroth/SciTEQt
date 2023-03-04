@@ -11,8 +11,8 @@
 #ifndef JOBQUEUE_H
 #define JOBQUEUE_H
 
-enum JobSubsystem {
-	jobCLI = 0, jobGUI = 1, jobShell = 2, jobExtension = 3, jobHelp = 4, jobOtherHelp = 5, jobGrep = 6, jobImmediate = 7
+enum class JobSubsystem {
+	cli = 0, gui = 1, shell = 2, extension = 3, help = 4, otherHelp = 5, grep = 6, immediate = 7
 };
 
 JobSubsystem SubsystemFromChar(char c) noexcept;

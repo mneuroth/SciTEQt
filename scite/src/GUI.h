@@ -17,7 +17,7 @@ public:
 	int x;
 	int y;
 
-	explicit Point(int x_=0, int y_=0) noexcept : x(x_), y(y_) {
+	explicit constexpr Point(int x_=0, int y_=0) noexcept : x(x_), y(y_) {
 	}
 };
 
@@ -28,15 +28,15 @@ public:
 	int right;
 	int bottom;
 
-	Rectangle(int left_=0, int top_=0, int right_=0, int bottom_ = 0) noexcept :
+	explicit constexpr Rectangle(int left_=0, int top_=0, int right_=0, int bottom_ = 0) noexcept :
 		left(left_), top(top_), right(right_), bottom(bottom_) {
 	}
 	bool Contains(Point pt) const noexcept {
 		return (pt.x >= left) && (pt.x <= right) &&
 		       (pt.y >= top) && (pt.y <= bottom);
 	}
-	int Width() const noexcept { return abs(right - left); }        // PATCH 31.12.2022 for Qt6
-	int Height() const noexcept { return abs(bottom - top); }       // PATCH 31.12.2022 for Qt6
+	int Width() const noexcept { return right - left; }
+	int Height() const noexcept { return bottom - top; }
 	bool operator==(const Rectangle &other) const noexcept {
 		return (left == other.left) &&
 		       (top == other.top) &&
@@ -45,9 +45,9 @@ public:
 	}
 };
 
-#if defined(GTK) || defined(__APPLE__) || defined(__ANDROID__) || defined(__linux__) || defined(__EMSCRIPTEN__)
+#if defined(GTK) || defined(__APPLE__)
 
-// On GTK and OS X use UTF-8 char strings
+// On GTK and macOS use UTF-8 char strings
 
 typedef char gui_char;
 typedef std::string gui_string;
@@ -69,7 +69,10 @@ typedef std::wstring_view gui_string_view;
 
 gui_string StringFromUTF8(const char *s);
 gui_string StringFromUTF8(const std::string &s);
-std::string UTF8FromString(const gui_string &s);
+gui_string StringFromUTF8(std::string_view sv);
+//std::string UTF8FromString(const gui_string & sv);
+//std::string UTF8FromString(gui_string_view sv);
+std::string UTF8FromString(const gui_string &sv);
 gui_string StringFromInteger(long i);
 gui_string StringFromLongLong(long long i);
 gui_string HexStringFromInteger(long i);
@@ -103,13 +106,14 @@ public:
 		return !!wid;
 	}
 	void Destroy();
-	bool HasFocus();
+	bool HasFocus() const noexcept;
 	Rectangle GetPosition();
 	void SetPosition(Rectangle rc);
 	Rectangle GetClientPosition();
 	void Show(bool show=true);
 	void InvalidateAll();
 	void SetTitle(const gui_char *s);
+	void SetRedraw(bool redraw);
 };
 
 typedef void *MenuID;
@@ -122,7 +126,7 @@ public:
 		return mid;
 	}
 	void CreatePopUp();
-	void Destroy();
+	void Destroy() noexcept;
 	void Show(Point pt, Window &w);
 };
 

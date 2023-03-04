@@ -27,10 +27,10 @@ public:
 	virtual ~ExtensionAPI() {
 	}
 	enum Pane { paneEditor=1, paneOutput=2, paneFindOutput=3 };
-	virtual intptr_t Send(Pane p, Scintilla::API::Message msg, uintptr_t wParam=0, intptr_t lParam=0)=0;
-	virtual std::string Range(Pane p, Scintilla::API::Range range)=0;
-	virtual void Remove(Pane p, Scintilla::API::Position start, Scintilla::API::Position end)=0;
-	virtual void Insert(Pane p, Scintilla::API::Position pos, const char *s)=0;
+    virtual intptr_t Send(Pane p, Scintilla::Message msg, uintptr_t wParam=0, intptr_t lParam=0)=0;
+	virtual std::string Range(Pane p, Scintilla::Span range)=0;
+	virtual void Remove(Pane p, Scintilla::Position start, Scintilla::Position end)=0;
+	virtual void Insert(Pane p, Scintilla::Position pos, const char *s)=0;
 	virtual void Trace(const char *s)=0;
 	virtual std::string Property(const char *key)=0;
 	virtual void SetProperty(const char *key, const char *val)=0;
@@ -44,7 +44,7 @@ public:
 	virtual void UserStripSet(int control, const char *value)=0;
 	virtual void UserStripSetList(int control, const char *value)=0;
 	virtual std::string UserStripValue(int control)=0;
-	virtual Scintilla::API::ScintillaCall &PaneCaller(Pane p) noexcept =0;
+	virtual Scintilla::ScintillaCall &PaneCaller(Pane p) noexcept =0;
 };
 
 /**
@@ -56,7 +56,7 @@ public:
 	virtual ~Extension() {}
 
 	virtual bool Initialise(ExtensionAPI *host_)=0;
-	virtual bool Finalise()=0;
+	virtual bool Finalise() noexcept =0;
 	virtual bool Clear()=0;
 	virtual bool Load(const char *filename)=0;
 
@@ -72,7 +72,7 @@ public:
 	virtual bool OnExecute(const char *) { return false; }
 	virtual bool OnSavePointReached() { return false; }
 	virtual bool OnSavePointLeft() { return false; }
-	virtual bool OnStyle(Scintilla::API::Position, Scintilla::API::Position, int, StyleWriter *) {
+	virtual bool OnStyle(Scintilla::Position, Scintilla::Position, int, StyleWriter *) {
 		return false;
 	}
 	virtual bool OnDoubleClick() { return false; }
@@ -84,7 +84,7 @@ public:
 	virtual bool SendProperty(const char *) { return false; }
 
 	virtual bool OnKey(int, int) { return false; }
-	virtual bool OnDwellStart(Scintilla::API::Position, const char *) { return false; }
+	virtual bool OnDwellStart(Scintilla::Position, const char *) { return false; }
 	virtual bool OnClose(const char *) { return false; }
 	virtual bool OnUserStrip(int /* control */, int /* change */) { return false; }
 	virtual bool NeedsOnClose() { return true; }

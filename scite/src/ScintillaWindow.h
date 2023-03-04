@@ -10,7 +10,7 @@
 
 namespace GUI {
 
-class ScintillaWindow : public GUI::ScintillaPrimitive, public Scintilla::API::ScintillaCall {
+class ScintillaWindow : public GUI::ScintillaPrimitive, public Scintilla::ScintillaCall {
 public:
 	ScintillaWindow() noexcept;
 	~ScintillaWindow() override;

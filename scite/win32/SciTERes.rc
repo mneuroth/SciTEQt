@@ -87,20 +87,21 @@ POPUP "&Search"
 BEGIN
 	MENUITEM "&Find...\tCtrl+F",				IDM_FIND
 	MENUITEM "Find &Next\tF3",				IDM_FINDNEXT
-	MENUITEM "Find Previou&s\tShift+F3",		IDM_FINDNEXTBACK
+	MENUITEM "Find &Previous\tShift+F3",		IDM_FINDNEXTBACK
 	MENUITEM "F&ind in Files...\tCtrl+Shift+F",	IDM_FINDINFILES
-	MENUITEM "R&eplace...\tCtrl+H",			IDM_REPLACE
-	MENUITEM "Incrementa&l Search...\tCtrl+Alt+I",	IDM_INCSEARCH
-	MENUITEM "Selection A&dd Next\tCtrl+Shift+D",	IDM_SELECTIONADDNEXT
-	MENUITEM "Selection &Add Each",			IDM_SELECTIONADDEACH
+	MENUITEM "&Replace...\tCtrl+H",			IDM_REPLACE
+	MENUITEM "Incremental &Search...\tCtrl+Alt+I",	IDM_INCSEARCH
+	MENUITEM "Fi&lter...\tCtrl+Alt+F",			IDM_FILTER
+	MENUITEM "Selection &Add Next\tCtrl+Shift+D",	IDM_SELECTIONADDNEXT
+	MENUITEM "Selection Add &Each",			IDM_SELECTIONADDEACH
 	MENUITEM SEPARATOR
 	MENUITEM "&Go to...\tCtrl+G",			IDM_GOTO
 	MENUITEM "Next Book&mark\tF2",			IDM_BOOKMARK_NEXT
 	MENUITEM "Pre&vious Bookmark\tShift+F2",	IDM_BOOKMARK_PREV
-	MENUITEM "Toggle Bookmar&k\tCtrl+F2",		IDM_BOOKMARK_TOGGLE
+	MENUITEM "&Toggle Bookmark\tCtrl+F2",		IDM_BOOKMARK_TOGGLE
 	MENUITEM "&Clear All Bookmarks",			IDM_BOOKMARK_CLEARALL
 	MENUITEM "Select All &Bookmarks",		IDM_BOOKMARK_SELECT_ALL
-END
+END // used(15): abcefgilmnprstv // Available: dhjkoquwxyz
 
 POPUP "&View"
 BEGIN
@@ -452,6 +453,7 @@ BEGIN
 
 	"F", IDM_FIND,   VIRTKEY, CONTROL
 	"F", IDM_FINDINFILES,   VIRTKEY, CONTROL, SHIFT
+	"F", IDM_FILTER,   VIRTKEY, CONTROL, ALT
 	"H", IDM_REPLACE,  VIRTKEY, CONTROL
 	"D", IDM_SELECTIONADDNEXT,  VIRTKEY, CONTROL, SHIFT
 	"G", IDM_GOTO, VIRTKEY, CONTROL
@@ -575,6 +577,8 @@ IDBM_REGEX BITMAP "regex.bmp"
 IDBM_BACKSLASH BITMAP "backslash.bmp"
 IDBM_AROUND BITMAP "around.bmp"
 IDBM_UP BITMAP "up.bmp"
+IDBM_FILTER BITMAP "filter.bmp"
+IDBM_CONTEXT BITMAP "context.bmp"
 
 IDBM_20_WORD BITMAP "word20.bmp"
 IDBM_20_CASE BITMAP "case20.bmp"
@@ -582,6 +586,8 @@ IDBM_20_REGEX BITMAP "regex20.bmp"
 IDBM_20_BACKSLASH BITMAP "backslash20.bmp"
 IDBM_20_AROUND BITMAP "around20.bmp"
 IDBM_20_UP BITMAP "up20.bmp"
+IDBM_20_FILTER BITMAP "filter20.bmp"
+IDBM_20_CONTEXT BITMAP "context20.bmp"
 
 IDBM_24_WORD BITMAP "word24.bmp"
 IDBM_24_CASE BITMAP "case24.bmp"
@@ -589,6 +595,8 @@ IDBM_24_REGEX BITMAP "regex24.bmp"
 IDBM_24_BACKSLASH BITMAP "backslash24.bmp"
 IDBM_24_AROUND BITMAP "around24.bmp"
 IDBM_24_UP BITMAP "up24.bmp"
+IDBM_24_FILTER BITMAP "filter24.bmp"
+IDBM_24_CONTEXT BITMAP "context24.bmp"
 
 IDBM_32_WORD BITMAP "word32.bmp"
 IDBM_32_CASE BITMAP "case32.bmp"
@@ -596,6 +604,8 @@ IDBM_32_REGEX BITMAP "regex32.bmp"
 IDBM_32_BACKSLASH BITMAP "backslash32.bmp"
 IDBM_32_AROUND BITMAP "around32.bmp"
 IDBM_32_UP BITMAP "up32.bmp"
+IDBM_32_FILTER BITMAP "filter32.bmp"
+IDBM_32_CONTEXT BITMAP "context32.bmp"
 
 //The embedded properties file is to allow a one file distribution of Sc1.EXE
 #ifdef STATIC_BUILD

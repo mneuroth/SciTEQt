@@ -79,11 +79,11 @@
     <table class="header" width="100%" summary="header">
       <tr>
         <td class="headerlinks">
-	  <a href="SciTEFAQ.html">
+          <a href="SciTEFAQ.html">
           Frequently Asked Questions</a>&nbsp;&nbsp;
-	  <a href="SciTELua.html">
+          <a href="SciTELua.html">
           Scripting</a>&nbsp;&nbsp;
-	  <a href="SciTERegEx.html">Regular Expressions</a>&nbsp;&nbsp;
+          <a href="SciTERegEx.html">Regular Expressions</a>&nbsp;&nbsp;
         </td>
       </tr>
     </table>
@@ -202,8 +202,8 @@ NameError: name 'mistake' is not defined
       similar as it handles this similarly to a user opening the file from the shell.</td></tr>
     <tr><td>3</td><td>lua<br />director</td><td>Internal extension or director extension</td></tr>
     <tr><td>4</td><td>htmlhelp</td><td>Open in HtmlHelp program<br />
-	Two part command separated by ! with the first
-	part being the topic to search for and the second the name of the help file
+        Two part command separated by ! with the first
+        part being the topic to search for and the second the name of the help file
     </td></tr>
     <tr><td>5</td><td>winhelp</td><td>Open with WinHelp function<br />
     Two part command similar to subsystem 4</td></tr>
@@ -233,15 +233,15 @@ NameError: name 'mistake' is not defined
        The "-p" argument causes SciTE to print the file and then exit.
     </p>
     <p>
-	For <span class="windowsonly">Windows</span>:<br />
-	The command line arguments "-" and "--" (without the quotes) are special in that they read the
-	stdin stream into the last buffer ("-"), or the output pane ("--"))<br />
-	The command line argument "-@" (without the quotes) is special in that file names are read from stdin
-	and opened.<br />
-	<b>Note:</b> when reading stdin into the output pane, when the property split.vertical is 0, the
-	output pane is increased to its maximum height.  When the property split.vertical is 1, the output pane is
-	increased to approximately half of the screen width.<br />
-	<b>Note:</b> If stdin is not redirected, these arguments are effectively ignored.
+        For <span class="windowsonly">Windows</span>:<br />
+        The command line arguments "-" and "--" (without the quotes) are special in that they read the
+        stdin stream into the last buffer ("-"), or the output pane ("--"))<br />
+        The command line argument "-@" (without the quotes) is special in that file names are read from stdin
+        and opened.<br />
+        <b>Note:</b> when reading stdin into the output pane, when the property split.vertical is 0, the
+        output pane is increased to its maximum height.  When the property split.vertical is 1, the output pane is
+        increased to approximately half of the screen width.<br />
+        <b>Note:</b> If stdin is not redirected, these arguments are effectively ignored.
     </p>
     <div>
        For example,</div>
@@ -311,17 +311,17 @@ NameError: name 'mistake' is not defined
         So, if you need to perform e.g. a find: or a goto: command on a file, you must put
         the command after the filename, to allow SciTE to open the file before performing the command.
     </p>
-	<p>
-	For <span class="windowsonly">Windows</span>:<br />
-	If any simple file name on the command line matches a directory name, the file open dialog appears - this is dependent upon the property
-	"open.dialog.in.file.directory"<br /><br />
-	If the property "buffers" is greater than one and the file name matches either a existing file or by means of a wildcard search, one or more files, the
-	matching files are loaded up to the property "buffers" count.  Directories are not considered a match in this case<br /><br />
-	If the file name is an extension, optionally preceded by a path, and no such simple file name exists, the file open dialog appears, with the given extension as
-	the filter.<br /><br />
-	If the file name contains no extension, the property "source.default.extensions" is used to provide default extensions to attempt to match the file name to an
-	existing file.
-	</p>
+        <p>
+        For <span class="windowsonly">Windows</span>:<br />
+        If any simple file name on the command line matches a directory name, the file open dialog appears - this is dependent upon the property
+        "open.dialog.in.file.directory"<br /><br />
+        If the property "buffers" is greater than one and the file name matches either a existing file or by means of a wildcard search, one or more files, the
+        matching files are loaded up to the property "buffers" count.  Directories are not considered a match in this case<br /><br />
+        If the file name is an extension, optionally preceded by a path, and no such simple file name exists, the file open dialog appears, with the given extension as
+        the filter.<br /><br />
+        If the file name contains no extension, the property "source.default.extensions" is used to provide default extensions to attempt to match the file name to an
+        existing file.
+        </p>
     <h3 id="Buffers">
        Buffers
     </h3>
@@ -849,6 +849,13 @@ NameError: name 'mistake' is not defined
       These prefixes are discussed in the <a href="#DefinedVariables">"Defined variables"</a> section.
       </p>
       <p>
+      Colours are defined like HTML with '#' followed by 6 or 8 hexadecimal digits #RRGGBB or #RRGGBBAA
+      defining the red, green, blue, and alpha values of the colour.
+      Alpha is the degree of translucency with 00 completely transparent and FF completely opaque.
+      A 6 digit colour is assumed to be completely opaque.
+      Only a few settings can currently be set translucent with an 8-digit value.
+      </p>
+      <p>
       On Windows, values may be scaled using the current screen dots-per-inch so that they use more
       pixels on high resolution screens and appear a reasonable size.
       <span class="example">margin.width=$(scale&nbsp;16)</span> makes the margin 16 pixels wide
@@ -867,6 +874,7 @@ NameError: name 'mistake' is not defined
                <tr id='property-FileName'><td>FileName</td><td>base name of the current file</td></tr>
                <tr id='property-FileExt'><td>FileExt</td><td>extension of the current file</td></tr>
                <tr id='property-FileNameExt'><td>FileNameExt</td><td>$(FileName).$(FileExt)</td></tr>
+               <tr id='property-RelativePath'><td>RelativePath</td><td>relative path from properties file to current file</td></tr>
                <tr id='property-Language'><td>Language</td><td>name of the lexer used for the current file</td></tr>
                <tr id='property-SessionPath'><td>SessionPath</td><td>full path of the current session</td></tr>
                <tr id='property-CurrentSelection'><td>CurrentSelection</td><td>value of the currently selected text</td></tr>
@@ -957,14 +965,35 @@ NameError: name 'mistake' is not defined
       non-indented statement is found the if clause is finished. Only simple set
       statements are allowed in if clauses. The evaluation of if statements occurs
       at read time, not at evaluation time.
-      A reread is forced if either of the system properties changes.
+      A reread is forced if either of the system properties changes.</p>
      <div class="example">
      if PLAT_WIN<br />
      &nbsp;&nbsp;&nbsp;&nbsp;caret.fore=#00FF00<br />
      if $(= $(Appearance);1)<br />
      &nbsp;&nbsp;&nbsp;&nbsp;caret.fore=#FFFFFF<br />
      </div>
-    </p>
+    <p>
+      Local and directories properties files may test the value of the current file in "if" tests with
+      $(FilePath), $(FileDir), $(FileName), $(FileExt), $(FileNameExt), and $(RelativePath).</p>
+     <div class="example">
+     if $(= $(FileNameExt);HeaderEOLFill_0.md)<br />
+     &nbsp;&nbsp;&nbsp;&nbsp;lexer.markdown.header.eolfill=0<br />
+     if $(= $(FileExt);pl)<br />
+     &nbsp;&nbsp;&nbsp;&nbsp;edge.mode=1<br />
+     &nbsp;&nbsp;&nbsp;&nbsp;edge.column=79<br />
+     </div>
+      <p>The "match" statement is like "if" but implicitly matches patterns against $(RelativePath), allowing wildcards *, ?;
+      sets [a-z%]; and alternates {cpp,cxx,ixx}.
+      Only Unix-style "/" directory separators may be used as "\" may be used as a quote.
+      If there is no "/" in the pattern then "**/" is prepended to allow matching in any subdirectory.
+      There should be exactly one space between "match" and the pattern and trailing whitespace is removed.</p>
+     <div class="example">
+     match *.{js,py}<br />
+     &nbsp;&nbsp;&nbsp;&nbsp;colour.code.comment.line=fore:#70B060<br />
+     match lexilla/**/Lex*.[ci]xx<br />
+     &nbsp;&nbsp;&nbsp;&nbsp;font.comment=Cascadia Code<br />
+     &nbsp;&nbsp;&nbsp;&nbsp;lexer.cpp.escape.sequence=1<br />
+     </div>
     <p>
       <a name="property-module"></a>
       The 'module' statement is meant for use in the single-file distribution Sc1 where all of the
@@ -1093,7 +1122,34 @@ NameError: name 'mistake' is not defined
         </td>
         <td>
           SciTE normally saves the current buffer when performing a Compile, Build, or Go
-	  command. To save all buffers set save.all.for.build=1
+          command. To save all buffers set save.all.for.build=1
+        </td>
+      </tr>
+      <tr id='property-representations'>
+        <td>
+        representations
+        </td>
+        <td>
+          Sets up a different way of displaying particular characters.
+          It contains a list of items separated by ','.
+          An item may define the representation of a character or set an appearance or colour.
+          A representation item contains a character followed by '=' and its representation text.
+          Hexadecimal Unicode escapes may be used: '\x' followed by 2 hexadecimal digits, '\u' followed by 4, or '\U' followed by 8.
+          Appearance items start with '!' followed by an optional appearance number, '0' for plain or '1' for blobs,
+          '' for default.
+          Colour items start with '#' followed by 6 (opaque), 8 (translucent), or 0 (default) hexadecimal digits.
+          By default, representations are shown in the colour of the style of the original text.
+          Appearance and colour items continue to affect following representation items until they are changed or reset.
+          To specify the characters '\', '=', ',', '!', or '#' use an escape.
+          Only single characters can be represented except for the special case of Windows line ends
+          Carriage Return + Line Feed.<br />
+          The following example shows 'π' as a blob 'Pi';
+          '₪' as a blob 'shekel(₪)';
+          and with View | End of Line turned on Carriage Return + Line Feed appears as translucent red text 'crlf'.
+          <div class="example">
+representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
+        </td>
+
         </td>
       </tr>
       <tr id='property-view.whitespace'>
@@ -1120,6 +1176,15 @@ NameError: name 'mistake' is not defined
         applied by the lexer.
         </td>
       </tr>
+      <tr id='property-whitespace.size'>
+        <td>
+          whitespace.size<br />
+        </td>
+        <td>
+        Sets the size used for displaying all visible spaces, especially for when whitespace.fore
+        is set to be subtle.
+        </td>
+      </tr>
       <tr id='property-view.indentation.guides'>
         <td>
           <a name='property-view.indentation.examine'></a><a name='property-highlight.indentation.guides'></a>
@@ -1132,8 +1197,8 @@ NameError: name 'mistake' is not defined
           Setting view.indentation.guides to 1 displays dotted vertical lines within indentation white
           space every indent.size columns.<br />
           Setting view.indentation.examine to 1 to display guides within real indentation whitespace only,
-	  2 according to the next non-empty line (good for Python) or 3 according to both the next and
-	  previous non-empty lines (good for most languages).<br />
+          2 according to the next non-empty line (good for Python) or 3 according to both the next and
+          previous non-empty lines (good for most languages).<br />
           Setting highlight.indentation.guides to 1 highlights the indentation guide associated with a
           brace when that brace is highlighted.
         </td>
@@ -1285,8 +1350,8 @@ NameError: name 'mistake' is not defined
         </td>
         <td>
           SciTE has a built-in icon set for the toolbar, setting this to 1 makes
-	SciTE more integrated in the GNOME desktop by using the icons
-	provided by the current theme used in GNOME.
+        SciTE more integrated in the GNOME desktop by using the icons
+        provided by the current theme used in GNOME.
         </td>
       </tr>
       <tr class="gtkonly" id='property-pathbar.visible'>
@@ -1295,7 +1360,15 @@ NameError: name 'mistake' is not defined
         </td>
         <td>
           The path bar is a line of text under the tab bar showing the full path of the currently selected tab.
-	Setting pathbar.visible to 1 makes the path bar visible on GTK.
+        Setting pathbar.visible to 1 makes the path bar visible on GTK.
+        </td>
+      </tr>
+      <tr class="gtkonly" id='property-pathbar.selectable'>
+        <td>
+          pathbar.selectable
+        </td>
+        <td>
+          Setting pathbar.selectable to 1 makes the visible path bar selectable on GTK.
         </td>
       </tr>
       <tr id='property-undo.redo.lazy'>
@@ -1305,6 +1378,32 @@ NameError: name 'mistake' is not defined
         <td>
           Setting this to 1 changes the technique used to determine when to enable or disable
           tool bar buttons to be less accurate. This may improve performance on slow machines.
+        </td>
+      </tr>
+      <tr id='property-change.history'>
+        <td>
+          change.history<br />
+          marker.reverted.to.origin<br />
+          marker.saved<br />
+          marker.modified<br />
+          marker.reverted.to.modified<br />
+          indicator.reverted.to.origin.insertion<br />
+          indicator.reverted.to.origin.deletion<br />
+          indicator.saved.insertion<br />
+          indicator.saved.deletion<br />
+          indicator.modified.insertion<br />
+          indicator.modified.deletion<br />
+          indicator.reverted.to.modified.insertion<br />
+          indicator.reverted.to.modified.deletion
+        </td>
+        <td>
+          The change.history property controls whether changes to the document (insertions, deletions, saved chanes, ...) are
+          shown as margin markers or indicators within text.<br .>
+          It is a set of bit flags (1=enable, 2=margin markers, 4=indicators in text) so the most likely settings are
+          0=disabled; 3=enabled with margin marks, or 7=enabled with margin markers and in-text indicators.<br />
+          There is a default set of visuals for this feature but they may be altered with the marker.* and indicator.* properties.<br />
+          As change history can only be enabled when the file is in its original state, this property only takes effect when
+          a file is loaded.
         </td>
       </tr>
       <tr id='property-statusbar.visible'>
@@ -1430,8 +1529,8 @@ NameError: name 'mistake' is not defined
         </td>
         <td>
           The save.on.timer property causes SciTE to save modified files whenever there have been no
-	  modifications for the number of seconds specified by the property.
-	  When set to 0, the default, this feature is disabled and files are not automatically saved.
+          modifications for the number of seconds specified by the property.
+          When set to 0, the default, this feature is disabled and files are not automatically saved.
         </td>
       </tr>
       <tr id='property-reload.preserves.undo'>
@@ -1448,15 +1547,15 @@ NameError: name 'mistake' is not defined
            check.if.already.open
         </td>
         <td>
-	This option allows opening files in an existing instance of SciTE rather than
-	always opening a new instance.
-	When this option is set and SciTE is started, it checks to see if
-	there are any other instances of SciTE open. If there is, another
-	instance is asked to open the file and become active and the new
-	instance exits.
-	On Windows, the instance with the Options | Open Files Here
-	menu item checked opens the file.
-	On GTK, an arbitrary instance opens the file.
+        This option allows opening files in an existing instance of SciTE rather than
+        always opening a new instance.
+        When this option is set and SciTE is started, it checks to see if
+        there are any other instances of SciTE open. If there is, another
+        instance is asked to open the file and become active and the new
+        instance exits.
+        On Windows, the instance with the Options | Open Files Here
+        menu item checked opens the file.
+        On GTK, an arbitrary instance opens the file.
         </td>
       </tr>
       <tr id='property-read.only'>
@@ -1481,17 +1580,17 @@ NameError: name 'mistake' is not defined
       <tr id='property-background.open.size'>
         <td>
           <a name='property-background.save.size'></a>
-	background.open.size<br />
-	background.save.size
+        background.open.size<br />
+        background.save.size
         </td>
         <td>
           This setting controls whether files are opened and saved without blocking the user interface
-	while they are being read or written.
-	Files larger than the given size in bytes will be read or written in the background while
-	smaller files will be read or written directly and SciTE will not respond until the file access is completed.
-	The default value is -1 allows background processing for all files.
-	For saving, the size used is the in-memory size in bytes which will differ from the on-disk size
-	when the UTF-16 encoding is used.
+        while they are being read or written.
+        Files larger than the given size in bytes will be read or written in the background while
+        smaller files will be read or written directly and SciTE will not respond until the file access is completed.
+        The default value is -1 allows background processing for all files.
+        For saving, the size used is the in-memory size in bytes which will differ from the on-disk size
+        when the UTF-16 encoding is used.
         </td>
       </tr>
       </tr>
@@ -1530,11 +1629,11 @@ NameError: name 'mistake' is not defined
         </td>
         <td>
           Files dropped on SciTE on Windows are normally opened asynchronously
-	as there may be a long list. However, files dragged from some applications
-	such as 7-Zip may only exist for a moment in the temporary directory and
-	be deleted once the drop has occurred.<br />
-	Setting this to 1 makes SciTE open dropped files in the temporary directory
-	immediately.
+        as there may be a long list. However, files dragged from some applications
+        such as 7-Zip may only exist for a moment in the temporary directory and
+        be deleted once the drop has occurred.<br />
+        Setting this to 1 makes SciTE open dropped files in the temporary directory
+        immediately.
         </td>
       </tr>
       <tr id='property-quit.on.close.last'>
@@ -1553,8 +1652,8 @@ NameError: name 'mistake' is not defined
            highlight.current.word
         </td>
         <td>
-	When set to 1, all occurrences of the selected word are highlighted with the
-	colour defined by highlight.current.word.colour. By default, this option is disabled. (See indicators.alpha and indicators.under)
+        When set to 1, all occurrences of the selected word are highlighted with the
+        colour defined by highlight.current.word.colour. By default, this option is disabled. (See indicators.alpha and indicators.under)
         </td>
       </tr>
       <tr id='property-highlight.current.word.indicator'>
@@ -1574,19 +1673,19 @@ NameError: name 'mistake' is not defined
            highlight.current.word.colour
         </td>
         <td>
-	The option highlight.current.word.colour defines the colour of highlight.
-	The default value is #A0A000.<br />
+        The option highlight.current.word.colour defines the colour of highlight.
+        The default value is #A0A000.<br />
         Overridden by highlight.current.word.indicator.
         </td>
       </tr>
       <tr id='property-highlight.current.word.by.style'>
         <td>
-	   highlight.current.word.by.style
+           highlight.current.word.by.style
         </td>
         <td>
-	If the option highlight.current.word.by.style is set, then only words with the same style
+        If the option highlight.current.word.by.style is set, then only words with the same style
         are highlighted (e.g. if you select this word in a comment, then only occurrences of words in
-	comments are selected).
+        comments are selected).
         </td>
       </tr>
       <tr class="osxonly" id='property-spell.ignore'>
@@ -1630,38 +1729,79 @@ NameError: name 'mistake' is not defined
       </tr>
       <tr id='property-selection.fore'>
         <td>
-          <a name='property-selection.back'></a><a name='property-selection.alpha'></a>
+          <a name='property-selection.back'></a>
           selection.fore<br />
-           selection.back<br />
-           selection.alpha
+          selection.back
         </td>
         <td>
           Sets the colours used for displaying selected text. If one of these is not set then that
           attribute is not changed for the selection. The default is to show the selection by
           changing the background to light grey and leaving the foreground the same as when it was
-          not selected. The translucency of the selection is set with selection.alpha with an alpha
-	of 256 turning translucency off.
+          not selected.
+          When selection.layer is under text (1) or over text (2), selection.back may be an 8 digit number
+          with translucency as the last two digits.
+          On macOS, the system's selection background may be used when selection.back is set to empty.
         </td>
       </tr>
-      <tr id='property-caret.fore'>
+      <tr id='property-selection.layer'>
         <td>
-          caret.fore
+          selection.layer
         </td>
         <td>
-          Sets the colour used for the caret.
+          Sets the layer for drawing the selection background:
+          base opaque (0), under text (1), or over text (2).
         </td>
       </tr>
       <tr id='property-selection.additional.fore'>
         <td>
-          <a name='property-selection.additional.back'></a><a name='property-selection.additional.alpha'></a>
+          <a name='property-selection.additional.back'></a>
           selection.additional.fore<br />
-           selection.additional.back<br />
-           selection.additional.alpha
+          selection.additional.back
         </td>
         <td>
-          Similar to selection.fore, selection.back, selection.alpha.
-        Sets the colours used for displaying additional selections when multiple selections are
-        enabled or a rectangular selection is made.
+          Similar to selection.fore, selection.back.
+          Sets the colours used for displaying additional selections when multiple selections are
+          enabled or a rectangular selection is made.
+        </td>
+      </tr>
+      <tr id='property-selection.secondary.fore'>
+        <td>
+          <a name='property-selection.secondary.back'></a>
+          selection.secondary.fore<br />
+          selection.secondary.back
+        </td>
+        <td>
+          Similar to selection.fore and selection.back.
+          Sets the colours used for displaying selections when another window holds the primary selection.
+        </td>
+      </tr>
+      <tr id='property-selection.inactive.fore'>
+        <td>
+          <a name='property-selection.inactive.back'></a>
+          selection.inactive.fore<br />
+          selection.inactive.back
+        </td>
+        <td>
+          Similar to selection.fore and selection.back.
+          Sets the colours used for displaying selections when the window is inactive because it does not have focus.
+        </td>
+      </tr>
+      <tr class="windowsonly" id='property-selection.always.visible'>
+        <td>
+          selection.always.visible
+        </td>
+        <td>
+          Set to 1 to show the selection coloured even when SciTE is not the active application. Default is 1.
+        </td>
+      </tr>
+      <tr id='property-caret.fore'>
+        <td>
+          caret.fore<br />
+          <a name='property-caret.additional.fore'></a>
+          caret.additional.fore
+        </td>
+        <td>
+          Sets the colour used for the main and additional carets.
         </td>
       </tr>
       <tr id='property-caret.additional.blinks'>
@@ -1672,24 +1812,24 @@ NameError: name 'mistake' is not defined
           Set whether all carets blink. 0 means only the main caret blinks. Default is 1.
         </td>
       </tr>
-      <tr class="windowsonly" id='property-selection.always.visible'>
-        <td>
-          selection.always.visible
-        </td>
-        <td>
-          Set to 1 to show the selection coloured even when SciTE is not the active application. Default is 0.
-        </td>
-      </tr>
       <tr id='property-caret.line.back'>
         <td>
-          <a name='property-caret.line.back.alpha'></a>
+          <a name='property-caret.line.layer'></a>
           caret.line.back<br />
-          caret.line.back.alpha
+          caret.line.layer
         </td>
         <td>
           Sets the background colour and translucency used for line containing the caret.
-		    Translucency ranges from 0 for completely transparent to 255 for opaque with
-			 256 being opaque and not using translucent drawing code which may be slower.
+          caret.line.back is the layer to draw the caret line: base opaque (0), under text (1), or over text (2).
+        </td>
+      </tr>
+      <tr id='property-caret.line.frame'>
+        <td>
+          caret.line.frame
+        </td>
+        <td>
+          This setting allows the caret line to be drawn as a rectangle inside the line instead of the whole line.
+          It sets the width of rectangles sides. A setting of 0 returns to drawing the whole line.
         </td>
       </tr>
       <tr id='property-caret.period'>
@@ -1729,16 +1869,16 @@ NameError: name 'mistake' is not defined
       </tr>
       <tr id='property-selection.multiple'>
         <td>
-          <a name='property-selection.additional.typing'></a>
+          <a name='property-selection.additional.typing'></a><a name='property-selection.multipaste'></a>
           selection.multiple<br />
           selection.additional.typing<br />
           selection.multipaste
         </td>
         <td>
-	Set selection.multiple to make multiple selections with the mouse by holding down the Ctrl key.<br />
-	Set selection.additional.typing to 1. to allow typing, backspace and delete to affect all selections including each line
-	of rectangular selections. When set to 0, typing only affects the main selection.<br />
-	Set selection.multipaste to 1 to paste at all selections. If set to 0, the paste will only be inserted at the last selection.
+        Set selection.multiple to make multiple selections with the mouse by holding down the Ctrl key.<br />
+        Set selection.additional.typing to 1. to allow typing, backspace and delete to affect all selections including each line
+        of rectangular selections. When set to 0, typing only affects the main selection.<br />
+        Set selection.multipaste to 1 to paste at all selections. If set to 0, the paste will only be inserted at the last selection.
         </td>
       </tr>
       <tr id='property-virtual.space'>
@@ -1747,9 +1887,9 @@ NameError: name 'mistake' is not defined
         </td>
         <td>
           Determines whether the caret can be moved into virtual space, that is, beyond the last character on a line.
-	Set to 1 to allow virtual space when making a rectangular selection, 2 to allow the arrow keys or a mouse
-	click to  move the caret into virtual space, and 3 to allow both.
-	4 may be added to prevent left arrow from wrapping to previous line.
+        Set to 1 to allow virtual space when making a rectangular selection, 2 to allow the arrow keys or a mouse
+        click to  move the caret into virtual space, and 3 to allow both.
+        4 may be added to prevent left arrow from wrapping to previous line.
         </td>
       </tr>
       <tr id='property-caret.policy.xslop'>
@@ -1861,15 +2001,18 @@ NameError: name 'mistake' is not defined
        </tr>
       <tr id='property-bookmark.fore'>
         <td>
-          <a name='property-bookmark.back'></a><a name='property-bookmark.alpha'></a>
+          <a name='property-bookmark.back'></a><a name='property-bookmark.alpha'></a><a name='property-bookmark.stroke.width'></a>
           bookmark.fore<br />
           bookmark.back<br />
-          bookmark.alpha
+          bookmark.alpha<br />
+          bookmark.stroke.width
         </td>
         <td>
           The colours used to display bookmarks in the margin. If bookmark.fore is empty then
           a blue sphere is used. When the margin is turned off, bookmarks are shown by a
-          change in the background colour of the line with the translucency set with bookmark.alpha.
+          change in the background colour of the line with the translucency set with bookmark.alpha.<br />
+          The stroke width of the symbol can be set in hundredths of a pixel with bookmark.stroke.width.
+          When using a high DPI display or large fonts it can be worthwhile setting bookmark.stroke.width to 200.
         </td>
        </tr>
       <tr id='property-bookmark.symbol'>
@@ -1953,9 +2096,9 @@ NameError: name 'mistake' is not defined
         <td>open.suffix.<i>filepattern</i></td>
         <td>Defines a suffix to add to the selected file name for the
         Open Selected Filename command in the File menu.
-	This is used in languages where the suffix is not given when accessing a file.
-	An example is python where "import xlib" will most often mean to import from
-	a file called "xlib.py".<br />
+        This is used in languages where the suffix is not given when accessing a file.
+        An example is python where "import xlib" will most often mean to import from
+        a file called "xlib.py".<br />
         An open.suffix setting may look like:<br />
         <div class="example">open.suffix.*.py=.py</div>
         </td>
@@ -2013,8 +2156,8 @@ NameError: name 'mistake' is not defined
           If there is more than one API file then the file names are separated by ';'.
           API files contain a sorted list of
           identifiers and function prototypes, one per line. If there are multiple files then each file should
-	end with a line end or the next file's first line will merge with the previous file's last line.
-	The "Complete Symbol" command
+        end with a line end or the next file's first line will merge with the previous file's last line.
+        The "Complete Symbol" command
           looks at the characters before the caret and displayed the subset of the API file
           starting with that string. When an opening brace is typed, the file is searched for the
           text preceding the caret and if a function prototype is found then it is displayed as a
@@ -2087,6 +2230,19 @@ NameError: name 'mistake' is not defined
         The * form is used if there is no lexer specific setting.
         </td>
       </tr>
+      <tr class="windowsonly" id='property-autocomplete.fore'>
+        <td>
+          autocomplete.fore<br />
+          autocomplete.back<br />
+          autocomplete.selected.fore<br />
+          autocomplete.selected.back
+        </td>
+        <td>
+        If these settings are not empty, they specify colours to use in
+        autocompletion lists.
+        The default values depend on the platform and system settings.
+        </td>
+      </tr>
       <tr id='property-autocomplete.*.typesep'>
         <td>
           autocomplete.<i>lexer</i>.typesep<br />
@@ -2096,6 +2252,14 @@ NameError: name 'mistake' is not defined
         If this setting is not empty, it specifies the character used to
         separate autocompletion choices from type icon IDs.
         The default value is '?'.
+        </td>
+      </tr>
+      <tr id='property-autocomplete.visible.item.count'>
+        <td>
+          autocomplete.visible.item.count
+        </td>
+        <td>
+        Set the number of items that are visible in autocompletion lists. The default is 9.
         </td>
       </tr>
       <tr id='property-autocompleteword.automatic'>
@@ -2191,434 +2355,514 @@ NameError: name 'mistake' is not defined
       </tr>
 <!--++Autogenerated - run ../scripts/RegenerateSource.py to regenerate -->
 <!--**\(\*\n\) -->
-	<tr id='property-asp.default.language'>
-	<td>asp.default.language</td>
-	<td>Script in ASP code is initially assumed to be in JavaScript. To change this to VBScript set asp.default.language to 2. Python is 3.</td>
-	</tr>
-	<tr id='property-fold.abl.comment.multiline'>
-	<td>fold.abl.comment.multiline</td>
-	<td>Set this property to 0 to disable folding multi-line comments when fold.comment=1.</td>
-	</tr>
-	<tr id='property-fold.abl.syntax.based'>
-	<td>fold.abl.syntax.based</td>
-	<td>Set this property to 0 to disable syntax based folding.</td>
-	</tr>
-	<tr id='property-fold.asm.comment.explicit'>
-	<td>fold.asm.comment.explicit</td>
-	<td>This option enables folding explicit fold points when using the Asm lexer. Explicit fold points allows adding extra folding by placing a ;{ comment at the start and a ;} at the end of a section that should fold.</td>
-	</tr>
-	<tr id='property-fold.asm.comment.multiline'>
-	<td>fold.asm.comment.multiline</td>
-	<td>Set this property to 1 to enable folding multi-line comments.</td>
-	</tr>
-	<tr id='property-fold.asm.explicit.anywhere'>
-	<td>fold.asm.explicit.anywhere</td>
-	<td>Set this property to 1 to enable explicit fold points anywhere, not just in line comments.</td>
-	</tr>
-	<tr id='property-fold.asm.explicit.end'>
-	<td>fold.asm.explicit.end</td>
-	<td>The string to use for explicit fold end points, replacing the standard ;}.</td>
-	</tr>
-	<tr id='property-fold.asm.explicit.start'>
-	<td>fold.asm.explicit.start</td>
-	<td>The string to use for explicit fold start points, replacing the standard ;{.</td>
-	</tr>
-	<tr id='property-fold.asm.syntax.based'>
-	<td>fold.asm.syntax.based</td>
-	<td>Set this property to 0 to disable syntax based folding.</td>
-	</tr>
-	<tr id='property-fold.at.else'>
-	<td>fold.at.else</td>
-	<td>This option enables C++ folding on a "} else {" line of an if statement.</td>
-	</tr>
-	<tr id='property-fold.baan.inner.level'>
-	<td>fold.baan.inner.level</td>
-	<td>Set this property to 1 to enable folding of inner levels of select statements.Disabled by default. case and if statements are also eligible</td>
-	</tr>
-	<tr id='property-fold.baan.keywords.based'>
-	<td>fold.baan.keywords.based</td>
-	<td>Set this property to 0 to disable keywords based folding, which is folding based on for, if, on (case), repeat, select, while and fold ends based on endfor, endif, endcase, until, endselect, endwhile respectively.Also folds declarations which are grouped together.</td>
-	</tr>
-	<tr id='property-fold.baan.sections'>
-	<td>fold.baan.sections</td>
-	<td>Set this property to 0 to disable folding of Main Sections as well as Sub Sections.</td>
-	</tr>
-	<tr id='property-fold.baan.syntax.based'>
-	<td>fold.baan.syntax.based</td>
-	<td>Set this property to 0 to disable syntax based folding, which is folding based on '{' & '('.</td>
-	</tr>
-	<tr id='property-fold.basic.comment.explicit'>
-	<td>fold.basic.comment.explicit</td>
-	<td>This option enables folding explicit fold points when using the Basic lexer. Explicit fold points allows adding extra folding by placing a ;{ (BB/PB) or '{ (FB) comment at the start and a ;} (BB/PB) or '} (FB) at the end of a section that should be folded.</td>
-	</tr>
-	<tr id='property-fold.basic.explicit.anywhere'>
-	<td>fold.basic.explicit.anywhere</td>
-	<td>Set this property to 1 to enable explicit fold points anywhere, not just in line comments.</td>
-	</tr>
-	<tr id='property-fold.basic.explicit.end'>
-	<td>fold.basic.explicit.end</td>
-	<td>The string to use for explicit fold end points, replacing the standard ;} (BB/PB) or '} (FB).</td>
-	</tr>
-	<tr id='property-fold.basic.explicit.start'>
-	<td>fold.basic.explicit.start</td>
-	<td>The string to use for explicit fold start points, replacing the standard ;{ (BB/PB) or '{ (FB).</td>
-	</tr>
-	<tr id='property-fold.basic.syntax.based'>
-	<td>fold.basic.syntax.based</td>
-	<td>Set this property to 0 to disable syntax based folding.</td>
-	</tr>
-	<tr id='property-fold.cil.comment.multiline'>
-	<td>fold.cil.comment.multiline</td>
-	<td>Set this property to 0 to disable folding multi-line comments when fold.comment=1.</td>
-	</tr>
-	<tr id='property-fold.comment'>
-	<td>fold.comment</td>
-	<td>This option enables folding multi-line comments and explicit fold points when using the C++ lexer. Explicit fold points allows adding extra folding by placing a //{ comment at the start and a //} at the end of a section that should fold.</td>
-	</tr>
-	<tr id='property-fold.cpp.comment.explicit'>
-	<td>fold.cpp.comment.explicit</td>
-	<td>Set this property to 0 to disable folding explicit fold points when fold.comment=1.</td>
-	</tr>
-	<tr id='property-fold.cpp.comment.multiline'>
-	<td>fold.cpp.comment.multiline</td>
-	<td>Set this property to 0 to disable folding multi-line comments when fold.comment=1.</td>
-	</tr>
-	<tr id='property-fold.cpp.explicit.anywhere'>
-	<td>fold.cpp.explicit.anywhere</td>
-	<td>Set this property to 1 to enable explicit fold points anywhere, not just in line comments.</td>
-	</tr>
-	<tr id='property-fold.cpp.explicit.end'>
-	<td>fold.cpp.explicit.end</td>
-	<td>The string to use for explicit fold end points, replacing the standard //}.</td>
-	</tr>
-	<tr id='property-fold.cpp.explicit.start'>
-	<td>fold.cpp.explicit.start</td>
-	<td>The string to use for explicit fold start points, replacing the standard //{.</td>
-	</tr>
-	<tr id='property-fold.cpp.preprocessor.at.else'>
-	<td>fold.cpp.preprocessor.at.else</td>
-	<td>This option enables folding on a preprocessor #else or #endif line of an #if statement.</td>
-	</tr>
-	<tr id='property-fold.cpp.syntax.based'>
-	<td>fold.cpp.syntax.based</td>
-	<td>Set this property to 0 to disable syntax based folding.</td>
-	</tr>
-	<tr id='property-fold.d.comment.explicit'>
-	<td>fold.d.comment.explicit</td>
-	<td>Set this property to 0 to disable folding explicit fold points when fold.comment=1.</td>
-	</tr>
-	<tr id='property-fold.d.comment.multiline'>
-	<td>fold.d.comment.multiline</td>
-	<td>Set this property to 0 to disable folding multi-line comments when fold.comment=1.</td>
-	</tr>
-	<tr id='property-fold.d.explicit.anywhere'>
-	<td>fold.d.explicit.anywhere</td>
-	<td>Set this property to 1 to enable explicit fold points anywhere, not just in line comments.</td>
-	</tr>
-	<tr id='property-fold.d.explicit.end'>
-	<td>fold.d.explicit.end</td>
-	<td>The string to use for explicit fold end points, replacing the standard //}.</td>
-	</tr>
-	<tr id='property-fold.d.explicit.start'>
-	<td>fold.d.explicit.start</td>
-	<td>The string to use for explicit fold start points, replacing the standard //{.</td>
-	</tr>
-	<tr id='property-fold.d.syntax.based'>
-	<td>fold.d.syntax.based</td>
-	<td>Set this property to 0 to disable syntax based folding.</td>
-	</tr>
-	<tr id='property-fold.dataflex.compilerlist'>
-	<td>fold.dataflex.compilerlist</td>
-	<td>Set to 1 for enabling the code folding feature in *.prn files</td>
-	</tr>
-	<tr id='property-fold.haskell.imports'>
-	<td>fold.haskell.imports</td>
-	<td>Set to 1 to enable folding of import declarations</td>
-	</tr>
-	<tr id='property-fold.html'>
-	<td>fold.html</td>
-	<td>Folding is turned on or off for HTML and XML files with this option. The fold option must also be on for folding to occur.</td>
-	</tr>
-	<tr id='property-fold.html.preprocessor'>
-	<td>fold.html.preprocessor</td>
-	<td>Folding is turned on or off for scripts embedded in HTML files with this option. The default is on.</td>
-	</tr>
-	<tr id='property-fold.hypertext.comment'>
-	<td>fold.hypertext.comment</td>
-	<td>Allow folding for comments in scripts embedded in HTML. The default is off.</td>
-	</tr>
-	<tr id='property-fold.hypertext.heredoc'>
-	<td>fold.hypertext.heredoc</td>
-	<td>Allow folding for heredocs in scripts embedded in HTML. The default is off.</td>
-	</tr>
-	<tr id='property-fold.perl.at.else'>
-	<td>fold.perl.at.else</td>
-	<td>This option enables Perl folding on a "} else {" line of an if statement.</td>
-	</tr>
-	<tr id='property-fold.perl.comment.explicit'>
-	<td>fold.perl.comment.explicit</td>
-	<td>Set to 0 to disable explicit folding.</td>
-	</tr>
-	<tr id='property-fold.perl.package'>
-	<td>fold.perl.package</td>
-	<td>Set to 0 to disable folding packages when using the Perl lexer.</td>
-	</tr>
-	<tr id='property-fold.perl.pod'>
-	<td>fold.perl.pod</td>
-	<td>Set to 0 to disable folding Pod blocks when using the Perl lexer.</td>
-	</tr>
-	<tr id='property-fold.preprocessor'>
-	<td>fold.preprocessor</td>
-	<td>This option enables folding preprocessor directives when using the C++ lexer. Includes C#'s explicit #region and #endregion folding directives.</td>
-	</tr>
-	<tr id='property-fold.quotes.python'>
-	<td>fold.quotes.python</td>
-	<td>This option enables folding multi-line quoted strings when using the Python lexer.</td>
-	</tr>
-	<tr id='property-fold.raku.comment.multiline'>
-	<td>fold.raku.comment.multiline</td>
-	<td>Set this property to 0 to disable folding multi-line comments when fold.comment=1.</td>
-	</tr>
-	<tr id='property-fold.raku.comment.pod'>
-	<td>fold.raku.comment.pod</td>
-	<td>Set this property to 0 to disable folding POD comments when fold.comment=1.</td>
-	</tr>
-	<tr id='property-fold.rust.comment.explicit'>
-	<td>fold.rust.comment.explicit</td>
-	<td>Set this property to 0 to disable folding explicit fold points when fold.comment=1.</td>
-	</tr>
-	<tr id='property-fold.rust.comment.multiline'>
-	<td>fold.rust.comment.multiline</td>
-	<td>Set this property to 0 to disable folding multi-line comments when fold.comment=1.</td>
-	</tr>
-	<tr id='property-fold.rust.explicit.anywhere'>
-	<td>fold.rust.explicit.anywhere</td>
-	<td>Set this property to 1 to enable explicit fold points anywhere, not just in line comments.</td>
-	</tr>
-	<tr id='property-fold.rust.explicit.end'>
-	<td>fold.rust.explicit.end</td>
-	<td>The string to use for explicit fold end points, replacing the standard //}.</td>
-	</tr>
-	<tr id='property-fold.rust.explicit.start'>
-	<td>fold.rust.explicit.start</td>
-	<td>The string to use for explicit fold start points, replacing the standard //{.</td>
-	</tr>
-	<tr id='property-fold.rust.syntax.based'>
-	<td>fold.rust.syntax.based</td>
-	<td>Set this property to 0 to disable syntax based folding.</td>
-	</tr>
-	<tr id='property-fold.sql.at.else'>
-	<td>fold.sql.at.else</td>
-	<td>This option enables SQL folding on a "ELSE" and "ELSIF" line of an IF statement.</td>
-	</tr>
-	<tr id='property-fold.verilog.flags'>
-	<td>fold.verilog.flags</td>
-	<td>This option enables folding module definitions. Typically source files contain only one module definition so this option is somewhat useless.</td>
-	</tr>
-	<tr id='property-fold.xml.at.tag.open'>
-	<td>fold.xml.at.tag.open</td>
-	<td>Enable folding for XML at the start of open tag. The default is off.</td>
-	</tr>
-	<tr id='property-html.tags.case.sensitive'>
-	<td>html.tags.case.sensitive</td>
-	<td>For XML and HTML, setting this property to 1 will make tags match in a case sensitive way which is the expected behaviour for XML and XHTML.</td>
-	</tr>
-	<tr id='property-lexer.as.comment.character'>
-	<td>lexer.as.comment.character</td>
-	<td>Overrides the default comment character (which is ';' for asm and '#' for as).</td>
-	</tr>
-	<tr id='property-lexer.asm.comment.delimiter'>
-	<td>lexer.asm.comment.delimiter</td>
-	<td>Character used for COMMENT directive's delimiter, replacing the standard "~".</td>
-	</tr>
-	<tr id='property-lexer.baan.styling.within.preprocessor'>
-	<td>lexer.baan.styling.within.preprocessor</td>
-	<td>For Baan code, determines whether all preprocessor code is styled in the preprocessor style (0, the default) or only from the initial # to the end of the command word(1).</td>
-	</tr>
-	<tr id='property-lexer.cpp.allow.dollars'>
-	<td>lexer.cpp.allow.dollars</td>
-	<td>Set to 0 to disallow the '$' character in identifiers with the cpp lexer.</td>
-	</tr>
-	<tr id='property-lexer.cpp.backquoted.strings'>
-	<td>lexer.cpp.backquoted.strings</td>
-	<td>Set to 1 to enable highlighting of back-quoted raw strings .</td>
-	</tr>
-	<tr id='property-lexer.cpp.escape.sequence'>
-	<td>lexer.cpp.escape.sequence</td>
-	<td>Set to 1 to enable highlighting of escape sequences in strings</td>
-	</tr>
-	<tr id='property-lexer.cpp.hashquoted.strings'>
-	<td>lexer.cpp.hashquoted.strings</td>
-	<td>Set to 1 to enable highlighting of hash-quoted strings.</td>
-	</tr>
-	<tr id='property-lexer.cpp.track.preprocessor'>
-	<td>lexer.cpp.track.preprocessor</td>
-	<td>Set to 1 to interpret #if/#else/#endif to grey out code that is not active.</td>
-	</tr>
-	<tr id='property-lexer.cpp.triplequoted.strings'>
-	<td>lexer.cpp.triplequoted.strings</td>
-	<td>Set to 1 to enable highlighting of triple-quoted strings.</td>
-	</tr>
-	<tr id='property-lexer.cpp.update.preprocessor'>
-	<td>lexer.cpp.update.preprocessor</td>
-	<td>Set to 1 to update preprocessor definitions when #define found.</td>
-	</tr>
-	<tr id='property-lexer.cpp.verbatim.strings.allow.escapes'>
-	<td>lexer.cpp.verbatim.strings.allow.escapes</td>
-	<td>Set to 1 to allow verbatim strings to contain escape sequences.</td>
-	</tr>
-	<tr id='property-lexer.css.hss.language'>
-	<td>lexer.css.hss.language</td>
-	<td>Set to 1 for HSS (.hss)</td>
-	</tr>
-	<tr id='property-lexer.css.less.language'>
-	<td>lexer.css.less.language</td>
-	<td>Set to 1 for Less CSS (.less)</td>
-	</tr>
-	<tr id='property-lexer.css.scss.language'>
-	<td>lexer.css.scss.language</td>
-	<td>Set to 1 for Sassy CSS (.scss)</td>
-	</tr>
-	<tr id='property-lexer.d.fold.at.else'>
-	<td>lexer.d.fold.at.else</td>
-	<td>This option enables D folding on a "} else {" line of an if statement.</td>
-	</tr>
-	<tr id='property-lexer.edifact.highlight.un.all'>
-	<td>lexer.edifact.highlight.un.all</td>
-	<td>Set to 0 to highlight only UNA segments, or 1 to highlight all UNx segments.</td>
-	</tr>
-	<tr id='property-lexer.errorlist.escape.sequences'>
-	<td>lexer.errorlist.escape.sequences</td>
-	<td>Set to 1 to interpret escape sequences.</td>
-	</tr>
-	<tr id='property-lexer.errorlist.value.separate'>
-	<td>lexer.errorlist.value.separate</td>
-	<td>For lines in the output pane that are matches from Find in Files or GCC-style diagnostics, style the path and line number separately from the rest of the line with style 21 used for the rest of the line. This allows matched text to be more easily distinguished from its location.</td>
-	</tr>
-	<tr id='property-lexer.flagship.styling.within.preprocessor'>
-	<td>lexer.flagship.styling.within.preprocessor</td>
-	<td>For Harbour code, determines whether all preprocessor code is styled in the preprocessor style (0) or only from the initial # to the end of the command word(1, the default). It also determines how to present text, dump, and disabled code.</td>
-	</tr>
-	<tr id='property-lexer.haskell.allow.hash'>
-	<td>lexer.haskell.allow.hash</td>
-	<td>Set to 0 to disallow the '#' character at the end of identifiers and literals with the haskell lexer (GHC -XMagicHash extension)</td>
-	</tr>
-	<tr id='property-lexer.haskell.allow.questionmark'>
-	<td>lexer.haskell.allow.questionmark</td>
-	<td>Set to 1 to allow the '?' character at the start of identifiers with the haskell lexer (GHC & Hugs -XImplicitParams extension)</td>
-	</tr>
-	<tr id='property-lexer.haskell.allow.quotes'>
-	<td>lexer.haskell.allow.quotes</td>
-	<td>Set to 0 to disable highlighting of Template Haskell name quotations and promoted constructors (GHC -XTemplateHaskell and -XDataKinds extensions)</td>
-	</tr>
-	<tr id='property-lexer.haskell.cpp'>
-	<td>lexer.haskell.cpp</td>
-	<td>Set to 0 to disable C-preprocessor highlighting (-XCPP extension)</td>
-	</tr>
-	<tr id='property-lexer.haskell.import.safe'>
-	<td>lexer.haskell.import.safe</td>
-	<td>Set to 0 to disallow "safe" keyword in imports (GHC -XSafe, -XTrustworthy, -XUnsafe extensions)</td>
-	</tr>
-	<tr id='property-lexer.html.django'>
-	<td>lexer.html.django</td>
-	<td>Set to 1 to enable the django template language.</td>
-	</tr>
-	<tr id='property-lexer.html.mako'>
-	<td>lexer.html.mako</td>
-	<td>Set to 1 to enable the mako template language.</td>
-	</tr>
-	<tr id='property-lexer.json.allow.comments'>
-	<td>lexer.json.allow.comments</td>
-	<td>Set to 1 to enable highlighting of line/block comments in JSON</td>
-	</tr>
-	<tr id='property-lexer.json.escape.sequence'>
-	<td>lexer.json.escape.sequence</td>
-	<td>Set to 1 to enable highlighting of escape sequences in strings</td>
-	</tr>
-	<tr id='property-lexer.nim.raw.strings.highlight.ident'>
-	<td>lexer.nim.raw.strings.highlight.ident</td>
-	<td>Set to 1 to enable highlighting generalized raw string identifiers. Generalized raw string identifiers are anything other than r (or R).</td>
-	</tr>
-	<tr id='property-lexer.props.allow.initial.spaces'>
-	<td>lexer.props.allow.initial.spaces</td>
-	<td>For properties files, set to 0 to style all lines that start with whitespace in the default style. This is not suitable for SciTE .properties files which use indentation for flow control but can be used for RFC2822 text where indentation is used for continuation lines.</td>
-	</tr>
-	<tr id='property-lexer.python.keywords2.no.sub.identifiers'>
-	<td>lexer.python.keywords2.no.sub.identifiers</td>
-	<td>When enabled, it will not style keywords2 items that are used as a sub-identifier. Example: when set, will not highlight "foo.open" when "open" is a keywords2 item.</td>
-	</tr>
-	<tr id='property-lexer.python.literals.binary'>
-	<td>lexer.python.literals.binary</td>
-	<td>Set to 0 to not recognise Python 3 binary and octal literals: 0b1011 0o712.</td>
-	</tr>
-	<tr id='property-lexer.python.strings.b'>
-	<td>lexer.python.strings.b</td>
-	<td>Set to 0 to not recognise Python 3 bytes literals b"x".</td>
-	</tr>
-	<tr id='property-lexer.python.strings.f'>
-	<td>lexer.python.strings.f</td>
-	<td>Set to 0 to not recognise Python 3.6 f-string literals f"var={var}".</td>
-	</tr>
-	<tr id='property-lexer.python.strings.over.newline'>
-	<td>lexer.python.strings.over.newline</td>
-	<td>Set to 1 to allow strings to span newline characters.</td>
-	</tr>
-	<tr id='property-lexer.python.strings.u'>
-	<td>lexer.python.strings.u</td>
-	<td>Set to 0 to not recognise Python Unicode literals u"x" as used before Python 3.</td>
-	</tr>
-	<tr id='property-lexer.python.unicode.identifiers'>
-	<td>lexer.python.unicode.identifiers</td>
-	<td>Set to 0 to not recognise Python 3 Unicode identifiers.</td>
-	</tr>
-	<tr id='property-lexer.rust.fold.at.else'>
-	<td>lexer.rust.fold.at.else</td>
-	<td>This option enables Rust folding on a "} else {" line of an if statement.</td>
-	</tr>
-	<tr id='property-lexer.sql.allow.dotted.word'>
-	<td>lexer.sql.allow.dotted.word</td>
-	<td>Set to 1 to colourise recognized words with dots (recommended for Oracle PL/SQL objects).</td>
-	</tr>
-	<tr id='property-lexer.sql.numbersign.comment'>
-	<td>lexer.sql.numbersign.comment</td>
-	<td>If "lexer.sql.numbersign.comment" property is set to 0 a line beginning with '#' will not be a comment.</td>
-	</tr>
-	<tr id='property-lexer.verilog.allupperkeywords'>
-	<td>lexer.verilog.allupperkeywords</td>
-	<td>Set to 1 to style identifiers that are all uppercase as documentation keyword.</td>
-	</tr>
-	<tr id='property-lexer.verilog.fold.preprocessor.else'>
-	<td>lexer.verilog.fold.preprocessor.else</td>
-	<td>This option enables folding on `else and `elsif preprocessor directives.</td>
-	</tr>
-	<tr id='property-lexer.verilog.portstyling'>
-	<td>lexer.verilog.portstyling</td>
-	<td>Set to 1 to style input, output, and inout ports differently from regular keywords.</td>
-	</tr>
-	<tr id='property-lexer.verilog.track.preprocessor'>
-	<td>lexer.verilog.track.preprocessor</td>
-	<td>Set to 1 to interpret `if/`else/`endif to grey out code that is not active.</td>
-	</tr>
-	<tr id='property-lexer.verilog.update.preprocessor'>
-	<td>lexer.verilog.update.preprocessor</td>
-	<td>Set to 1 to update preprocessor definitions when `define, `undef, or `undefineall found.</td>
-	</tr>
-	<tr id='property-lexer.xml.allow.scripts'>
-	<td>lexer.xml.allow.scripts</td>
-	<td>Set to 0 to disable scripts in XML.</td>
-	</tr>
-	<tr id='property-sql.backslash.escapes'>
-	<td>sql.backslash.escapes</td>
-	<td>Enables backslash as an escape character in SQL.</td>
-	</tr>
-	<tr id='property-styling.within.preprocessor'>
-	<td>styling.within.preprocessor</td>
-	<td>For C++ code, determines whether all preprocessor code is styled in the preprocessor style (0, the default) or only from the initial # to the end of the command word(1).</td>
-	</tr>
-	<tr id='property-tab.timmy.whinge.level'>
-	<td>tab.timmy.whinge.level</td>
-	<td>For Python code, checks whether indenting is consistent. The default, 0 turns off indentation checking, 1 checks whether each line is potentially inconsistent with the previous line, 2 checks whether any space characters occur before a tab character in the indentation, 3 checks whether any spaces are in the indentation, and 4 checks for any tab characters in the indentation. 1 is a good level to use.</td>
-	</tr>
+        <tr id='property-asp.default.language'>
+        <td>asp.default.language</td>
+        <td>Script in ASP code is initially assumed to be in JavaScript. To change this to VBScript set asp.default.language to 2. Python is 3.</td>
+        </tr>
+        <tr id='property-fold.abl.comment.multiline'>
+        <td>fold.abl.comment.multiline</td>
+        <td>Set this property to 0 to disable folding multi-line comments when fold.comment=1.</td>
+        </tr>
+        <tr id='property-fold.abl.syntax.based'>
+        <td>fold.abl.syntax.based</td>
+        <td>Set this property to 0 to disable syntax based folding.</td>
+        </tr>
+        <tr id='property-fold.asm.comment.explicit'>
+        <td>fold.asm.comment.explicit</td>
+        <td>This option enables folding explicit fold points when using the Asm lexer. Explicit fold points allows adding extra folding by placing a ;{ comment at the start and a ;} at the end of a section that should fold.</td>
+        </tr>
+        <tr id='property-fold.asm.comment.multiline'>
+        <td>fold.asm.comment.multiline</td>
+        <td>Set this property to 1 to enable folding multi-line comments.</td>
+        </tr>
+        <tr id='property-fold.asm.explicit.anywhere'>
+        <td>fold.asm.explicit.anywhere</td>
+        <td>Set this property to 1 to enable explicit fold points anywhere, not just in line comments.</td>
+        </tr>
+        <tr id='property-fold.asm.explicit.end'>
+        <td>fold.asm.explicit.end</td>
+        <td>The string to use for explicit fold end points, replacing the standard ;}.</td>
+        </tr>
+        <tr id='property-fold.asm.explicit.start'>
+        <td>fold.asm.explicit.start</td>
+        <td>The string to use for explicit fold start points, replacing the standard ;{.</td>
+        </tr>
+        <tr id='property-fold.asm.syntax.based'>
+        <td>fold.asm.syntax.based</td>
+        <td>Set this property to 0 to disable syntax based folding.</td>
+        </tr>
+        <tr id='property-fold.at.else'>
+        <td>fold.at.else</td>
+        <td>This option enables C++ folding on a "} else {" line of an if statement.</td>
+        </tr>
+        <tr id='property-fold.baan.inner.level'>
+        <td>fold.baan.inner.level</td>
+        <td>Set this property to 1 to enable folding of inner levels of select statements.Disabled by default. case and if statements are also eligible</td>
+        </tr>
+        <tr id='property-fold.baan.keywords.based'>
+        <td>fold.baan.keywords.based</td>
+        <td>Set this property to 0 to disable keywords based folding, which is folding based on for, if, on (case), repeat, select, while and fold ends based on endfor, endif, endcase, until, endselect, endwhile respectively.Also folds declarations which are grouped together.</td>
+        </tr>
+        <tr id='property-fold.baan.sections'>
+        <td>fold.baan.sections</td>
+        <td>Set this property to 0 to disable folding of Main Sections as well as Sub Sections.</td>
+        </tr>
+        <tr id='property-fold.baan.syntax.based'>
+        <td>fold.baan.syntax.based</td>
+        <td>Set this property to 0 to disable syntax based folding, which is folding based on '{' & '('.</td>
+        </tr>
+        <tr id='property-fold.basic.comment.explicit'>
+        <td>fold.basic.comment.explicit</td>
+        <td>This option enables folding explicit fold points when using the Basic lexer. Explicit fold points allows adding extra folding by placing a ;{ (BB/PB) or '{ (FB) comment at the start and a ;} (BB/PB) or '} (FB) at the end of a section that should be folded.</td>
+        </tr>
+        <tr id='property-fold.basic.explicit.anywhere'>
+        <td>fold.basic.explicit.anywhere</td>
+        <td>Set this property to 1 to enable explicit fold points anywhere, not just in line comments.</td>
+        </tr>
+        <tr id='property-fold.basic.explicit.end'>
+        <td>fold.basic.explicit.end</td>
+        <td>The string to use for explicit fold end points, replacing the standard ;} (BB/PB) or '} (FB).</td>
+        </tr>
+        <tr id='property-fold.basic.explicit.start'>
+        <td>fold.basic.explicit.start</td>
+        <td>The string to use for explicit fold start points, replacing the standard ;{ (BB/PB) or '{ (FB).</td>
+        </tr>
+        <tr id='property-fold.basic.syntax.based'>
+        <td>fold.basic.syntax.based</td>
+        <td>Set this property to 0 to disable syntax based folding.</td>
+        </tr>
+        <tr id='property-fold.cil.comment.multiline'>
+        <td>fold.cil.comment.multiline</td>
+        <td>Set this property to 0 to disable folding multi-line comments when fold.comment=1.</td>
+        </tr>
+        <tr id='property-fold.comment'>
+        <td>fold.comment</td>
+        <td>This option enables folding multi-line comments and explicit fold points when using the C++ lexer. Explicit fold points allows adding extra folding by placing a //{ comment at the start and a //} at the end of a section that should fold.</td>
+        </tr>
+        <tr id='property-fold.cpp.comment.explicit'>
+        <td>fold.cpp.comment.explicit</td>
+        <td>Set this property to 0 to disable folding explicit fold points when fold.comment=1.</td>
+        </tr>
+        <tr id='property-fold.cpp.comment.multiline'>
+        <td>fold.cpp.comment.multiline</td>
+        <td>Set this property to 0 to disable folding multi-line comments when fold.comment=1.</td>
+        </tr>
+        <tr id='property-fold.cpp.explicit.anywhere'>
+        <td>fold.cpp.explicit.anywhere</td>
+        <td>Set this property to 1 to enable explicit fold points anywhere, not just in line comments.</td>
+        </tr>
+        <tr id='property-fold.cpp.explicit.end'>
+        <td>fold.cpp.explicit.end</td>
+        <td>The string to use for explicit fold end points, replacing the standard //}.</td>
+        </tr>
+        <tr id='property-fold.cpp.explicit.start'>
+        <td>fold.cpp.explicit.start</td>
+        <td>The string to use for explicit fold start points, replacing the standard //{.</td>
+        </tr>
+        <tr id='property-fold.cpp.preprocessor.at.else'>
+        <td>fold.cpp.preprocessor.at.else</td>
+        <td>This option enables folding on a preprocessor #else or #endif line of an #if statement.</td>
+        </tr>
+        <tr id='property-fold.cpp.syntax.based'>
+        <td>fold.cpp.syntax.based</td>
+        <td>Set this property to 0 to disable syntax based folding.</td>
+        </tr>
+        <tr id='property-fold.d.comment.explicit'>
+        <td>fold.d.comment.explicit</td>
+        <td>Set this property to 0 to disable folding explicit fold points when fold.comment=1.</td>
+        </tr>
+        <tr id='property-fold.d.comment.multiline'>
+        <td>fold.d.comment.multiline</td>
+        <td>Set this property to 0 to disable folding multi-line comments when fold.comment=1.</td>
+        </tr>
+        <tr id='property-fold.d.explicit.anywhere'>
+        <td>fold.d.explicit.anywhere</td>
+        <td>Set this property to 1 to enable explicit fold points anywhere, not just in line comments.</td>
+        </tr>
+        <tr id='property-fold.d.explicit.end'>
+        <td>fold.d.explicit.end</td>
+        <td>The string to use for explicit fold end points, replacing the standard //}.</td>
+        </tr>
+        <tr id='property-fold.d.explicit.start'>
+        <td>fold.d.explicit.start</td>
+        <td>The string to use for explicit fold start points, replacing the standard //{.</td>
+        </tr>
+        <tr id='property-fold.d.syntax.based'>
+        <td>fold.d.syntax.based</td>
+        <td>Set this property to 0 to disable syntax based folding.</td>
+        </tr>
+        <tr id='property-fold.dataflex.compilerlist'>
+        <td>fold.dataflex.compilerlist</td>
+        <td>Set to 1 for enabling the code folding feature in *.prn files</td>
+        </tr>
+        <tr id='property-fold.fsharp.comment.multiline'>
+        <td>fold.fsharp.comment.multiline</td>
+        <td>Setting this option to 0 disables folding of grouped line comments in F# files when fold.comment=1.</td>
+        </tr>
+        <tr id='property-fold.fsharp.comment.stream'>
+        <td>fold.fsharp.comment.stream</td>
+        <td>Setting this option to 0 disables folding of ML-style comments in F# files when fold.comment=1.</td>
+        </tr>
+        <tr id='property-fold.fsharp.imports'>
+        <td>fold.fsharp.imports</td>
+        <td>Setting this option to 0 disables folding of F# import declarations.</td>
+        </tr>
+        <tr id='property-fold.fsharp.preprocessor'>
+        <td>fold.fsharp.preprocessor</td>
+        <td>Setting this option to 1 enables folding of F# compiler directives.</td>
+        </tr>
+        <tr id='property-fold.gdscript.quotes'>
+        <td>fold.gdscript.quotes</td>
+        <td>This option enables folding multi-line quoted strings when using the GDScript lexer.</td>
+        </tr>
+        <tr id='property-fold.haskell.imports'>
+        <td>fold.haskell.imports</td>
+        <td>Set to 1 to enable folding of import declarations</td>
+        </tr>
+        <tr id='property-fold.html'>
+        <td>fold.html</td>
+        <td>Folding is turned on or off for HTML and XML files with this option. The fold option must also be on for folding to occur.</td>
+        </tr>
+        <tr id='property-fold.html.preprocessor'>
+        <td>fold.html.preprocessor</td>
+        <td>Folding is turned on or off for scripts embedded in HTML files with this option. The default is on.</td>
+        </tr>
+        <tr id='property-fold.hypertext.comment'>
+        <td>fold.hypertext.comment</td>
+        <td>Allow folding for comments in scripts embedded in HTML. The default is off.</td>
+        </tr>
+        <tr id='property-fold.hypertext.heredoc'>
+        <td>fold.hypertext.heredoc</td>
+        <td>Allow folding for heredocs in scripts embedded in HTML. The default is off.</td>
+        </tr>
+        <tr id='property-fold.julia.docstring'>
+        <td>fold.julia.docstring</td>
+        <td>Fold multiline triple-doublequote strings, usually used to document a function or type above the definition.</td>
+        </tr>
+        <tr id='property-fold.julia.syntax.based'>
+        <td>fold.julia.syntax.based</td>
+        <td>Set this property to 0 to disable syntax based folding.</td>
+        </tr>
+        <tr id='property-fold.perl.at.else'>
+        <td>fold.perl.at.else</td>
+        <td>This option enables Perl folding on a "} else {" line of an if statement.</td>
+        </tr>
+        <tr id='property-fold.perl.comment.explicit'>
+        <td>fold.perl.comment.explicit</td>
+        <td>Set to 0 to disable explicit folding.</td>
+        </tr>
+        <tr id='property-fold.perl.package'>
+        <td>fold.perl.package</td>
+        <td>Set to 0 to disable folding packages when using the Perl lexer.</td>
+        </tr>
+        <tr id='property-fold.perl.pod'>
+        <td>fold.perl.pod</td>
+        <td>Set to 0 to disable folding Pod blocks when using the Perl lexer.</td>
+        </tr>
+        <tr id='property-fold.preprocessor'>
+        <td>fold.preprocessor</td>
+        <td>This option enables folding preprocessor directives when using the C++ lexer. Includes C#'s explicit #region and #endregion folding directives.</td>
+        </tr>
+        <tr id='property-fold.quotes.python'>
+        <td>fold.quotes.python</td>
+        <td>This option enables folding multi-line quoted strings when using the Python lexer.</td>
+        </tr>
+        <tr id='property-fold.raku.comment.multiline'>
+        <td>fold.raku.comment.multiline</td>
+        <td>Set this property to 0 to disable folding multi-line comments when fold.comment=1.</td>
+        </tr>
+        <tr id='property-fold.raku.comment.pod'>
+        <td>fold.raku.comment.pod</td>
+        <td>Set this property to 0 to disable folding POD comments when fold.comment=1.</td>
+        </tr>
+        <tr id='property-fold.rust.comment.explicit'>
+        <td>fold.rust.comment.explicit</td>
+        <td>Set this property to 0 to disable folding explicit fold points when fold.comment=1.</td>
+        </tr>
+        <tr id='property-fold.rust.comment.multiline'>
+        <td>fold.rust.comment.multiline</td>
+        <td>Set this property to 0 to disable folding multi-line comments when fold.comment=1.</td>
+        </tr>
+        <tr id='property-fold.rust.explicit.anywhere'>
+        <td>fold.rust.explicit.anywhere</td>
+        <td>Set this property to 1 to enable explicit fold points anywhere, not just in line comments.</td>
+        </tr>
+        <tr id='property-fold.rust.explicit.end'>
+        <td>fold.rust.explicit.end</td>
+        <td>The string to use for explicit fold end points, replacing the standard //}.</td>
+        </tr>
+        <tr id='property-fold.rust.explicit.start'>
+        <td>fold.rust.explicit.start</td>
+        <td>The string to use for explicit fold start points, replacing the standard //{.</td>
+        </tr>
+        <tr id='property-fold.rust.syntax.based'>
+        <td>fold.rust.syntax.based</td>
+        <td>Set this property to 0 to disable syntax based folding.</td>
+        </tr>
+        <tr id='property-fold.sql.at.else'>
+        <td>fold.sql.at.else</td>
+        <td>This option enables SQL folding on a "ELSE" and "ELSIF" line of an IF statement.</td>
+        </tr>
+        <tr id='property-fold.verilog.flags'>
+        <td>fold.verilog.flags</td>
+        <td>This option enables folding module definitions. Typically source files contain only one module definition so this option is somewhat useless.</td>
+        </tr>
+        <tr id='property-fold.xml.at.tag.open'>
+        <td>fold.xml.at.tag.open</td>
+        <td>Enable folding for XML at the start of open tag. The default is off.</td>
+        </tr>
+        <tr id='property-html.tags.case.sensitive'>
+        <td>html.tags.case.sensitive</td>
+        <td>For XML and HTML, setting this property to 1 will make tags match in a case sensitive way which is the expected behaviour for XML and XHTML.</td>
+        </tr>
+        <tr id='property-lexer.as.comment.character'>
+        <td>lexer.as.comment.character</td>
+        <td>Overrides the default comment character (which is ';' for asm and '#' for as).</td>
+        </tr>
+        <tr id='property-lexer.asm.comment.delimiter'>
+        <td>lexer.asm.comment.delimiter</td>
+        <td>Character used for COMMENT directive's delimiter, replacing the standard "~".</td>
+        </tr>
+        <tr id='property-lexer.baan.styling.within.preprocessor'>
+        <td>lexer.baan.styling.within.preprocessor</td>
+        <td>For Baan code, determines whether all preprocessor code is styled in the preprocessor style (0, the default) or only from the initial # to the end of the command word(1).</td>
+        </tr>
+        <tr id='property-lexer.cpp.allow.dollars'>
+        <td>lexer.cpp.allow.dollars</td>
+        <td>Set to 0 to disallow the '$' character in identifiers with the cpp lexer.</td>
+        </tr>
+        <tr id='property-lexer.cpp.backquoted.strings'>
+        <td>lexer.cpp.backquoted.strings</td>
+        <td>Set to 1 to enable highlighting of back-quoted raw strings .</td>
+        </tr>
+        <tr id='property-lexer.cpp.escape.sequence'>
+        <td>lexer.cpp.escape.sequence</td>
+        <td>Set to 1 to enable highlighting of escape sequences in strings</td>
+        </tr>
+        <tr id='property-lexer.cpp.hashquoted.strings'>
+        <td>lexer.cpp.hashquoted.strings</td>
+        <td>Set to 1 to enable highlighting of hash-quoted strings.</td>
+        </tr>
+        <tr id='property-lexer.cpp.track.preprocessor'>
+        <td>lexer.cpp.track.preprocessor</td>
+        <td>Set to 1 to interpret #if/#else/#endif to grey out code that is not active.</td>
+        </tr>
+        <tr id='property-lexer.cpp.triplequoted.strings'>
+        <td>lexer.cpp.triplequoted.strings</td>
+        <td>Set to 1 to enable highlighting of triple-quoted strings.</td>
+        </tr>
+        <tr id='property-lexer.cpp.update.preprocessor'>
+        <td>lexer.cpp.update.preprocessor</td>
+        <td>Set to 1 to update preprocessor definitions when #define found.</td>
+        </tr>
+        <tr id='property-lexer.cpp.verbatim.strings.allow.escapes'>
+        <td>lexer.cpp.verbatim.strings.allow.escapes</td>
+        <td>Set to 1 to allow verbatim strings to contain escape sequences.</td>
+        </tr>
+        <tr id='property-lexer.css.hss.language'>
+        <td>lexer.css.hss.language</td>
+        <td>Set to 1 for HSS (.hss)</td>
+        </tr>
+        <tr id='property-lexer.css.less.language'>
+        <td>lexer.css.less.language</td>
+        <td>Set to 1 for Less CSS (.less)</td>
+        </tr>
+        <tr id='property-lexer.css.scss.language'>
+        <td>lexer.css.scss.language</td>
+        <td>Set to 1 for Sassy CSS (.scss)</td>
+        </tr>
+        <tr id='property-lexer.d.fold.at.else'>
+        <td>lexer.d.fold.at.else</td>
+        <td>This option enables D folding on a "} else {" line of an if statement.</td>
+        </tr>
+        <tr id='property-lexer.edifact.highlight.un.all'>
+        <td>lexer.edifact.highlight.un.all</td>
+        <td>Set to 0 to highlight only UNA segments, or 1 to highlight all UNx segments.</td>
+        </tr>
+        <tr id='property-lexer.errorlist.escape.sequences'>
+        <td>lexer.errorlist.escape.sequences</td>
+        <td>Set to 1 to interpret escape sequences.</td>
+        </tr>
+        <tr id='property-lexer.errorlist.value.separate'>
+        <td>lexer.errorlist.value.separate</td>
+        <td>For lines in the output pane that are matches from Find in Files or GCC-style diagnostics, style the path and line number separately from the rest of the line with style 21 used for the rest of the line. This allows matched text to be more easily distinguished from its location.</td>
+        </tr>
+        <tr id='property-lexer.flagship.styling.within.preprocessor'>
+        <td>lexer.flagship.styling.within.preprocessor</td>
+        <td>For Harbour code, determines whether all preprocessor code is styled in the preprocessor style (0) or only from the initial # to the end of the command word(1, the default). It also determines how to present text, dump, and disabled code.</td>
+        </tr>
+        <tr id='property-lexer.gdscript.keywords2.no.sub.identifiers'>
+        <td>lexer.gdscript.keywords2.no.sub.identifiers</td>
+        <td>When enabled, it will not style keywords2 items that are used as a sub-identifier. Example: when set, will not highlight "foo.open" when "open" is a keywords2 item.</td>
+        </tr>
+        <tr id='property-lexer.gdscript.literals.binary'>
+        <td>lexer.gdscript.literals.binary</td>
+        <td>Set to 0 to not recognise binary and octal literals: 0b1011 0o712.</td>
+        </tr>
+        <tr id='property-lexer.gdscript.strings.over.newline'>
+        <td>lexer.gdscript.strings.over.newline</td>
+        <td>Set to 1 to allow strings to span newline characters.</td>
+        </tr>
+        <tr id='property-lexer.gdscript.unicode.identifiers'>
+        <td>lexer.gdscript.unicode.identifiers</td>
+        <td>Set to 0 to not recognise Unicode identifiers.</td>
+        </tr>
+        <tr id='property-lexer.gdscript.whinge.level'>
+        <td>lexer.gdscript.whinge.level</td>
+        <td>For GDScript code, checks whether indenting is consistent. The default, 0 turns off indentation checking, 1 checks whether each line is potentially inconsistent with the previous line, 2 checks whether any space characters occur before a tab character in the indentation, 3 checks whether any spaces are in the indentation, and 4 checks for any tab characters in the indentation. 1 is a good level to use.</td>
+        </tr>
+        <tr id='property-lexer.haskell.allow.hash'>
+        <td>lexer.haskell.allow.hash</td>
+        <td>Set to 0 to disallow the '#' character at the end of identifiers and literals with the haskell lexer (GHC -XMagicHash extension)</td>
+        </tr>
+        <tr id='property-lexer.haskell.allow.questionmark'>
+        <td>lexer.haskell.allow.questionmark</td>
+        <td>Set to 1 to allow the '?' character at the start of identifiers with the haskell lexer (GHC & Hugs -XImplicitParams extension)</td>
+        </tr>
+        <tr id='property-lexer.haskell.allow.quotes'>
+        <td>lexer.haskell.allow.quotes</td>
+        <td>Set to 0 to disable highlighting of Template Haskell name quotations and promoted constructors (GHC -XTemplateHaskell and -XDataKinds extensions)</td>
+        </tr>
+        <tr id='property-lexer.haskell.cpp'>
+        <td>lexer.haskell.cpp</td>
+        <td>Set to 0 to disable C-preprocessor highlighting (-XCPP extension)</td>
+        </tr>
+        <tr id='property-lexer.haskell.import.safe'>
+        <td>lexer.haskell.import.safe</td>
+        <td>Set to 0 to disallow "safe" keyword in imports (GHC -XSafe, -XTrustworthy, -XUnsafe extensions)</td>
+        </tr>
+        <tr id='property-lexer.html.django'>
+        <td>lexer.html.django</td>
+        <td>Set to 1 to enable the django template language.</td>
+        </tr>
+        <tr id='property-lexer.html.mako'>
+        <td>lexer.html.mako</td>
+        <td>Set to 1 to enable the mako template language.</td>
+        </tr>
+        <tr id='property-lexer.json.allow.comments'>
+        <td>lexer.json.allow.comments</td>
+        <td>Set to 1 to enable highlighting of line/block comments in JSON</td>
+        </tr>
+        <tr id='property-lexer.json.escape.sequence'>
+        <td>lexer.json.escape.sequence</td>
+        <td>Set to 1 to enable highlighting of escape sequences in strings</td>
+        </tr>
+        <tr id='property-lexer.julia.highlight.lexerror'>
+        <td>lexer.julia.highlight.lexerror</td>
+        <td>This option enables highlighting of syntax error int character or number definition.</td>
+        </tr>
+        <tr id='property-lexer.julia.highlight.typeannotation'>
+        <td>lexer.julia.highlight.typeannotation</td>
+        <td>This option enables highlighting of the type identifier after `::`.</td>
+        </tr>
+        <tr id='property-lexer.markdown.header.eolfill'>
+        <td>lexer.markdown.header.eolfill</td>
+        <td>Set to 1 to highlight all ATX header text.</td>
+        </tr>
+        <tr id='property-lexer.nim.raw.strings.highlight.ident'>
+        <td>lexer.nim.raw.strings.highlight.ident</td>
+        <td>Set to 1 to enable highlighting generalized raw string identifiers. Generalized raw string identifiers are anything other than r (or R).</td>
+        </tr>
+        <tr id='property-lexer.props.allow.initial.spaces'>
+        <td>lexer.props.allow.initial.spaces</td>
+        <td>For properties files, set to 0 to style all lines that start with whitespace in the default style. This is not suitable for SciTE .properties files which use indentation for flow control but can be used for RFC2822 text where indentation is used for continuation lines.</td>
+        </tr>
+        <tr id='property-lexer.python.decorator.attributes'>
+        <td>lexer.python.decorator.attributes</td>
+        <td>Set to 1 to recognise Python decorator attributes.</td>
+        </tr>
+        <tr id='property-lexer.python.identifier.attributes'>
+        <td>lexer.python.identifier.attributes</td>
+        <td>Set to 1 to recognise Python identifier attributes.</td>
+        </tr>
+        <tr id='property-lexer.python.keywords2.no.sub.identifiers'>
+        <td>lexer.python.keywords2.no.sub.identifiers</td>
+        <td>When enabled, it will not style keywords2 items that are used as a sub-identifier. Example: when set, will not highlight "foo.open" when "open" is a keywords2 item.</td>
+        </tr>
+        <tr id='property-lexer.python.literals.binary'>
+        <td>lexer.python.literals.binary</td>
+        <td>Set to 0 to not recognise Python 3 binary and octal literals: 0b1011 0o712.</td>
+        </tr>
+        <tr id='property-lexer.python.strings.b'>
+        <td>lexer.python.strings.b</td>
+        <td>Set to 0 to not recognise Python 3 bytes literals b"x".</td>
+        </tr>
+        <tr id='property-lexer.python.strings.f'>
+        <td>lexer.python.strings.f</td>
+        <td>Set to 0 to not recognise Python 3.6 f-string literals f"var={var}".</td>
+        </tr>
+        <tr id='property-lexer.python.strings.over.newline'>
+        <td>lexer.python.strings.over.newline</td>
+        <td>Set to 1 to allow strings to span newline characters.</td>
+        </tr>
+        <tr id='property-lexer.python.strings.u'>
+        <td>lexer.python.strings.u</td>
+        <td>Set to 0 to not recognise Python Unicode literals u"x" as used before Python 3.</td>
+        </tr>
+        <tr id='property-lexer.python.unicode.identifiers'>
+        <td>lexer.python.unicode.identifiers</td>
+        <td>Set to 0 to not recognise Python 3 Unicode identifiers.</td>
+        </tr>
+        <tr id='property-lexer.r.escape.sequence'>
+        <td>lexer.r.escape.sequence</td>
+        <td>Set to 1 to enable highlighting of escape sequences in strings.</td>
+        </tr>
+        <tr id='property-lexer.rust.fold.at.else'>
+        <td>lexer.rust.fold.at.else</td>
+        <td>This option enables Rust folding on a "} else {" line of an if statement.</td>
+        </tr>
+        <tr id='property-lexer.sql.allow.dotted.word'>
+        <td>lexer.sql.allow.dotted.word</td>
+        <td>Set to 1 to colourise recognized words with dots (recommended for Oracle PL/SQL objects).</td>
+        </tr>
+        <tr id='property-lexer.sql.numbersign.comment'>
+        <td>lexer.sql.numbersign.comment</td>
+        <td>If "lexer.sql.numbersign.comment" property is set to 0 a line beginning with '#' will not be a comment.</td>
+        </tr>
+        <tr id='property-lexer.verilog.allupperkeywords'>
+        <td>lexer.verilog.allupperkeywords</td>
+        <td>Set to 1 to style identifiers that are all uppercase as documentation keyword.</td>
+        </tr>
+        <tr id='property-lexer.verilog.fold.preprocessor.else'>
+        <td>lexer.verilog.fold.preprocessor.else</td>
+        <td>This option enables folding on `else and `elsif preprocessor directives.</td>
+        </tr>
+        <tr id='property-lexer.verilog.portstyling'>
+        <td>lexer.verilog.portstyling</td>
+        <td>Set to 1 to style input, output, and inout ports differently from regular keywords.</td>
+        </tr>
+        <tr id='property-lexer.verilog.track.preprocessor'>
+        <td>lexer.verilog.track.preprocessor</td>
+        <td>Set to 1 to interpret `if/`else/`endif to grey out code that is not active.</td>
+        </tr>
+        <tr id='property-lexer.verilog.update.preprocessor'>
+        <td>lexer.verilog.update.preprocessor</td>
+        <td>Set to 1 to update preprocessor definitions when `define, `undef, or `undefineall found.</td>
+        </tr>
+        <tr id='property-lexer.visualprolog.backquoted.strings'>
+        <td>lexer.visualprolog.backquoted.strings</td>
+        <td>Set to 1 to enable using back quotes (``) to delimit strings.</td>
+        </tr>
+        <tr id='property-lexer.visualprolog.verbatim.strings'>
+        <td>lexer.visualprolog.verbatim.strings</td>
+        <td>Set to 0 to disable highlighting verbatim strings using '@'.</td>
+        </tr>
+        <tr id='property-lexer.xml.allow.scripts'>
+        <td>lexer.xml.allow.scripts</td>
+        <td>Set to 0 to disable scripts in XML.</td>
+        </tr>
+        <tr id='property-sql.backslash.escapes'>
+        <td>sql.backslash.escapes</td>
+        <td>Enables backslash as an escape character in SQL.</td>
+        </tr>
+        <tr id='property-styling.within.preprocessor'>
+        <td>styling.within.preprocessor</td>
+        <td>For C++ code, determines whether all preprocessor code is styled in the preprocessor style (0, the default) or only from the initial # to the end of the command word(1).</td>
+        </tr>
+        <tr id='property-tab.timmy.whinge.level'>
+        <td>tab.timmy.whinge.level</td>
+        <td>For Python code, checks whether indenting is consistent. The default, 0 turns off indentation checking, 1 checks whether each line is potentially inconsistent with the previous line, 2 checks whether any space characters occur before a tab character in the indentation, 3 checks whether any spaces are in the indentation, and 4 checks for any tab characters in the indentation. 1 is a good level to use.</td>
+        </tr>
 
 <!----Autogenerated -- end of automatically generated section -->
       <tr id='property-user.shortcuts'>
@@ -2629,7 +2873,7 @@ NameError: name 'mistake' is not defined
         Define keys that perform commands.
         This is a '|' delimited list of keys and the commands they produce.
         The commands are either <a href="CommandValues.html">string or numeric IDs</a>.
-        Numeric IDs above 2000 are Scintilla commands and are sent to the focussed pane.
+        Numeric IDs above 2000 are Scintilla commands and are sent to the focused pane.
         Named IDs and numeric IDs below 2000 are SciTE menu commands.<br/>
         The modifiers are Ctrl, Shift, Alt, <span class="gtkonly">Super</span>, and <span class="osxonly">Control</span>.<br/>
         The named keys are Left, Right, Up, Down, Insert, End, Home, Enter, Space, Tab,
@@ -2648,7 +2892,7 @@ user.shortcuts=\<br/>
 Ctrl+Shift+I|IDM_OPEN|\<br/>
 Ctrl+Shift+Left|IDM_CLOSE|<br/>
         </div>
-	This property is only read at start up.
+        This property is only read at start up.
         <br/>
         </td>
       </tr>
@@ -2765,8 +3009,8 @@ Prev File|IDM_PREVFILE|<br/>
         </td>
         <td>
           Chooses between word wrapping (1, the default) and character wrapping (2).
-	Character wrapping is a better choice for Asian languages with no spaces
-	between words.
+        Character wrapping is a better choice for Asian languages with no spaces
+        between words.
         </td>
       </tr>
       <tr id='property-wrap.visual.flags'>
@@ -2863,6 +3107,17 @@ Prev File|IDM_PREVFILE|<br/>
         memory is plentiful.
         </td>
       </tr>
+      <tr id='property-threads.layout'>
+        <td>
+        threads.layout
+        </td>
+        <td>
+       Specify how many threads to use for layout of wide lines.
+       Improves performance considerably - a 4 core processor will often reduce layout
+       time by a factor of almost 4.
+       Will be clamped to the maximum hardware concurrency available.
+        </td>
+      </tr>
       <tr id='property-open.filter'>
         <td>
           open.filter
@@ -2948,7 +3203,7 @@ Prev File|IDM_PREVFILE|<br/>
       </tr>
       <tr id='property-save.session'>
         <td>
-          <a name='property-save.recent'></a><a name='property-save.position'></a>
+          <a name='property-save.recent'></a><a name='property-save.position'></a><a name='property-save.find'></a>
           save.session<br />
           save.recent<br />
           save.position<br />
@@ -3004,7 +3259,7 @@ Prev File|IDM_PREVFILE|<br/>
         </td>
         <td>
           Set find.close.on.find to 0, 1 or 2 to prevent (0) or allow (1) closing the
-          the find strip automatically when the Find button is pressed.
+          find strip automatically when the Find button is pressed.
           The value 2 causes the strip to close automatically only when the search finds a match
           which enables the user to change options or search string if a mistake was made.
           The default value is 1.
@@ -3032,7 +3287,7 @@ Prev File|IDM_PREVFILE|<br/>
         </td>
         <td>
         If the find.replacewith.focus property is set, the Replace With input box is focused
-	in the Replace dialog if Find What is non-empty.
+        in the Replace dialog if Find What is non-empty.
         </td>
       </tr>
       <tr id='property-find.replace.regexp.posix'>
@@ -3061,7 +3316,7 @@ Prev File|IDM_PREVFILE|<br/>
         <td>
           <a name='property-replace.use.strip'></a>
          find.use.strip<br />
-	 replace.use.strip
+         replace.use.strip
         </td>
         <td>
           Use in-window strips rather than dialogs for performing Find or Replace commands.
@@ -3071,13 +3326,13 @@ Prev File|IDM_PREVFILE|<br/>
         <td>
           <a name='property-replace.strip.incremental'></a>
          find.strip.incremental<br />
-	 replace.strip.incremental
+         replace.strip.incremental
         </td>
         <td>
           Perform incremental search when typing in the find and replace strips.
-	  Set to 1 to enable incremental searching and 2 to enable both incremental searching
-	  and highlighting all matches. Highlighting all matches (2) can be slow on large files so
-	  should only be enabled when performance is reasonable.
+          Set to 1 to enable incremental searching and 2 to enable both incremental searching
+          and highlighting all matches. Highlighting all matches (2) can be slow on large files so
+          should only be enabled when performance is reasonable.
         </td>
       </tr>
       <tr id='property-find.indicator.incremental'>
@@ -3086,10 +3341,57 @@ Prev File|IDM_PREVFILE|<br/>
         </td>
         <td>
           Sets the indicator to use for find.strip.incremental=2 or replace.strip.incremental=2.
-	  This is a
+          This is a
             <a href="#IndicatorProperty">structured property</a> with multiple attributes similar to:
          <div class="example">
               find.indicator.incremental=style:compositionthick,colour:#FFB700,under
+         </div>
+        </td>
+       </tr>
+      <tr id='property-filter.match.indicator'>
+        <td>
+          filter.match.indicator
+        </td>
+        <td>
+          Sets the indicator to used to mark matches for filter views.
+          This is a
+            <a href="#IndicatorProperty">structured property</a> with multiple attributes similar to:
+         <div class="example">
+              filter.match.indicator=style:roundbox,colour:#00FFDF,under
+         </div>
+        </td>
+       </tr>
+      <tr id='property-filter.match.back'>
+        <td>
+          filter.match.back
+        </td>
+        <td>
+          The background colour with alpha to use for matching lines in filter views when context shown.
+          Either a 6-digit RGB or 8-digit RGBA value.
+         <div class="example">
+          filter.match.back=#0000FF20
+         </div>
+        </td>
+       </tr>
+      <tr id='property-filter.context'>
+        <td>
+          filter.context
+        </td>
+        <td>
+          The number of lines of context around each matching line to show in a filter view when in context mode.
+         <div class="example">
+          filter.context=3
+         </div>
+        </td>
+       </tr>
+      <tr id='property-hidden.line.colour'>
+        <td>
+          hidden.line.colour
+        </td>
+        <td>
+          The colour to draw horizontal lines between ranges of visible lines.
+         <div class="example">
+          hidden.line.colour=#00800040
          </div>
         </td>
        </tr>
@@ -3099,8 +3401,8 @@ Prev File|IDM_PREVFILE|<br/>
         </td>
         <td>
           Buttons on GTK often contain extra spacing that makes strips take too much room.
-	  This setting tries to limit the height of buttons.
-	  A value of 23 or 24 may work well.
+          This setting tries to limit the height of buttons.
+          A value of 23 or 24 may work well.
         </td>
       </tr>
       <tr class="osxonly" id='property-strip.shortcuts.enable'>
@@ -3121,7 +3423,7 @@ Prev File|IDM_PREVFILE|<br/>
         </td>
         <td>
           Enables Replace in Buffers command
-	  <span class="windowsonly">and Search only in this style checkbox.
+          <span class="windowsonly">and Search only in this style checkbox.
           If enabled, searches can be restricted to a particular style (e.g. strings).</span>
         </td>
       </tr>
@@ -3131,18 +3433,19 @@ Prev File|IDM_PREVFILE|<br/>
         </td>
         <td>
           Controls the animated golden match indicator on macOS.
-	The default value, 1, shows and animates the find indicator then fades it away so surrounding text can be seen clearly.
-	Use the value 0 to disable the find indicator and the value 2 to keep the find indicator displayed.
-          This setting is not available on OS X 10.6.
+        The default value, 1, shows and animates the find indicator then fades it away so surrounding text can be seen clearly.
+        Use the value 0 to disable the find indicator and the value 2 to keep the find indicator displayed.
+          This setting is not available on macOS 10.6.
         </td>
       </tr>
       <tr id='property-find.command'>
         <td>
+          <a name='property-find.input'></a>
           find.command<br />
-	  find.option.wholeword.0<br />
-	  find.option.wholeword.1<br />
-	  find.option.matchcase.0<br />
-	  find.option.matchcase.1<br />
+          find.option.wholeword.0<br />
+          find.option.wholeword.1<br />
+          find.option.matchcase.0<br />
+          find.option.matchcase.1<br />
           <span class="windowsonly">find.input</span>
         </td>
         <td>
@@ -3168,14 +3471,14 @@ c:\cygwin\bin\xargs -0 fgrep -G -n "$(find.what)"
           To do this, specify find.input to be the search string, $(find.what).
           <br />
           If find.command is empty then SciTE's own search code is used. This only does a
-	simple search without regular expressions and is faster than running an external program.
-	<br />
-	  When defining find.command, to specify the value of the option for the "match case" use
-	  $(find.matchcase), and to specify the value of the option "whole word" use
-	  $(find.wholeword). Additionally, you should define the properties find.option.matchcase.0,
-	  find.option.matchcase.1, find.option.wholeword.0 and find.option.wholeword.1 to
-	  match the expected parameters of the command you use for find.
-	  <br />
+        simple search without regular expressions and is faster than running an external program.
+        <br />
+          When defining find.command, to specify the value of the option for the "match case" use
+          $(find.matchcase), and to specify the value of the option "whole word" use
+          $(find.wholeword). Additionally, you should define the properties find.option.matchcase.0,
+          find.option.matchcase.1, find.option.wholeword.0 and find.option.wholeword.1 to
+          match the expected parameters of the command you use for find.
+          <br />
         <div class="example">
 find.option.wholeword.0=<br />
 find.option.wholeword.1=-w<br />
@@ -3209,9 +3512,9 @@ c:\cygwin\bin\xargs -0 grep $(find.wholeword) $(find.matchcase) -G -n "$(find.wh
           find.in.dot
         </td>
         <td>
-	If find.in.dot is 1 then Find in Files searches in directories that start with '.'.
-	The default behaviour is to prevent SciTE finding matches in the unmodified versions of
-	files kept by Subversion in .svn subdirectories.
+        If find.in.dot is 1 then Find in Files searches in directories that start with '.'.
+        The default behaviour is to prevent SciTE finding matches in the unmodified versions of
+        files kept by Subversion in .svn subdirectories.
         </td>
       </tr>
       <tr id='property-find.in.binary'>
@@ -3219,8 +3522,20 @@ c:\cygwin\bin\xargs -0 grep $(find.wholeword) $(find.matchcase) -G -n "$(find.wh
           find.in.binary
         </td>
         <td>
-	If find.in.binary is 1 then Find in Files displays matches in binary files.
-	For Find in Files, a binary file is a file that contains a NUL byte in the first 64K block read from the file.
+        If find.in.binary is 1 then Find in Files displays matches in binary files.
+        For Find in Files, a binary file is a file that contains a NUL byte in the first 64K block read from the file.
+        </td>
+      </tr>
+      <tr id='property-find.exclude'>
+        <td>
+          find.exclude
+        </td>
+        <td>
+        This is a set of file patterns to <strong>not</strong> search in with Find in Files.
+        Both file names and directory names can appear here.
+        <div class="example">
+find.exclude=*.bak *.pyc debug release<br />
+</div>
         </td>
       </tr>
       <tr id='property-find.in.directory'>
@@ -3228,8 +3543,8 @@ c:\cygwin\bin\xargs -0 grep $(find.wholeword) $(find.matchcase) -G -n "$(find.wh
           find.in.directory
         </td>
         <td>
-	If set then Find in Files directory will be prefilled by this value.
-	If not set then Find in Files directory will be prefilled by directory of current file.
+        If set then Find in Files directory will be prefilled by this value.
+        If not set then Find in Files directory will be prefilled by directory of current file.
         </td>
       </tr>
       <tr id='property-find.in.files.close.on.find'>
@@ -3250,24 +3565,24 @@ c:\cygwin\bin\xargs -0 grep $(find.wholeword) $(find.matchcase) -G -n "$(find.wh
           To support a DBCS language such as Japanese, a code page can be set here. This ensures
           that double byte characters are always treated as a unit so the caret is never located
           between the two bytes of a double byte character.<br/><br/>
-  	  <table>
-	  <thead><tr><th>Code page</th><th>Value</th></tr></thead>
-	  <tr><td>Default (single byte character set)</td><td align="right">0</td></tr>
-	  <tr><td>UTF-8</td><td align="right">65001</td></tr>
-	  <tr><td>Japanese Shift-JIS</td><td align="right">932</td></tr>
-	  <tr><td>Simplified Chinese GBK</td><td align="right">936</td></tr>
-	  <tr><td>Korean Wansung</td><td align="right">949</td></tr>
-	  <tr><td>Traditional Chinese Big5</td><td align="right">950</td></tr>
-	  <tr><td>Korean Johab</td><td align="right">1361</td></tr>
-  	  </table>
+          <table>
+          <thead><tr><th>Code page</th><th>Value</th></tr></thead>
+          <tr><td>Default (single byte character set)</td><td align="right">0</td></tr>
+          <tr><td>UTF-8</td><td align="right">65001</td></tr>
+          <tr><td>Japanese Shift-JIS</td><td align="right">932</td></tr>
+          <tr><td>Simplified Chinese GBK</td><td align="right">936</td></tr>
+          <tr><td>Korean Wansung</td><td align="right">949</td></tr>
+          <tr><td>Traditional Chinese Big5</td><td align="right">950</td></tr>
+          <tr><td>Korean Johab</td><td align="right">1361</td></tr>
+          </table>
         Setting code.page to 65001 starts Unicode mode and the document is treated as
         a sequence of characters expressed as UTF-8. Display is performed by converting to the
         platform's normal Unicode encoding first so characters from any language will be displayed.
         Correct glyphs may only be displayed if fonts are chosen that contain the appropriate glyphs.
         The Tahoma font contains a wide range of glyphs so may be a good choice. <br/>
         This property can <em>not</em> set a single byte character set.<br />
-	If output.code.page is set then it is used for the output pane which otherwise
-	matches the edit pane.
+        If output.code.page is set then it is used for the output pane which otherwise
+        matches the edit pane.
         </td>
       </tr>
       <tr id='property-character.set'>
@@ -3276,27 +3591,27 @@ c:\cygwin\bin\xargs -0 grep $(find.wholeword) $(find.matchcase) -G -n "$(find.wh
         </td>
         <td>
           This setting allows changing the character set that is asked for when setting up fonts.
-	Not all of the values will work on all platforms.<br/><br/>
-	  <table>
-	  <thead><tr><th>Character set</th><th>Value</th></tr></thead>
-	  <tr><td>Default</td><td align="right">0</td></tr>
-	  <tr><td>Japanese</td><td align="right">128</td></tr>
-	  <tr><td>Chinese GB2312</td><td align="right">134</td></tr>
-	  <tr><td>Chinese BIG5</td><td align="right">136</td></tr>
-	  <tr><td>Korean</td><td align="right">129</td></tr>
-	  <tr><td>Greek</td><td align="right">161</td></tr>
-	  <tr><td>Eastern European</td><td align="right">238</td></tr>
-	  <tr class="windowsonly"><td>Baltic</td><td align="right">186</td></tr>
-	  <tr class="windowsonly"><td>Turkish</td><td align="right">162</td></tr>
-	  <tr><td>Hebrew</td><td align="right">177</td></tr>
-	  <tr><td>Arabic</td><td align="right">178</td></tr>
-	  <tr class="windowsonly"><td>Thai</td><td align="right">222</td></tr>
-	  <tr class="windowsonly"><td>Vietnamese</td><td align="right">163</td></tr>
-	  <tr class="gtkonly"><td>Cyrillic (CP866 on GTK)</td><td align="right">866</td></tr>
-	  <tr><td>Cyrillic (CP1251 on Windows, KOI8-R on GTK)</td><td align="right">204</td></tr>
-	  <tr class="gtkonly"><td>Cyrillic (CP1251 on GTK)</td><td align="right">1251</td></tr>
-	  <tr class="gtkonly"><td>European with Euro (ISO 8859-15)</td><td align="right">1000</td></tr>
-	  </table>
+        Not all of the values will work on all platforms.<br/><br/>
+          <table>
+          <thead><tr><th>Character set</th><th>Value</th></tr></thead>
+          <tr><td>Default</td><td align="right">0</td></tr>
+          <tr><td>Japanese</td><td align="right">128</td></tr>
+          <tr><td>Chinese GB2312</td><td align="right">134</td></tr>
+          <tr><td>Chinese BIG5</td><td align="right">136</td></tr>
+          <tr><td>Korean</td><td align="right">129</td></tr>
+          <tr><td>Greek</td><td align="right">161</td></tr>
+          <tr><td>Eastern European</td><td align="right">238</td></tr>
+          <tr class="windowsonly"><td>Baltic</td><td align="right">186</td></tr>
+          <tr class="windowsonly"><td>Turkish</td><td align="right">162</td></tr>
+          <tr><td>Hebrew</td><td align="right">177</td></tr>
+          <tr><td>Arabic</td><td align="right">178</td></tr>
+          <tr class="windowsonly"><td>Thai</td><td align="right">222</td></tr>
+          <tr class="windowsonly"><td>Vietnamese</td><td align="right">163</td></tr>
+          <tr class="gtkonly"><td>Cyrillic (CP866 on GTK)</td><td align="right">866</td></tr>
+          <tr><td>Cyrillic (CP1251 on Windows, KOI8-R on GTK)</td><td align="right">204</td></tr>
+          <tr class="gtkonly"><td>Cyrillic (CP1251 on GTK)</td><td align="right">1251</td></tr>
+          <tr class="gtkonly"><td>European with Euro (ISO 8859-15)</td><td align="right">1000</td></tr>
+          </table>
         All of these values except for 1251 and 1000 should work on macOS or Windows.
         On GTK Baltic, Turkish, Thai and Vietnamese will probably not work.
         </td>
@@ -3324,6 +3639,16 @@ c:\cygwin\bin\xargs -0 grep $(find.wholeword) $(find.matchcase) -G -n "$(find.wh
           It defaults to 0, so disabled.
         </td>
       </tr>
+      <tr class="windows-osx" id='property-bidirectional'>
+        <td>
+          bidirectional
+        </td>
+        <td>
+          Experimental and incomplete display for bidirectional languages like Arabic and Hebrew on macOS
+          and Windows.
+          Set to 1 to turn on bidirectional display.
+        </td>
+      </tr>
       <tr class="gtkonly" id='property-accessibility'>
         <td>
           accessibility
@@ -3344,23 +3669,26 @@ c:\cygwin\bin\xargs -0 grep $(find.wholeword) $(find.matchcase) -G -n "$(find.wh
         </td>
         <td>
           These settings control which files are imported by import statements.<br/>
-	The imports.include property defines the names of the properties
-	files that may be imported. Say you are only interested in using
-	fortran and lisp, then in user properties, you could set<br />
-	<div class="example">
+        The imports.include property defines the names of the properties
+        files that may be imported. Say you are only interested in using
+        fortran and lisp, then in user properties, you could set<br />
+        <div class="example">
 imports.include=fortran lisp
-	</div>
-	The imports.exclude property is examined only if imports.include is empty or missing.
-	This property stops the named files from being imported.<br />
+        </div>
+        The imports.exclude property is examined only if imports.include is empty or missing.
+        This property stops the named files from being imported.<br />
           The properties files shipped with SciTE, and which can be included or excluded with these properties, are:<br />
-          abaqus ada asl asm asn1 au3 ave avs baan blitzbasic
-          bullant caml cmake cobol coffeescript conf cpp csound css d ecl
-          eiffel erlang escript flagship forth fortran freebasic gap haskell
-          hex html inno kix latex lisp lot lout lua matlab maxima metapost
-          mmixal modula3 nimrod nncrontab nsis opal oscript others
-          pascal perl pov powerpro powershell ps purebasic python r rebol
-          registry ruby rust scriptol smalltalk sorcins specman spice sql
-          tacl tal tcl tex txt2tags vb verilog vhdl yaml.
+          abaqus ada asciidoc asl asm asn1 au3 ave avs baan
+          blitzbasic bullant caml cil cmake cobol coffeescript
+          conf cpp csound css d dataflex ecl eiffel erlang
+          escript flagship forth fortran freebasic fsharp gap
+          haskell hex html inno json kix latex lisp lot lout
+          lua markdown matlab maxima metapost mmixal modula3
+          nim nimrod nncrontab nsis opal oscript others pascal
+          perl pov powerpro powershell ps purebasic python r
+          raku rebol registry ruby rust sas scriptol smalltalk
+          sorcins specman spice sql tacl tal tcl tex txt2tags
+          vb verilog vhdl visualprolog yaml.
         </td>
       </tr>
       <tr id='property-command.discover.properties'>
@@ -3373,7 +3701,7 @@ imports.include=fortran lisp
         The program should print a list of property=value lines for each property it wants to set.
         This is the same format as properties files.<br />
         <div class="example">
-	      command.discover.properties=python /home/user/FileDetect.py "$(FilePath)"
+              command.discover.properties=python /home/user/FileDetect.py "$(FilePath)"
          </div>
         A simple Python script that recognises a particular tag that indicates the file is in the Korean code page 949:<br />
         <div class="example">
@@ -3458,29 +3786,29 @@ imports.include=fortran lisp
         </td>
         <td>
           On Unix, command files often have no extension and instead specify the interpreter
-		    to use for the file in an initial line that starts with "#!". When the lexer can not be
-			 otherwise determined and the file starts with "#!", the initial line is split up into words and
-			 each word is prepended with "shbang.". If a property with this name exists then it is
-			 treated as the extension of the file. For example, <span class="example">shbang.python=py</span> will be
-			 triggered by an initial line <span class="example">#!/usr/bin/env python</span> so the file will be treated as Python.
+                    to use for the file in an initial line that starts with "#!". When the lexer can not be
+                         otherwise determined and the file starts with "#!", the initial line is split up into words and
+                         each word is prepended with "shbang.". If a property with this name exists then it is
+                         treated as the extension of the file. For example, <span class="example">shbang.python=py</span> will be
+                         triggered by an initial line <span class="example">#!/usr/bin/env python</span> so the file will be treated as Python.
         </td>
       </tr>
-      <tr id='property-lexillapath'>
-      	<td>
-      	lexilla.path
-      	</td>
-      	<td>
+      <tr id='property-lexilla.path'>
+        <td>
+        lexilla.path
+        </td>
+        <td>
           Specifies a ';' separated list of dynamic lexer libraries.
           Each entry is a path to a dynamic library that implements the Lexilla protocol.
           If there is no extension then the platform standard extension '.so', '.dll', or '.dylib' is appended.
           The special entry '.' which is the default refers to the 'Lexilla' dynamic library distributed with SciTE.
-      	</td>
+        </td>
       </tr>
       <tr id='property-lexillacontext'>
-      	<td>
-      	lexilla.context.<i>contextspecific</i>
-      	</td>
-      	<td>
+        <td>
+        lexilla.context.<i>contextspecific</i>
+        </td>
+        <td>
           Lexer libraries may require initialisation parameters and these can be specified by prefixing the
           library-specific names with 'lexilla.context.'.
           For example, a lexer library that needs to read in XML files containing lexer definitions may require a
@@ -3488,15 +3816,7 @@ imports.include=fortran lisp
           <div class="example">
                 lexilla.context.xmllexer.directory=/home/example/xmllexer/definitions
           </div>
-      	</td>
-      </tr>
-      <tr id='property-lexerpath'>
-      	<td>
-      	lexerpath.<i>filepattern</i>
-      	</td>
-      	<td>
-      	Specifies the path to an external lexer module that will be loaded into Scintilla.
-      	</td>
+        </td>
       </tr>
       <tr id='property-keywords'>
         <td>
@@ -3550,9 +3870,9 @@ imports.include=fortran lisp
         </td>
         <td>
           Defines which characters are considered whitespace. The default value is that initially set up
-		  by Scintilla, which is space and all chars less than 0x20.  Setting this property allows you to
-		  force Scintilla to consider other characters as whitespace (e.g. punctuation) during such activities
-		  as cursor navigation (ctrl+left/right).
+                  by Scintilla, which is space and all chars less than 0x20.  Setting this property allows you to
+                  force Scintilla to consider other characters as whitespace (e.g. punctuation) during such activities
+                  as cursor navigation (ctrl+left/right).
         </td>
       </tr>
       <tr id='property-style.*'>
@@ -3564,17 +3884,94 @@ imports.include=fortran lisp
           The lexers determine a style number for each lexical type, such as keyword, comment or
           number. These settings determine the visual style to be used for each style number of
           each lexer.<br />
-           The value of each setting is a set of ',' separated fields, some of which have a
-          subvalue after a ':'. The fields are: <div class="example">font, size, fore, back, italics, notitalics, bold,
+           The value of each setting is a set of ',' separated attributes, some of which have a
+          subvalue after a ':'. The attributes are: <div class="example">font, size, fore, back, italics, notitalics, bold,
           notbold, weight, eolfilled, noteolfilled, underlined, notunderlined, case,
-          visible, notvisible, changeable, and notchangeable</div>
-        The font field has a subvalue which is the name of
-          the font, the fore and back have colour subvalues,
-          the size field has a (fractional) numeric size subvalue,
-          the weight field has a numeric size subvalue (1.. 999: 100=light, 400=normal, 700=bold),
-          the case field has a subvalue of 'm', 'u', 'l', or 'c' for miXed, UPPER, lower, or Camel case,
-          and the bold, italics and eolfilled fields have no subvalue. The value
-          "fore:#FF0000,font:Courier,size:14" represents 14 point, red Courier text.<br />
+          visible, notvisible, invisiblerepresentation, changeable, and notchangeable</div>
+         <table cellpadding="1" cellspacing="0" border="1" summary="Style fields">
+          <tr>
+           <th>attribute</th>
+           <th>subvalue</th>
+          </tr>
+          <tr>
+           <td>font</td>
+           <td>name of the font</td>
+          </tr>
+          <tr>
+           <td>size</td>
+           <td>numeric size, possibly fractional</td>
+          </tr>
+          <tr>
+           <td>fore</td>
+           <td>a hex colour value preceded by '#' such as #008020</td>
+          </tr>
+          <tr>
+           <td>back</td>
+           <td>a hex colour value preceded by '#' such as #008020</td>
+          </tr>
+          <tr>
+           <td>italics</td>
+           <td></td>
+          </tr>
+          <tr>
+           <td>notitalics</td>
+           <td></td>
+          </tr>
+          <tr>
+           <td>bold</td>
+           <td></td>
+          </tr>
+          <tr>
+           <td>notbold</td>
+           <td></td>
+          </tr>
+          <tr>
+           <td>weight</td>
+           <td>numeric 1.. 999: 100=light, 400=normal, 700=bold</td>
+          </tr>
+          <tr>
+           <td>eolfilled</td>
+           <td></td>
+          </tr>
+          <tr>
+           <td>noteolfilled</td>
+           <td></td>
+          </tr>
+          <tr>
+           <td>underlined</td>
+           <td></td>
+          </tr>
+          <tr>
+           <td>notunderlined</td>
+           <td></td>
+          </tr>
+          <tr>
+           <td>case</td>
+           <td>'m', 'u', 'l', or 'c' for miXed, UPPER, lower, or Camel case</td>
+          </tr>
+          <tr>
+           <td>visible</td>
+           <td></td>
+          </tr>
+          <tr>
+           <td>notvisible</td>
+           <td></td>
+          </tr>
+          <tr>
+           <td>invisiblerepresentation</td>
+           <td>character as UTF-8 text to represent this style when invisible</td>
+          </tr>
+          <tr>
+           <td>changeable</td>
+           <td></td>
+          </tr>
+          <tr>
+           <td>notchangeable</td>
+           <td></td>
+          </tr>
+         </table>
+          The value
+          "fore:#FF0000,font:Courier,bold,size:14" represents 14 point, bold red Courier text.<br />
            A global style can be set up using style.*.<i>stylenumber</i>. Any style options set in
           the global style will be inherited by each lexer style unless overridden.
         </td>
@@ -3657,13 +4054,24 @@ imports.include=fortran lisp
         This setting allows choosing different ways of drawing text on Windows and macOS.
         The appearance will depend on platform settings and, on Windows, the technology setting.
         This setting does not currently have any effect on GTK.
-	  <table>
-	  <thead><tr><th>Value</th><th>Meaning</th></tr></thead>
-	  <tr><td>0</td><td>Default</td></tr>
-	  <tr><td>1</td><td>Non-antialiased</td></tr>
-	  <tr><td>2</td><td>Antialiased</td></tr>
-	  <tr><td>3</td><td>LCD Optimized</td></tr>
-	  </table>
+          <table>
+          <thead><tr><th>Value</th><th>Meaning</th></tr></thead>
+          <tr><td>0</td><td>Default</td></tr>
+          <tr><td>1</td><td>Non-antialiased</td></tr>
+          <tr><td>2</td><td>Antialiased</td></tr>
+          <tr><td>3</td><td>LCD Optimized</td></tr>
+          </table>
+        </td>
+      </tr>
+      <tr class="windowsonly" id='property-font.locale'>
+        <td>
+          font.locale
+        </td>
+        <td>
+        This setting allows choosing character shapes that match languages by specifying a language locale.
+        Some values are "ja" for Japanese, "ko" for Korean, "zh-Hans" for Simplified Chinese and "zh-Hant" for Traditional Chinese.
+        The default setting is "en-us" for US English.
+        The setting only works on Windows with DirectWrite (technology=1).
         </td>
       </tr>
        <tr id='property-braces.check'>
@@ -3699,9 +4107,23 @@ imports.include=fortran lisp
         command is performed.
         </td>
       </tr>
+      <tr id='property-font.monospaced.list'>
+        <td>
+        font.monospaced.list
+        </td>
+        <td>
+        A ';'-separated list of font names which are monospace over the ASCII graphics characters
+        which includes 'a'-'z', 'A'-'Z', '0'-'9', ' ', and common punctuation.
+        The value may be '*' in which case each font is checked for being monospaced.
+        Fonts in this list may be optimized for speed and memory use if they are actually monospaced.
+          <div class="example">
+                font.monospaced.list=Noto Mono;Menlo;Lucida Console
+          </div>
+        </td>
+      </tr>
       <tr id='property-command.compile'>
         <td>
-          <a name='property-command.compile.subsystem'></a><a name='property-command.build'></a><a name='property-command.build.subsystem'></a><a name='property-command.build.directory'></a><a name='property-command.go'></a><a name='property-command.go.subsystem'></a>
+          <a name='property-command.compile.subsystem'></a><a name='property-command.build'></a><a name='property-command.build.subsystem'></a><a name='property-command.build.directory'></a><a name='property-command.go'></a><a name='property-command.go.subsystem'></a><a name='property-command.clean'></a>
           command.compile.<i>filepattern</i><br />
           command.compile.subsystem.<i>filepattern</i><br />
           command.build.<i>filepattern</i><br />
@@ -3770,7 +4192,7 @@ imports.include=fortran lisp
         would pipe the current selection to the command processes.
         The command.input property is only supported for subsystem 0
         (command line programs).<br />
-	<br />
+        <br />
 
         The optional command.replace.selection can be used to specify that the
         command output should replace the current selection (or be inserted at the cursor
@@ -3787,7 +4209,7 @@ imports.include=fortran lisp
         A final command property is command.quiet.
         A value of 1 indicates that the command I/O should not be echoed to the output pane.
         This may be useful in combination with command.input and command.replace.selection.<br />
-	<br />
+        <br />
 
         The command.mode property is a comma-separated list of flags / settings.  Each mode
         setting can have an argument, separated from the setting name by a colon.  For
@@ -3817,19 +4239,19 @@ groupundo - yes or no
         there is no default keyboard shortcut.  The notation used to specify keyboard
         shortcuts is the same as for the user.shortcuts property, described elsewhere
         in this document.<br />
-	<br />
+        <br />
 
         If the text of a command starts with '*' then the Parameters dialog is displayed to
         prompt for parameters before executing the command. The initial '*' is not included
         in the command that is executed.<br />
-	<br />
+        <br />
 
         The command number can be in the range of 0 to 49. Command numbers 0 to 9 are
         assigned Ctrl+Number shortcuts. Internally these commands use IDs starting from
         1100 (IDM_TOOLS) which can be used in user.shortcuts and user.context.menu as:
          <div class="example">user.context.menu=Indent|1100|</div>
-	 If command.name is empty then no item is added to the Tools menu. This can be used
-	 for commands that are only in the context menu or user shortcuts.
+         If command.name is empty then no item is added to the Tools menu. This can be used
+         for commands that are only in the context menu or user shortcuts.
         </td>
       </tr>
       <tr id='property-command.help'>
@@ -4033,8 +4455,8 @@ groupundo - yes or no
         </td>
       </tr>
       <tr id='property-fold'>
-	<td>fold</td>
-	<td>Folding is turned on by setting fold=1.</td>
+        <td>fold</td>
+        <td>Folding is turned on by setting fold=1.</td>
       </tr>
       <tr id='property-fold.symbols'>
         <td>
@@ -4050,12 +4472,22 @@ groupundo - yes or no
       </tr>
       <tr id='property-fold.fore'>
         <td>
-          <a name="property-fold.back"></a>
+          <a name='property-fold.back'></a>
           fold.fore<br />
           fold.back
         </td>
         <td>
         Sets the colours used for folds. fold.fore sets the outline colour, fold.back sets the fill.
+        An 8-digit value sets the translucency as well: #FF00007F is half-transparent red.
+        </td>
+      </tr>
+      <tr id='property-fold.stroke.width'>
+        <td>
+          fold.stroke.width
+        </td>
+        <td>
+          Sets the stroke width of the fold symbols in hundredths of a pixel.
+          The default value, 100 is good for standard displays but 200 may be better for high DPI displays,
         </td>
       </tr>
       <tr id='property-fold.margin.width'>
@@ -4102,6 +4534,15 @@ groupundo - yes or no
         Set to 64 to help debug folding by showing hexadecimal fold levels in margin.
         </td>
       </tr>
+      <tr id='property-fold.line.colour'>
+        <td>
+          fold.line.colour
+        </td>
+        <td>
+                Set the colour for lines specified with fold.flags.
+                6 digit colours (#FF3020) and 8 digit colour+alpha (#FF302040) are supported.
+        </td>
+      </tr>
       <tr id='property-fold.compact'>
         <td>
           fold.compact<br />
@@ -4117,8 +4558,8 @@ groupundo - yes or no
         </td>
         <td>
         Set to 1 to enable highlight for current folding block (smallest one that contains the caret).
-	By default, it's disable. Note : The highlight is enabled only when fold.symbols equals
-	to 2 (round headers) or 3 (square headers).
+        By default, it's disable. Note: The highlight is enabled only when fold.symbols equals
+        to 2 (round headers) or 3 (square headers).
         </td>
       </tr>
       <tr id='property-fold.highlight.colour'>
@@ -4127,6 +4568,7 @@ groupundo - yes or no
         </td>
         <td>
         Define the colour of highlight. The colour by default is red (#FF0000).
+        An 8-digit value sets the translucency as well.
         </td>
       </tr>
       <tr id='property-title.full.path'>
@@ -4174,7 +4616,7 @@ groupundo - yes or no
         If indent.auto is set then indent.size and use.tabs are set according to the contents
         of the opened document.<br />
         The properties file settings apply to newly opened files but remain constant once the file is open
-	unless changed using the Change Indentation Settings dialog.<br />
+        unless changed using the Change Indentation Settings dialog.<br />
         If tab.indents is set then pressing tab within indentation whitespace indents by indent.size
         rather than inserting a tab character. If backspace.unindents then pressing backspace
         within indentation whitespace unindents by indent.size rather than deleting the character
@@ -4248,8 +4690,8 @@ groupundo - yes or no
         </td>
         <td>
           For Python, automatically indent by one level if the previous line ended in a ':'
-	ignoring comments and whitespace. Otherwise use the same indentation as the previous line.
-	This property overrides other indentation settings.
+        ignoring comments and whitespace. Otherwise use the same indentation as the previous line.
+        This property overrides other indentation settings.
          </td>
       </tr>
       <tr id='property-os.x.home.end.keys'>
@@ -4257,9 +4699,9 @@ groupundo - yes or no
           os.x.home.end.keys
         </td>
         <td>
-	Chooses the standard macOS behaviour for the Home and End keys which is
-	to scroll the file to the start or end. This setting takes precedence over
-	vc.home.key.
+        Chooses the standard macOS behaviour for the Home and End keys which is
+        to scroll the file to the start or end. This setting takes precedence over
+        vc.home.key.
         </td>
       </tr>
       <tr id='property-vc.home.key'>
@@ -4331,13 +4773,13 @@ groupundo - yes or no
         </td>
         <td>
           Set the name of the localisation file. For a multi-user installation
-	this allows each user to set a preferred user interface language.<br />
-	On macOS, localisation files for some languages are installed in the translations
-	subdirectory of the user home directory which allows setting
-	the user interface to, for example, German with
-		<div class="example">
-		locale.properties=$(SciteUserHome)/translations/locale.de.properties
-		</div>
+        this allows each user to set a preferred user interface language.<br />
+        On macOS, localisation files for some languages are installed in the translations
+        subdirectory of the user home directory which allows setting
+        the user interface to, for example, German with
+                <div class="example">
+                locale.properties=$(SciteUserHome)/translations/locale.de.properties
+                </div>
         </td>
       </tr>
       <tr id='property-translation.missing'>
@@ -4357,14 +4799,14 @@ groupundo - yes or no
         </td>
         <td>
                 Defines the entries in the Language menu and the file extensions they map to.
-		Each menu item is defined by 3 elements, language name, extension and an optional
-		keyboard equivalent. Each element is terminated by '|'. For example:<br />
-		<span class="example">H&amp;ypertext|html|F12|</span><br />
-		Menu items may be commented out by prefixing the name with '#'.
+                Each menu item is defined by 3 elements, language name, extension and an optional
+                keyboard equivalent. Each element is terminated by '|'. For example:<br />
+                <span class="example">H&amp;ypertext|html|F12|</span><br />
+                Menu items may be commented out by prefixing the name with '#'.
                 The default value for this setting is built up by combining all
                 <a href="#property-star-language">*language</a> settings.<br />
-		This value is read only once when starting SciTE, so, after changing it,
-		restart SciTE to see the effect.
+                This value is read only once when starting SciTE, so, after changing it,
+                restart SciTE to see the effect.
         </td>
       </tr>
       <tr id='property-star-language'>
@@ -4386,21 +4828,21 @@ groupundo - yes or no
         </td>
         <td>
                 The menukey.* settings allow the user to redefine accelerator keys for menus
-		without having to resort to modifying the SciTE source code.  The syntax for the setting is:
-		<div class="example">
-		menukey.menu_title.menu_name=&lt;modifier&gt;key
-		</div>
-		For example, the File | Exit command accelerator could be specified as follows:
-		<div class="example">
-		menukey.file.exit=&lt;control&gt;Q
-		</div>
-		Note that spaces in menu titles and names must be converted to underscores,
-		and trailing ellipses removed.  For example, "File | Save As...." is referenced as "menukey.file.save_as".
-		<br /><br />
-		Multiple modifiers may be specified, though each must be surrounded by angle brackets.  The
-		recognised modifiers are the same as for the user.shortcuts setting described above.  The recognised named
-		keys are also the same as for user.shortcuts, with the addition of "none" to indicate that no accelerator
-		key should be defined for a particular menu.
+                without having to resort to modifying the SciTE source code.  The syntax for the setting is:
+                <div class="example">
+                menukey.menu_title.menu_name=&lt;modifier&gt;key
+                </div>
+                For example, the File | Exit command accelerator could be specified as follows:
+                <div class="example">
+                menukey.file.exit=&lt;control&gt;Q
+                </div>
+                Note that spaces in menu titles and names must be converted to underscores,
+                and trailing ellipses removed.  For example, "File | Save As...." is referenced as "menukey.file.save_as".
+                <br /><br />
+                Multiple modifiers may be specified, though each must be surrounded by angle brackets.  The
+                recognised modifiers are the same as for the user.shortcuts setting described above.  The recognised named
+                keys are also the same as for user.shortcuts, with the addition of "none" to indicate that no accelerator
+                key should be defined for a particular menu.
         </td>
       </tr>
       <tr class="windowsonly" id='property-source.default.extensions'>
@@ -4480,6 +4922,7 @@ groupundo - yes or no
         <td>
           On Windows, to prevent a console window appearing momentarily whenever the Lua
           os.execute or io.popen functions are called to execute programs, set create.hidden.console to 1.
+          This property is only read at startup so changing behaviour requires restarting SciTE.
         </td>
       </tr>
       <tr id='property-caret.sticky'>
@@ -4488,22 +4931,22 @@ groupundo - yes or no
         </td>
         <td>
           Controls when the last position of the caret on the line is modified.
-		  When set to 1, the position is not modified when you type a character, a tab,
-		  paste the clipboard content or press backspace. The default is 0 which turns
-		  off this feature.
+                  When set to 1, the position is not modified when you type a character, a tab,
+                  paste the clipboard content or press backspace. The default is 0 which turns
+                  off this feature.
         </td>
       </tr>
-	  <tr id='property-properties.directory.enable'>
+          <tr id='property-properties.directory.enable'>
         <td>
           properties.directory.enable
         </td>
         <td>
           Enables or disables the evaluation of the directory properties file.
           The default is 0 which disables the evaluation. Any other value enables
-		   this properties file.
+                   this properties file.
         </td>
       </tr>
-	  <tr id='property-editor.config.enable'>
+          <tr id='property-editor.config.enable'>
         <td>
           editor.config.enable
         </td>
@@ -4513,7 +4956,7 @@ groupundo - yes or no
           The default is 0 which disables the evaluation with any other value enabling it.
         </td>
       </tr>
-	  <tr id='property-save.path.suggestion'>
+          <tr id='property-save.path.suggestion'>
         <td>
           save.path.suggestion
         </td>
@@ -4650,7 +5093,7 @@ groupundo - yes or no
      </tr>
     </table>
     <h3 id="IndicatorProperty">
-       Indicator definition
+       Indicator and marker definitions
     </h3>
     <p>Properties that define indicators look like</p>
     <div class="example">
@@ -4666,7 +5109,7 @@ groupundo - yes or no
       <td>style</td>
       <td>one of plain, squiggle, tt, diagonal, strike, hidden, box, roundbox, straightbox, fullbox, dash,
       dots, squigglelow, dotbox, squigglepixmap, compositionthick, compositionthin,
-      textfore, gradient, gradientcentre, point, or pointcharacter.<br />
+      textfore, gradient, gradientcentre, point, pointcharacter, or pointtop.<br />
       </td>
       <td>plain</td>
      </tr>
@@ -4696,9 +5139,39 @@ groupundo - yes or no
       <td>yes</td>
      </tr>
     </table>
-    </p>
     <p>Samples:<br />
     <img src="SciTEIndicators.png" alt="Indicator samples" /></p>
+    <p>Properties that define markers look like</p>
+    <div class="example">
+       marker.saved=style:leftrect,fore:#00A000,back:#A0A000</div>
+    <table cellpadding="1" cellspacing="0" border="1" summary="Caret policy">
+     <tr>
+      <th>attribute</th>
+      <th>value</th>
+      <th>default</th>
+     </tr>
+     <tr>
+      <td>style</td>
+      <td>one of circle, roundrect, arrow, smallrect, shortarrow, empty, arrowdown,
+      minus, plus, vline, lcorner, tcorner, boxplus, boxplusconnected,
+      boxminus, boxminusconnected, lcornercurve, tcornercurve,
+      circleplus, circleplusconnected, circleminus, circleminusconnected,
+      background, dotdotdot, arrows, fullrect, leftrect,
+      underline, bookmark, verticalbookmark, or bar.<br />
+      </td>
+      <td>circle</td>
+     </tr>
+     <tr>
+      <td>colour or color or fore</td>
+      <td>a hex colour alpha value preceded by '#' such as #00802040 or #008020.</td>
+      <td>black</td>
+     </tr>
+     <tr>
+      <td>back</td>
+      <td>a hex colour alpha value preceded by '#' such as #00802040 or #008020.</td>
+      <td>white</td>
+     </tr>
+    </table>
     <h3 id="NewLanguage">
        Supporting a new language
     </h3>
@@ -4710,12 +5183,10 @@ groupundo - yes or no
     </p>
     <p>
        For languages that can not be lexed with the existing lexers, a new lexer can be coded in
-      C++.&nbsp; These can either be built into Scintilla, or put into an
-		external module and loaded when SciTE runs (See lexerpath).</p>
-       <a href="SciTELexer.html">Installing a lexer into SciTE</a>
-    <br />
-		<a href="SciTEExternalLexer.html">Creating and installing an external
-		lexer</a><br />
+       C++.&nbsp; These can either be built into Lexilla, or put into an
+       external module and loaded when SciTE runs.
+       See Lexilla and the <a href="#property-lexillapath">lexilla.path</a> property.
+    </p>
     <p>
        The open.filter should be modified to include the file extensions used for the new language
       and entries added for command.compile, command.build, command.go and command.go.needs for the

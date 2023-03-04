@@ -33,17 +33,19 @@
 // Copyright 1998-2001 by Neil Hodgson <neilh@scintilla.org>
 // The License.txt file describes the conditions under which this software may be distributed.
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <time.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <ctime>
+#include <cerrno>
 
+#include <tuple>
 #include <string>
 #include <string_view>
 #include <vector>
 #include <map>
 #include <set>
+#include <optional>
 #include <memory>
 #include <chrono>
 #include <atomic>
@@ -77,6 +79,7 @@
 #include "Cookie.h"
 #include "Worker.h"
 #include "MatchMarker.h"
+#include "Searcher.h"
 #include "SciTEBase.h"
 #include "DirectorExtension.h"
 
@@ -127,7 +130,7 @@ static void AddSendPipe(int fd, const char *name) {
 	}
 }
 
-static void RemoveSendPipes() {
+static void RemoveSendPipes() noexcept {
 	for (int i = 0; i < s_send_cnt; ++i) {
 		PipeEntry &entry = s_send_pipes[i];
 		close(entry.fd);
@@ -246,7 +249,7 @@ bool DirectorExtension::Initialise(ExtensionAPI *host_) {
 	return true;
 }
 
-bool DirectorExtension::Finalise() {
+bool DirectorExtension::Finalise() noexcept {
 	::SendDirector("closing");
 	// close and remove all the notification pipes (except ipc.director.name)
 	RemoveSendPipes();

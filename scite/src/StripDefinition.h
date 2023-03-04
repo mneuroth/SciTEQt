@@ -48,14 +48,12 @@ public:
 		columns = 0;
 		controls.push_back(std::vector<UserControl>());
 		const GUI::gui_char *pdef=definition.c_str();
-		int line = 0;
 		unsigned int column = 0;
 		int item = 0;
 		while (*pdef) {
 			if (*pdef == '\n') {
 				controls.push_back(std::vector<UserControl>());
 				column = 0;
-				line++;
 				pdef++;
 				continue;
 			}
@@ -141,7 +139,7 @@ public:
 		}
 	}
 
-	UserControl *FindControl(int control) {
+	UserControl *FindControl(int control) noexcept {
 		int controlID=0;
 		for (std::vector<std::vector<UserControl> >::iterator line=controls.begin(); line != controls.end(); ++line) {
 			for (std::vector<UserControl>::iterator ctl=line->begin(); ctl != line->end(); ++ctl) {
@@ -155,6 +153,6 @@ public:
 	}
 };
 
-enum StripCommand { scUnknown, scClicked, scChange, scFocusIn, scFocusOut };
+enum class StripCommand { unknown, clicked, change, focusIn, focusOut };
 
 #endif

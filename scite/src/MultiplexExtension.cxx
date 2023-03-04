@@ -54,7 +54,7 @@ bool MultiplexExtension::Initialise(ExtensionAPI *host_) {
 	return false;
 }
 
-bool MultiplexExtension::Finalise() {
+bool MultiplexExtension::Finalise() noexcept {
 	if (host) {
 		for (int i = static_cast<int>(extensions.size()) - 1; i >= 0; --i)
 			extensions[i]->Finalise();
@@ -169,7 +169,7 @@ bool MultiplexExtension::OnSavePointLeft() {
 	return false;
 }
 
-bool MultiplexExtension::OnStyle(Scintilla::API::Position p, Scintilla::API::Position q, int r, StyleWriter *s) {
+bool MultiplexExtension::OnStyle(Scintilla::Position p, Scintilla::Position q, int r, StyleWriter *s) {
 	for (Extension *pexp : extensions) {
 		if (pexp->OnStyle(p, q, r, s)) {
 			return true;
@@ -238,7 +238,7 @@ bool MultiplexExtension::OnKey(int keyval, int modifiers) {
 	return false;
 }
 
-bool MultiplexExtension::OnDwellStart(Scintilla::API::Position pos, const char *word) {
+bool MultiplexExtension::OnDwellStart(Scintilla::Position pos, const char *word) {
 	for (Extension *pexp : extensions)
 		pexp->OnDwellStart(pos, word);
 	return false;

@@ -5,22 +5,24 @@
 // Copyright 1998-2001 by Neil Hodgson <neilh@scintilla.org>
 // The License.txt file describes the conditions under which this software may be distributed.
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstdio>
+#include <ctime>
 
+#include <tuple>
 #include <string>
 #include <string_view>
 #include <vector>
 #include <map>
 #include <set>
+#include <optional>
 #include <memory>
 #include <chrono>
 #include <atomic>
 #include <mutex>
 
 #undef _WIN32_WINNT
-#define _WIN32_WINNT  0x0602
+#define _WIN32_WINNT  0x0A00
 #include <windows.h>
 #include <commctrl.h>
 
@@ -42,6 +44,7 @@
 #include "Cookie.h"
 #include "Worker.h"
 #include "MatchMarker.h"
+#include "Searcher.h"
 #include "SciTEBase.h"
 #include "DirectorExtension.h"
 
@@ -84,7 +87,7 @@ static void SendDirector(const char *verb, const char *arg = nullptr) {
 	}
 }
 
-static void SendDirector(const char *verb, intptr_t arg) {
+static void SendDirectorInteger(const char *verb, intptr_t arg) {
 	std::string s = std::to_string(arg);
 	::SendDirector(verb, s.c_str());
 }
@@ -101,7 +104,7 @@ static void CheckEnvironment(ExtensionAPI *phost) {
 				startedByDirector = true;
 				wDirector = HwndFromString(director.c_str());
 				// Director is just seen so identify this to it
-				::SendDirector("identity", reinterpret_cast<intptr_t>(wReceiver));
+				::SendDirectorInteger("identity", reinterpret_cast<intptr_t>(wReceiver));
 			}
 		}
 		std::string sReceiver = StdStringFromSizeT(reinterpret_cast<size_t>(wReceiver));
@@ -170,14 +173,22 @@ bool DirectorExtension::Initialise(ExtensionAPI *host_) {
 	if (!wReceiver)
 		::exit(FALSE);
 	// Make the frame window handle available so the director can activate it.
+	const SciTEBase *hostSciTE = dynamic_cast<SciTEBase *>(host);
+	if (!hostSciTE) {
+		::exit(FALSE);
+	}
 	::SetWindowLongPtr(wReceiver, GWLP_USERDATA,
-			   reinterpret_cast<LONG_PTR>((static_cast<SciTEBase *>(host))->GetID()));
+			   reinterpret_cast<LONG_PTR>(hostSciTE->GetID()));
 	CheckEnvironment(host);
 	return true;
 }
 
-bool DirectorExtension::Finalise() {
-	::SendDirector("closing");
+bool DirectorExtension::Finalise() noexcept {
+	try {
+		::SendDirector("closing");
+	} catch (...) {
+		// Shutting down so continue even if unable to send message to director.
+	}
 	if (wReceiver)
 		::DestroyWindow(wReceiver);
 	wReceiver = {};

@@ -10,6 +10,7 @@
 #include <chrono>
 
 #include "ScintillaTypes.h"
+#include "ScintillaMessages.h"
 #include "ScintillaCall.h"
 
 #include "Scintilla.h"
@@ -26,9 +27,9 @@ ScintillaWindow::~ScintillaWindow() = default;
 void ScintillaWindow::SetScintilla(GUI::WindowID wid_) {
 	SetID(wid_);
 	if (wid) {
-		SciFnDirect fn_ = reinterpret_cast<SciFnDirect>(
-					  Send(SCI_GETDIRECTFUNCTION, 0, 0));
-		const sptr_t ptr_ = Send(SCI_GETDIRECTPOINTER, 0, 0);
+		SciFnDirectStatus fn_ = reinterpret_cast<SciFnDirectStatus>(
+					  Send(static_cast<unsigned int>(Scintilla::Message::GetDirectStatusFunction)));
+		const sptr_t ptr_ = Send(static_cast<unsigned int>(Scintilla::Message::GetDirectPointer));
 		SetFnPtr(fn_, ptr_);
 	}
 }

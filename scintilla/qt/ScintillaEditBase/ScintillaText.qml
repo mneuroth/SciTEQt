@@ -6,9 +6,10 @@
  *
  ***************************************************************************/
 
-import QtQuick 2.9
-import QtQuick.Controls 2.3
-import QtQml.Models 2.1
+import QtQuick //2.9
+import QtQuick.Controls //2.3
+import QtQuick.Dialogs //1.2
+import QtQml.Models //2.1
 
 import org.scintilla.scintilla 1.0
 
@@ -136,8 +137,8 @@ ScrollView {
                 onTriggered: menuCommandDelegate !== undefined ? menuCommandDelegate(model.menuId) : quickScintillaEditor.cmdContextMenu(model.menuId)
             }
 
-            onObjectAdded: (index, object) => { editContextMenu.insertItem(index, object) }
-            onObjectRemoved: (object) => { editContextMenu.removeItem(object) }
+            onObjectAdded: editContextMenu.insertItem(index, object)
+            onObjectRemoved: editContextMenu.removeItem(object)
         }
 
     }
@@ -163,7 +164,7 @@ ScrollView {
         // https://stackoverflow.com/questions/30359262/how-to-scroll-qml-scrollview-to-center
         target: root.contentItem
 
-        function onContentXChanged() {
+        onContentXChanged: {
             var delta = root.contentItem.contentX - quickScintillaEditor.x
             var deltaInColumns = parseInt(delta / quickScintillaEditor.charWidth,10)
             if(delta >= quickScintillaEditor.charWidth) {
@@ -192,8 +193,7 @@ ScrollView {
             else {
             }
         }
-        function onContentYChanged() {
-            //console.trace()
+        onContentYChanged: {
             var delta = root.contentItem.contentY - quickScintillaEditor.y
             var deltaInLines = parseInt(delta / quickScintillaEditor.charHeight,10)
             if(delta >= quickScintillaEditor.charHeight) {
@@ -226,28 +226,28 @@ ScrollView {
            root.contentItem.interactive = value
         }
 
-        function onShowContextMenu(pos) { editContextMenu.popup(pos) }
+        onShowContextMenu: editContextMenu.popup(pos)
 
-        function onAddToContextMenu(menuId, txt, enabled) { contextMenuModel.append({"display":txt, "enabled":enabled, "menuId":menuId}) }
+        onAddToContextMenu: contextMenuModel.append({"display":txt, "enabled":enabled, "menuId":menuId})
 
-        function onClearContextMenu() { contextMenuModel.clear() }
+        onClearContextMenu: contextMenuModel.clear()
 
-        function onDoubleClick() {
+        onDoubleClick: {
             //console.log("double click !")
         }
 
-        function onMarginClicked() {
+        onMarginClicked: {
             //console.log("MARGING CLICK !")
         }
 
-        function onTextAreaClicked() {
+        onTextAreaClicked: {
             //console.log("TextArea CLICK !")
         }
 
         // this signal is emited if the scintilla editor contol scrolls, because of a keyboard interaction
         //   --> update the root appropriate: move editor control to right position and
         //       update content area and position of scroll view (results in updating the scrollbar)
-        function onHorizontalScrolled(value) {
+        onHorizontalScrolled: {
             // value from scintilla in pixel !
             quickScintillaEditor.x = value              // order of calls is very important: first update child and then the container !
             root.contentItem.contentX = value

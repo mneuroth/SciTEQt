@@ -19,13 +19,25 @@ class FilePath;
 
 typedef std::vector<FilePath> FilePathSet;
 
+struct FileCloser {
+	// Called by unique_ptr to close the file
+	void operator()(FILE *file) noexcept {
+		if (file) {
+			fclose(file);
+		}
+	}
+};
+
+using FileHolder = std::unique_ptr<FILE, FileCloser>;
+
 class FilePath {
 	GUI::gui_string fileName;
-	GUI::gui_string nonLocalFileName;
+    GUI::gui_string nonLocalFileName;   /*SciteQt Patch*/
 public:
 	FilePath() noexcept;
-	FilePath(const GUI::gui_char *fileName_, const GUI::gui_char *nonLocalFileName_ = 0);
-	FilePath(const GUI::gui_string &fileName_, const GUI::gui_string &nonLocalFileName_ = GUI::gui_string());
+    FilePath(const GUI::gui_char *fileName_, const GUI::gui_char *nonLocalFileName_ = 0);   /*SciteQt Patch*/
+    FilePath(const GUI::gui_string &fileName_, const GUI::gui_string &nonLocalFileName_ = GUI::gui_string());   /*SciteQt Patch*/
+	FilePath(const GUI::gui_string_view fileName_);
 	FilePath(FilePath const &directory, FilePath const &name);
 	FilePath(FilePath const &) = default;
 	FilePath(FilePath &&) noexcept = default;
@@ -38,18 +50,17 @@ public:
 	void Set(FilePath const &directory, FilePath const &name);
 	void SetDirectory(FilePath const &directory);
 	virtual void Init() noexcept;
-	bool SameNameAs(const GUI::gui_char *other) const noexcept;
-	bool SameNameAs(const FilePath &other) const noexcept;
+	[[nodiscard]]bool SameNameAs(const FilePath &other) const noexcept;
 	bool operator==(const FilePath &other) const noexcept;
 	bool operator<(const FilePath &other) const noexcept;
 	bool IsSet() const noexcept;
-	bool IsUntitled() const;
-	bool IsAbsolute() const;
-	bool IsRoot() const;
-	bool IsNotLocal() const;
+	bool IsUntitled() const noexcept;
+	bool IsAbsolute() const noexcept;
+	bool IsRoot() const noexcept;
+    bool IsNotLocal() const noexcept;   /*SciteQt Patch*/
 	static int RootLength() noexcept;
 	const GUI::gui_char *AsInternal() const noexcept;
-	const GUI::gui_char *AsNonLocalInternal() const noexcept;
+    const GUI::gui_char *AsNonLocalInternal() const noexcept;    /*SciteQt Patch*/
 	std::string AsUTF8() const;
 	FilePath Name() const;
 	FilePath BaseName() const;
@@ -58,17 +69,19 @@ public:
 	void FixName();
 	FilePath AbsolutePath() const;
 	FilePath NormalizePath() const;
+	GUI::gui_string RelativePathTo(FilePath filePath) const;
 	static FilePath GetWorkingDirectory();
 	bool SetWorkingDirectory() const noexcept;
+	static FilePath UserHomeDirectory();
 	void List(FilePathSet &directories, FilePathSet &files) const;
 	FILE *Open(const GUI::gui_char *mode) const noexcept;
 	std::string Read() const;
 	void Remove() const noexcept;
-	time_t ModifiedTime() const;
+	time_t ModifiedTime() const noexcept;
 	long long GetFileLength() const noexcept;
 	bool Exists() const noexcept;
 	bool IsDirectory() const noexcept;
-	bool Matches(const GUI::gui_char *pattern) const;
+	bool Matches(GUI::gui_string_view pattern) const;
 	static bool CaseSensitive() noexcept;
 };
 

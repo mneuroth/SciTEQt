@@ -9,9 +9,11 @@
 #include <cstdio>
 #include <ctime>
 
+#include <tuple>
 #include <string>
 #include <string_view>
 #include <vector>
+#include <memory>
 #include <chrono>
 
 #include "ScintillaTypes.h"
@@ -51,7 +53,7 @@ extern "C" {
 
 #endif
 
-namespace SA = Scintilla::API;
+namespace SA = Scintilla;
 
 // A note on naming conventions:
 // I've gone back and forth on this a bit, trying different styles.
@@ -66,20 +68,21 @@ namespace SA = Scintilla::API;
 // the normal SciTE convention.  There is some grey area of course,
 // and for these I just make a judgement call
 
+namespace {
 
-static ExtensionAPI *host = nullptr;
-static lua_State *luaState = nullptr;
-static bool luaDisabled = false;
+ExtensionAPI *host = nullptr;
+lua_State *luaState = nullptr;
+bool luaDisabled = false;
 
-static std::string startupScript;
-static std::string extensionScript;
+std::string startupScript;
+std::string extensionScript;
 
-static bool tracebackEnabled = true;
+bool tracebackEnabled = true;
 
-static int maxBufferIndex = -1;
-static int curBufferIndex = -1;
+int maxBufferIndex = -1;
+int curBufferIndex = -1;
 
-static int GetPropertyInt(const char *propName) {
+int GetPropertyInt(const char *propName) {
 	int propVal = 0;
 	if (host) {
 		std::string sPropVal = host->Property(propName);
@@ -90,39 +93,47 @@ static int GetPropertyInt(const char *propName) {
 	return propVal;
 }
 
-LuaExtension::LuaExtension() {}
+}
 
-LuaExtension::~LuaExtension() {}
+LuaExtension::LuaExtension() noexcept = default;
 
-LuaExtension &LuaExtension::Instance() {
+LuaExtension::~LuaExtension() = default;
+
+LuaExtension &LuaExtension::Instance() noexcept {
 	static LuaExtension singleton;
 	return singleton;
 }
 
-// Forward declarations
-static ExtensionAPI::Pane check_pane_object(lua_State *L, int index);
-static void push_pane_object(lua_State *L, ExtensionAPI::Pane p) noexcept;
-static int iface_function_helper(lua_State *L, const IFaceFunction &func);
+namespace {
 
-inline bool IFaceTypeIsScriptable(IFaceType t, int index) noexcept {
+// Forward declarations
+ExtensionAPI::Pane check_pane_object(lua_State *L, int index);
+void push_pane_object(lua_State *L, ExtensionAPI::Pane p) noexcept;
+int iface_function_helper(lua_State *L, const IFaceFunction &func);
+
+bool IFaceTypeIsScriptable(IFaceType t, int index) noexcept {
 	return t < iface_stringresult || (index==1 && t == iface_stringresult);
 }
 
-inline bool IFaceTypeIsNumeric(IFaceType t) noexcept {
+bool IFaceTypeIsNumeric(IFaceType t) noexcept {
 	return (t > iface_void && t < iface_bool);
 }
 
-inline bool IFaceFunctionIsScriptable(const IFaceFunction &f) noexcept {
+bool IFaceFunctionIsScriptable(const IFaceFunction &f) noexcept {
 	return IFaceTypeIsScriptable(f.paramType[0], 0) && IFaceTypeIsScriptable(f.paramType[1], 1);
 }
 
-inline bool IFacePropertyIsScriptable(const IFaceProperty &p) noexcept {
+bool IFacePropertyIsScriptable(const IFaceProperty &p) noexcept {
 	return (((p.valueType > iface_void) && (p.valueType <= iface_stringresult) && (p.valueType != iface_keymod)) &&
 		((p.paramType < iface_colour) || (p.paramType == iface_string) ||
 		 (p.paramType == iface_bool)) && (p.getter || p.setter));
 }
 
-inline void raise_error(lua_State *L, const char *errMsg=nullptr) {
+const char *push_string(lua_State *L, const std::string &s) noexcept {
+	return lua_pushlstring(L, s.data(), s.length());
+}
+
+void raise_error(lua_State *L, const char *errMsg=nullptr) noexcept {
 	luaL_where(L, 1);
 	if (errMsg) {
 		lua_pushstring(L, errMsg);
@@ -134,7 +145,7 @@ inline void raise_error(lua_State *L, const char *errMsg=nullptr) {
 }
 
 // lua_absindex for LUA <5.1
-inline int absolute_index(lua_State *L, int index) noexcept {
+int absolute_index(lua_State *L, int index) noexcept {
 	if (index > LUA_REGISTRYINDEX && index < 0)
 		return lua_gettop(L) + index + 1;
 	else
@@ -149,7 +160,7 @@ inline int absolute_index(lua_State *L, int index) noexcept {
 **/
 
 // copy the contents of one table into another returning the size
-static int merge_table(lua_State *L, int destTableIdx, int srcTableIdx, bool copyMetatable = false) {
+int merge_table(lua_State *L, int destTableIdx, int srcTableIdx, bool copyMetatable = false) {
 	int count = 0;
 	if (lua_istable(L, destTableIdx) && lua_istable(L, srcTableIdx)) {
 		srcTableIdx = absolute_index(L, srcTableIdx);
@@ -171,7 +182,7 @@ static int merge_table(lua_State *L, int destTableIdx, int srcTableIdx, bool cop
 }
 
 // make a copy of a table (not deep), leaving it at the top of the stack
-static bool clone_table(lua_State *L, int srcTableIdx, bool copyMetatable = false) {
+bool clone_table(lua_State *L, int srcTableIdx, bool copyMetatable = false) {
 	if (lua_istable(L, srcTableIdx)) {
 		srcTableIdx = absolute_index(L, srcTableIdx);
 		lua_newtable(L);
@@ -184,7 +195,7 @@ static bool clone_table(lua_State *L, int srcTableIdx, bool copyMetatable = fals
 }
 
 // loop through each key in the table and set its value to nil
-static void clear_table(lua_State *L, int tableIdx, bool clearMetatable = true) {
+void clear_table(lua_State *L, int tableIdx, bool clearMetatable = true) {
 	if (lua_istable(L, tableIdx)) {
 		tableIdx = absolute_index(L, tableIdx);
 		if (clearMetatable) {
@@ -203,7 +214,7 @@ static void clear_table(lua_State *L, int tableIdx, bool clearMetatable = true) 
 }
 
 // Lua 5.1's checkudata throws an error on failure, we don't want that, we want NULL
-static void *checkudata(lua_State *L, int ud, const char *tname) noexcept {
+void *checkudata(lua_State *L, int ud, const char *tname) noexcept {
 	void *p = lua_touserdata(L, ud);
 	if (p) { // value is a userdata?
 		if (lua_getmetatable(L, ud)) { // does it have a metatable?
@@ -219,13 +230,13 @@ static void *checkudata(lua_State *L, int ud, const char *tname) noexcept {
 	return nullptr;
 }
 
-static int cf_scite_send(lua_State *L) {
+int cf_scite_send(lua_State *L) {
 	// This is reinstated as a replacement for the old <pane>:send, which was removed
 	// due to safety concerns.  Is now exposed as scite.SendEditor / scite.SendOutput.
 	// It is rewritten to be typesafe, checking the arguments against the metadata in
 	// IFaceTable in the same way that the object interface does.
 
-	const int paneIndex = lua_upvalueindex(1);
+	constexpr int paneIndex = lua_upvalueindex(1);
 	check_pane_object(L, paneIndex);
 	const int message = luaL_checkint(L, 1);
 
@@ -265,12 +276,12 @@ static int cf_scite_send(lua_State *L) {
 	}
 }
 
-static int cf_scite_constname(lua_State *L) {
+int cf_scite_constname(lua_State *L) {
 	const int message = luaL_checkint(L, 1);
 	const char *prefix = luaL_optstring(L, 2, nullptr);
 	const std::string constName = IFaceTable::GetConstantName(message, prefix);
 	if (constName.length() > 0) {
-		lua_pushstring(L, constName.c_str());
+		push_string(L, constName);
 		return 1;
 	} else {
 		raise_error(L, "Argument does not match any Scintilla / SciTE constant");
@@ -278,7 +289,7 @@ static int cf_scite_constname(lua_State *L) {
 	}
 }
 
-static int cf_scite_open(lua_State *L) {
+int cf_scite_open(lua_State *L) {
 	const char *s = luaL_checkstring(L, 1);
 	if (s) {
 		std::string cmd = "open:";
@@ -289,7 +300,14 @@ static int cf_scite_open(lua_State *L) {
 	return 0;
 }
 
-static int cf_scite_menu_command(lua_State *L) {
+int cf_scite_reload_properties(lua_State *L) {
+	if (!lua_gettop(L)) {
+		host->Perform("reloadproperties:");
+	}
+	return 0;
+}
+
+int cf_scite_menu_command(lua_State *L) {
 	const int cmdID = luaL_checkint(L, 1);
 	if (cmdID) {
 		host->DoMenuCommand(cmdID);
@@ -297,13 +315,13 @@ static int cf_scite_menu_command(lua_State *L) {
 	return 0;
 }
 
-static int cf_scite_update_status_bar(lua_State *L) {
+int cf_scite_update_status_bar(lua_State *L) {
 	const bool bUpdateSlowData = (lua_gettop(L) > 0 ? lua_toboolean(L, 1) : false) != 0;
 	host->UpdateStatusBar(bUpdateSlowData);
 	return 0;
 }
 
-static int cf_scite_strip_show(lua_State *L) {
+int cf_scite_strip_show(lua_State *L) {
 	const char *s = luaL_checkstring(L, 1);
 	if (s) {
 		host->UserStripShow(s);
@@ -311,7 +329,7 @@ static int cf_scite_strip_show(lua_State *L) {
 	return 0;
 }
 
-static int cf_scite_strip_set(lua_State *L) {
+int cf_scite_strip_set(lua_State *L) {
 	const int control = luaL_checkint(L, 1);
 	const char *value = luaL_checkstring(L, 2);
 	if (value) {
@@ -320,7 +338,7 @@ static int cf_scite_strip_set(lua_State *L) {
 	return 0;
 }
 
-static int cf_scite_strip_set_list(lua_State *L) {
+int cf_scite_strip_set_list(lua_State *L) {
 	const int control = luaL_checkint(L, 1);
 	const char *value = luaL_checkstring(L, 2);
 	if (value) {
@@ -329,14 +347,14 @@ static int cf_scite_strip_set_list(lua_State *L) {
 	return 0;
 }
 
-static int cf_scite_strip_value(lua_State *L) {
+int cf_scite_strip_value(lua_State *L) {
 	const int control = luaL_checkint(L, 1);
 	std::string value = host->UserStripValue(control);
-	lua_pushstring(L, value.c_str());
+	push_string(L, value);
 	return 1;
 }
 
-static ExtensionAPI::Pane check_pane_object(lua_State *L, int index) {
+ExtensionAPI::Pane check_pane_object(lua_State *L, int index) {
 	ExtensionAPI::Pane *pPane = static_cast<ExtensionAPI::Pane *>(checkudata(L, index, "SciTE_MT_Pane"));
 
 	if ((!pPane) && lua_istable(L, index)) {
@@ -365,15 +383,15 @@ static ExtensionAPI::Pane check_pane_object(lua_State *L, int index) {
 	return ExtensionAPI::paneOutput; // this line never reached
 }
 
-static int cf_pane_textrange(lua_State *L) {
+int cf_pane_textrange(lua_State *L) {
 	const ExtensionAPI::Pane p = check_pane_object(L, 1);
 
 	if (lua_gettop(L) >= 3) {
 		const SA::Position cpMin = luaL_checkinteger(L, 2);
 		const SA::Position cpMax = luaL_checkinteger(L, 3);
 		if (cpMax >= 0) {
-			std::string range = host->Range(p, SA::Range(cpMin, cpMax));
-			lua_pushstring(L, range.c_str());
+			std::string range = host->Range(p, SA::Span(cpMin, cpMax));
+			push_string(L, range);
 			return 1;
 		} else {
 			raise_error(L, "Invalid argument 2 for <pane>:textrange.  Positive number or zero expected.");
@@ -385,7 +403,7 @@ static int cf_pane_textrange(lua_State *L) {
 	return 0;
 }
 
-static int cf_pane_insert(lua_State *L) {
+int cf_pane_insert(lua_State *L) {
 	const ExtensionAPI::Pane p = check_pane_object(L, 1);
 	const SA::Position pos = luaL_checkinteger(L, 2);
 	const char *s = luaL_checkstring(L, 3);
@@ -393,7 +411,7 @@ static int cf_pane_insert(lua_State *L) {
 	return 0;
 }
 
-static int cf_pane_remove(lua_State *L) {
+int cf_pane_remove(lua_State *L) {
 	const ExtensionAPI::Pane p = check_pane_object(L, 1);
 	const SA::Position cpMin = luaL_checkinteger(L, 2);
 	const SA::Position cpMax = luaL_checkinteger(L, 3);
@@ -401,14 +419,14 @@ static int cf_pane_remove(lua_State *L) {
 	return 0;
 }
 
-static int cf_pane_append(lua_State *L) {
+int cf_pane_append(lua_State *L) {
 	const ExtensionAPI::Pane p = check_pane_object(L, 1);
 	const char *s = luaL_checkstring(L, 2);
 	host->Insert(p, host->PaneCaller(p).Length(), s);
 	return 0;
 }
 
-static int cf_pane_findtext(lua_State *L) {
+int cf_pane_findtext(lua_State *L) {
 	const ExtensionAPI::Pane p = check_pane_object(L, 1);
 
 	const int nArgs = lua_gettop(L);
@@ -444,7 +462,7 @@ static int cf_pane_findtext(lua_State *L) {
 		if (!hasError) {
 			sc.SetTargetRange(rangeStart, rangeEnd);
 			sc.SetSearchFlags(static_cast<SA::FindOption>(flags));
-			const SA::Range result = sc.RangeSearchInTarget(t);
+			const SA::Span result = sc.SpanSearchInTarget(t);
 			if (result.start >= 0) {
 				lua_pushinteger(L, result.start);
 				lua_pushinteger(L, result.end);
@@ -469,7 +487,7 @@ static int cf_pane_findtext(lua_State *L) {
 
 struct PaneMatchObject {
 	ExtensionAPI::Pane pane;
-	SA::Range range;
+	SA::Span range;
 	int flags; // this is really part of the state, but is kept here for convenience
 	SA::Position endPosOrig; // has to do with preventing infinite loop on a 0-length match
 	bool RangeValid() const noexcept {
@@ -477,7 +495,7 @@ struct PaneMatchObject {
 	}
 };
 
-static int cf_match_replace(lua_State *L) {
+int cf_match_replace(lua_State *L) {
 	PaneMatchObject *pmo = static_cast<PaneMatchObject *>(checkudata(L, 1, "SciTE_MT_PaneMatchObject"));
 	if (!pmo) {
 		raise_error(L, "Self argument for match:replace() should be a pane match object.");
@@ -502,7 +520,7 @@ static int cf_match_replace(lua_State *L) {
 	return 0;
 }
 
-static int cf_match_metatable_index(lua_State *L) {
+int cf_match_metatable_index(lua_State *L) {
 	const PaneMatchObject *pmo = static_cast<PaneMatchObject *>(checkudata(L, 1, "SciTE_MT_PaneMatchObject"));
 	if (!pmo) {
 		raise_error(L, "Internal error: pane match object is missing.");
@@ -526,10 +544,10 @@ static int cf_match_metatable_index(lua_State *L) {
 			// Exception: if the changes are made exclusively through match:replace,
 			// everything will be fine.
 			const std::string range = host->Range(pmo->pane, pmo->range);
-			lua_pushstring(L, range.c_str());
+			push_string(L, range);
 			return 1;
 		} else if (0 == strcmp(key, "replace")) {
-			const int replaceMethodIndex = lua_upvalueindex(1);
+			constexpr int replaceMethodIndex = lua_upvalueindex(1);
 			if (lua_iscfunction(L, replaceMethodIndex)) {
 				lua_pushvalue(L, replaceMethodIndex);
 				return 1;
@@ -543,7 +561,7 @@ static int cf_match_metatable_index(lua_State *L) {
 	return 0;
 }
 
-static int cf_match_metatable_tostring(lua_State *L) {
+int cf_match_metatable_tostring(lua_State *L) {
 	const PaneMatchObject *pmo = static_cast<PaneMatchObject *>(checkudata(L, 1, "SciTE_MT_PaneMatchObject"));
 	if (!pmo) {
 		raise_error(L, "Internal error: pane match object is missing.");
@@ -557,13 +575,13 @@ static int cf_match_metatable_tostring(lua_State *L) {
 	}
 }
 
-static int cf_pane_match(lua_State *L) {
+int cf_pane_match(lua_State *L) {
 	const int nargs = lua_gettop(L);
 
 	const ExtensionAPI::Pane p = check_pane_object(L, 1);
 	luaL_checkstring(L, 2);
 
-	const int generatorIndex = lua_upvalueindex(1);
+	constexpr int generatorIndex = lua_upvalueindex(1);
 	if (!lua_isfunction(L, generatorIndex)) {
 		raise_error(L, "Internal error: match generator is missing.");
 		return 0;
@@ -579,7 +597,7 @@ static int cf_pane_match(lua_State *L) {
 	PaneMatchObject *pmo = static_cast<PaneMatchObject *>(lua_newuserdata(L, sizeof(PaneMatchObject)));
 	if (pmo) {
 		pmo->pane = p;
-		pmo->range = SA::Range(-1, 0);
+		pmo->range = SA::Span(-1, 0);
 		pmo->endPosOrig = 0;
 		pmo->flags = 0;
 		if (nargs >= 3) {
@@ -611,7 +629,7 @@ static int cf_pane_match(lua_State *L) {
 	}
 }
 
-static int cf_pane_match_generator(lua_State *L) {
+int cf_pane_match_generator(lua_State *L) {
 	const char *text = lua_tostring(L, 1);
 	PaneMatchObject *pmo = static_cast<PaneMatchObject *>(checkudata(L, 2, "SciTE_MT_PaneMatchObject"));
 
@@ -636,12 +654,12 @@ static int cf_pane_match_generator(lua_State *L) {
 
 	SA::ScintillaCall &sc = host->PaneCaller(pmo->pane);
 
-	const SA::Range range(searchPos, sc.Length());
+	const SA::Span range(searchPos, sc.Length());
 
 	if (range.end > range.start) {
 		sc.SetTarget(range);
 		sc.SetSearchFlags(static_cast<SA::FindOption>(pmo->flags));
-		const SA::Range result = sc.RangeSearchInTarget(text);
+		const SA::Span result = sc.SpanSearchInTarget(text);
 		if (result.start >= 0) {
 			pmo->range = result;
 			pmo->endPosOrig = result.end;
@@ -658,12 +676,12 @@ static int cf_pane_match_generator(lua_State *L) {
 	return 1;
 }
 
-static int cf_props_metatable_index(lua_State *L) {
+int cf_props_metatable_index(lua_State *L) {
 	const int selfArg = lua_isuserdata(L, 1) ? 1 : 0;
 
 	if (lua_isstring(L, selfArg + 1)) {
 		std::string value = host->Property(lua_tostring(L, selfArg + 1));
-		lua_pushstring(L, value.c_str());
+		push_string(L, value);
 		return 1;
 	} else {
 		raise_error(L, "String argument required for property access");
@@ -671,7 +689,7 @@ static int cf_props_metatable_index(lua_State *L) {
 	return 0;
 }
 
-static int cf_props_metatable_newindex(lua_State *L) {
+int cf_props_metatable_newindex(lua_State *L) {
 	const int selfArg = lua_isuserdata(L, 1) ? 1 : 0;
 
 	const char *key = lua_isstring(L, selfArg + 1) ? lua_tostring(L, selfArg + 1) : nullptr;
@@ -692,7 +710,7 @@ static int cf_props_metatable_newindex(lua_State *L) {
 }
 
 /*
-static int cf_os_execute(lua_State *L) {
+int cf_os_execute(lua_State *L) {
 	// The SciTE version of os.execute would pipe its stdout and stderr
 	// to the output pane.  This can be implemented in terms of popen
 	// on GTK and in terms of CreateProcess on Windows.  Either way,
@@ -705,7 +723,7 @@ static int cf_os_execute(lua_State *L) {
 }
 */
 
-static int cf_global_print(lua_State *L) {
+int cf_global_print(lua_State *L) {
 	const int nargs = lua_gettop(L);
 
 	lua_getglobal(L, "tostring");
@@ -736,7 +754,7 @@ static int cf_global_print(lua_State *L) {
 }
 
 
-static int cf_global_trace(lua_State *L) {
+int cf_global_trace(lua_State *L) {
 	const char *s = lua_tostring(L, 1);
 	if (s) {
 		host->Trace(s);
@@ -744,7 +762,7 @@ static int cf_global_trace(lua_State *L) {
 	return 0;
 }
 
-static int cf_global_dostring(lua_State *L) {
+int cf_global_dostring(lua_State *L) {
 	const int nargs = lua_gettop(L);
 	const char *code = luaL_checkstring(L, 1);
 	const char *name = luaL_optstring(L, 2, code);
@@ -757,7 +775,7 @@ static int cf_global_dostring(lua_State *L) {
 	return 0;
 }
 
-static bool call_function(lua_State *L, int nargs, bool ignoreFunctionReturnValue=false) {
+bool call_function(lua_State *L, int nargs, bool ignoreFunctionReturnValue=false) {
 	bool handled = false;
 	if (L) {
 		int traceback = 0;
@@ -804,7 +822,7 @@ static bool call_function(lua_State *L, int nargs, bool ignoreFunctionReturnValu
 	return handled;
 }
 
-static bool HasNamedFunction(const char *name) noexcept {
+bool HasNamedFunction(const char *name) noexcept {
 	bool hasFunction = false;
 	if (luaState) {
 		hasFunction = lua_getglobal(luaState, name) != LUA_TNIL;
@@ -813,7 +831,7 @@ static bool HasNamedFunction(const char *name) noexcept {
 	return hasFunction;
 }
 
-static bool CallNamedFunction(const char *name) {
+bool CallNamedFunction(const char *name) {
 	bool handled = false;
 	if (luaState) {
 		if (lua_getglobal(luaState, name) != LUA_TNIL) {
@@ -825,7 +843,7 @@ static bool CallNamedFunction(const char *name) {
 	return handled;
 }
 
-static bool CallNamedFunction(const char *name, const char *arg) {
+bool CallNamedFunction(const char *name, const char *arg) {
 	bool handled = false;
 	if (luaState) {
 		if (lua_getglobal(luaState, name) != LUA_TNIL) {
@@ -838,7 +856,7 @@ static bool CallNamedFunction(const char *name, const char *arg) {
 	return handled;
 }
 
-static bool CallNamedFunction(const char *name, int numberArg, const char *stringArg) {
+bool CallNamedFunction(const char *name, int numberArg, const char *stringArg) {
 	bool handled = false;
 	if (luaState) {
 		if (lua_getglobal(luaState, name) != LUA_TNIL) {
@@ -852,7 +870,7 @@ static bool CallNamedFunction(const char *name, int numberArg, const char *strin
 	return handled;
 }
 
-static bool CallNamedFunction(const char *name, int numberArg, int numberArg2) {
+bool CallNamedFunction(const char *name, int numberArg, int numberArg2) {
 	bool handled = false;
 	if (luaState) {
 		if (lua_getglobal(luaState, name) != LUA_TNIL) {
@@ -866,7 +884,7 @@ static bool CallNamedFunction(const char *name, int numberArg, int numberArg2) {
 	return handled;
 }
 
-static int iface_function_helper(lua_State *L, const IFaceFunction &func) {
+int iface_function_helper(lua_State *L, const IFaceFunction &func) {
 	const ExtensionAPI::Pane p = check_pane_object(L, 1);
 
 	int arg = 2;
@@ -899,7 +917,7 @@ static int iface_function_helper(lua_State *L, const IFaceFunction &func) {
 			params[i] = SptrFromString(s ? s : "");
 		} else if (func.paramType[i] == iface_keymod) {
 			const int keycode = luaL_checkint(L, arg++) & 0xFFFF;
-			const int modifiers = luaL_checkint(L, arg++) &
+			const intptr_t modifiers = luaL_checkint(L, arg++) &
 					      static_cast<int>(SA::KeyMod::Shift|SA::KeyMod::Ctrl|SA::KeyMod::Alt);
 			params[i] = keycode | (modifiers<<16);
 		} else if (func.paramType[i] == iface_bool) {
@@ -911,15 +929,8 @@ static int iface_function_helper(lua_State *L, const IFaceFunction &func) {
 
 	if (needStringResult) {
 		const intptr_t stringResultLen = host->Send(p, static_cast<SA::Message>(func.value), params[0], 0);
-		if (stringResultLen > 0) {
-			// not all string result methods are guaranteed to add a null terminator
-			stringResult.assign(stringResultLen + 1, '\0');
-			params[1] = SptrFromPointer(&stringResult[0]);
-		} else {
-			// Is this an error?  Are there any cases where it's not an error,
-			// and where the right thing to do is just return a blank string?
-			return 0;
-		}
+		stringResult.assign(stringResultLen, '\0');
+		params[1] = SptrFromPointer(stringResult.data());
 		if (func.paramType[0] == iface_length) {
 			params[0] = stringResultLen;
 		}
@@ -948,7 +959,7 @@ static int iface_function_helper(lua_State *L, const IFaceFunction &func) {
 	int resultCount = 0;
 
 	if (needStringResult) {
-		lua_pushstring(L, stringResult.c_str());
+		push_string(L, stringResult);
 		resultCount++;
 	}
 
@@ -968,7 +979,7 @@ struct IFacePropertyBinding {
 	const IFaceProperty *prop;
 };
 
-static int cf_ifaceprop_metatable_index(lua_State *L) {
+int cf_ifaceprop_metatable_index(lua_State *L) {
 	// if there is a getter, __index calls it
 	// otherwise, __index raises "property 'name' is write-only".
 	const IFacePropertyBinding *ipb = static_cast<IFacePropertyBinding *>(checkudata(L, 1, "SciTE_MT_IFacePropertyBinding"));
@@ -989,7 +1000,7 @@ static int cf_ifaceprop_metatable_index(lua_State *L) {
 	return iface_function_helper(L, func);
 }
 
-static int cf_ifaceprop_metatable_newindex(lua_State *L) {
+int cf_ifaceprop_metatable_newindex(lua_State *L) {
 	const IFacePropertyBinding *ipb = static_cast<IFacePropertyBinding *>(checkudata(L, 1, "SciTE_MT_IFacePropertyBinding"));
 	if (!(ipb && IFacePropertyIsScriptable(*(ipb->prop)))) {
 		raise_error(L, "Internal error: property binding is improperly set up");
@@ -1009,8 +1020,8 @@ static int cf_ifaceprop_metatable_newindex(lua_State *L) {
 	return iface_function_helper(L, func);
 }
 
-static int cf_pane_iface_function(lua_State *L) {
-	const int funcidx = lua_upvalueindex(1);
+int cf_pane_iface_function(lua_State *L) {
+	constexpr int funcidx = lua_upvalueindex(1);
 	const IFaceFunction *func = static_cast<IFaceFunction *>(lua_touserdata(L, funcidx));
 	if (func) {
 		return iface_function_helper(L, *func);
@@ -1020,7 +1031,7 @@ static int cf_pane_iface_function(lua_State *L) {
 	}
 }
 
-static int push_iface_function(lua_State *L, const char *name) {
+int push_iface_function(lua_State *L, const char *name) {
 	int i = IFaceTable::FindFunction(name);
 	if (i >= 0) {
 		if (IFaceFunctionIsScriptable(IFaceTable::functions[i])) {
@@ -1038,7 +1049,7 @@ static int push_iface_function(lua_State *L, const char *name) {
 	return -1; // signal to try next pane index handler
 }
 
-static int push_iface_propval(lua_State *L, const char *name) {
+int push_iface_propval(lua_State *L, const char *name) {
 	// this function doesn't raise errors, but returns 0 if the function is not handled.
 
 	const int propidx = IFaceTable::FindProperty(name);
@@ -1070,7 +1081,7 @@ static int push_iface_propval(lua_State *L, const char *name) {
 				}
 			}
 		} else {
-			// Indexed property.  These return an object with the following behavior:
+			// Indexed property.  These return an object with the following behaviour:
 			// if there is a getter, __index calls it
 			// otherwise, __index raises "property 'name' is write-only".
 			// if there is a setter, __newindex calls it
@@ -1100,7 +1111,7 @@ static int push_iface_propval(lua_State *L, const char *name) {
 	return -1; // signal to try next pane index handler
 }
 
-static int cf_pane_metatable_index(lua_State *L) {
+int cf_pane_metatable_index(lua_State *L) {
 	if (lua_isstring(L, 2)) {
 		const char *name = lua_tostring(L, 2);
 
@@ -1126,7 +1137,7 @@ static int cf_pane_metatable_index(lua_State *L) {
 	return 0;
 }
 
-static int cf_pane_metatable_newindex(lua_State *L) {
+int cf_pane_metatable_newindex(lua_State *L) {
 	if (lua_isstring(L, 2)) {
 		const int propidx = IFaceTable::FindProperty(lua_tostring(L, 2));
 		if (propidx >= 0) {
@@ -1193,7 +1204,7 @@ void push_pane_object(lua_State *L, ExtensionAPI::Pane p) noexcept {
 	lua_setmetatable(L, -2);
 }
 
-static int cf_global_metatable_index(lua_State *L) {
+int cf_global_metatable_index(lua_State *L) {
 	if (lua_isstring(L, 2)) {
 		const char *name = lua_tostring(L, 2);
 		if ((name[0] < 'A') || (name[0] > 'Z') || ((name[1] >= 'a') && (name[1] <= 'z'))) {
@@ -1225,7 +1236,7 @@ static int cf_global_metatable_index(lua_State *L) {
 	return 0; // global namespace access should not raise errors
 }
 
-static int LuaPanicFunction(lua_State *L) {
+int LuaPanicFunction(lua_State *L) {
 	if (L == luaState) {
 		lua_close(luaState);
 		luaState = nullptr;
@@ -1242,12 +1253,12 @@ static int LuaPanicFunction(lua_State *L) {
 // since it means a user who is having trouble with Lua can just refrain from
 // using it.
 
-static bool CheckStartupScript() {
+bool CheckStartupScript() {
 	startupScript = host->Property("ext.lua.startup.script");
 	return startupScript.length() > 0;
 }
 
-static void PublishGlobalBufferData() noexcept {
+void PublishGlobalBufferData() noexcept {
 // release 1.62
 // A Lua table called 'buffer' is associated with each buffer
 // and can be used to maintain buffer-specific state.
@@ -1281,7 +1292,7 @@ static void PublishGlobalBufferData() noexcept {
 	lua_setglobal(luaState, "buffer");
 }
 
-static bool InitGlobalScope(bool checkProperties, bool forceReload = false) {
+bool InitGlobalScope(bool checkProperties, bool forceReload = false) {
 	bool reload = forceReload;
 	if (checkProperties) {
 		const int resetMode = GetPropertyInt("ext.lua.reset");
@@ -1408,6 +1419,9 @@ static bool InitGlobalScope(bool checkProperties, bool forceReload = false) {
 	lua_pushcfunction(luaState, cf_scite_open);
 	lua_setfield(luaState, -2, "Open");
 
+	lua_pushcfunction(luaState, cf_scite_reload_properties);
+	lua_setfield(luaState, -2, "ReloadProperties");
+
 	lua_pushcfunction(luaState, cf_scite_menu_command);
 	lua_setfield(luaState, -2, "MenuCommand");
 
@@ -1483,6 +1497,8 @@ static bool InitGlobalScope(bool checkProperties, bool forceReload = false) {
 	return true;
 }
 
+}
+
 bool LuaExtension::Initialise(ExtensionAPI *host_) {
 	host = host_;
 
@@ -1493,7 +1509,7 @@ bool LuaExtension::Initialise(ExtensionAPI *host_) {
 	return false;
 }
 
-bool LuaExtension::Finalise() {
+bool LuaExtension::Finalise() noexcept {
 	if (luaState) {
 		lua_close(luaState);
 	}
@@ -1504,7 +1520,7 @@ bool LuaExtension::Finalise() {
 	// The rest don't strictly need to be cleared since they
 	// are never accessed except when luaState and host are set
 
-	startupScript = "";
+	startupScript.clear();
 
 	return false;
 }
@@ -1543,12 +1559,6 @@ bool LuaExtension::Load(const char *filename) {
 
 
 bool LuaExtension::InitBuffer(int index) {
-	/*
-	char msg[100];
-	sprintf(msg, "InitBuffer(%d)\n", index);
-	host->Trace(msg);
-	*/
-
 	if (index > maxBufferIndex)
 		maxBufferIndex = index;
 
@@ -1573,12 +1583,6 @@ bool LuaExtension::InitBuffer(int index) {
 }
 
 bool LuaExtension::ActivateBuffer(int index) {
-	/*
-	char msg[100];
-	sprintf(msg, "ActivateBuffer(%d)\n", index);
-	host->Trace(msg);
-	*/
-
 	// Probably don't need to do anything with Lua here.  Setting
 	// curBufferIndex is important so that InitGlobalScope knows
 	// which buffer is active, in order to populate the 'buffer'
@@ -1590,10 +1594,6 @@ bool LuaExtension::ActivateBuffer(int index) {
 }
 
 bool LuaExtension::RemoveBuffer(int index) {
-	//char msg[100];
-	//sprintf(msg, "RemoveBuffer(%d)\n", index);
-	//host->Trace(msg);
-
 	if (luaState) {
 		// Remove the bufferdata element at index, and move
 		// the other elements down.  The element at the
@@ -1629,11 +1629,6 @@ bool LuaExtension::OnExecute(const char *s) {
 // gets called when selecting a luaScript within the tools menu
 // pcalls string.find(s) -> if that succeeds, insert the function onto the stack and try to call_function(s).
 	bool handled = false;
-	/*	std::string msg = "lua: selected Tools->";
-		msg.append(s);
-		msg.append("\n");
-		host->Trace(msg.c_str());
-	*/
 
 	if (luaState || InitGlobalScope(false)) {
 		// May as well use Lua's pattern matcher to parse the command.
@@ -1664,6 +1659,11 @@ bool LuaExtension::OnExecute(const char *s) {
 								traceMessage += "'\n";
 								host->Trace(traceMessage.c_str());
 							}
+						} else {
+							std::string traceMessage = "> Lua: this expression is not a function '";
+							traceMessage += s;
+							traceMessage += "'\n";
+							host->Trace(traceMessage.c_str());
 						}
 					} else {
 						std::string traceMessage = "> Lua: error checking global scope for command '";
@@ -1867,7 +1867,7 @@ struct StylingContext {
 		memcpy(cursor[0], "\0\0\0\0\0\0\0\0", 8);
 		memcpy(cursor[1], "\0\0\0\0\0\0\0\0", 8);
 		memcpy(cursor[2], "\0\0\0\0\0\0\0\0", 8);
-		styler->StartAt(startPos_, static_cast<char>(0xffu));
+		styler->StartAt(startPos_);
 		styler->StartSegment(startPos_);
 
 		GetNextChar();
@@ -1991,7 +1991,7 @@ struct StylingContext {
 		for (SA::Position i = 0; i < len; i++) {
 			sReturn[i] = context->styler->SafeGetCharAt(start + i);
 		}
-		lua_pushstring(L, sReturn.c_str());
+		push_string(L, sReturn);
 		return 1;
 	}
 
@@ -2023,7 +2023,7 @@ bool LuaExtension::OnStyle(SA::Position startPos, SA::Position lengthDoc, int in
 	if (luaState) {
 		if (lua_getglobal(luaState, "OnStyle") != LUA_TNIL) {
 
-			StylingContext sc;
+			StylingContext sc {};
 			sc.startPos = startPos;
 			sc.lengthDoc = lengthDoc;
 			sc.initStyle = initStyle;
@@ -2046,7 +2046,7 @@ bool LuaExtension::OnStyle(SA::Position startPos, SA::Position lengthDoc, int in
 
 			lua_pushstring(luaState, "language");
 			std::string lang = host->Property("Language");
-			lua_pushstring(luaState, lang.c_str());
+			push_string(luaState, lang);
 			lua_settable(luaState, -3);
 
 			sc.PushMethod(luaState, StylingContext::Line, "Line");
@@ -2100,7 +2100,7 @@ bool LuaExtension::OnUserListSelection(int listType, const char *selection) {
 
 namespace {
 
-bool CheckModifiers(int modifiers, SA::KeyMod mod) noexcept {
+constexpr bool CheckModifiers(int modifiers, SA::KeyMod mod) noexcept {
 	return (static_cast<int>(mod) & modifiers) != 0;
 }
 

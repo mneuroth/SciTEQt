@@ -26,13 +26,14 @@
 #include <map>
 #include <set>
 #include <algorithm>
+#include <optional>
 #include <memory>
 #include <chrono>
 #include <atomic>
 #include <mutex>
 #include <thread>
 
-#include "Platform.h"
+#include "Geometry.h"
 
 #include "ILoader.h"
 #include "ILexer.h"
@@ -40,6 +41,8 @@
 #include "ScintillaTypes.h"
 #include "ScintillaMessages.h"
 #include "ScintillaCall.h"
+
+#include "Platform.h"
 
 #include "Scintilla.h"
 #include "SciLexer.h"
@@ -55,6 +58,7 @@
 #include "Extender.h"
 #include "SciTE.h"
 #include "JobQueue.h"
+#include "Searcher.h"
 
 #include "Cookie.h"
 #include "Worker.h"
@@ -191,13 +195,14 @@ public:
     virtual void PrintSetup() override;
     virtual void Find() override;
     virtual MessageBoxChoice WindowMessageBox(GUI::Window &w, const GUI::gui_string &msg, MessageBoxStyle style = mbsIconWarning) override;
+    virtual void Filter() override;
     virtual void FindMessageBox(const std::string &msg, const std::string *findItem = nullptr) override;
     virtual void FindIncrement() override;
     virtual void FindInFiles() override;
     virtual void Replace() override;
     virtual void DestroyFindReplace() override;
     virtual void GoLineDialog() override;
-    virtual bool AbbrevDialog() override;
+    virtual void AbbrevDialog() override;
     virtual void TabSizeDialog() override;
     virtual bool ParametersOpen() override;
     virtual void ParamGrab() override;

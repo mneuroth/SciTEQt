@@ -8,22 +8,26 @@
 #ifndef SCITEWIN_H
 #define SCITEWIN_H
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdarg.h>
-
+#include <cstdlib>
 #include <cstdint>
+#include <cassert>
+#include <cstring>
+#include <cstdio>
+#include <cstdarg>
 
-#include <optional>
+#include <tuple>
 #include <string>
 #include <string_view>
 #include <vector>
 #include <deque>
 #include <map>
 #include <set>
+#include <optional>
+#include <initializer_list>
 #include <algorithm>
+#include <iterator>
 #include <memory>
+#include <numeric>
 #include <chrono>
 #include <sstream>
 #include <iomanip>
@@ -34,19 +38,17 @@
 
 #include <sys/stat.h>
 
-#ifdef __MINGW_H
-#define _WIN32_IE	0x0400
-#endif
-
 #undef _WIN32_WINNT
 #undef WINVER
 #ifdef WIN_TARGET
 #define _WIN32_WINNT WIN_TARGET
 #define WINVER WIN_TARGET
 #else
-#define _WIN32_WINNT  0x0501
-#define WINVER 0x0501
+#define _WIN32_WINNT  0x0A00
+#define WINVER 0x0A00
 #endif
+#undef NOMINMAX
+#define NOMINMAX 1
 #include <windows.h>
 #include <commctrl.h>
 #include <richedit.h>
@@ -72,6 +74,8 @@ typedef void *HTHEME;
 #include "ScintillaCall.h"
 
 #include "Scintilla.h"
+#include "Lexilla.h"
+#include "LexillaAccess.h"
 
 #include "GUI.h"
 #include "ScintillaWindow.h"
@@ -79,7 +83,6 @@ typedef void *HTHEME;
 #include "StringList.h"
 #include "StringHelpers.h"
 #include "FilePath.h"
-#include "LexillaLibrary.h"
 #include "StyleDefinition.h"
 #include "PropSetFile.h"
 #include "StyleWriter.h"
@@ -90,6 +93,7 @@ typedef void *HTHEME;
 #include "Worker.h"
 #include "FileWorker.h"
 #include "MatchMarker.h"
+#include "Searcher.h"
 #include "SciTEBase.h"
 #include "UniqueInstance.h"
 #include "StripDefinition.h"
@@ -176,7 +180,7 @@ protected:
 	GUI::gui_char tooltipText[MAX_PATH*2 + 1];
 	bool tbLarge;
 	bool modalParameters;
-	int filterDefault;
+	GUI::gui_string openFilterDefault;
 	bool staticBuild;
 	int menuSource;
 	std::deque<GUI::gui_string> dropFilesQueue;
@@ -201,6 +205,7 @@ protected:
 
 	// Tab Bar
 	HFONT fontTabs;
+	std::vector<GUI::gui_string> tabNamesCurrent;
 
 	/// Preserve focus during deactivation
 	HWND wFocus;
@@ -213,10 +218,11 @@ protected:
 	BackgroundStrip backgroundStrip;
 	UserStrip userStrip;
 	SearchStrip searchStrip;
+	FilterStrip filterStrip;
 	FindStrip findStrip;
 	ReplaceStrip replaceStrip;
 
-	enum { bandTool, bandTab, bandContents, bandUser, bandBackground, bandSearch, bandFind, bandReplace, bandStatus };
+	enum { bandTool, bandTab, bandContents, bandUser, bandBackground, bandSearch, bandFind, bandReplace, bandFilter, bandStatus };
 	std::vector<Band> bands;
 
 	void ReadLocalization() override;
@@ -228,6 +234,7 @@ protected:
 	void ReadPropertiesInitial() override;
 	void ReadProperties() override;
 
+	SystemAppearance WindowsAppearance() const noexcept;
 	SystemAppearance CurrentAppearance() const noexcept override;
 
 	void TimerStart(int mask) override;
@@ -295,7 +302,8 @@ protected:
 	void SetFileProperties(PropSetFile &ps) override;
 	void SetStatusBarText(const char *s) override;
 
-	void TabInsert(int index, const GUI::gui_char *title, /*for SciteQt*/const GUI::gui_char *fullPath) override;
+	void UpdateTabs(const std::vector<GUI::gui_string> &tabNames) override;
+	void TabInsert(int index, const GUI::gui_char *title) override;
 	void TabSelect(int index) override;
 	void RemoveAllTabs() override;
 
@@ -331,7 +339,11 @@ protected:
 	void FillCombosForGrep(Dialog &dlg);
 	BOOL GrepMessage(HWND hDlg, UINT message, WPARAM wParam);
 	static INT_PTR CALLBACK GrepDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+	void CloseOtherFinders(int cmdID);
 	void FindIncrement() override;
+	void Filter() override;
+	bool FilterShowing() override;
+
 	void Find() override;
 	void FindInFiles() override;
 	void Replace() override;
@@ -344,7 +356,7 @@ protected:
 
 	BOOL AbbrevMessage(HWND hDlg, UINT message, WPARAM wParam);
 	static INT_PTR CALLBACK AbbrevDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
-	bool AbbrevDialog() override;
+	void AbbrevDialog() override;
 
 	BOOL TabSizeMessage(HWND hDlg, UINT message, WPARAM wParam);
 	static INT_PTR CALLBACK TabSizeDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
@@ -365,6 +377,13 @@ protected:
 public:
 
 	explicit SciTEWin(Extension *ext = 0);
+
+	// Deleted so SciTEWin objects can not be copied.
+	SciTEWin(const SciTEWin &) = delete;
+	SciTEWin(SciTEWin &&) = delete;
+	SciTEWin &operator=(const SciTEWin &) = delete;
+	SciTEWin &operator=(SciTEWin &&) = delete;
+
 	~SciTEWin();
 
 	static bool DialogHandled(GUI::WindowID id, MSG *pmsg) noexcept;
@@ -377,6 +396,7 @@ public:
 	void OutputAppendEncodedStringSynchronised(const GUI::gui_string &s, int codePageDocument);
 	void ResetExecution();
 	void ExecuteNext();
+	void ExecuteGrep(const Job &jobToRun);
 	DWORD ExecuteOne(const Job &jobToRun);
 	void ProcessExecute();
 	void ShellExec(const std::string &cmd, const char *dir);
@@ -387,16 +407,17 @@ public:
 	void PostOnMainThread(int cmd, Worker *pWorker) override;
 	void WorkerCommand(int cmd, Worker *pWorker) override;
 
+	void CreateStrip(LPCWSTR stripName, LPVOID lpParam);
 	void Creation();
 	LRESULT KeyDown(WPARAM wParam);
 	LRESULT KeyUp(WPARAM wParam);
 	void AddToPopUp(const char *label, int cmd=0, bool enabled=true) override;
 	LRESULT ContextMenuMessage(UINT iMessage, WPARAM wParam, LPARAM lParam);
-	void CheckForScintillaFailure(SA::Status statusFailure);
+	void CheckForScintillaFailure(SA::Status statusFailure) noexcept;
 	LRESULT WndProc(UINT iMessage, WPARAM wParam, LPARAM lParam);
 
 	std::string EncodeString(const std::string &s) override;
-	std::string GetRangeInUIEncoding(GUI::ScintillaWindow &win, SA::Range range) override;
+	std::string GetRangeInUIEncoding(GUI::ScintillaWindow &win, SA::Span span) override;
 
 	HACCEL GetAcceleratorTable() noexcept {
 		return hAccTable;
@@ -419,11 +440,12 @@ GUI::Point ClientFromScreen(HWND hWnd, GUI::Point ptScreen) noexcept;
 
 // Common minor conversions
 
-inline GUI::Point PointFromLong(LPARAM lPoint) noexcept {
+constexpr GUI::Point PointFromLong(LPARAM lPoint) noexcept {
+	// static_cast<short> needed for negative coordinates
 	return GUI::Point(static_cast<short>(LOWORD(lPoint)), static_cast<short>(HIWORD(lPoint)));
 }
 
-inline int ControlIDOfWParam(WPARAM wParam) noexcept {
+constexpr int ControlIDOfWParam(WPARAM wParam) noexcept {
 	return wParam & 0xffff;
 }
 

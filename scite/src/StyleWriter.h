@@ -11,36 +11,36 @@
 // Read only access to a document, its styles and other data
 class TextReader {
 protected:
-	static constexpr Scintilla::API::Position extremePosition = INTPTR_MAX;
+	static constexpr Scintilla::Position extremePosition = INTPTR_MAX;
 	/** @a bufferSize is a trade off between time taken to copy the characters
 	 * and retrieval overhead.
 	 * @a slopSize positions the buffer before the desired position
 	 * in case there is some backtracking. */
-	static constexpr Scintilla::API::Position bufferSize = 4000;
-	static constexpr Scintilla::API::Position slopSize = bufferSize / 8;
+	static constexpr Scintilla::Position bufferSize = 4000;
+	static constexpr Scintilla::Position slopSize = bufferSize / 8;
 	char buf[bufferSize+1];
-	Scintilla::API::Position startPos;
-	Scintilla::API::Position endPos;
+	Scintilla::Position startPos;
+	Scintilla::Position endPos;
 	int codePage;
 
-	Scintilla::API::ScintillaCall &sc;
-	Scintilla::API::Position lenDoc;
+	Scintilla::ScintillaCall &sc;
+	Scintilla::Position lenDoc;
 
 	bool InternalIsLeadByte(char ch) const;
-	void Fill(Scintilla::API::Position position);
+	void Fill(Scintilla::Position position);
 public:
-	explicit TextReader(Scintilla::API::ScintillaCall &sc_) noexcept;
+	explicit TextReader(Scintilla::ScintillaCall &sc_) noexcept;
 	// Deleted so TextReader objects can not be copied.
 	TextReader(const TextReader &source) = delete;
 	TextReader &operator=(const TextReader &) = delete;
-	char operator[](Scintilla::API::Position position) {
+	char operator[](Scintilla::Position position) {
 		if (position < startPos || position >= endPos) {
 			Fill(position);
 		}
 		return buf[position - startPos];
 	}
 	/** Safe version of operator[], returning a defined value for invalid position. */
-	char SafeGetCharAt(Scintilla::API::Position position, char chDefault=' ') {
+	char SafeGetCharAt(Scintilla::Position position, char chDefault=' ') {
 		if (position < startPos || position >= endPos) {
 			Fill(position);
 			if (position < startPos || position >= endPos) {
@@ -56,34 +56,34 @@ public:
 	void SetCodePage(int codePage_) noexcept {
 		codePage = codePage_;
 	}
-	bool Match(Scintilla::API::Position pos, const char *s);
-	int StyleAt(Scintilla::API::Position position);
-	Scintilla::API::Line GetLine(Scintilla::API::Position position);
-	Scintilla::API::Position LineStart(Scintilla::API::Line line);
-	Scintilla::API::FoldLevel LevelAt(Scintilla::API::Line line);
-	Scintilla::API::Position Length();
-	int GetLineState(Scintilla::API::Line line);
+	bool Match(Scintilla::Position pos, const char *s);
+	int StyleAt(Scintilla::Position position);
+	Scintilla::Line GetLine(Scintilla::Position position);
+	Scintilla::Position LineStart(Scintilla::Line line);
+	Scintilla::FoldLevel LevelAt(Scintilla::Line line);
+	Scintilla::Position Length();
+	int GetLineState(Scintilla::Line line);
 };
 
 // Adds methods needed to write styles and folding
 class StyleWriter : public TextReader {
 protected:
 	char styleBuf[bufferSize];
-	Scintilla::API::Position validLen;
-	Scintilla::API::Position startSeg;
+	Scintilla::Position validLen;
+	Scintilla::Position startSeg;
 public:
-	explicit StyleWriter(Scintilla::API::ScintillaCall &sc_) noexcept;
+	explicit StyleWriter(Scintilla::ScintillaCall &sc_) noexcept;
 	// Deleted so StyleWriter objects can not be copied.
 	StyleWriter(const StyleWriter &source) = delete;
 	StyleWriter &operator=(const StyleWriter &) = delete;
 	void Flush();
-	void SetLineState(Scintilla::API::Line line, int state);
+	void SetLineState(Scintilla::Line line, int state);
 
-	void StartAt(Scintilla::API::Position start, char chMask=31);
-	Scintilla::API::Position GetStartSegment() const noexcept { return startSeg; }
-	void StartSegment(Scintilla::API::Position pos) noexcept;
-	void ColourTo(Scintilla::API::Position pos, int chAttr);
-	void SetLevel(Scintilla::API::Line line, Scintilla::API::FoldLevel level);
+	void StartAt(Scintilla::Position start);
+	Scintilla::Position GetStartSegment() const noexcept { return startSeg; }
+	void StartSegment(Scintilla::Position pos) noexcept;
+	void ColourTo(Scintilla::Position pos, int chAttr);
+	void SetLevel(Scintilla::Line line, Scintilla::FoldLevel level);
 };
 
 #endif

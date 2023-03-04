@@ -3,15 +3,16 @@
 // and each of these groups are then divided into directory groups.
 // Based on Scintilla's HeaderOrder.txt and compatible with it.
 
-// C standard library
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <time.h>
-#include <assert.h>
-#include <errno.h>
-#include <signal.h>
+// Base of the repository relative to this file
+
+//base:..
+
+// File patterns to check:
+//source:**/*.h
+//source:**/*.cxx
+
+// Exclude lua implementation as it is an external project that follows different rules
+//exclude:lua
 
 // C++ wrappers of C standard library
 #include <cstddef>
@@ -25,10 +26,10 @@
 #include <cmath>
 #include <clocale>
 #include <cerrno>
+#include <csignal>
 
 // C++ standard library
 #include <stdexcept>
-#include <optional>
 #include <tuple>
 #include <string>
 #include <string_view>
@@ -36,9 +37,13 @@
 #include <deque>
 #include <map>
 #include <set>
+#include <optional>
+#include <initializer_list>
 #include <algorithm>
+#include <iterator>
 #include <functional>
 #include <memory>
+#include <numeric>
 #include <chrono>
 #include <sstream>
 #include <iomanip>
@@ -52,7 +57,7 @@
 
 #include <unistd.h>
 #include <dirent.h>
-#include <dlfcn.h>
+#include <pwd.h>
 
 // Also on Windows
 #include <sys/types.h>
@@ -60,7 +65,7 @@
 
 #include <sys/wait.h>
 
-// GTK+ headers
+// GTK headers
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
@@ -85,7 +90,6 @@
 
 // include
 
-#include "Sci_Position.h"
 #include "ILoader.h"
 #include "ILexer.h"
 #include "ScintillaTypes.h"
@@ -95,6 +99,8 @@
 #include "ScintillaWidget.h"
 
 #include "SciLexer.h"
+#include "Lexilla.h"
+#include "LexillaAccess.h"
 
 // SciTE headers
 
@@ -103,7 +109,7 @@
 #include "StringList.h"
 #include "StringHelpers.h"
 #include "FilePath.h"
-#include "LexillaLibrary.h"
+#include "PathMatch.h"
 #include "StyleDefinition.h"
 #include "PropSetFile.h"
 #include "StyleWriter.h"
@@ -119,6 +125,7 @@
 #include "FileWorker.h"
 #include "MatchMarker.h"
 #include "EditorConfig.h"
+#include "Searcher.h"
 #include "SciTEBase.h"
 #include "UniqueInstance.h"
 #include "StripDefinition.h"

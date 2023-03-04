@@ -6,8 +6,6 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
-// Callback thunk class connects GTK signals to a simple command method.
-
 // Callback thunk class connects GTK signals to an instance method.
 template< class T, void (T::*method)() >
 class ObjectSignal {
@@ -17,10 +15,19 @@ public:
 	}
 };
 
+// Key names are longer for GTK 3
+#if GTK_CHECK_VERSION(3,0,0)
+#define GKEY_Escape GDK_KEY_Escape
+#define GKEY_Void GDK_KEY_VoidSymbol
+#else
+#define GKEY_Escape GDK_Escape
+#define GKEY_Void GDK_VoidSymbol
+#endif
+
 class WBase : public GUI::Window {
 public:
 	operator GtkWidget*() const;
-	GtkWidget* Pointer();
+	GtkWidget *Pointer();
 	bool Sensitive();
 };
 
@@ -30,64 +37,72 @@ inline GtkWidget *Widget(const GUI::Window &w) {
 
 class WStatic : public WBase {
 public:
-	void Create(GUI::gui_string text);
+	void Create(const GUI::gui_string &text);
 	bool HasMnemonic();
 	void SetMnemonicFor(WBase &w);
 };
 
 class WEntry : public WBase {
 public:
-	void Create(const GUI::gui_char *text=0);
+	void Create(const GUI::gui_string &text);
 	void ActivatesDefault();
 	const GUI::gui_char *Text();
 	int Value();
-	void SetText(const GUI::gui_char *text);
+	void SetText(GUI::gui_string text);
 	static void SetValid(GtkEntry *entry, bool valid);
 };
 
 class WComboBoxEntry : public WBase {
 public:
 	void Create();
-	GtkEntry *Entry();
+	GtkEntry *Entry() const;
 	void ActivatesDefault();
 	const GUI::gui_char *Text();
-	void SetText(const GUI::gui_char *text);
-	bool HasFocusOnSelfOrChild();
+	void SetText(const GUI::gui_string &text);
+	bool HasFocusOnSelfOrChild() const;
 	void ClearList();
 	void RemoveText(int position);
-	void AppendText(const char *text);
+	void AppendText(const GUI::gui_string &text);
 	void FillFromMemory(const std::vector<std::string> &mem, bool useTop = false);
 };
 
 class WButton : public WBase {
 public:
-	void Create(GUI::gui_string text, GCallback func, gpointer data);
-	void Create(GUI::gui_string text);
+	void Create(const GUI::gui_string &text, GCallback func, gpointer data);
+	void Create(const GUI::gui_string &text);
 };
 
 class WToggle : public WBase {
 public:
 	void Create(const GUI::gui_string &text);
-	bool Active();
+	bool Active() const;
 	void SetActive(bool active);
 };
 
-class WCheckDraw : public WBase {
+class CheckDrawWatcher {
 public:
-	typedef void (*ChangeFunction)(WCheckDraw *cd, void *user);
+	virtual void CheckChanged() = 0;
+};
+
+class WCheckDraw : public WBase {
 private:
-	ChangeFunction cdfn;
-	void *user;
+	CheckDrawWatcher *watcher = nullptr;
+	int cmd = 0;
+	int key = 0;
+	std::string label;
 	static void Toggled(GtkWidget *widget, WCheckDraw *pcd);
-	GtkToggleButton *ToggleButton();
+	GtkToggleButton *ToggleButton() const;
 public:
 	WCheckDraw();
 	~WCheckDraw();
-	void Create(const char **xpmImage, const GUI::gui_string &toolTip, GtkStyle *pStyle_);
-	bool Active();
+	void Create(int cmd_, const char **xpmImage, const GUI::gui_string &toolTip);
+	int Command() const;
+	const char *Label() const;
+	bool Active() const;
 	void SetActive(bool active);
 	void Toggle();
-	void SetChangeFunction(ChangeFunction cdfn_, void *user_);
+	void SetChangeWatcher(CheckDrawWatcher *watcher_);
+	bool ToggleMatchKey(int key_);
 	enum {  checkIconWidth = 16, checkButtonWidth = 16 + 3 * 2 + 1};
 };
 
@@ -103,7 +118,7 @@ private:
 	int next;
 public:
 	WTable(int rows_, int columns_);
-	void Add(GtkWidget *child=0, int width=1, bool expand=false,
+	void Add(GtkWidget *child=nullptr, int width=1, bool expand=false,
 		int xpadding=5, int ypadding=5);
 	void Label(GtkWidget *child);
 	void PackInto(GtkBox *box, gboolean expand=TRUE);
@@ -111,7 +126,8 @@ public:
 	void NextLine();
 };
 
-GUI::gui_char KeyFromLabel(GUI::gui_string label);
+GUI::gui_char KeyFromLabel(const GUI::gui_string &label);
+std::string GtkFromWinCaption(const GUI::gui_string &text);
 
 class Dialog : public GUI::Window {
 public:
@@ -127,11 +143,11 @@ private:
 
 class BaseWin : public GUI::Window {
 protected:
-	ILocalize *localiser;
+	const ILocalize *localiser;
 public:
 	BaseWin() : localiser(0) {
 	}
-	void SetLocalizer(ILocalize *localiser_) {
+	void SetLocalizer(const ILocalize *localiser_) {
 		localiser = localiser_;
 	}
 };
@@ -150,11 +166,11 @@ public:
 	virtual void Creation(GtkWidget *container);
 	virtual void Show(int buttonHeight);
 	virtual void Close();
-	virtual bool KeyDown(GdkEventKey *event);
+	virtual bool KeyDown(const GdkEventKey *event);
 	virtual void ShowPopup() {}
 	virtual void MenuAction(guint /* action */) {}
 	static void MenuSignal(GtkMenuItem *menuItem, Strip *pStrip);
-	void AddToPopUp(GUI::Menu &popup, const char *label, int cmd, bool checked);
+	void AddToPopUp(GUI::Menu &popup, const GUI::gui_string &label, int cmd, bool checked);
 	virtual void ChildFocus(GtkWidget *widget);
 	static gboolean ChildFocusSignal(GtkContainer *container, GtkWidget *widget, Strip *pStrip);
 	virtual gboolean Focus(GtkDirectionType /* direction*/ ) { return false; }

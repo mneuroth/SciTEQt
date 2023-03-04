@@ -29,11 +29,12 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5641EA06-A73C-4297-B287-48B40850C708}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -84,8 +85,8 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;STATIC_BUILD;SCI_LEXER;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;LUA_USER_H="scite_lua_win.h";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src;..\lua\src;..\..\scintilla\include;..\..\scintilla\src;..\..\scintilla\lexlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STATIC_BUILD;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;LUA_USER_H="scite_lua_win.h";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src;..\lua\src;..\..\lexilla\include;..\..\lexilla\access;..\..\lexilla\lexlib;..\..\scintilla\include;..\..\scintilla\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4702;4324</DisableSpecificWarnings>
@@ -94,6 +95,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>gdi32.lib;msimg32.lib;comdlg32.lib;comctl32.lib;advapi32.lib;imm32.lib;shell32.lib;ole32.lib;oleaut32.lib;uxtheme.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <CETCompat>true</CETCompat>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..\src;..\..\Scintilla\Win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -201,21 +203,35 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\lexilla\lexlib\Accessor.cxx" />
+    <ClCompile Include="..\..\lexilla\lexlib\CharacterCategory.cxx" />
+    <ClCompile Include="..\..\lexilla\lexlib\CharacterSet.cxx" />
+    <ClCompile Include="..\..\lexilla\lexlib\DefaultLexer.cxx" />
+    <ClCompile Include="..\..\lexilla\lexlib\LexAccessor.cxx" />
+    <ClCompile Include="..\..\lexilla\lexlib\LexerBase.cxx" />
+    <ClCompile Include="..\..\lexilla\lexlib\LexerModule.cxx" />
+    <ClCompile Include="..\..\lexilla\lexlib\LexerNoExceptions.cxx" />
+    <ClCompile Include="..\..\lexilla\lexlib\LexerSimple.cxx" />
+    <ClCompile Include="..\..\lexilla\lexlib\PropSetSimple.cxx" />
+    <ClCompile Include="..\..\lexilla\lexlib\StyleContext.cxx" />
+    <ClCompile Include="..\..\lexilla\lexlib\WordList.cxx" />
+    <ClCompile Include="..\..\lexilla\lexers\*.cxx" />
+    <ClCompile Include="..\..\lexilla\access\LexillaAccess.cxx" />
+    <ClCompile Include="..\..\lexilla\src\Lexilla.cxx" />
     <ClCompile Include="..\..\scintilla\src\*.cxx" />
-    <ClCompile Include="..\..\scintilla\lexlib\*.cxx" />
-    <ClCompile Include="..\..\scintilla\lexers\*.cxx" />
+    <ClCompile Include="..\..\scintilla\call\ScintillaCall.cxx" />
     <ClCompile Include="..\..\scintilla\win32\HanjaDic.cxx" />
     <ClCompile Include="..\..\scintilla\win32\PlatWin.cxx" />
     <ClCompile Include="..\..\scintilla\win32\ScintillaWin.cxx" />
-    <ClCompile Include="..\..\scintilla\lexilla\src\Lexilla.cxx" />
     <ClCompile Include="..\src\*.cxx" />
     <ClCompile Include="..\win32\*.cxx" />
     <ClCompile Include="..\lua\src\*.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\lexilla\include\*.h" />
+    <ClInclude Include="..\..\lexilla\lexlib\*.h" />
     <ClInclude Include="..\..\scintilla\include\*.h" />
     <ClInclude Include="..\..\scintilla\src\*.h" />
-    <ClInclude Include="..\..\scintilla\lexlib\*.h" />
     <ClInclude Include="..\..\scintilla\win32\*.h" />
     <ClInclude Include="..\src\*.h" />
     <ClInclude Include="..\win32\*.h" />

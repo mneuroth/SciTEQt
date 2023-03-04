@@ -15,42 +15,55 @@ public:
 	int size;
 	std::string fore;
 	std::string back;
-	Scintilla::API::FontWeight weight;
+	Scintilla::FontWeight weight;
 	bool italics;
 	bool eolfilled;
 	bool underlined;
-	Scintilla::API::CaseVisible caseForce;
+	Scintilla::CaseVisible caseForce;
 	bool visible;
 	bool changeable;
+	std::string invisibleRep;
 	enum flags { sdNone = 0, sdFont = 0x1, sdSize = 0x2, sdFore = 0x4, sdBack = 0x8,
 		     sdWeight = 0x10, sdItalics = 0x20, sdEOLFilled = 0x40, sdUnderlined = 0x80,
-		     sdCaseForce = 0x100, sdVisible = 0x200, sdChangeable = 0x400
+		     sdCaseForce = 0x100, sdVisible = 0x200, sdChangeable = 0x400, sdInvisibleRep=0x800
 		   } specified;
 	explicit StyleDefinition(std::string_view definition);
 	bool ParseStyleDefinition(std::string_view definition);
-	Scintilla::API::Colour Fore() const;
-	Scintilla::API::Colour Back() const;
+	Scintilla::Colour Fore() const;
+	Scintilla::Colour Back() const;
 	int FractionalSize() const noexcept;
 	bool IsBold() const noexcept;
 };
 
-inline constexpr Scintilla::API::Colour ColourRGB(unsigned int red, unsigned int green, unsigned int blue) noexcept {
+inline constexpr Scintilla::Colour ColourRGB(unsigned int red, unsigned int green, unsigned int blue) noexcept {
 	return red | (green << 8) | (blue << 16);
 }
 
-int IntFromHexDigit(int ch) noexcept;
+inline constexpr Scintilla::ColourAlpha ColourRGBA(unsigned int red, unsigned int green, unsigned int blue, unsigned int alpha=0xff) noexcept {
+	return red | (green << 8) | (blue << 16) | (alpha << 24);
+}
+
 int IntFromHexByte(std::string_view hexByte) noexcept;
 
-Scintilla::API::Colour ColourFromString(const std::string &s);
+Scintilla::Colour ColourFromString(const std::string &s);
+Scintilla::ColourAlpha ColourAlphaFromString(std::string_view s);
 
 struct IndicatorDefinition {
-	Scintilla::API::IndicatorStyle style;
-	Scintilla::API::Colour colour;
-	Scintilla::API::Alpha fillAlpha;
-	Scintilla::API::Alpha outlineAlpha;
+	Scintilla::IndicatorStyle style;
+	Scintilla::Colour colour;
+	Scintilla::Alpha fillAlpha;
+	Scintilla::Alpha outlineAlpha;
 	bool under;
 	explicit IndicatorDefinition(std::string_view definition);
 	bool ParseIndicatorDefinition(std::string_view definition);
+};
+
+struct MarkerDefinition {
+	Scintilla::MarkerSymbol style;
+	Scintilla::Colour colour;
+	Scintilla::Colour back = ColourRGB(0xFF,0xFF,0xFF);
+	explicit MarkerDefinition(std::string_view definition);
+	bool ParseMarkerDefinition(std::string_view definition);
 };
 
 #endif

@@ -16,6 +16,7 @@ enum IFaceType {
 	iface_line,
 	iface_pointer,
 	iface_colour,
+	iface_colouralpha,
 	iface_bool,
 	iface_keymod,
 	iface_string,
@@ -23,7 +24,10 @@ enum IFaceType {
 	iface_cells,
 	iface_textrange,
 	iface_findtext,
-	iface_formatrange
+	iface_formatrange,
+	iface_textrangefull,
+	iface_findtextfull,
+	iface_formatrangefull,
 };
 
 struct IFaceConstant {

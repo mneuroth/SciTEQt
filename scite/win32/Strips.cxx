@@ -6,6 +6,7 @@
 // The License.txt file describes the conditions under which this software may be distributed.
 
 #include "SciTEWin.h"
+#include "DLLFunction.h"
 
 void *PointerFromWindow(HWND hWnd) noexcept {
 	return reinterpret_cast<void *>(::GetWindowLongPtr(hWnd, 0));
@@ -35,7 +36,7 @@ GUI::gui_string TextOfWindow(HWND hWnd) {
 GUI::gui_string ClassNameOfWindow(HWND hWnd) {
 	// In the documentation of WNDCLASS:
 	// "The maximum length for lpszClassName is 256."
-	constexpr size_t maxClassNameLength = 256+1;	// +1 for NUL
+	constexpr int maxClassNameLength = 256+1;	// +1 for NUL
 	GUI::gui_char className[maxClassNameLength];
 	if (::GetClassNameW(hWnd, className, maxClassNameLength))
 		return GUI::gui_string(className);
@@ -50,8 +51,10 @@ void ComboBoxAppend(HWND hWnd, const GUI::gui_string &gs) noexcept {
 namespace {
 
 HINSTANCE ApplicationInstance() noexcept {
-	return ::GetModuleHandle(NULL);
+	return ::GetModuleHandle(nullptr);
 }
+
+constexpr COLORREF colourNoMatch = RGB(0xff, 0x66, 0x66);
 
 void SetFontHandle(const GUI::Window &w, HFONT hfont) noexcept {
 	SetWindowFont(HwndOf(w), hfont, 0);
@@ -69,15 +72,18 @@ SIZE SizeButton(const GUI::Window &wButton) noexcept {
 	return sz;
 }
 
-int WidthText(HFONT hfont, const GUI::gui_char *text) noexcept {
-	HDC hdcMeasure = ::CreateCompatibleDC(NULL);
+SIZE SizeText(HFONT hfont, const GUI::gui_char *text) noexcept {
+	HDC hdcMeasure = ::CreateCompatibleDC({});
 	HFONT hfontOriginal = SelectFont(hdcMeasure, hfont);
 	RECT rcText = {0, 0, 2000, 2000};
 	::DrawText(hdcMeasure, text, -1, &rcText, DT_CALCRECT);
-	const int width = rcText.right - rcText.left;
 	SelectFont(hdcMeasure, hfontOriginal);
 	::DeleteDC(hdcMeasure);
-	return width;
+	return SIZE{ rcText.right - rcText.left, rcText.bottom - rcText.top, };
+}
+
+int WidthText(HFONT hfont, const GUI::gui_char *text) noexcept {
+	return SizeText(hfont, text).cx;
 }
 
 int WidthControl(GUI::Window &w) {
@@ -99,10 +105,9 @@ std::string ComboSelectionText(GUI::Window w) {
 	const int selection = ComboBox_GetCurSel(combo);
 	if (selection != CB_ERR) {
 		const int len = ComboBox_GetLBTextLen(combo, selection);
-		GUI::gui_string itemText(len+1, L'\0');
-		const int lenActual = ComboBox_GetLBText(combo, selection, &itemText[0]);
+		GUI::gui_string itemText(len, L'\0');
+		const int lenActual = ComboBox_GetLBText(combo, selection, itemText.data());
 		if (lenActual != CB_ERR) {
-			itemText.pop_back(); // Remove NUL
 			return GUI::UTF8FromString(itemText);
 		}
 	}
@@ -126,10 +131,19 @@ void SetComboText(GUI::Window w, const std::string &s, ComboSelection selection)
 void SetComboFromMemory(GUI::Window w, const ComboMemory &mem) {
 	HWND combo = HwndOf(w);
 	ComboBox_ResetContent(combo);
-	for (int i = 0; i < mem.Length(); i++) {
+	for (size_t i = 0; i < mem.Length(); i++) {
 		GUI::gui_string gs = GUI::StringFromUTF8(mem.At(i));
 		ComboBoxAppend(combo, gs);
 	}
+}
+
+constexpr WPARAM SubCommandOfWParam(WPARAM wParam) noexcept {
+	return wParam >> 16;
+}
+
+bool IsSameOrChild(const GUI::Window &wParent, HWND wChild) noexcept {
+	HWND hwnd = HwndOf(wParent);
+	return (wChild == hwnd) || IsChild(hwnd, wChild);
 }
 
 }
@@ -151,50 +165,60 @@ LRESULT PASCAL BaseWin::StWndProc(
 	}
 }
 
-static const char *textFindPrompt = "Fi&nd:";
-static const char *textReplacePrompt = "Rep&lace:";
-static const char *textFindNext = "&Find Next";
-static const char *textMarkAll = "&Mark All";
+namespace {
 
-static const char *textReplace = "&Replace";
-static const char *textReplaceAll = "Replace &All";
-static const char *textInSelection = "In &Selection";
+constexpr RECT RECTFromRectangle(GUI::Rectangle r) noexcept {
+	RECT rc = { r.left, r.top, r.right, r.bottom };
+	return rc;
+}
 
-static SearchOption toggles[] = {
-	{"Match &whole word only", IDM_WHOLEWORD, IDWHOLEWORD},
-	{"Case sensiti&ve", IDM_MATCHCASE, IDMATCHCASE},
-	{"Regular &expression", IDM_REGEXP, IDREGEXP},
-	{"Transform &backslash expressions", IDM_UNSLASH, IDUNSLASH},
-	{"Wrap ar&ound", IDM_WRAPAROUND, IDWRAP},
-	{"&Up", IDM_DIRECTIONUP, IDDIRECTIONUP},
-	{nullptr, 0, 0},
+struct Interval {
+	int start = 0;
+	int end = 0;
+	Interval(int start_, int end_) noexcept : start(start_), end(end_) {
+	}
 };
 
-GUI::Window Strip::CreateText(const char *text) {
-	GUI::gui_string localised = localiser->Text(text);
-	const int width = WidthText(fontText, localised.c_str()) + 4;
-	GUI::Window w;
-	w.SetID(::CreateWindowEx(0, TEXT("Static"), localised.c_str(),
-				 WS_CHILD | WS_CLIPSIBLINGS | SS_RIGHT,
-				 2, 2, width, 21,
-				 Hwnd(), HmenuID(0), ::ApplicationInstance(), 0));
-	SetFontHandle(w, fontText);
-	w.Show();
-	return w;
+std::vector<Interval> Distribute(GUI::Rectangle rcArea, int gap, std::initializer_list<int> widths) {
+	int totalWidth = std::accumulate(widths.begin(), widths.end(), 0);
+	totalWidth += gap * (static_cast<int>(std::size(widths)) - 1);
+	const int resizerWidth = rcArea.Width() - totalWidth;
+	std::vector<Interval> positions;
+	int position = rcArea.left;
+	for (const int width : widths) {
+		const int widthElement = width ? width : resizerWidth;
+		positions.push_back(Interval(position, position + widthElement));
+		position += widthElement + gap;
+	}
+	return positions;
+}
+
+void SetWindowPosition(GUI::Window &w, Interval intervalHorizontal, Interval verticalInterval) {
+	const GUI::Rectangle rc(intervalHorizontal.start, verticalInterval.start,
+		intervalHorizontal.end, verticalInterval.end);
+	w.SetPosition(rc);
+}
+
+bool MatchAccessKey(const std::string &caption, int key) noexcept {
+	for (size_t i = 0; i < caption.length() - 1; i++) {
+		if ((caption[i] == '&') && (MakeUpperCase(caption[i + 1]) == key)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 #define PACKVERSION(major,minor) MAKELONG(minor,major)
 
-static DWORD GetVersion(LPCTSTR lpszDllName) noexcept {
+DWORD GetVersion(LPCWSTR lpszDllName) noexcept {
 	DWORD dwVersion = 0;
-	HINSTANCE hinstDll = ::LoadLibrary(lpszDllName);
+	HINSTANCE hinstDll = ::LoadLibraryW(lpszDllName);
 	if (hinstDll) {
-		DLLGETVERSIONPROC pDllGetVersion = reinterpret_cast<DLLGETVERSIONPROC>(
-				::GetProcAddress(hinstDll, "DllGetVersion"));
+		DLLGETVERSIONPROC pDllGetVersion = DLLFunction<DLLGETVERSIONPROC>(
+			hinstDll, "DllGetVersion");
 
 		if (pDllGetVersion) {
-			DLLVERSIONINFO dvi;
-			::ZeroMemory(&dvi, sizeof(dvi));
+			DLLVERSIONINFO dvi{};
 			dvi.cbSize = sizeof(dvi);
 
 			const HRESULT hr = (*pDllGetVersion)(&dvi);
@@ -205,6 +229,53 @@ static DWORD GetVersion(LPCTSTR lpszDllName) noexcept {
 		::FreeLibrary(hinstDll);
 	}
 	return dwVersion;
+}
+
+DWORD versionComctl = 0;
+
+bool HideKeyboardCues() noexcept {
+	BOOL b = FALSE;
+	if (::SystemParametersInfo(SPI_GETKEYBOARDCUES, 0, &b, 0) == 0)
+		return FALSE;
+	return !b;
+}
+
+const char *textFindPrompt = "Fi&nd:";
+const char *textReplacePrompt = "Rep&lace:";
+const char *textFindNext = "&Find Next";
+const char *textMarkAll = "&Mark All";
+
+const char *textReplace = "&Replace";
+const char *textReplaceAll = "Replace &All";
+const char *textInSelection = "In &Selection";
+
+const char *textFilterPrompt = "&Filter:";
+
+SearchOption toggles[] = {
+	{"Match &whole word only", IDM_WHOLEWORD, IDWHOLEWORD},
+	{"&Case sensitive", IDM_MATCHCASE, IDMATCHCASE},
+	{"Regular &expression", IDM_REGEXP, IDREGEXP},
+	{"Transform &backslash expressions", IDM_UNSLASH, IDUNSLASH},
+	{"Wrap ar&ound", IDM_WRAPAROUND, IDWRAP},
+	{"&Up", IDM_DIRECTIONUP, IDDIRECTIONUP},
+	{"Fil&ter", IDM_FILTERSTATE, IDFILTERSTATE},
+	{"Conte&xt", IDM_CONTEXTVISIBLE, IDCONTEXTVISIBLE},
+	{nullptr, 0, 0},
+};
+
+}
+
+GUI::Window Strip::CreateText(const char *text) {
+	GUI::gui_string localised = localiser->Text(text);
+	const int width = WidthText(fontText, localised.c_str()) + 4;
+	GUI::Window w;
+	w.SetID(::CreateWindowEx(0, TEXT("Static"), localised.c_str(),
+				 WS_CHILD | WS_CLIPSIBLINGS | SS_RIGHT,
+				 2, 2, width, 21,
+				 Hwnd(), HmenuID(0), ::ApplicationInstance(), nullptr));
+	SetFontHandle(w, fontText);
+	w.Show();
+	return w;
 }
 
 GUI::Window Strip::CreateButton(const char *text, size_t ident, bool check) {
@@ -242,7 +313,7 @@ GUI::Window Strip::CreateButton(const char *text, size_t ident, bool check) {
 				 WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS |
 				 (check ? (BS_AUTOCHECKBOX | BS_PUSHLIKE | BS_BITMAP) : BS_PUSHBUTTON),
 				 2, 2, width, height,
-				 Hwnd(), HmenuID(ident), ::ApplicationInstance(), 0));
+				 Hwnd(), HmenuID(ident), ::ApplicationInstance(), nullptr));
 	if (check) {
 		int resNum = IDBM_WORD;
 		switch (ident) {
@@ -264,9 +335,20 @@ GUI::Window Strip::CreateButton(const char *text, size_t ident, bool check) {
 		case IDDIRECTIONUP:
 			resNum = IDBM_UP;
 			break;
+		case IDFILTERSTATE:
+			resNum = IDBM_FILTER;
+			break;
+		case IDCONTEXTVISIBLE:
+			resNum = IDBM_CONTEXT;
+			break;
+		default:
+			break;
 		}
 
-		const UINT flags = (GetVersion(TEXT("COMCTL32")) >= PACKVERSION(6, 0)) ?
+		if (!versionComctl) {
+			versionComctl = GetVersion(L"COMCTL32");
+		}
+		const UINT flags = (versionComctl >= PACKVERSION(6, 0)) ?
 				   (LR_DEFAULTSIZE) : (LR_DEFAULTSIZE|LR_LOADMAP3DCOLORS);
 		HBITMAP bm = static_cast<HBITMAP>(::LoadImage(
 				::ApplicationInstance(), MAKEINTRESOURCE(resNum + resDifference), IMAGE_BITMAP,
@@ -312,11 +394,11 @@ void Strip::Creation() {
 	fontText = ::CreateFontIndirect(&ncm.lfMessageFont);
 
 	wToolTip = ::CreateWindowEx(0,
-				    TOOLTIPS_CLASSW, NULL,
+				    TOOLTIPS_CLASSW, nullptr,
 				    WS_POPUP | TTS_ALWAYSTIP,
 				    CW_USEDEFAULT, CW_USEDEFAULT,
 				    CW_USEDEFAULT, CW_USEDEFAULT,
-				    Hwnd(), NULL, ::ApplicationInstance(), NULL);
+				    Hwnd(), NULL, ::ApplicationInstance(), nullptr);
 
 	SetTheme();
 }
@@ -346,7 +428,7 @@ bool Strip::KeyDown(WPARAM key) {
 	case VK_TAB:
 		if (IsChild(Hwnd(), ::GetFocus())) {
 			::SendMessage(Hwnd(), WM_UPDATEUISTATE, (UISF_HIDEACCEL|UISF_HIDEFOCUS) << 16 | UIS_CLEAR, 0);
-			Tab((::GetKeyState(VK_SHIFT) & 0x80000000) == 0);
+			Tab(!IsKeyDown(VK_SHIFT));
 			return true;
 		} else {
 			return false;
@@ -355,22 +437,20 @@ bool Strip::KeyDown(WPARAM key) {
 		Close();
 		return true;
 	default:
-		if ((::GetKeyState(VK_MENU) & 0x80000000) != 0) {
+		if (IsKeyDown(VK_MENU) && !IsKeyDown(VK_CONTROL)) {
 			HWND wChild = GetFirstChild(Hwnd());
 			while (wChild) {
 				const GUI::gui_string className = ClassNameOfWindow(wChild);
 				if ((className == TEXT("Button")) || (className == TEXT("Static"))) {
 					const std::string caption = GUI::UTF8FromString(TextOfWindow(wChild));
-					for (int i=0; caption[i]; i++) {
-						if ((caption[i] == L'&') && (MakeUpperCase(caption[i+1]) == static_cast<int>(key))) {
-							if (className == TEXT("Button")) {
-								::SendMessage(wChild, BM_CLICK, 0, 0);
-							} else {	// Static caption
-								wChild = GetNextSibling(wChild);
-								::SetFocus(wChild);
-							}
-							return true;
+					if (MatchAccessKey(caption, static_cast<int>(key))) {
+						if (className == TEXT("Button")) {
+							::SendMessage(wChild, BM_CLICK, 0, 0);
+						} else {	// Static caption
+							wChild = GetNextSibling(wChild);
+							::SetFocus(wChild);
 						}
+						return true;
 					}
 				}
 				wChild = GetNextSibling(wChild);
@@ -387,15 +467,6 @@ bool Strip::Command(WPARAM) {
 void Strip::Size() {
 }
 
-namespace {
-
-RECT RECTFromRectangle(GUI::Rectangle r) noexcept {
-	RECT rc = { r.left, r.top, r.right, r.bottom };
-	return rc;
-}
-
-}
-
 void Strip::Paint(HDC hDC) {
 	const GUI::Rectangle rcStrip = GetClientPosition();
 	const RECT rc = RECTFromRectangle(rcStrip);
@@ -409,9 +480,9 @@ void Strip::Paint(HDC hDC) {
 		if (hTheme) {
 #ifdef THEME_AVAILABLE
 			int closeAppearence = CBS_NORMAL;
-			if (closeState == csOver) {
+			if (closeState == StripCloseState::over) {
 				closeAppearence = CBS_HOT;
-			} else if (closeState == csClickedOver) {
+			} else if (closeState == StripCloseState::clickedOver) {
 				closeAppearence = CBS_PUSHED;
 			}
 			::DrawThemeBackground(hTheme, hDC, WP_SMALLCLOSEBUTTON, closeAppearence,
@@ -419,9 +490,9 @@ void Strip::Paint(HDC hDC) {
 #endif
 		} else {
 			int closeAppearence = 0;
-			if (closeState == csOver) {
+			if (closeState == StripCloseState::over) {
 				closeAppearence = DFCS_HOT;
-			} else if (closeState == csClickedOver) {
+			} else if (closeState == StripCloseState::clickedOver) {
 				closeAppearence = DFCS_PUSHED;
 			}
 
@@ -473,26 +544,30 @@ void Strip::InvalidateClose() {
 	::InvalidateRect(Hwnd(), &rc, TRUE);
 }
 
+void Strip::Redraw() noexcept {
+	::InvalidateRect(Hwnd(), nullptr, TRUE);
+}
+
 bool Strip::MouseInClose(GUI::Point pt) {
 	const GUI::Rectangle rcClose = CloseArea();
 	return rcClose.Contains(pt);
 }
 
 void Strip::TrackMouse(GUI::Point pt) {
-	const stripCloseState closeStateStart = closeState;
+	const StripCloseState closeStateStart = closeState;
 	if (MouseInClose(pt)) {
-		if (closeState == csNone)
-			closeState = csOver;
-		if (closeState == csClicked)
-			closeState = csClickedOver;
+		if (closeState == StripCloseState::none)
+			closeState = StripCloseState::over;
+		if (closeState == StripCloseState::clicked)
+			closeState = StripCloseState::clickedOver;
 	} else {
-		if (closeState == csOver)
-			closeState = csNone;
-		if (closeState == csClickedOver)
-			closeState = csClicked;
+		if (closeState == StripCloseState::over)
+			closeState = StripCloseState::none;
+		if (closeState == StripCloseState::clickedOver)
+			closeState = StripCloseState::clicked;
 	}
-	if ((closeState != csNone) && !capturedMouse) {
-		TRACKMOUSEEVENT tme;
+	if ((closeState != StripCloseState::none) && !capturedMouse) {
+		TRACKMOUSEEVENT tme {};
 		tme.cbSize = sizeof(tme);
 		tme.dwFlags = TME_LEAVE;
 		tme.hwndTrack = Hwnd();
@@ -525,13 +600,6 @@ void Strip::SetTheme() noexcept {
 		closeSize.cy = closeSize.cy * scale / 96;
 	}
 #endif
-}
-
-static bool HideKeyboardCues() noexcept {
-	BOOL b=FALSE;
-	if (::SystemParametersInfo(SPI_GETKEYBOARDCUES, 0, &b, 0) == 0)
-		return FALSE;
-	return !b;
 }
 
 LRESULT Strip::EditColour(HWND hwnd, HDC hdc) noexcept {
@@ -590,7 +658,7 @@ LRESULT Strip::CustomDraw(NMHDR *pnmh) noexcept {
 		const int xOffset = ((rcButton.right - rcButton.left) - rbmi.bmiHeader.biWidth) / 2 + 1;
 		const int yOffset = ((rcButton.bottom - rcButton.top) - rbmi.bmiHeader.biHeight) / 2;
 
-		HDC hdcBM = ::CreateCompatibleDC(NULL);
+		HDC hdcBM = ::CreateCompatibleDC({});
 		HBITMAP hbmOriginal = SelectBitmap(hdcBM, hBitmap);
 		::TransparentBlt(pcd->hdc, xOffset, yOffset,
 				 rbmi.bmiHeader.biWidth, rbmi.bmiHeader.biHeight,
@@ -665,7 +733,7 @@ LRESULT Strip::WndProc(UINT iMessage, WPARAM wParam, LPARAM lParam) {
 
 	case WM_LBUTTONDOWN:
 		if (MouseInClose(PointFromLong(lParam))) {
-			closeState = csClickedOver;
+			closeState = StripCloseState::clickedOver;
 			InvalidateClose();
 			capturedMouse = true;
 			::SetCapture(Hwnd());
@@ -682,7 +750,7 @@ LRESULT Strip::WndProc(UINT iMessage, WPARAM wParam, LPARAM lParam) {
 				Close();
 			}
 			capturedMouse = false;
-			closeState = csNone;
+			closeState = StripCloseState::none;
 			InvalidateClose();
 			::ReleaseCapture();
 		}
@@ -690,7 +758,7 @@ LRESULT Strip::WndProc(UINT iMessage, WPARAM wParam, LPARAM lParam) {
 
 	case WM_MOUSELEAVE:
 		if (!capturedMouse) {
-			closeState = csNone;
+			closeState = StripCloseState::none;
 			InvalidateClose();
 		}
 		break;
@@ -742,20 +810,27 @@ void Strip::AddToPopUp(GUI::Menu &popup, const char *label, int cmd, bool checke
 void Strip::ShowPopup() {
 }
 
+void Strip::CloseIfOpen() {
+	if (visible) {
+		Close();
+	}
+}
+
 void BackgroundStrip::Creation() {
 	Strip::Creation();
+	lineHeight = SizeText(fontText, GUI_TEXT("\u00C5Ay")).cy + space * 2 + 1;
 
 	wExplanation = ::CreateWindowEx(0, TEXT("Static"), TEXT(""),
 					WS_CHILD | WS_CLIPSIBLINGS,
 					2, 2, 100, 21,
-					Hwnd(), HmenuID(0), ::ApplicationInstance(), 0);
+					Hwnd(), HmenuID(0), ::ApplicationInstance(), nullptr);
 	wExplanation.Show();
 	SetFontHandle(wExplanation, fontText);
 
 	wProgress = ::CreateWindowEx(0, PROGRESS_CLASS, TEXT(""),
 				     WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 				     2, 2, 100, 21,
-				     Hwnd(), HmenuID(0), ::ApplicationInstance(), 0);
+				     Hwnd(), HmenuID(0), ::ApplicationInstance(), nullptr);
 }
 
 void BackgroundStrip::Destruction() noexcept {
@@ -787,7 +862,7 @@ void BackgroundStrip::Size() {
 	rcExplanation.bottom += 1;
 	wExplanation.SetPosition(rcExplanation);
 
-	::InvalidateRect(Hwnd(), nullptr, TRUE);
+	Redraw();
 }
 
 bool BackgroundStrip::HasClose() const noexcept {
@@ -829,8 +904,6 @@ void BackgroundStrip::SetProgress(const GUI::gui_string &explanation, size_t siz
 	::SendMessage(HwndOf(wProgress), PBM_SETPOS, progress/scaleProgress, 0);
 }
 
-static constexpr COLORREF colourNoMatch = RGB(0xff, 0x66, 0x66);
-
 void SearchStripBase::Creation() {
 	Strip::Creation();
 
@@ -857,7 +930,7 @@ void SearchStrip::Creation() {
 	wText = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("Edit"), TEXT(""),
 			       WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS | ES_AUTOHSCROLL,
 			       50, 2, 300, 21,
-			       Hwnd(), HmenuID(IDC_INCFINDTEXT), ::ApplicationInstance(), 0);
+			       Hwnd(), HmenuID(IDC_INCFINDTEXT), ::ApplicationInstance(), nullptr);
 	wText.Show();
 
 	SetFontHandle(wText, fontText);
@@ -903,7 +976,7 @@ void SearchStrip::Size() {
 
 	wStaticFind.SetPosition(rcText);
 
-	::InvalidateRect(Hwnd(), nullptr, TRUE);
+	Redraw();
 }
 
 void SearchStrip::Paint(HDC hDC) {
@@ -934,7 +1007,7 @@ void SearchStrip::Next(bool select) {
 	if (select) {
 		pSearcher->MoveBack();
 	}
-	pSearcher->SetFindText(ControlText(wText).c_str());
+	pSearcher->SetFindText(ControlText(wText));
 	pSearcher->wholeWord = false;
 	if (pSearcher->FindHasText()) {
 		pSearcher->FindNext(false, false);
@@ -949,7 +1022,7 @@ bool SearchStrip::Command(WPARAM wParam) {
 	if (entered)
 		return false;
 	const int control = ControlIDOfWParam(wParam);
-	const int subCommand = static_cast<int>(wParam >> 16);
+	const WPARAM subCommand = SubCommandOfWParam(wParam);
 	if (((control == IDC_INCFINDTEXT) && (subCommand == EN_CHANGE)) ||
 			(control == IDC_INCFINDBTNOK)) {
 		Next(control != IDC_INCFINDBTNOK);
@@ -978,7 +1051,7 @@ LRESULT SearchStrip::WndProc(UINT iMessage, WPARAM wParam, LPARAM lParam) {
 LRESULT FindReplaceStrip::EditColour(HWND hwnd, HDC hdc) noexcept {
 	if (GetDlgItem(static_cast<HWND>(GetID()), IDFINDWHAT) == ::GetParent(hwnd)) {
 		if (pSearcher->FindHasText() &&
-				(incrementalBehaviour != simple) &&
+				(incrementalBehaviour != IncrementalBehaviour::simple) &&
 				pSearcher->failedfind) {
 			return NoMatchColour(hdc);
 		}
@@ -986,24 +1059,36 @@ LRESULT FindReplaceStrip::EditColour(HWND hwnd, HDC hdc) noexcept {
 	return Strip::EditColour(hwnd, hdc);
 }
 
+void FindReplaceStrip::SetFindFromSource(ChangingSource source) {
+	if (source == ChangingSource::edit) {
+		pSearcher->SetFindText(ControlText(wText));
+	} else {
+		pSearcher->SetFindText(ComboSelectionText(wText));
+	}
+}
+
 void FindReplaceStrip::NextIncremental(ChangingSource source) {
-	if (incrementalBehaviour == simple)
+	if (performFilter && !pSearcher->filterState) {
+		pSearcher->FilterAll(false);
+	}
+	if ((incrementalBehaviour == IncrementalBehaviour::simple) && !pSearcher->filterState)
 		return;
 	if (pSearcher->findWhat.length()) {
 		pSearcher->MoveBack();
 	}
 
-	if (source == changingEdit) {
-		pSearcher->SetFindText(ControlText(wText).c_str());
-	} else {
-		pSearcher->SetFindText(ComboSelectionText(wText).c_str());
-	}
+	SetFindFromSource(source);
 
 	if (pSearcher->FindHasText()) {
+		pSearcher->InsertFindInMemory();
 		pSearcher->FindNext(pSearcher->reverseFind, false, true);
 		pSearcher->SetCaretAsStart();
 	}
-	MarkIncremental();	// Mark all secondary hits
+	if (pSearcher->filterState) {
+		pSearcher->FilterAll(true);
+	} else {
+		MarkIncremental();	// Mark all secondary hits
+	}
 	wText.InvalidateAll();
 }
 
@@ -1012,12 +1097,16 @@ void FindReplaceStrip::SetIncrementalBehaviour(int behaviour) noexcept {
 }
 
 void FindReplaceStrip::MarkIncremental() {
-	if (incrementalBehaviour == showAllMatches) {
-		pSearcher->MarkAll(Searcher::markIncremental);
+	if (incrementalBehaviour == IncrementalBehaviour::showAllMatches) {
+		pSearcher->MarkAll(Searcher::MarkPurpose::incremental);
 	}
 }
 
 void FindReplaceStrip::Close() {
+	if (pSearcher->filterState) {
+		pSearcher->filterState = false;
+		pSearcher->FilterAll(false);
+	}
 	if (pSearcher->havefound) {
 		pSearcher->InsertFindInMemory();
 	}
@@ -1033,7 +1122,7 @@ void FindStrip::Creation() {
 	wText = CreateWindowEx(0, TEXT("ComboBox"), TEXT(""),
 			       WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS | CBS_DROPDOWN | CBS_AUTOHSCROLL,
 			       50, 2, 300, 80,
-			       Hwnd(), HmenuID(IDFINDWHAT), ::ApplicationInstance(), 0);
+			       Hwnd(), HmenuID(IDFINDWHAT), ::ApplicationInstance(), nullptr);
 	SetFontHandle(wText, fontText);
 	wText.Show();
 
@@ -1059,58 +1148,39 @@ void FindStrip::Size() {
 	if (!visible)
 		return;
 	Strip::Size();
-	const GUI::Rectangle rcArea = LineArea(0);
+	GUI::Rectangle rcArea = LineArea(0);
+	rcArea.left += space;
 
-	GUI::Rectangle rcButton = rcArea;
-	rcButton.top -= 1;
-	rcButton.bottom += 1;
+	const Interval verticalButton(rcArea.top - 1, rcArea.bottom);
+	const Interval verticalCheck(rcArea.top, rcArea.bottom);
 
-	const int checkWidth = rcButton.Height() - 2;	// Using height to make square
-	rcButton.left = rcButton.right - checkWidth;
-	wCheckUp.SetPosition(rcButton);
+	const int checkWidth = rcArea.Height() - 1;	// Using height to make square
 
-	rcButton.right = rcButton.left - 4;
-	rcButton.left = rcButton.right - checkWidth;
-	wCheckWrap.SetPosition(rcButton);
+	const std::vector<Interval> positions = Distribute(rcArea, 4, {
+		WidthControl(wStaticFind),
+		0,
+		WidthControl(wButton),
+		WidthControl(wButtonMarkAll),
+		checkWidth,
+		checkWidth,
+		checkWidth,
+		checkWidth,
+		checkWidth,
+		checkWidth,
+	});
 
-	rcButton.right = rcButton.left - 4;
-	rcButton.left = rcButton.right - checkWidth;
-	wCheckBE.SetPosition(rcButton);
+	SetWindowPosition(wStaticFind, positions[0], Interval(rcArea.top + 3, rcArea.bottom));
+	SetWindowPosition(wText, positions[1], Interval(rcArea.top, rcArea.bottom + 60));
+	SetWindowPosition(wButton, positions[2], verticalButton);
+	SetWindowPosition(wButtonMarkAll, positions[3], verticalButton);
+	SetWindowPosition(wCheckWord, positions[4], verticalCheck);
+	SetWindowPosition(wCheckCase, positions[5], verticalCheck);
+	SetWindowPosition(wCheckRE, positions[6], verticalCheck);
+	SetWindowPosition(wCheckBE, positions[7], verticalCheck);
+	SetWindowPosition(wCheckWrap, positions[8], verticalCheck);
+	SetWindowPosition(wCheckUp, positions[9], verticalCheck);
 
-	rcButton.right = rcButton.left - 4;
-	rcButton.left = rcButton.right - checkWidth;
-	wCheckRE.SetPosition(rcButton);
-
-	rcButton.right = rcButton.left - 4;
-	rcButton.left = rcButton.right - checkWidth;
-	wCheckCase.SetPosition(rcButton);
-
-	rcButton.right = rcButton.left - 4;
-	rcButton.left = rcButton.right - checkWidth;
-	wCheckWord.SetPosition(rcButton);
-
-	rcButton.right = rcButton.left - 4;
-	rcButton.left = rcButton.right - WidthControl(wButtonMarkAll);
-	wButtonMarkAll.SetPosition(rcButton);
-
-	rcButton.right = rcButton.left - 4;
-	rcButton.left = rcButton.right - WidthControl(wButton);
-	wButton.SetPosition(rcButton);
-
-	GUI::Rectangle rcText = rcArea;
-	rcText.bottom += 60;
-	rcText.left = WidthControl(wStaticFind) + 8;
-	rcText.right = rcButton.left - 4;
-	wText.SetPosition(rcText);
-	wText.Show();
-
-	rcText.right = rcText.left - 4;
-	rcText.left = 4;
-	rcText.top = rcArea.top + 3;
-	rcText.bottom = rcArea.bottom;
-	wStaticFind.SetPosition(rcText);
-
-	::InvalidateRect(Hwnd(), nullptr, TRUE);
+	Redraw();
 }
 
 void FindStrip::Paint(HDC hDC) {
@@ -1126,17 +1196,12 @@ bool FindStrip::KeyDown(WPARAM key) {
 		return false;
 	if (Strip::KeyDown(key))
 		return true;
-	switch (key) {
-	case VK_RETURN:
+	if (key == VK_RETURN) {
 		if (IsChild(Hwnd(), ::GetFocus())) {
-			if (incrementalBehaviour == simple) {
-				Next(false, IsKeyDown(VK_SHIFT));
-			} else {
-				if (pSearcher->closeFind == Searcher::CloseFind::closePrevent) {
-					Next(false, IsKeyDown(VK_SHIFT));
-				} else {
-					Close();
-				}
+			Next(false, IsKeyDown(VK_SHIFT));
+			if ((incrementalBehaviour != IncrementalBehaviour::simple) &&
+				(pSearcher->closeFind != Searcher::CloseFind::closePrevent)) {
+				Close();
 			}
 			return true;
 		}
@@ -1145,9 +1210,9 @@ bool FindStrip::KeyDown(WPARAM key) {
 }
 
 void FindStrip::Next(bool markAll, bool invertDirection) {
-	pSearcher->SetFind(ControlText(wText).c_str());
+	pSearcher->SetFind(ControlText(wText));
 	if (markAll) {
-		pSearcher->MarkAll(Searcher::markWithBookMarks);
+		pSearcher->MarkAll(Searcher::MarkPurpose::withBookMarks);
 	}
 	const bool found = pSearcher->FindNext(pSearcher->reverseFind ^ invertDirection) >= 0;
 	if (pSearcher->ShouldClose(found)) {
@@ -1173,16 +1238,12 @@ bool FindStrip::Command(WPARAM wParam) {
 	if (entered)
 		return false;
 	const int control = ControlIDOfWParam(wParam);
-	const int subCommand = static_cast<int>(wParam >> 16);
+	const WPARAM subCommand = SubCommandOfWParam(wParam);
 	if (control == IDOK) {
-		if (incrementalBehaviour == simple) {
-			Next(false, false);
-		} else {
-			if (pSearcher->closeFind == Searcher::CloseFind::closePrevent) {
-				Next(false, false);
-			} else {
-				Close();
-			}
+		Next(false, false);
+		if ((incrementalBehaviour != IncrementalBehaviour::simple) &&
+			(pSearcher->closeFind != Searcher::CloseFind::closePrevent)) {
+			Close();
 		}
 		return true;
 	} else if (control == IDMARKALL) {
@@ -1190,15 +1251,15 @@ bool FindStrip::Command(WPARAM wParam) {
 		return true;
 	} else if (control == IDFINDWHAT) {
 		if (subCommand == CBN_EDITCHANGE) {
-			NextIncremental(changingEdit);
+			NextIncremental(ChangingSource::edit);
 			return true;
 		} else if (subCommand == CBN_SELCHANGE) {
-			NextIncremental(changingCombo);
+			NextIncremental(ChangingSource::combo);
 			return true;
 		}
 	} else {
 		pSearcher->FlagFromCmd(control) = !pSearcher->FlagFromCmd(control);
-		NextIncremental(changingEdit);
+		NextIncremental(ChangingSource::edit);
 		CheckButtons();
 	}
 	return false;
@@ -1236,7 +1297,7 @@ void ReplaceStrip::Creation() {
 	wText = CreateWindowEx(0, TEXT("ComboBox"), TEXT(""),
 			       WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS | CBS_DROPDOWN | CBS_AUTOHSCROLL,
 			       50, 2, 300, 80,
-			       Hwnd(), HmenuID(IDFINDWHAT), ::ApplicationInstance(), 0);
+			       Hwnd(), HmenuID(IDFINDWHAT), ::ApplicationInstance(), nullptr);
 	SetFontHandle(wText, fontText);
 	wText.Show();
 
@@ -1248,7 +1309,7 @@ void ReplaceStrip::Creation() {
 	wReplace = CreateWindowEx(0, TEXT("ComboBox"), TEXT(""),
 				  WS_CHILD | WS_TABSTOP | CBS_DROPDOWN | CBS_AUTOHSCROLL,
 				  50, 2, 300, 80,
-				  Hwnd(), HmenuID(IDREPLACEWITH), ::ApplicationInstance(), 0);
+				  Hwnd(), HmenuID(IDREPLACEWITH), ::ApplicationInstance(), nullptr);
 	SetFontHandle(wReplace, fontText);
 	wReplace.Show();
 
@@ -1265,6 +1326,9 @@ void ReplaceStrip::Creation() {
 	wCheckBE = CreateButton(toggles[SearchOption::tBackslash].label, toggles[SearchOption::tBackslash].id, true);
 
 	wCheckWrap = CreateButton(toggles[SearchOption::tWrap].label, toggles[SearchOption::tWrap].id, true);
+
+	wCheckFilter = CreateButton(toggles[SearchOption::tFilter].label, toggles[SearchOption::tFilter].id, true);
+	wCheckContext = CreateButton(toggles[SearchOption::tContext].label, toggles[SearchOption::tContext].id, true);
 }
 
 void ReplaceStrip::Destruction() noexcept {
@@ -1280,85 +1344,53 @@ void ReplaceStrip::Size() {
 		return;
 	Strip::Size();
 
-	const int widthCaption = Maximum(WidthControl(wStaticFind), WidthControl(wStaticReplace));
+	const int widthCaption = std::max(WidthControl(wStaticFind), WidthControl(wStaticReplace));
 
 	GUI::Rectangle rcLine = LineArea(0);
+	rcLine.left += space;
 
-	const int widthButtons = Maximum(WidthControl(wButtonFind), WidthControl(wButtonReplace));
-	const int widthLastButtons = Maximum(WidthControl(wButtonReplaceAll), WidthControl(wButtonReplaceInSelection));
+	const int widthButtons = std::max(WidthControl(wButtonFind), WidthControl(wButtonReplace));
+	const int widthLastButtons = std::max(WidthControl(wButtonReplaceAll), WidthControl(wButtonReplaceInSelection));
 
-	GUI::Rectangle rcButton = rcLine;
-	rcButton.top -= 1;
+	const int checkWidth = rcLine.Height() - 1;	// Using height to make square
 
-	const int checkWidth = rcButton.Height() - 2;	// Using height to make square
+	const std::vector<Interval> positions = Distribute(rcLine, 4, {
+		widthCaption,
+		0,
+		widthButtons,
+		widthLastButtons,
+		checkWidth,
+		checkWidth,
+		checkWidth,
+		checkWidth,
+	});
 
-	// Allow empty slot to match wrap button on next line
-	rcButton.right = rcButton.right - (checkWidth + 4);
+	Interval verticalButton(rcLine.top - 1, rcLine.bottom);
+	Interval verticalCheck(rcLine.top, rcLine.bottom);
 
-	rcButton.left = rcButton.right - checkWidth;
-	wCheckCase.SetPosition(rcButton);
-
-	rcButton.right = rcButton.left - 4;
-	rcButton.left = rcButton.right - checkWidth;
-	wCheckWord.SetPosition(rcButton);
-
-	rcButton.right = rcButton.left - 4;
-	rcButton.left = rcButton.right - widthLastButtons;
-	wButtonReplaceAll.SetPosition(rcButton);
-
-	rcButton.right = rcButton.left - 4;
-	rcButton.left = rcButton.right - widthButtons;
-	wButtonFind.SetPosition(rcButton);
-
-	GUI::Rectangle rcText = rcLine;
-	rcText.bottom += 60;
-	rcText.left = widthCaption + 8;
-	rcText.right = rcButton.left - 4;
-	wText.SetPosition(rcText);
-
-	GUI::Rectangle rcStatic = rcLine;
-	rcStatic.right = rcText.left - 4;
-	rcStatic.left = 4;
-	rcStatic.top = rcLine.top + 3;
-	wStaticFind.SetPosition(rcStatic);
+	SetWindowPosition(wStaticFind, positions[0], Interval(rcLine.top + 3, rcLine.bottom));
+	SetWindowPosition(wText, positions[1], Interval(rcLine.top, rcLine.bottom + 60));
+	SetWindowPosition(wButtonFind, positions[2], verticalButton);
+	SetWindowPosition(wButtonReplaceAll, positions[3], verticalButton);
+	SetWindowPosition(wCheckWord, positions[4], verticalCheck);
+	SetWindowPosition(wCheckCase, positions[5], verticalCheck);
+	SetWindowPosition(wCheckFilter, positions[6], verticalCheck);
+	SetWindowPosition(wCheckContext, positions[7], verticalCheck);
 
 	rcLine = LineArea(1);
 
-	rcButton = rcLine;
-	rcButton.top -= 1;
+	verticalButton = Interval(rcLine.top - 1, rcLine.bottom);
+	verticalCheck = Interval(rcLine.top, rcLine.bottom);
 
-	rcButton.left = rcButton.right - checkWidth;
-	wCheckWrap.SetPosition(rcButton);
+	SetWindowPosition(wStaticReplace, positions[0], Interval(rcLine.top + 3, rcLine.bottom));
+	SetWindowPosition(wReplace, positions[1], Interval(rcLine.top, rcLine.bottom + 60));
+	SetWindowPosition(wButtonReplace, positions[2], verticalButton);
+	SetWindowPosition(wButtonReplaceInSelection, positions[3], verticalButton);
+	SetWindowPosition(wCheckRE, positions[4], verticalCheck);
+	SetWindowPosition(wCheckBE, positions[5], verticalCheck);
+	SetWindowPosition(wCheckWrap, positions[6], verticalCheck);
 
-	rcButton.right = rcButton.left - 4;
-	rcButton.left = rcButton.right - checkWidth;
-	wCheckBE.SetPosition(rcButton);
-
-	rcButton.right = rcButton.left - 4;
-	rcButton.left = rcButton.right - checkWidth;
-	wCheckRE.SetPosition(rcButton);
-
-	rcButton.right = rcButton.left - 4;
-	rcButton.left = rcButton.right - widthLastButtons;
-	wButtonReplaceInSelection.SetPosition(rcButton);
-
-	rcButton.right = rcButton.left - 4;
-	rcButton.left = rcButton.right - widthButtons;
-	wButtonReplace.SetPosition(rcButton);
-
-	GUI::Rectangle rcReplace = rcLine;
-	rcReplace.bottom += 60;
-	rcReplace.left = rcText.left;
-	rcReplace.right = rcText.right;
-	wReplace.SetPosition(rcReplace);
-
-	rcStatic = rcLine;
-	rcStatic.right = rcReplace.left - 4;
-	rcStatic.left = 4;
-	rcStatic.top = rcLine.top + 3;
-	wStaticReplace.SetPosition(rcStatic);
-
-	::InvalidateRect(Hwnd(), nullptr, TRUE);
+	Redraw();
 }
 
 void ReplaceStrip::Paint(HDC hDC) {
@@ -1369,18 +1401,12 @@ void ReplaceStrip::Focus() noexcept {
 	::SetFocus(HwndOf(wText));
 }
 
-static bool IsSameOrChild(const GUI::Window &wParent, HWND wChild) noexcept {
-	HWND hwnd = HwndOf(wParent);
-	return (wChild == hwnd) || IsChild(hwnd, wChild);
-}
-
 bool ReplaceStrip::KeyDown(WPARAM key) {
 	if (!visible)
 		return false;
 	if (Strip::KeyDown(key))
 		return true;
-	switch (key) {
-	case VK_RETURN:
+	if (key == VK_RETURN) {
 		if (IsChild(Hwnd(), ::GetFocus())) {
 			if (IsSameOrChild(wButtonFind, ::GetFocus()))
 				HandleReplaceCommand(IDOK, IsKeyDown(VK_SHIFT));
@@ -1403,8 +1429,10 @@ bool ReplaceStrip::KeyDown(WPARAM key) {
 void ReplaceStrip::ShowPopup() {
 	GUI::Menu popup;
 	popup.CreatePopUp();
-	for (int i=SearchOption::tWord; i<=SearchOption::tWrap; i++) {
-		AddToPopUp(popup, toggles[i].label, toggles[i].cmd, pSearcher->FlagFromCmd(toggles[i].cmd));
+	for (int i = SearchOption::tWord; i <= SearchOption::tContext; i++) {
+		if (i != SearchOption::tUp) {
+			AddToPopUp(popup, toggles[i].label, toggles[i].cmd, pSearcher->FlagFromCmd(toggles[i].cmd));
+		}
 	}
 	const GUI::Rectangle rcButton = wCheckWord.GetPosition();
 	const GUI::Point pt(rcButton.left, rcButton.bottom);
@@ -1412,11 +1440,11 @@ void ReplaceStrip::ShowPopup() {
 }
 
 void ReplaceStrip::HandleReplaceCommand(int cmd, bool reverseFind) {
-	pSearcher->SetFind(ControlText(wText).c_str());
+	pSearcher->SetFind(ControlText(wText));
 	SetComboFromMemory(wText, pSearcher->memFinds);
 	SetComboText(wText, pSearcher->findWhat, ComboSelection::atEnd);
 	if (cmd != IDOK) {
-		pSearcher->SetReplace(ControlText(wReplace).c_str());
+		pSearcher->SetReplace(ControlText(wReplace));
 		SetComboFromMemory(wReplace, pSearcher->memReplaces);
 		SetComboText(wReplace, pSearcher->replaceWhat, ComboSelection::atEnd);
 	}
@@ -1426,13 +1454,14 @@ void ReplaceStrip::HandleReplaceCommand(int cmd, bool reverseFind) {
 			pSearcher->FindNext(reverseFind);
 		}
 	} else if (cmd == IDREPLACE) {
-		pSearcher->ReplaceOnce(incrementalBehaviour == simple);
-		NextIncremental(changingEdit);	// Show not found colour if no more matches.
+		pSearcher->ReplaceOnce(incrementalBehaviour == IncrementalBehaviour::simple);
+		NextIncremental(ChangingSource::edit);	// Show not found colour if no more matches.
 	} else if ((cmd == IDREPLACEALL) || (cmd == IDREPLACEINSEL)) {
 		//~ replacements = pSciTEWin->ReplaceAll(cmd == IDREPLACEINSEL);
 		pSearcher->ReplaceAll(cmd == IDREPLACEINSEL);
-		NextIncremental(changingEdit);	// Show not found colour if no more matches.
+		NextIncremental(ChangingSource::edit);	// Show not found colour if no more matches.
 	}
+
 	//GUI::gui_string replDone = GUI::StringFromInteger(replacements);
 	//dlg.SetItemText(IDREPLDONE, replDone.c_str());
 }
@@ -1450,10 +1479,10 @@ bool ReplaceStrip::Command(WPARAM wParam) {
 		case CBN_SELENDCANCEL:
 			return false;
 		case CBN_EDITCHANGE:
-			NextIncremental(changingEdit);
+			NextIncremental(ChangingSource::edit);
 			return true;
 		case CBN_SELCHANGE:
-			NextIncremental(changingCombo);
+			NextIncremental(ChangingSource::combo);
 			return true;
 		default:
 			return false;
@@ -1471,13 +1500,24 @@ bool ReplaceStrip::Command(WPARAM wParam) {
 	case IDREGEXP:
 	case IDUNSLASH:
 	case IDWRAP:
+	case IDCONTEXTVISIBLE:
 	case IDM_WHOLEWORD:
 	case IDM_MATCHCASE:
 	case IDM_REGEXP:
 	case IDM_WRAPAROUND:
 	case IDM_UNSLASH:
+	case IDM_CONTEXTVISIBLE:
 		pSearcher->FlagFromCmd(control) = !pSearcher->FlagFromCmd(control);
-		NextIncremental(changingEdit);
+		NextIncremental(ChangingSource::edit);
+		break;
+
+	case IDM_FILTERSTATE:
+	case IDFILTERSTATE:
+		if (pSearcher->filterState) {
+			// Expand all folds
+		}
+		pSearcher->FlagFromCmd(control) = !pSearcher->FlagFromCmd(control);
+		NextIncremental(ChangingSource::edit);
 		break;
 
 	default:
@@ -1494,6 +1534,8 @@ void ReplaceStrip::CheckButtons() noexcept {
 	CheckButton(wCheckRE, pSearcher->regExp);
 	CheckButton(wCheckWrap, pSearcher->wrapFind);
 	CheckButton(wCheckBE, pSearcher->unSlash);
+	CheckButton(wCheckFilter, pSearcher->filterState);
+	CheckButton(wCheckContext, pSearcher->contextVisible);
 	entered--;
 }
 
@@ -1515,13 +1557,163 @@ void ReplaceStrip::ShowStrip() {
 	MarkIncremental();
 }
 
+void FilterStrip::Creation() {
+	SearchStripBase::Creation();
+
+	wStaticFind = CreateText(textFilterPrompt);
+
+	wText = CreateWindowEx(0, TEXT("ComboBox"), TEXT(""),
+		WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS | CBS_DROPDOWN | CBS_AUTOHSCROLL,
+		50, 2, 300, 80,
+		Hwnd(), HmenuID(IDFINDWHAT), ::ApplicationInstance(), nullptr);
+	SetFontHandle(wText, fontText);
+	wText.Show();
+
+	const GUI::Rectangle rcCombo = wText.GetPosition();
+	lineHeight = rcCombo.Height() + space + 1;
+
+	wCheckWord = CreateButton(toggles[SearchOption::tWord].label, toggles[SearchOption::tWord].id, true);
+	wCheckCase = CreateButton(toggles[SearchOption::tCase].label, toggles[SearchOption::tCase].id, true);
+	wCheckRE = CreateButton(toggles[SearchOption::tRegExp].label, toggles[SearchOption::tRegExp].id, true);
+	wCheckBE = CreateButton(toggles[SearchOption::tBackslash].label, toggles[SearchOption::tBackslash].id, true);
+	wCheckContext = CreateButton(toggles[SearchOption::tContext].label, toggles[SearchOption::tContext].id, true);
+}
+
+void FilterStrip::Destruction() noexcept {
+	SearchStripBase::Destruction();
+}
+
+void FilterStrip::Size() {
+	if (!visible)
+		return;
+	Strip::Size();
+	GUI::Rectangle rcArea = LineArea(0);
+	rcArea.left += space;
+
+	const Interval verticalCheck(rcArea.top, rcArea.bottom);
+
+	const int checkWidth = rcArea.Height() - 1;	// Using height to make square
+
+	const std::vector<Interval> positions = Distribute(rcArea, 4, {
+		WidthControl(wStaticFind),
+		0,
+		checkWidth,
+		checkWidth,
+		checkWidth,
+		checkWidth,
+		checkWidth,
+		});
+
+	SetWindowPosition(wStaticFind, positions[0], Interval(rcArea.top + 3, rcArea.bottom));
+	SetWindowPosition(wText, positions[1], Interval(rcArea.top, rcArea.bottom + 60));
+	SetWindowPosition(wCheckWord, positions[2], verticalCheck);
+	SetWindowPosition(wCheckCase, positions[3], verticalCheck);
+	SetWindowPosition(wCheckRE, positions[4], verticalCheck);
+	SetWindowPosition(wCheckBE, positions[5], verticalCheck);
+	SetWindowPosition(wCheckContext, positions[6], verticalCheck);
+
+	Redraw();
+}
+
+void FilterStrip::Paint(HDC hDC) {
+	Strip::Paint(hDC);
+}
+
+void FilterStrip::Focus() noexcept {
+	::SetFocus(HwndOf(wText));
+}
+
+bool FilterStrip::KeyDown(WPARAM key) {
+	if (!visible)
+		return false;
+	if (Strip::KeyDown(key))
+		return true;
+	if (key == VK_RETURN) {
+		if (IsChild(Hwnd(), ::GetFocus())) {
+			Filter(ChangingSource::edit);
+			return true;
+		}
+	}
+	return false;
+}
+
+void FilterStrip::Filter(ChangingSource source) {
+	SetFindFromSource(source);
+	pSearcher->InsertFindInMemory();
+	pSearcher->FilterAll(true);
+}
+
+void FilterStrip::ShowPopup() {
+	GUI::Menu popup;
+	popup.CreatePopUp();
+	for (int i = SearchOption::tWord; i <= SearchOption::tContext; i++) {
+		if ((i != SearchOption::tWrap) && (i != SearchOption::tUp) && (i != SearchOption::tFilter)) {
+			AddToPopUp(popup, toggles[i].label, toggles[i].cmd, pSearcher->FlagFromCmd(toggles[i].cmd));
+		}
+	}
+	const GUI::Rectangle rcButton = wCheckContext.GetPosition();
+	const GUI::Point pt(rcButton.left, rcButton.bottom);
+	popup.Show(pt, *this);
+}
+
+bool FilterStrip::Command(WPARAM wParam) {
+	if (entered)
+		return false;
+	const int control = ControlIDOfWParam(wParam);
+	const WPARAM subCommand = SubCommandOfWParam(wParam);
+	if (control == IDOK) {
+		Filter(ChangingSource::edit);
+		return true;
+	} else if (control == IDFINDWHAT) {
+		if (subCommand == CBN_EDITCHANGE) {
+			Filter(ChangingSource::edit);
+			return true;
+		} else if (subCommand == CBN_SELCHANGE) {
+			Filter(ChangingSource::combo);
+			return true;
+		}
+	} else {
+		pSearcher->FlagFromCmd(control) = !pSearcher->FlagFromCmd(control);
+		Filter(ChangingSource::edit);
+		CheckButtons();
+	}
+	return false;
+}
+
+void FilterStrip::CheckButtons() noexcept {
+	entered++;
+	CheckButton(wCheckWord, pSearcher->wholeWord);
+	CheckButton(wCheckCase, pSearcher->matchCase);
+	CheckButton(wCheckRE, pSearcher->regExp);
+	CheckButton(wCheckBE, pSearcher->unSlash);
+	CheckButton(wCheckContext, pSearcher->contextVisible);
+	entered--;
+}
+
+void FilterStrip::ShowStrip() {
+	pSearcher->failedfind = false;
+	Focus();
+	pSearcher->SetCaretAsStart();
+	pSearcher->InsertFindInMemory();
+	SetComboFromMemory(wText, pSearcher->memFinds);
+	SetComboText(wText, pSearcher->findWhat, ComboSelection::all);
+	CheckButtons();
+	pSearcher->ScrollEditorIfNeeded();
+	Filter(ChangingSource::edit);
+}
+
+void FilterStrip::Close() {
+	pSearcher->FilterAll(false);
+	FindReplaceStrip::Close();
+}
+
 void UserStrip::Creation() {
 	Strip::Creation();
 	// Combo boxes automatically size to a reasonable height so create a temporary and measure
 	HWND wComboTest = ::CreateWindowEx(0, TEXT("ComboBox"), TEXT("Aby"),
 					   WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS | CBS_DROPDOWN | CBS_AUTOHSCROLL,
 					   50, 2, 300, 80,
-					   Hwnd(), 0, ::ApplicationInstance(), 0);
+					   Hwnd(), 0, ::ApplicationInstance(), nullptr);
 	SetWindowFont(wComboTest, fontText, 0);
 	RECT rc;
 	::GetWindowRect(wComboTest, &rc);
@@ -1598,7 +1790,7 @@ void UserStrip::Size() {
 		top += lineHeight;
 	}
 
-	::InvalidateRect(Hwnd(), nullptr, TRUE);
+	Redraw();
 }
 
 bool UserStrip::HasClose() const noexcept {
@@ -1627,7 +1819,7 @@ bool UserStrip::KeyDown(WPARAM key) {
 			for (const std::vector<UserControl> &line : psd->controls) {
 				for (const UserControl &ctl : line) {
 					if (ctl.controlType == UserControl::ucDefaultButton) {
-						extender->OnUserStrip(ctl.item, scClicked);
+						extender->OnUserStrip(ctl.item, static_cast<int>(StripCommand::clicked));
 						return true;
 					}
 				}
@@ -1638,24 +1830,28 @@ bool UserStrip::KeyDown(WPARAM key) {
 	return false;
 }
 
-static StripCommand NotificationToStripCommand(int notification) noexcept {
+namespace {
+
+StripCommand NotificationToStripCommand(int notification) noexcept {
 	switch (notification) {
 	case BN_CLICKED:
-		return scClicked;
+		return StripCommand::clicked;
 	case EN_CHANGE:
 	case CBN_EDITCHANGE:
-		return scChange;
+		return StripCommand::change;
 	case EN_UPDATE:
-		return scUnknown;
+		return StripCommand::unknown;
 	case CBN_SETFOCUS:
 	case EN_SETFOCUS:
-		return scFocusIn;
+		return StripCommand::focusIn;
 	case CBN_KILLFOCUS:
 	case EN_KILLFOCUS:
-		return scFocusOut;
+		return StripCommand::focusOut;
 	default:
-		return scUnknown;
+		return StripCommand::unknown;
 	}
+}
+
 }
 
 bool UserStrip::Command(WPARAM wParam) {
@@ -1665,8 +1861,8 @@ bool UserStrip::Command(WPARAM wParam) {
 	const int notification = HIWORD(wParam);
 	if (extender) {
 		const StripCommand sc = NotificationToStripCommand(notification);
-		if (sc != scUnknown)
-			return extender->OnUserStrip(control, sc);
+		if (sc != StripCommand::unknown)
+			return extender->OnUserStrip(control, static_cast<int>(sc));
 	}
 	return false;
 }
@@ -1686,7 +1882,7 @@ int UserStrip::Lines() const noexcept {
 void UserStrip::SetDescription(const char *description) {
 	entered++;
 	GUI::gui_string sDescription = GUI::StringFromUTF8(description);
-	const bool resetting = psd != 0;
+	const bool resetting = psd != nullptr;
 	if (psd) {
 		for (std::vector<UserControl> &line : psd->controls) {
 			for (UserControl &ctl : line) {
@@ -1694,7 +1890,7 @@ void UserStrip::SetDescription(const char *description) {
 			}
 		}
 	}
-	psd.reset(new StripDefinition(sDescription));
+	psd = std::make_unique<StripDefinition>(sDescription);
 	// Create all the controls but with arbitrary initial positions which will be fixed up later.
 	size_t controlID=0;
 	int top = space;
@@ -1708,7 +1904,7 @@ void UserStrip::SetDescription(const char *description) {
 				ctl.w = ::CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("Edit"), ctl.text.c_str(),
 							 WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS | ES_AUTOHSCROLL,
 							 left, top, ctl.widthDesired, lineHeight - 3,
-							 Hwnd(), HmenuID(controlID), ::ApplicationInstance(), 0);
+							 Hwnd(), HmenuID(controlID), ::ApplicationInstance(), nullptr);
 				break;
 
 			case UserControl::ucCombo:
@@ -1717,7 +1913,7 @@ void UserStrip::SetDescription(const char *description) {
 				ctl.w = ::CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("ComboBox"), ctl.text.c_str(),
 							 WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS | CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_VSCROLL,
 							 left, top, ctl.widthDesired, 180,
-							 Hwnd(), HmenuID(controlID), ::ApplicationInstance(), 0);
+							 Hwnd(), HmenuID(controlID), ::ApplicationInstance(), nullptr);
 				break;
 
 			case UserControl::ucButton:
@@ -1729,7 +1925,7 @@ void UserStrip::SetDescription(const char *description) {
 							 WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS |
 							 ((ctl.controlType == UserControl::ucDefaultButton) ? BS_DEFPUSHBUTTON : BS_PUSHBUTTON),
 							 left, top, ctl.widthDesired, lineHeight-1,
-							 Hwnd(), HmenuID(controlID), ::ApplicationInstance(), 0);
+							 Hwnd(), HmenuID(controlID), ::ApplicationInstance(), nullptr);
 				break;
 
 			default:
@@ -1737,7 +1933,7 @@ void UserStrip::SetDescription(const char *description) {
 				ctl.w = ::CreateWindowEx(0, TEXT("Static"), ctl.text.c_str(),
 							 WS_CHILD | WS_CLIPSIBLINGS | ES_RIGHT,
 							 left, top, ctl.widthDesired, lineHeight - 5,
-							 Hwnd(), HmenuID(controlID), ::ApplicationInstance(), 0);
+							 Hwnd(), HmenuID(controlID), ::ApplicationInstance(), nullptr);
 				break;
 			}
 			ctl.w.Show();

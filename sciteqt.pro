@@ -5,6 +5,7 @@ SUBDIRS		= scintilla/qt/ScintillaEditBase
 
 !small {
     SUBDIRS         += scite/qt
+    SUBDIRS         += lexilla/src
 }
 
 android {

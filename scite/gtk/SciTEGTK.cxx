@@ -3,20 +3,23 @@
 // Copyright 1998-2004 by Neil Hodgson <neilh@scintilla.org>
 // The License.txt file describes the conditions under which this software may be distributed.
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <time.h>
-#include <assert.h>
-#include <errno.h>
-#include <signal.h>
+#include <cstdlib>
+#include <cassert>
+#include <cstring>
+#include <cstdio>
+#include <cstdarg>
+#include <ctime>
+#include <cerrno>
+#include <csignal>
 
+#include <tuple>
 #include <string>
 #include <string_view>
 #include <vector>
 #include <map>
 #include <set>
+#include <optional>
+#include <initializer_list>
 #include <algorithm>
 #include <memory>
 #include <chrono>
@@ -43,12 +46,14 @@
 #include "Scintilla.h"
 #include "ScintillaWidget.h"
 
+#include "Lexilla.h"
+#include "LexillaAccess.h"
+
 #include "GUI.h"
 #include "ScintillaWindow.h"
 #include "StringList.h"
 #include "StringHelpers.h"
 #include "FilePath.h"
-#include "LexillaLibrary.h"
 #include "StyleDefinition.h"
 #include "PropSetFile.h"
 
@@ -62,8 +67,10 @@
 #include "Cookie.h"
 #include "Worker.h"
 #include "MatchMarker.h"
+#include "Searcher.h"
 #include "SciTEBase.h"
 #include "StripDefinition.h"
+#include "Strips.h"
 
 #include "SciTEKeys.h"
 
@@ -80,11 +87,8 @@
 
 #endif
 
-enum { mbsAboutBox = 0x100000 };
-
 // Key names are longer for GTK 3
 #if GTK_CHECK_VERSION(3,0,0)
-#define GKEY_Escape GDK_KEY_Escape
 #define GKEY_Tab GDK_KEY_Tab
 #define GKEY_ISO_Left_Tab GDK_KEY_ISO_Left_Tab
 #define GKEY_KP_Enter GDK_KEY_KP_Enter
@@ -96,7 +100,6 @@ enum { mbsAboutBox = 0x100000 };
 #define GKEY_F3 GDK_KEY_F3
 #define GKEY_F4 GDK_KEY_F4
 #else
-#define GKEY_Escape GDK_Escape
 #define GKEY_Tab GDK_Tab
 #define GKEY_ISO_Left_Tab GDK_ISO_Left_Tab
 #define GKEY_KP_Enter GDK_KP_Enter
@@ -109,19 +112,53 @@ enum { mbsAboutBox = 0x100000 };
 #define GKEY_F4 GDK_F4
 #endif
 
-static GdkWindow *WindowFromWidget(GtkWidget *w) {
-	return gtk_widget_get_window(w);
-}
-
 const char appName[] = "SciTE";
-
-static GtkWidget *PWidget(const GUI::Window &w) {
-	return static_cast<GtkWidget *>(w.GetID());
-}
 
 class SciTEGTK;
 
-typedef void (*SigFunction)(GtkWidget *w, SciTEGTK *app);
+namespace {
+
+enum { mbsAboutBox = 0x100000 };
+
+GdkWindow *WindowFromWidget(GtkWidget *w) noexcept {
+	return gtk_widget_get_window(w);
+}
+
+GtkWidget *PWidget(const GUI::Window &w) noexcept {
+	return static_cast<GtkWidget *>(w.GetID());
+}
+
+std::string WithoutUnderscore(const char *s) {
+	std::string ret;
+	while (*s) {
+		if (*s != '_')
+			ret += *s;
+		s++;
+	}
+	return ret;
+}
+
+void SetCairoColour(cairo_t *cr, SA::Colour co) noexcept {
+	cairo_set_source_rgb(cr,
+		(co & 0xff) / 255.0,
+		((co >> 8) & 0xff) / 255.0,
+		((co >> 16) & 0xff) / 255.0);
+}
+
+constexpr double doubleFromPangoUnits(int pu) noexcept {
+	return static_cast<double>(pu) / PANGO_SCALE;
+}
+
+GtkWidget *pixmap_new(const char **xpm) {
+	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_xpm_data(xpm);
+	return gtk_image_new_from_pixbuf(pixbuf);
+}
+
+void AddToolSpace(GtkToolbar *toolbar) {
+	GtkToolItem *space = gtk_separator_tool_item_new();
+	gtk_widget_show(GTK_WIDGET(space));
+	gtk_toolbar_insert(toolbar, space, -1);
+}
 
 // Callback thunk class connects GTK signals to a SciTEGTK instance method.
 template< void (SciTEGTK::*method)() >
@@ -156,6 +193,8 @@ struct SciTEItemFactoryEntry {
 	const char *item_type;
 };
 
+}
+
 long SciTEKeys::ParseKeyCode(const char *mnemonic) {
 	int modsInKey = 0;
 	int keyval = -1;
@@ -179,7 +218,7 @@ long SciTEKeys::ParseKeyCode(const char *mnemonic) {
 		} else if ((sKey.length() > 1)) {
 			if ((sKey[0] == 'F') && (IsADigit(sKey[1]))) {
 				sKey.erase(0, 1);
-				int fkeyNum = atoi(sKey.c_str());
+				const int fkeyNum = atoi(sKey.c_str());
 				if (fkeyNum >= 1 && fkeyNum <= 12)
 #if GTK_CHECK_VERSION(3,0,0)
 					keyval = fkeyNum - 1 + GDK_KEY_F1;
@@ -295,17 +334,6 @@ bool SciTEKeys::MatchKeyCode(long parsedKeyCode, int keyval, int modifiers) noex
 	return parsedKeyCode && !(0xFFFF0000 & (keyval | modifiers)) && (parsedKeyCode == (keyval | (modifiers<<16)));
 }
 
-class BackgroundStrip : public Strip {
-public:
-	WStatic wExplanation;
-	WProgress wProgress;
-
-	BackgroundStrip() {
-	}
-	void Creation(GtkWidget *container) override;
-	void SetProgress(const GUI::gui_string &explanation, size_t size, size_t progress);
-};
-
 class DialogGoto : public Dialog {
 public:
 	WEntry entryGoto;
@@ -367,128 +395,20 @@ public:
 	void FillCombosInDialog() override;
 };
 
-class FindReplaceStrip : public Strip, public SearchUI {
-public:
-	WComboBoxEntry wComboFind;
-	bool initializingSearch;
-	enum IncrementalBehaviour { simple, incremental, showAllMatches };
-	IncrementalBehaviour incrementalBehaviour;
-	FindReplaceStrip() : initializingSearch(false), incrementalBehaviour(simple) {
-	}
-	void SetIncrementalBehaviour(int behaviour);
-	void MarkIncremental();
-	void NextIncremental();
-};
-
-
-class FindStrip : public FindReplaceStrip {
-public:
-	WStatic wStaticFind;
-	WButton wButton;
-	WButton wButtonMarkAll;
-	enum { checks = 6 };
-	WCheckDraw wCheck[checks];
-
-	FindStrip() {
-	}
-	void Creation(GtkWidget *container) override;
-	virtual void Destruction();
-	void Show(int buttonHeight) override;
-	void Close() override;
-	bool KeyDown(GdkEventKey *event) override;
-	void MenuAction(guint action) override;
-	static void ActivateSignal(GtkWidget *w, FindStrip *pStrip);
-	static void FindComboChanged(GtkEditable *, FindStrip *pStrip);
-	static void ToggleChanged(WCheckDraw *, void *user);
-	static gboolean EscapeSignal(GtkWidget *w, GdkEventKey *event, FindStrip *pStrip);
-	void GrabFields();
-	void GrabToggles();
-	void SetToggles();
-	void ShowPopup() override;
-	void FindNextCmd();
-	void MarkAllCmd();
-	void ChildFocus(GtkWidget *widget) override;
-	gboolean Focus(GtkDirectionType direction) override;
-};
-
-class ReplaceStrip : public FindReplaceStrip {
-public:
-	WStatic wStaticFind;
-	WButton wButtonFind;
-	WButton wButtonReplaceAll;
-	WStatic wStaticReplace;
-	WComboBoxEntry wComboReplace;
-	WButton wButtonReplace;
-	WButton wButtonReplaceInSelection;
-	enum { checks = 5 };
-	WCheckDraw wCheck[checks];
-
-	ReplaceStrip() {
-	}
-	void Creation(GtkWidget *container) override;
-	virtual void Destruction();
-	void Show(int buttonHeight) override;
-	void Close() override;
-	bool KeyDown(GdkEventKey *event) override;
-	void MenuAction(guint action) override;
-	static void ActivateSignal(GtkWidget *w, ReplaceStrip *pStrip);
-	static void FindComboChanged(GtkEditable *, ReplaceStrip *pStrip);
-	static void ToggleChanged(WCheckDraw *, void *user);
-	static gboolean EscapeSignal(GtkWidget *w, GdkEventKey *event, ReplaceStrip *pStrip);
-	void GrabFields();
-	void GrabToggles();
-	void SetToggles();
-	void FindCmd();
-	void ReplaceAllCmd();
-	void ReplaceCmd();
-	void ReplaceInSelectionCmd();
-	void ShowPopup() override;
-	void ChildFocus(GtkWidget *widget) override;
-	gboolean Focus(GtkDirectionType direction) override;
-};
-
-class UserStrip : public Strip {
-public:
-	StripDefinition *psd;
-	Extension *extender;
-	SciTEGTK *pSciTEGTK;
-	WTable tableUser;
-
-	UserStrip() : psd(0), extender(0), pSciTEGTK(0), tableUser(1, 1){
-	}
-	void Creation(GtkWidget *container) override;
-	virtual void Destruction();
-	void Show(int buttonHeight) override;
-	void Close() override;
-	bool KeyDown(GdkEventKey *event) override;
-	static void ActivateSignal(GtkWidget *w, UserStrip *pStrip);
-	static gboolean EscapeSignal(GtkWidget *w, GdkEventKey *event, UserStrip *pStrip);
-	void ClickThis(GtkWidget *w);
-	static void ClickSignal(GtkWidget *w, UserStrip *pStrip);
-	void ChildFocus(GtkWidget *widget) override;
-	gboolean Focus(GtkDirectionType direction) override;
-	void SetDescription(const char *description);
-	void SetExtender(Extension *extender_);
-	void SetSciTE(SciTEGTK *pSciTEGTK_);
-	void Set(int control, const char *value);
-	void SetList(int control, const char *value);
-	std::string GetValue(int control);
-};
-
 // Manage the use of the GDK thread lock within glib signal handlers
 class ThreadLockMinder {
 public:
 #ifndef GDK_VERSION_3_6
-	ThreadLockMinder() {
+	ThreadLockMinder() noexcept {
 		gdk_threads_enter();
 	}
-	~ThreadLockMinder() {
+	~ThreadLockMinder() noexcept {
 		gdk_threads_leave();
 	}
 #endif
 };
 
-class SciTEGTK : public SciTEBase {
+class SciTEGTK : public SciTEBase, UserStripWatcher {
 
 	friend class UserStrip;
 
@@ -539,6 +459,7 @@ protected:
 
 	FindStrip findStrip;
 	ReplaceStrip replaceStrip;
+	FilterStrip filterStrip;
 
 	DialogFindReplace dlgFindReplace;
 	DialogParameters dlgParameters;
@@ -562,11 +483,8 @@ protected:
 	GtkPageSetup *pageSetup;
 	std::vector<int> pageStarts;
 
-	// Fullscreen handling
-	GdkRectangle saved;
-
 	GtkWidget *AddMBButton(GtkWidget *dialog, const char *label,
-	                       int val, GtkAccelGroup *accel_group, bool isDefault = false);
+	                       MessageBoxChoice val, GtkAccelGroup *accel_group, bool isDefault = false);
 	void SetIcon();
 
 	void ReadLocalization() override;
@@ -620,7 +538,7 @@ protected:
 	void Print(bool) override;
 	void PrintSetup() override;
 
-	std::string GetRangeInUIEncoding(GUI::ScintillaWindow &win, SA::Range range) override;
+	std::string GetRangeInUIEncoding(GUI::ScintillaWindow &win, SA::Span span) override;
 
 	MessageBoxChoice WindowMessageBox(GUI::Window &w, const GUI::gui_string &msg, int style = mbsIconWarning) override;
 	void FindMessageBox(const std::string &msg, const std::string *findItem=0) override;
@@ -633,7 +551,10 @@ protected:
 	void UIClosed() override;
 	void UIHasFocus() override;
 	GtkWidget *TranslatedLabel(const char *original);
+	void CloseOtherFinders(int cmdID);
 	void FindIncrement() override;
+	void Filter() override;
+	bool FilterShowing() override;
 	void FindInFilesResponse(int responseID);
 	void FindInFiles() override;
 	void Replace() override;
@@ -641,7 +562,7 @@ protected:
 	void FindReplace(bool replace) override;
 	void DestroyFindReplace() override;
 	void GoLineDialog() override;
-	bool AbbrevDialog() override;
+	void AbbrevDialog() override;
 	void TabSizeDialog() override;
 	bool ParametersDialog(bool modal) override;
 
@@ -650,7 +571,7 @@ protected:
 	FilePath GetSciteUserHome() override;
 
 	void SetStatusBarText(const char *s) override;
-	void TabInsert(int index, const GUI::gui_char *title, /*for SciteQt*/const GUI::gui_char *fullPath) override;
+	void TabInsert(int index, const GUI::gui_char *title) override;
 	void TabSelect(int index) override;
 	void RemoveAllTabs() override;
 	void SetFileProperties(PropSetFile &ps) override;
@@ -662,7 +583,6 @@ protected:
 	void ShowStatusBar() override;
 	void ActivateWindow(const char *timestamp) override;
 	void CopyPath() override;
-	bool &FlagFromCmd(int cmd);
 	void Command(unsigned long wParam, long lParam = 0);
 	void ContinueExecute(int fromPoll);
 
@@ -670,7 +590,7 @@ protected:
 	void UserStripSet(int control, const char *value) override;
 	void UserStripSetList(int control, const char *value) override;
 	std::string UserStripValue(int control) override;
-	void UserStripClosed();
+	void UserStripClosed() override;
 	void ShowBackgroundProgress(const GUI::gui_string &explanation, size_t size, size_t progress) override;
 
 	// Single instance
@@ -883,20 +803,20 @@ static void messageBoxOK(GtkWidget *, gpointer p) {
 }
 
 GtkWidget *SciTEGTK::AddMBButton(GtkWidget *dialog, const char *label,
-	int val, GtkAccelGroup *accel_group, bool isDefault) {
+	MessageBoxChoice val, GtkAccelGroup *accel_group, bool isDefault) {
 	GUI::gui_string translated = localiser.Text(label);
 #if GTK_CHECK_VERSION(3,14,0)
-	GtkWidget *button = gtk_dialog_add_button(GTK_DIALOG(dialog), translated.c_str(), val);
+	GtkWidget *button = gtk_dialog_add_button(GTK_DIALOG(dialog), translated.c_str(), static_cast<int>(val));
 #else
 	GtkWidget *button = gtk_button_new_with_mnemonic(translated.c_str());
 #endif
 	gtk_widget_set_can_default(button, TRUE);
-	size_t posMnemonic = translated.find('_');
+	const size_t posMnemonic = translated.find('_');
 	if (posMnemonic != GUI::gui_string::npos) {
 		// With a "Yes" button want to respond to pressing "y" as well as standard "Alt+y"
-		guint key = MakeLowerCase(translated[posMnemonic + 1]);
+		const guint key = MakeLowerCase(translated[posMnemonic + 1]);
 		gtk_widget_add_accelerator(button, "clicked", accel_group,
-	                           key, GdkModifierType(0), (GtkAccelFlags)0);
+	                           key, GdkModifierType{}, GtkAccelFlags{});
 	}
 	g_signal_connect(G_OBJECT(button), "clicked",
 		G_CALLBACK(messageBoxOK), GINT_TO_POINTER(val));
@@ -974,16 +894,23 @@ void SciTEGTK::SetStatusBarText(const char *s) {
 	gtk_statusbar_push(GTK_STATUSBAR(PWidget(wStatusBar)), sbContextID, s);
 }
 
-void SciTEGTK::TabInsert(int index, const GUI::gui_char *title, const GUI::gui_char *fullPath) {
+void SciTEGTK::TabInsert(int index, const GUI::gui_char *title) {
 	if (wTabBar.GetID()) {
 		GtkWidget *tablabel = gtk_label_new(title);
 		GtkWidget *tabcontent;
 		if (props.GetInt("pathbar.visible")) {
 			const FilePath &fp = buffers.buffers[index].file;
-			if (fp.IsUntitled())
+			if (fp.IsUntitled()) {
 				tabcontent = gtk_label_new(localiser.Text("Untitled").c_str());
-			else
+			} else {
 				tabcontent = gtk_label_new(fp.AsInternal());
+				if (props.GetInt("pathbar.selectable")) {
+					gtk_label_set_selectable(GTK_LABEL(tabcontent), TRUE);
+					gtk_widget_set_can_focus(tabcontent, FALSE);
+					gtk_label_set_use_markup(GTK_LABEL(tabcontent), TRUE);
+					gtk_label_set_ellipsize(GTK_LABEL(tabcontent), PANGO_ELLIPSIZE_MIDDLE);
+				}
+			}
 		} else {
 			// No path bar
 			tabcontent = gtk_image_new();
@@ -1012,14 +939,14 @@ void SciTEGTK::RemoveAllTabs() {
 void SciTEGTK::SetFileProperties(PropSetFile &ps) {
 	char timeBuffer[200];
 
-	time_t timeNow = time(NULL);
+	const time_t timeNow = time(NULL);
 
 	strftime(timeBuffer, sizeof(timeBuffer), "%x", localtime(&timeNow));
 	ps.Set("CurrentDate", timeBuffer);
 	strftime(timeBuffer, sizeof(timeBuffer), "%X", localtime(&timeNow));
 	ps.Set("CurrentTime", timeBuffer);
 
-	time_t timeFileModified = filePath.ModifiedTime();
+	const time_t timeFileModified = filePath.ModifiedTime();
 	strftime(timeBuffer, sizeof(timeBuffer), "%x", localtime(&timeFileModified));
 	ps.Set("FileDate", timeBuffer);
 	strftime(timeBuffer, sizeof(timeBuffer), "%X", localtime(&timeFileModified));
@@ -1032,7 +959,7 @@ void SciTEGTK::SetFileProperties(PropSetFile &ps) {
 	if (filePath.AsInternal()[0] == '.') {
 		fa += "H";
 	}
-	ps.Set("FileAttr", fa.c_str());
+	ps.Set("FileAttr", fa);
 }
 
 void SciTEGTK::UpdateStatusBar(bool bUpdateSlowData) {
@@ -1090,7 +1017,7 @@ void SciTEGTK::ActivateWindow(const char *timestamp) {
 	char *end;
 	// Reset errno so we can reliably test it
 	errno = 0;
-	gulong ts = strtoul(timestamp, &end, 0);
+	const gulong ts = strtoul(timestamp, &end, 0);
 	if (end != timestamp && errno == 0) {
 		gtk_window_present_with_time(GTK_WINDOW(PWidget(wSciTE)), ts);
 	} else {
@@ -1103,35 +1030,8 @@ void SciTEGTK::CopyPath() {
 		filePath.AsInternal(), -1);
 }
 
-// The find and replace dialogs and strips often manipulate boolean
-// flags based on dialog control IDs and menu IDs.
-bool &SciTEGTK::FlagFromCmd(int cmd) {
-	static bool notFound;
-	switch (cmd) {
-		case IDWHOLEWORD:
-		case IDM_WHOLEWORD:
-			return wholeWord;
-		case IDMATCHCASE:
-		case IDM_MATCHCASE:
-			return matchCase;
-		case IDREGEXP:
-		case IDM_REGEXP:
-			return regExp;
-		case IDUNSLASH:
-		case IDM_UNSLASH:
-			return unSlash;
-		case IDWRAP:
-		case IDM_WRAPAROUND:
-			return wrapFind;
-		case IDDIRECTIONUP:
-		case IDM_DIRECTIONUP:
-			return reverseFind;
-	}
-	return notFound;
-}
-
 void SciTEGTK::Command(unsigned long wParam, long) {
-	int cmdID = ControlIDOfCommand(wParam);
+	const int cmdID = ControlIDOfCommand(wParam);
 	switch (cmdID) {
 
 	case IDM_FULLSCREEN:
@@ -1181,8 +1081,8 @@ void SciTEGTK::ReadLocalization() {
 			gsize inLeft = strlen(val);
 			char *pout = converted;
 			gsize outLeft = sizeof(converted);
-			gsize conversions = g_iconv(iconvh, &pin, &inLeft, &pout, &outLeft);
-			if (conversions != ((gsize)(-1))) {
+			const gsize conversions = g_iconv(iconvh, &pin, &inLeft, &pout, &outLeft);
+			if (conversions != static_cast<gsize>(-1)) {
 				*pout = '\0';
 				localiser.Set(key, converted);
 			}
@@ -1218,7 +1118,7 @@ gboolean SciTEGTK::TimerTick(gpointer pSciTE) {
 }
 
 void SciTEGTK::TimerStart(int mask) {
-	int maskNew = timerMask | mask;
+	const int maskNew = timerMask | mask;
 	if (timerMask != maskNew) {
 		if (timerMask == 0) {
 			// Create a 1 second ticker
@@ -1229,7 +1129,7 @@ void SciTEGTK::TimerStart(int mask) {
 }
 
 void SciTEGTK::TimerEnd(int mask) {
-	int maskNew = timerMask & ~mask;
+	const int maskNew = timerMask & ~mask;
 	if (timerMask != maskNew) {
 		if (maskNew == 0) {
 			g_source_remove(timerID);
@@ -1304,29 +1204,6 @@ GtkWidget *SciTEGTK::MenuItemFromAction(int itemID) {
 		return it->second;
 }
 
-static std::string GtkFromWinCaption(const char *text) {
-	std::string sCaption(text);
-	// Escape underlines
-	Substitute(sCaption, "_", "__");
-	// Replace Windows-style ampersands with GTK underlines
-	size_t posFound = sCaption.find("&");
-	while (posFound != std::string::npos) {
-		std::string nextChar = sCaption.substr(posFound + 1, 1);
-		if (nextChar == "&") {
-			// Escaped, move on
-			posFound += 2;
-		} else {
-			sCaption.erase(posFound, 1);
-			sCaption.insert(posFound, "_", 1);
-			posFound += 1;
-		}
-		posFound = sCaption.find("&", posFound);
-	}
-	// Unescape ampersands
-	Substitute(sCaption, "&&", "&");
-	return sCaption;
-}
-
 void SciTEGTK::SetMenuItem(int, int, int itemID, const char *text, const char *mnemonic) {
 	DestroyMenuItem(0, itemID);
 
@@ -1338,10 +1215,12 @@ void SciTEGTK::SetMenuItem(int, int, int itemID, const char *text, const char *m
 	long keycode = 0;
 	if (mnemonic && *mnemonic) {
 		keycode = SciTEKeys::ParseKeyCode(mnemonic);
+#if !GTK_CHECK_VERSION(3,6,0)
 		if (keycode) {
 			itemText += " ";
 			itemText += mnemonic;
 		}
+#endif
 		// the keycode could be used to make a custom accelerator table
 		// but for now, the menu's item data is used instead for command
 		// tools, and for other menu entries it is just discarded.
@@ -1355,8 +1234,14 @@ void SciTEGTK::SetMenuItem(int, int, int itemID, const char *text, const char *m
 		GList *al = gtk_container_get_children(GTK_CONTAINER(item));
 		for (unsigned int ii = 0; ii < g_list_length(al); ii++) {
 			gpointer d = g_list_nth(al, ii);
-			GtkWidget **w = (GtkWidget **)d;
+			GtkWidget **w = static_cast<GtkWidget **>(d);
 			gtk_label_set_text_with_mnemonic(GTK_LABEL(*w), itemText.c_str());
+#if GTK_CHECK_VERSION(3,6,0)
+			if (keycode) {
+				gtk_accel_label_set_accel(GTK_ACCEL_LABEL(*w), keycode & 0xFFFF,
+					static_cast<GdkModifierType>(keycode >> 16));
+			}
+#endif
 		}
 		g_list_free(al);
 		gtk_widget_show(item);
@@ -1419,14 +1304,16 @@ void SciTEGTK::CheckMenus() {
 	CheckAMenuItem(IDM_EOL_CR, wEditor.EOLMode() == SA::EndOfLine::Cr);
 	CheckAMenuItem(IDM_EOL_LF, wEditor.EOLMode() == SA::EndOfLine::Lf);
 
-	CheckAMenuItem(IDM_ENCODING_DEFAULT, CurrentBuffer()->unicodeMode == uni8Bit);
-	CheckAMenuItem(IDM_ENCODING_UCS2BE, CurrentBuffer()->unicodeMode == uni16BE);
-	CheckAMenuItem(IDM_ENCODING_UCS2LE, CurrentBuffer()->unicodeMode == uni16LE);
-	CheckAMenuItem(IDM_ENCODING_UTF8, CurrentBuffer()->unicodeMode == uniUTF8);
-	CheckAMenuItem(IDM_ENCODING_UCOOKIE, CurrentBuffer()->unicodeMode == uniCookie);
+	CheckAMenuItem(IDM_ENCODING_DEFAULT, CurrentBuffer()->unicodeMode == UniMode::uni8Bit);
+	CheckAMenuItem(IDM_ENCODING_UCS2BE, CurrentBuffer()->unicodeMode == UniMode::uni16BE);
+	CheckAMenuItem(IDM_ENCODING_UCS2LE, CurrentBuffer()->unicodeMode == UniMode::uni16LE);
+	CheckAMenuItem(IDM_ENCODING_UTF8, CurrentBuffer()->unicodeMode == UniMode::utf8);
+	CheckAMenuItem(IDM_ENCODING_UCOOKIE, CurrentBuffer()->unicodeMode == UniMode::cookie);
 
 	CheckAMenuItem(IDM_VIEWSTATUSBAR, sbVisible);
 	CheckAMenuItem(IDM_VIEWTABBAR, tabVisible);
+
+	EnableAMenuItem(IDM_FINDINFILES, !jobQueue.IsExecuting());
 
 	if (btnBuild) {
 		gtk_widget_set_sensitive(btnBuild, !jobQueue.IsExecuting());
@@ -1608,12 +1495,12 @@ bool SciTEGTK::SaveAsXXX(FileFormat fmt, const char *title, const char *ext) {
 		gtk_dialog_set_default_response(GTK_DIALOG(dlg), GTK_RESPONSE_ACCEPT);
 		FilePath savePath = SaveName(ext);
 		if (ext) {
-			GtkFileFilter *filter = gtk_file_filter_new();
-			gtk_file_filter_set_name(filter, ext+1);
+			GtkFileFilter *fileFilter = gtk_file_filter_new();
+			gtk_file_filter_set_name(fileFilter, ext+1);
 			std::string filterSTR = "*";
 			filterSTR += ext;
-			gtk_file_filter_add_pattern(filter, filterSTR.c_str());
-			gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dlg), filter);
+			gtk_file_filter_add_pattern(fileFilter, filterSTR.c_str());
+			gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dlg), fileFilter);
 			gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dlg), savePath.Directory().AsInternal());
 			gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dlg), savePath.Name().AsInternal());
 		} else if (savePath.IsUntitled()) { // saving 'untitled'
@@ -1674,10 +1561,10 @@ void SciTEGTK::LoadSessionDialog() {
 				      SCITE_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
 				      NULL);
 
-		GtkFileFilter *filter = gtk_file_filter_new();
-		gtk_file_filter_set_name(filter, "session");
-		gtk_file_filter_add_pattern(filter, "*.session");
-		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dlg), filter);
+		GtkFileFilter *fileFilter = gtk_file_filter_new();
+		gtk_file_filter_set_name(fileFilter, "session");
+		gtk_file_filter_add_pattern(fileFilter, "*.session");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dlg), fileFilter);
 		gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dlg), filePath.Directory().AsInternal());
 		gtk_window_set_default_size(GTK_WINDOW(dlg), fileSelectorWidth, fileSelectorHeight);
 		if (gtk_dialog_run(GTK_DIALOG(dlg)) == GTK_RESPONSE_ACCEPT) {
@@ -1701,10 +1588,10 @@ void SciTEGTK::SaveSessionDialog() {
 				      SCITE_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
 				      NULL);
 
-		GtkFileFilter *filter = gtk_file_filter_new();
-		gtk_file_filter_set_name(filter, "session");
-		gtk_file_filter_add_pattern(filter, "*.session");
-		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dlg), filter);
+		GtkFileFilter *fileFilter = gtk_file_filter_new();
+		gtk_file_filter_set_name(fileFilter, "session");
+		gtk_file_filter_add_pattern(fileFilter, "*.session");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dlg), fileFilter);
 		gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dlg), filePath.Directory().AsInternal());
 		gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dlg), "SciTE.session");
 		gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dlg), TRUE);
@@ -1746,8 +1633,8 @@ void SciTEGTK::SetupFormat(Sci_RangeToFormat &frPrint, GtkPrintContext *context)
 	frPrint.hdc = cr;
 	frPrint.hdcTarget = cr;
 
-	gdouble width = gtk_print_context_get_width(context);
-	gdouble height = gtk_print_context_get_height(context);
+	const gdouble width = gtk_print_context_get_width(context);
+	const gdouble height = gtk_print_context_get_height(context);
 
 	frPrint.rc.left = 0;
 	frPrint.rc.top = 0;
@@ -1778,7 +1665,7 @@ void SciTEGTK::SetupFormat(Sci_RangeToFormat &frPrint, GtkPrintContext *context)
 		pango_layout_set_text(layout, "Xg", -1);
 		gint layoutHeight;
 		pango_layout_get_size(layout, NULL, &layoutHeight);
-		frPrint.rc.top += ((gdouble)layoutHeight / PANGO_SCALE) * 1.5;
+		frPrint.rc.top += doubleFromPangoUnits(layoutHeight) * 1.5;
 		g_object_unref(layout);
 	}
 
@@ -1789,7 +1676,7 @@ void SciTEGTK::SetupFormat(Sci_RangeToFormat &frPrint, GtkPrintContext *context)
 		pango_layout_set_text(layout, "Xg", -1);
 		gint layoutHeight;
 		pango_layout_get_size(layout, NULL, &layoutHeight);
-		frPrint.rc.bottom -= ((gdouble)layoutHeight / PANGO_SCALE) * 1.5;
+		frPrint.rc.bottom -= doubleFromPangoUnits(layoutHeight) * 1.5;
 		g_object_unref(layout);
 	}
 }
@@ -1799,7 +1686,7 @@ void SciTEGTK::BeginPrintThis(GtkPrintOperation *operation, GtkPrintContext *con
 	Sci_RangeToFormat frPrint;
 	SetupFormat(frPrint, context) ;
 
-	SA::Position lengthDoc = wEditor.Length();
+	const SA::Position lengthDoc = wEditor.Length();
 	SA::Position lengthPrinted = 0;
 	while (lengthPrinted < lengthDoc) {
 		pageStarts.push_back(lengthPrinted);
@@ -1814,13 +1701,6 @@ void SciTEGTK::BeginPrintThis(GtkPrintOperation *operation, GtkPrintContext *con
 
 void SciTEGTK::BeginPrint(GtkPrintOperation *operation, GtkPrintContext *context, SciTEGTK *scitew) {
 	scitew->BeginPrintThis(operation, context);
-}
-
-static void SetCairoColour(cairo_t *cr, SA::Colour co) {
-	cairo_set_source_rgb(cr,
-		(co & 0xff) / 255.0,
-		((co >> 8) & 0xff) / 255.0,
-		((co >> 16) & 0xff) / 255.0);
 }
 
 void SciTEGTK::DrawPageThis(GtkPrintOperation * /* operation */, GtkPrintContext *context, gint page_nr) {
@@ -1847,7 +1727,7 @@ void SciTEGTK::DrawPageThis(GtkPrintOperation * /* operation */, GtkPrintContext
 
 		gint layout_height;
 		pango_layout_get_size(layout, NULL, &layout_height);
-		gdouble text_height = (gdouble)layout_height / PANGO_SCALE;
+		const gdouble text_height = doubleFromPangoUnits(layout_height);
 		cairo_move_to(cr, frPrint.rc.left, frPrint.rc.top - text_height * 1.5);
 		pango_cairo_show_layout(cr, layout);
 		g_object_unref(layout);
@@ -1869,7 +1749,7 @@ void SciTEGTK::DrawPageThis(GtkPrintOperation * /* operation */, GtkPrintContext
 
 		gint layout_height;
 		pango_layout_get_size(layout, NULL, &layout_height);
-		gdouble text_height = (gdouble)layout_height / PANGO_SCALE;
+		const gdouble text_height = doubleFromPangoUnits(layout_height);
 		cairo_move_to(cr, frPrint.rc.left, frPrint.rc.bottom + text_height * 0.5);
 		pango_cairo_show_layout(cr, layout);
 		g_object_unref(layout);
@@ -1879,7 +1759,7 @@ void SciTEGTK::DrawPageThis(GtkPrintOperation * /* operation */, GtkPrintContext
 		cairo_stroke(cr);
 	}
 
-	SA::Position lengthDoc = wEditor.Length();
+	const SA::Position lengthDoc = wEditor.Length();
 	frPrint.chrg.cpMin = pageStarts[page_nr];
 	frPrint.chrg.cpMax = pageStarts[page_nr+1];
 	if (frPrint.chrg.cpMax < lengthDoc)
@@ -1897,6 +1777,7 @@ void SciTEGTK::Print(bool) {
 	SelectionIntoProperties();
 	// Printing through the GTK API
 	GtkPrintOperation *printOp = gtk_print_operation_new();
+	gtk_print_operation_set_job_name(printOp, gtk_window_get_title(GTK_WINDOW(PWidget(wSciTE))));
 
 	if (printSettings != NULL)
 		gtk_print_operation_set_print_settings(printOp, printSettings);
@@ -1906,7 +1787,7 @@ void SciTEGTK::Print(bool) {
 	g_signal_connect(printOp, "begin_print", G_CALLBACK(BeginPrint), this);
 	g_signal_connect(printOp, "draw_page", G_CALLBACK(DrawPage), this);
 
-	GtkPrintOperationResult res = gtk_print_operation_run(
+	const GtkPrintOperationResult res = gtk_print_operation_run(
 		printOp, GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG,
 		GTK_WINDOW(PWidget(wSciTE)), NULL);
 
@@ -1933,12 +1814,12 @@ void SciTEGTK::PrintSetup() {
 	pageSetup = newPageSetup;
 }
 
-std::string SciTEGTK::GetRangeInUIEncoding(GUI::ScintillaWindow &win, SA::Range range) {
-	const SA::Position len = range.Length();
+std::string SciTEGTK::GetRangeInUIEncoding(GUI::ScintillaWindow &win, SA::Span span) {
+	const SA::Position len = span.Length();
 	if (len == 0)
 		return std::string();
 	std::string allocation(len * 3 + 1, 0);
-	win.SetTarget(range);
+	win.SetTarget(span);
 	const SA::Position byteLength = win.TargetAsUTF8(&allocation[0]);
 	std::string sel(allocation, 0, byteLength);
 	return sel;
@@ -1951,11 +1832,11 @@ void SciTEGTK::Find() {
 	}
 	SelectionIntoFind();
 	if (props.GetInt("find.use.strip")) {
-		replaceStrip.Close();
+		CloseOtherFinders(IDM_FIND);
 		findStrip.SetIncrementalBehaviour(props.GetInt("find.strip.incremental"));
 		findStrip.Show(props.GetInt("strip.button.height", -1));
 	} else {
-		if (findStrip.visible || replaceStrip.visible)
+		if (findStrip.visible || replaceStrip.visible || filterStrip.visible)
 			return;
 		FindReplace(false);
 	}
@@ -1979,7 +1860,7 @@ GtkWidget *SciTEGTK::TranslatedLabel(const char *original) {
 	return gtk_label_new_with_mnemonic(text.c_str());
 }
 
-static void FillComboFromProps(WComboBoxEntry *combo, PropSetFile &props) {
+static void FillComboFromProps(WComboBoxEntry *combo, const PropSetFile &props) {
 	const char *key;
 	const char *val;
 	combo->ClearList();
@@ -1993,48 +1874,20 @@ static void FillComboFromProps(WComboBoxEntry *combo, PropSetFile &props) {
 
 static void FillComboFromMemory(WComboBoxEntry *combo, const ComboMemory &mem, bool useTop = false) {
 	combo->ClearList();
-	for (int i = 0; i < mem.Length(); i++) {
+	for (size_t i = 0; i < mem.Length(); i++) {
 		combo->AppendText(mem.At(i).c_str());
 	}
-	if (useTop) {
-		combo->SetText(mem.At(0).c_str());
+	if (useTop && mem.Length() > 0) {
+		combo->SetText(mem.At(0));
 	}
 }
 
 std::string SciTEGTK::EncodeString(const std::string &s) {
 	wEditor.SetLengthForEncode(s.length());
-	SA::Position len = wEditor.EncodedFromUTF8(s.c_str(), nullptr);
+	const SA::Position len = wEditor.EncodedFromUTF8(s.c_str(), nullptr);
 	std::vector<char> ret(len+1);
 	wEditor.EncodedFromUTF8(s.c_str(), &ret[0]);
 	return std::string(&ret[0], len);
-}
-
-void BackgroundStrip::Creation(GtkWidget *container) {
-	WTable table(1, 2);
-	SetID(table);
-	Strip::Creation(container);
-	gtk_container_set_border_width(GTK_CONTAINER(GetID()), 1);
-	gtk_box_pack_start(GTK_BOX(container), GTK_WIDGET(GetID()), FALSE, FALSE, 0);
-
-	wProgress.Create();
-	table.Add(wProgress, 1, false, 0, 0);
-	gtk_widget_show(wProgress);
-
-	wExplanation.Create("");
-	table.Label(wExplanation);
-
-	//g_signal_connect(G_OBJECT(GetID()), "set-focus-child", G_CALLBACK(ChildFocusSignal), this);
-	//g_signal_connect(G_OBJECT(GetID()), "focus", G_CALLBACK(FocusSignal), this);
-
-	gtk_widget_show(GTK_WIDGET(GetID()));
-}
-
-void BackgroundStrip::SetProgress(const GUI::gui_string &explanation, size_t size, size_t progress) {
-	gtk_label_set_text(GTK_LABEL(wExplanation.GetID()), explanation.c_str());
-	if (size > 0) {
-		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(wProgress.GetID()),
-			static_cast<double>(progress) / static_cast<double>(size));
-	}
 }
 
 void DialogFindReplace::GrabFields() {
@@ -2079,7 +1932,7 @@ void SciTEGTK::FindReplaceGrabFields() {
 
 void SciTEGTK::FRFindCmd() {
 	FindReplaceGrabFields();
-	bool isFindDialog = !dlgFindReplace.wComboReplace;
+	const bool isFindDialog = !dlgFindReplace.wComboReplace;
 	bool found = false;
 	if (findWhat[0]) {
 		found = FindNext(isFindDialog && reverseFind) >= 0;
@@ -2122,7 +1975,7 @@ void SciTEGTK::FRReplaceInBuffersCmd() {
 
 void SciTEGTK::FRMarkAllCmd() {
 	FindReplaceGrabFields();
-	MarkAll(markWithBookMarks);
+	MarkAll(MarkPurpose::withBookMarks);
 	const bool found = FindNext(reverseFind) >= 0;
 	if (ShouldClose(found))
 		dlgFindReplace.Destroy();
@@ -2188,11 +2041,13 @@ void SciTEGTK::FindInFilesCmd() {
 		findCommand += " \"";
 		findCommand += props.GetString("find.files");
 		findCommand += "\" \"";
+		findCommand += props.GetString("find.exclude");
+		findCommand += "\" \"";
 		std::string quotedForm = Slash(props.GetString("find.what"), true);
 		findCommand += quotedForm;
 		findCommand += "\"";
 	}
-	AddCommand(findCommand, props.GetString("find.directory"), jobCLI);
+	AddCommand(findCommand, props.GetString("find.directory"), JobSubsystem::cli);
 	if (jobQueue.HasCommandToRun())
 		Execute();
 	if (dlgFindInFiles.Created()) {
@@ -2226,220 +2081,27 @@ void SciTEGTK::FindInFilesBrowse() {
 	gtk_widget_destroy(dialog);
 }
 
-static const char *textFindPrompt = "Fi_nd:";
-static const char *textReplacePrompt = "Rep_lace:";
-static const char *textFindNext = "_Find Next";
-static const char *textMarkAll = "_Mark All";
+namespace {
 
-static const char *textFind = "F_ind";
-static const char *textReplace = "_Replace";
-static const char *textReplaceAll = "Replace _All";
-static const char *textInSelection = "In _Selection";
-static const char *textReplaceInBuffers = "Replace In _Buffers";
-static const char *textClose = "_Close";
+const char *textMarkAll = "_Mark All";
 
-/* XPM */
-static const char * word1_x_xpm[] = {
-"16 16 15 1",
-" 	c #FFFFFF",
-".	c #000000",
-"+	c #E1E1E1",
-"@	c #D9D9D9",
-"#	c #4D4D4D",
-"$	c #7C7C7C",
-"%	c #D0D0D0",
-"&	c #A7A7A7",
-"*	c #8C8C8C",
-"=	c #BDBDBD",
-"-	c #B2B2B2",
-";	c #686868",
-">	c #F0F0F0",
-",	c #9A9A9A",
-"'	c #C7C7C7",
-"                ",
-"                ",
-"                ",
-"                ",
-"                ",
-"                ",
-"               .",
-".+.+.@##@ .$%#&.",
-"*=.-*;++; .>;++.",
-",*.$,.  . . .  .",
-"=#,.=;++; . ;++.",
-"'.=.'@##@ . @#&.",
-"                ",
-".              .",
-".              .",
-"................"};
+const char *textFind = "F_ind";
+const char *textReplace = "_Replace";
+const char *textReplaceAll = "Replace _All";
+const char *textInSelection = "In _Selection";
+const char *textReplaceInBuffers = "Replace In _Buffers";
+const char *textClose = "_Close";
 
-/* XPM */
-static const char * case_x_xpm[] = {
-"16 16 12 1",
-" 	c #FFFFFF",
-".	c #BDBDBD",
-"+	c #4D4D4D",
-"@	c #000000",
-"#	c #D0D0D0",
-"$	c #C7C7C7",
-"%	c #7C7C7C",
-"&	c #B2B2B2",
-"*	c #8C8C8C",
-"=	c #E1E1E1",
-"-	c #686868",
-";	c #9A9A9A",
-"                ",
-"                ",
-"                ",
-"                ",
-"   .+@@         ",
-"  #@$           ",
-"  %%      &+@@  ",
-"  @*     &+=    ",
-"  @*     @&     ",
-"  -%     @&     ",
-"  .@#    ;+=    ",
-"   &+@@   ;@@@  ",
-"                ",
-"                ",
-"                ",
-"                "};
-
-/* XPM */
-static const char * regex_x_xpm[] = {
-"16 16 11 1",
-" 	c #FFFFFF",
-".	c #888888",
-"+	c #696969",
-"@	c #000000",
-"#	c #E0E0E0",
-"$	c #484848",
-"%	c #B6B6B6",
-"&	c #C4C4C4",
-"*	c #787878",
-"=	c #383838",
-"-	c #D3D3D3",
-"                ",
-"                ",
-"                ",
-"  .+        @   ",
-" #$$#     % + % ",
-" +&&+    #*=@=*#",
-"-$  $&     +++  ",
-"$&  &$    -$ =- ",
-"                ",
-"                ",
-"      %@%       ",
-"      %@%       ",
-"                ",
-"                ",
-"                ",
-"                "};
-
-/* XPM */
-static const char * backslash_x_xpm[] = {
-"16 16 15 1",
-" 	c #FFFFFF",
-".	c #141414",
-"+	c #585858",
-"@	c #A6A6A6",
-"#	c #B6B6B6",
-"$	c #272727",
-"%	c #E0E0E0",
-"&	c #979797",
-"*	c #000000",
-"=	c #696969",
-"-	c #484848",
-";	c #787878",
-">	c #D3D3D3",
-",	c #383838",
-"'	c #888888",
-"                ",
-"                ",
-"                ",
-".       .       ",
-"+@      +@   #  ",
-"#+      #+   $  ",
-" .%  .&* .% =*--",
-" ;&  *&  ;&  *  ",
-" >,  *   >,  *  ",
-"  $> *    $> *  ",
-"  &; *    &; *% ",
-"  %. *    %. '*.",
-"                ",
-"                ",
-"                ",
-"                "};
-
-/* XPM */
-static const char * around_x_xpm[] = {
-"16 16 2 1",
-" 	c #FFFFFF",
-".	c #000000",
-"                ",
-"      .....     ",
-"     .......    ",
-"    ...   ...   ",
-"            ..  ",
-"            ..  ",
-"   ..        .. ",
-"  ....       .. ",
-" ......      .. ",
-"   ..       ..  ",
-"   ...      ..  ",
-"    ...   ...   ",
-"     .......    ",
-"      .....     ",
-"                ",
-"                "};
-
-/* XPM */
-static const char * up_x_xpm[] = {
-"16 16 8 1",
-" 	c None",
-".	c #FFFFFF",
-"+	c #9C9C9C",
-"@	c #000000",
-"#	c #747474",
-"$	c #484848",
-"%	c #DFDFDF",
-"&	c #BFBFBF",
-"................",
-"................",
-"........+.......",
-".......@@#......",
-"......@@@@#.....",
-".....@@$@$@$....",
-"....@@%#@&+@$...",
-"...@@%.#@&.&@$..",
-"..#@%..#@&..&@&.",
-"..#....#@&...&&.",
-".......#@&......",
-".......#@&......",
-".......#@&......",
-".......#@&......",
-".......#@&......",
-"................"};
-
-const static SearchOption toggles[] = {
+const SearchOption toggles[] = {
 	{"Match _whole word only", IDM_WHOLEWORD, IDWHOLEWORD},
-	{"Case sensiti_ve", IDM_MATCHCASE, IDMATCHCASE},
+	{"_Case sensitive", IDM_MATCHCASE, IDMATCHCASE},
 	{"Regular _expression", IDM_REGEXP, IDREGEXP},
 	{"Transform _backslash expressions", IDM_UNSLASH, IDUNSLASH},
 	{"Wrap ar_ound", IDM_WRAPAROUND, IDWRAP},
 	{"_Up", IDM_DIRECTIONUP, IDDIRECTIONUP},
-	{0, 0, 0},
 };
 
-// Has to be in same order as toggles
-static const char **xpmImages[] = {
-	word1_x_xpm,
-	case_x_xpm,
-	regex_x_xpm,
-	backslash_x_xpm,
-	around_x_xpm,
-	up_x_xpm,
-};
+}
 
 void SciTEGTK::FindInFilesResponse(int responseID) {
 	switch (responseID) {
@@ -2457,14 +2119,14 @@ void SciTEGTK::FindInFiles() {
 	dlgFindInFiles.SetSearcher(this);
 
 	SelectionIntoFind();
-	props.Set("find.what", findWhat.c_str());
+	props.Set("find.what", findWhat);
 
 	FilePath findInDir = filePath.Directory().AbsolutePath();
 	std::string directory = props.GetString("find.in.directory");
 	if (directory.length()) {
 		findInDir = FilePath(directory.c_str());
 	}
-	props.Set("find.directory", findInDir.AsInternal());
+	props.SetPath("find.directory", findInDir);
 
 	dlgFindInFiles.Create(localiser.Text("Find in Files"));
 
@@ -2545,11 +2207,11 @@ void SciTEGTK::Replace() {
 	}
 	SelectionIntoFind();
 	if (props.GetInt("replace.use.strip")) {
-		findStrip.Close();
+		CloseOtherFinders(IDM_REPLACE);
 		replaceStrip.SetIncrementalBehaviour(props.GetInt("replace.strip.incremental"));
 		replaceStrip.Show(props.GetInt("strip.button.height", -1));
 	} else {
-		if (findStrip.visible || replaceStrip.visible)
+		if (findStrip.visible || replaceStrip.visible || filterStrip.visible)
 			return;
 		FindReplace(true);
 	}
@@ -2597,7 +2259,7 @@ void SciTEGTK::ContinueExecute(int fromPoll) {
 		}
 		if ((lastFlags & jobRepSelYes)
 			|| ((lastFlags & jobRepSelAuto) && !exitStatus)) {
-			int cpMin = wEditor.Send(SCI_GETSELECTIONSTART, 0, 0);
+			const int cpMin = wEditor.Send(SCI_GETSELECTIONSTART, 0, 0);
 			wEditor.Send(SCI_REPLACESEL,0,(sptr_t)(lastOutput.c_str()));
 			wEditor.Send(SCI_SETSEL, cpMin, cpMin+lastOutput.length());
 		}
@@ -2704,7 +2366,7 @@ void SciTEGTK::Execute() {
 	lastOutput = "";
 	lastFlags = jobQueue.jobQueue[icmd].flags;
 
-	if (jobQueue.jobQueue[icmd].jobType != jobExtension) {
+	if (jobQueue.jobQueue[icmd].jobType != JobSubsystem::extension) {
 		OutputAppendString(">");
 		OutputAppendString(jobQueue.jobQueue[icmd].command.c_str());
 		OutputAppendString("\n");
@@ -2714,11 +2376,11 @@ void SciTEGTK::Execute() {
 		jobQueue.jobQueue[icmd].directory.SetWorkingDirectory();
 	}
 
-	if (jobQueue.jobQueue[icmd].jobType == jobShell) {
+	if (jobQueue.jobQueue[icmd].jobType == JobSubsystem::shell) {
 		const gchar *argv[] = { "/bin/sh", "-c", jobQueue.jobQueue[icmd].command.c_str(), NULL };
-		g_spawn_async(NULL, const_cast<gchar**>(argv), NULL, GSpawnFlags(0), NULL, NULL, NULL, NULL);
+		g_spawn_async(NULL, const_cast<gchar**>(argv), NULL, GSpawnFlags{}, NULL, NULL, NULL, NULL);
 		ExecuteNext();
-	} else if (jobQueue.jobQueue[icmd].jobType == jobExtension) {
+	} else if (jobQueue.jobQueue[icmd].jobType == JobSubsystem::extension) {
 		if (extender)
 			extender->OnExecute(jobQueue.jobQueue[icmd].command.c_str());
 		ExecuteNext();
@@ -2746,7 +2408,7 @@ void SciTEGTK::Execute() {
 		inputChannel = g_io_channel_unix_new(fdout);
 		inputHandle = g_io_add_watch(inputChannel, G_IO_IN, (GIOFunc)IOSignal, this);
 		// Also add a background task in case there is no output from the tool
-		pollID = g_timeout_add(20, (gint (*)(void *)) SciTEGTK::PollTool, this);
+		pollID = g_timeout_add(20, reinterpret_cast<GSourceFunc>(SciTEGTK::PollTool), this);
 	}
 }
 
@@ -2762,7 +2424,7 @@ void SciTEGTK::StopExecute() {
 }
 
 void SciTEGTK::GotoCmd() {
-	int lineNo = dlgGoto.entryGoto.Value();
+	const SA::Line lineNo = dlgGoto.entryGoto.Value();
 	GotoLineEnsureVisible(lineNo - 1);
 	dlgGoto.Destroy();
 }
@@ -2791,7 +2453,7 @@ void SciTEGTK::GoLineDialog() {
 	GtkWidget *labelGoto = TranslatedLabel("_Destination Line Number:");
 	table.Label(labelGoto);
 
-	dlgGoto.entryGoto.Create();
+	dlgGoto.entryGoto.Create("");
 	table.Add(dlgGoto.entryGoto);
 	dlgGoto.entryGoto.ActivatesDefault();
 	gtk_widget_grab_focus(dlgGoto.entryGoto);
@@ -2807,6 +2469,7 @@ void SciTEGTK::GoLineDialog() {
 
 void SciTEGTK::AbbrevCmd() {
 	abbrevInsert = dlgAbbrev.comboAbbrev.Text();
+	PerformInsertAbbreviation();
 	dlgAbbrev.Destroy();
 }
 
@@ -2817,13 +2480,12 @@ void SciTEGTK::AbbrevResponse(int responseID) {
 			break;
 
 		case GTK_RESPONSE_CANCEL:
-			abbrevInsert = "";
 			dlgAbbrev.Destroy();
 			break;
 	}
 }
 
-bool SciTEGTK::AbbrevDialog() {
+void SciTEGTK::AbbrevDialog() {
 	dlgAbbrev.Create(localiser.Text("Insert Abbreviation"));
 
 	gtk_container_set_border_width(GTK_CONTAINER(PWidget(dlgAbbrev)), 0);
@@ -2838,6 +2500,7 @@ bool SciTEGTK::AbbrevDialog() {
 	gtk_entry_set_width_chars(dlgAbbrev.comboAbbrev.Entry(), 35);
 	FillComboFromProps(&dlgAbbrev.comboAbbrev, propsAbbrev);
 	table.Add(dlgAbbrev.comboAbbrev, 2, true);
+	dlgAbbrev.comboAbbrev.ActivatesDefault();
 
 	gtk_widget_grab_focus(dlgAbbrev.comboAbbrev);
 	gtk_label_set_mnemonic_widget(GTK_LABEL(labelAbbrev), dlgAbbrev.comboAbbrev);
@@ -2848,15 +2511,13 @@ bool SciTEGTK::AbbrevDialog() {
 	gtk_dialog_set_default_response(GTK_DIALOG(PWidget(dlgAbbrev)), GTK_RESPONSE_OK);
 
 	dlgAbbrev.Display(PWidget(wSciTE));
-
-	return TRUE;
 }
 
 void SciTEGTK::TabSizeSet(int &tabSize, bool &useTabs) {
 	tabSize = dlgTabSize.entryTabSize.Value();
 	if (tabSize > 0)
 		wEditor.SetTabWidth(tabSize);
-	int indentSize = dlgTabSize.entryIndentSize.Value();
+	const int indentSize = dlgTabSize.entryIndentSize.Value();
 	if (indentSize > 0)
 		wEditor.SetIndent(indentSize);
 	useTabs = dlgTabSize.toggleUseTabs.Active();
@@ -2909,7 +2570,7 @@ void SciTEGTK::TabSizeDialog() {
 	table.Label(labelTabSize);
 
 	std::string tabSize = StdStringFromInteger(wEditor.TabWidth());
-	dlgTabSize.entryTabSize.Create(tabSize.c_str());
+	dlgTabSize.entryTabSize.Create(tabSize);
 	table.Add(dlgTabSize.entryTabSize);
 	dlgTabSize.entryTabSize.ActivatesDefault();
 	gtk_widget_grab_focus(dlgTabSize.entryTabSize);
@@ -2919,12 +2580,12 @@ void SciTEGTK::TabSizeDialog() {
 	table.Label(labelIndentSize);
 
 	std::string indentSize = StdStringFromInteger(wEditor.Indent());
-	dlgTabSize.entryIndentSize.Create(indentSize.c_str());
+	dlgTabSize.entryIndentSize.Create(indentSize);
 	table.Add(dlgTabSize.entryIndentSize);
 	dlgTabSize.entryIndentSize.ActivatesDefault();
 	gtk_label_set_mnemonic_widget(GTK_LABEL(labelIndentSize), dlgTabSize.entryIndentSize);
 
-	bool useTabs = wEditor.UseTabs();
+	const bool useTabs = wEditor.UseTabs();
 	dlgTabSize.toggleUseTabs.Create(localiser.Text("_Use Tabs"));
 	dlgTabSize.toggleUseTabs.SetActive(useTabs);
 	table.Add();
@@ -2948,7 +2609,7 @@ void SciTEGTK::ParamGrab() {
 		for (int param = 0; param < maxParam; param++) {
 			std::string paramText = StdStringFromInteger(param + 1);
 			const char *paramVal = dlgParameters.entryParam[param].Text();
-			props.Set(paramText.c_str(), paramVal);
+			props.Set(paramText, paramVal);
 		}
 		UpdateStatusBar(true);
 	}
@@ -3008,7 +2669,7 @@ bool SciTEGTK::ParametersDialog(bool modal) {
 		GtkWidget *label = gtk_label_new_with_mnemonic(paramText.c_str());
 		table.Label(label);
 
-		dlgParameters.entryParam[param].Create(paramTextVal.c_str());
+		dlgParameters.entryParam[param].Create(paramTextVal);
 		table.Add(dlgParameters.entryParam[param]);
 		dlgParameters.entryParam[param].ActivatesDefault();
 
@@ -3083,7 +2744,7 @@ void SciTEGTK::FindReplace(bool replace) {
 	dlgFindReplace.wComboFind.Create();
 	table.Add(dlgFindReplace.wComboFind, 1, true);
 
-	dlgFindReplace.wComboFind.SetText(findWhat.c_str());
+	dlgFindReplace.wComboFind.SetText(findWhat);
 	gtk_entry_set_width_chars(dlgFindReplace.wComboFind.Entry(), 40);
 	dlgFindReplace.wComboFind.ActivatesDefault();
 	dlgFindReplace.labelFind.SetMnemonicFor(dlgFindReplace.wComboFind);
@@ -3174,16 +2835,16 @@ SciTEBase::MessageBoxChoice SciTEGTK::WindowMessageBox(GUI::Window &w, const GUI
 		g_signal_connect(G_OBJECT(messageBoxDialog),
 		                   "destroy", G_CALLBACK(messageBoxDestroy), &messageBoxDialog);
 
-		MessageBoxChoice escapeResult = mbOK;
+		MessageBoxChoice escapeResult = MessageBoxChoice::ok;
 		if ((style & 0xf) == mbsOK) {
-			AddMBButton(messageBoxDialog, "_OK", mbOK, accel_group, true);
+			AddMBButton(messageBoxDialog, "_OK", MessageBoxChoice::ok, accel_group, true);
 		} else {
-			AddMBButton(messageBoxDialog, "_Yes", mbYes, accel_group, true);
-			AddMBButton(messageBoxDialog, "_No", mbNo, accel_group);
-			escapeResult = mbNo;
+			AddMBButton(messageBoxDialog, "_Yes", MessageBoxChoice::yes, accel_group, true);
+			AddMBButton(messageBoxDialog, "_No", MessageBoxChoice::no, accel_group);
+			escapeResult = MessageBoxChoice::no;
 			if ((style & 0xf) == mbsYesNoCancel) {
-				AddMBButton(messageBoxDialog, "_Cancel", mbCancel, accel_group);
-				escapeResult = mbCancel;
+				AddMBButton(messageBoxDialog, "_Cancel", MessageBoxChoice::cancel, accel_group);
+				escapeResult = MessageBoxChoice::cancel;
 			}
 		}
 		g_signal_connect(G_OBJECT(messageBoxDialog),
@@ -3256,7 +2917,7 @@ void SciTEGTK::AboutDialog() {
 }
 
 void SciTEGTK::QuitProgram() {
-	if (SaveIfUnsureAll() != saveCancelled) {
+	if (SaveIfUnsureAll() != SaveResult::cancelled) {
 		quitting = true;
 		// If ongoing saves, wait for them to complete.
 		if (!buffers.SavingInBackground()) {
@@ -3266,7 +2927,7 @@ void SciTEGTK::QuitProgram() {
 }
 
 void SciTEGTK::PanePositionChanged(GObject *, GParamSpec *, SciTEGTK *scitew) {
-	bool sizeForced = scitew->UpdateOutputSize();
+	const bool sizeForced = scitew->UpdateOutputSize();
 
 	if (sizeForced) {
 		// Calling SizeContentWindows sets position on the H/VPaned and thus
@@ -3329,12 +2990,12 @@ gint SciTEGTK::QuitSignal(GtkWidget *, GdkEventAny *, SciTEGTK *scitew) {
 }
 
 void SciTEGTK::ButtonSignal(GtkWidget *, gpointer data) {
-	instance->Command((guint)(long)data);
+	instance->Command(GPOINTER_TO_UINT(data));
 }
 
 void SciTEGTK::MenuSignal(GtkMenuItem *menuitem, SciTEGTK *scitew) {
 	if (scitew->allowMenuActions) {
-		gint action = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(menuitem), "CmdNum"));
+		const guint action = GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(menuitem), "CmdNum"));
 		scitew->Command(action);
 	}
 }
@@ -3355,6 +3016,8 @@ gint SciTEGTK::MousePress(GtkWidget * /*widget*/, GdkEventButton *event, SciTEGT
 	return scitew->Mouse(event);
 }
 
+namespace {
+
 // Translate key strokes that are not in a menu into commands
 class KeyToCommand {
 public:
@@ -3370,7 +3033,7 @@ enum {
     mSC = GDK_SHIFT_MASK | GDK_CONTROL_MASK
 };
 
-static KeyToCommand kmap[] = {
+KeyToCommand kmap[] = {
                                  {m_C, GKEY_Tab, IDM_NEXTFILESTACK},
                                  {mSC, GKEY_ISO_Left_Tab, IDM_PREVFILESTACK},
                                  {m_C, GKEY_KP_Enter, IDM_COMPLETEWORD},
@@ -3387,9 +3050,11 @@ static KeyToCommand kmap[] = {
                                  {0, 0, 0},
                              };
 
-inline bool KeyMatch(const char *menuKey, int keyval, int modifiers) {
+bool KeyMatch(const char *menuKey, int keyval, int modifiers) {
 	return SciTEKeys::MatchKeyCode(
 		SciTEKeys::ParseKeyCode(menuKey), keyval, modifiers);
+}
+
 }
 
 gint SciTEGTK::Key(GdkEventKey *event) {
@@ -3405,9 +3070,9 @@ gint SciTEGTK::Key(GdkEventKey *event) {
 		}
 	}
 
-	int modifiers = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_MOD4_MASK);
+	const int modifiers = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_MOD4_MASK);
 
-	int cmodifiers = // modifier mask for Lua extension
+	const int cmodifiers = // modifier mask for Lua extension
 		((event->state & GDK_SHIFT_MASK)   ? SCMOD_SHIFT : 0) |
 		((event->state & GDK_CONTROL_MASK) ? SCMOD_CTRL  : 0) |
 		((event->state & GDK_MOD1_MASK)    ? SCMOD_ALT   : 0);
@@ -3444,7 +3109,7 @@ gint SciTEGTK::Key(GdkEventKey *event) {
 	for (int tool_i = 0; tool_i < toolMax; ++tool_i) {
 		GtkWidget *item = MenuItemFromAction(IDM_TOOLS + tool_i);
 		if (item) {
-			long keycode = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(item), "key"));
+			const long keycode = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(item), "key"));
 			if (keycode && SciTEKeys::MatchKeyCode(keycode, event->keyval, modifiers)) {
 				SciTEBase::MenuCommand(IDM_TOOLS + tool_i);
 				return 1;
@@ -3455,7 +3120,7 @@ gint SciTEGTK::Key(GdkEventKey *event) {
 	// check user defined keys
 	for (const ShortcutItem &scut : shortCutItemList) {
 		if (KeyMatch(scut.menuKey.c_str(), event->keyval, modifiers)) {
-			const int commandNum = SciTEBase::GetMenuCommandAsInt(scut.menuCommand.c_str());
+			const int commandNum = SciTEBase::GetMenuCommandAsInt(scut.menuCommand);
 			if (commandNum != -1) {
 				if (commandNum < 2000) {
 					SciTEBase::MenuCommand(commandNum);
@@ -3469,7 +3134,7 @@ gint SciTEGTK::Key(GdkEventKey *event) {
 		}
 	}
 
-	if (findStrip.KeyDown(event) || replaceStrip.KeyDown(event) || userStrip.KeyDown(event)) {
+	if (findStrip.KeyDown(event) || replaceStrip.KeyDown(event) || filterStrip.KeyDown(event) || userStrip.KeyDown(event)) {
 		g_signal_stop_emission_by_name(G_OBJECT(PWidget(wSciTE)), "key_press_event");
 		return 1;
 	}
@@ -3478,7 +3143,7 @@ gint SciTEGTK::Key(GdkEventKey *event) {
 }
 
 void SciTEGTK::PopUpCmd(GtkMenuItem *menuItem, SciTEGTK *scitew) {
-	sptr_t cmd = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(menuItem), "CmdNum"));
+	const guint cmd = GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(menuItem), "CmdNum"));
 	scitew->Command(cmd);
 }
 
@@ -3578,11 +3243,6 @@ gint SciTEGTK::TabBarScroll(GdkEventScroll *event) {
 	return TRUE;
 }
 
-static GtkWidget *pixmap_new(gchar **xpm) {
-	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_xpm_data((const char **)(char **)xpm);
-	return gtk_image_new_from_pixbuf(pixbuf);
-}
-
 GtkWidget *SciTEGTK::AddToolButton(const char *text, int cmd, GtkWidget *toolbar_icon) {
 	gtk_widget_show(GTK_WIDGET(toolbar_icon));
 	GUI::gui_string localised = localiser.Text(text);
@@ -3595,12 +3255,6 @@ GtkWidget *SciTEGTK::AddToolButton(const char *text, int cmd, GtkWidget *toolbar
 	                   G_CALLBACK(ButtonSignal),
 	                   GINT_TO_POINTER(cmd));
 	return GTK_WIDGET(button);
-}
-
-static void AddToolSpace(GtkToolbar *toolbar) {
-	GtkToolItem *space = gtk_separator_tool_item_new();
-	gtk_widget_show(GTK_WIDGET(space));
-	gtk_toolbar_insert(toolbar, space, -1);
 }
 
 void SciTEGTK::AddToolBar() {
@@ -3635,34 +3289,34 @@ void SciTEGTK::AddToolBar() {
 		AddToolButton("Next Buffer", IDM_NEXTFILE, gtk_image_new_from_icon_name("go-next", GTK_ICON_SIZE_LARGE_TOOLBAR));
 		return;
 	}
-	AddToolButton("New", IDM_NEW, pixmap_new((gchar**)filenew_xpm));
-	AddToolButton("Open", IDM_OPEN, pixmap_new((gchar**)fileopen_xpm));
-	AddToolButton("Save", IDM_SAVE, pixmap_new((gchar**)filesave_xpm));
-	AddToolButton("Close", IDM_CLOSE, pixmap_new((gchar**)close_xpm));
+	AddToolButton("New", IDM_NEW, pixmap_new(filenew_xpm));
+	AddToolButton("Open", IDM_OPEN, pixmap_new(fileopen_xpm));
+	AddToolButton("Save", IDM_SAVE, pixmap_new(filesave_xpm));
+	AddToolButton("Close", IDM_CLOSE, pixmap_new(close_xpm));
 
 	AddToolSpace(GTK_TOOLBAR(PWidget(wToolBar)));
-	AddToolButton("Undo", IDM_UNDO, pixmap_new((gchar**)undo_xpm));
-	AddToolButton("Redo", IDM_REDO, pixmap_new((gchar**)redo_xpm));
+	AddToolButton("Undo", IDM_UNDO, pixmap_new(undo_xpm));
+	AddToolButton("Redo", IDM_REDO, pixmap_new(redo_xpm));
 
 	AddToolSpace(GTK_TOOLBAR(PWidget(wToolBar)));
-	AddToolButton("Cut", IDM_CUT, pixmap_new((gchar**)editcut_xpm));
-	AddToolButton("Copy", IDM_COPY, pixmap_new((gchar**)editcopy_xpm));
-	AddToolButton("Paste", IDM_PASTE, pixmap_new((gchar**)editpaste_xpm));
+	AddToolButton("Cut", IDM_CUT, pixmap_new(editcut_xpm));
+	AddToolButton("Copy", IDM_COPY, pixmap_new(editcopy_xpm));
+	AddToolButton("Paste", IDM_PASTE, pixmap_new(editpaste_xpm));
 
 	AddToolSpace(GTK_TOOLBAR(PWidget(wToolBar)));
-	AddToolButton("Find in Files", IDM_FINDINFILES, pixmap_new((gchar**)findinfiles_xpm));
-	AddToolButton("Find", IDM_FIND, pixmap_new((gchar**)search_xpm));
-	AddToolButton("Find Next", IDM_FINDNEXT, pixmap_new((gchar**)findnext_xpm));
-	AddToolButton("Replace", IDM_REPLACE, pixmap_new((gchar**)replace_xpm));
+	AddToolButton("Find in Files", IDM_FINDINFILES, pixmap_new(findinfiles_xpm));
+	AddToolButton("Find", IDM_FIND, pixmap_new(search_xpm));
+	AddToolButton("Find Next", IDM_FINDNEXT, pixmap_new(findnext_xpm));
+	AddToolButton("Replace", IDM_REPLACE, pixmap_new(replace_xpm));
 
 	AddToolSpace(GTK_TOOLBAR(PWidget(wToolBar)));
-	btnCompile = AddToolButton("Compile", IDM_COMPILE, pixmap_new((gchar**)compile_xpm));
-	btnBuild = AddToolButton("Build", IDM_BUILD, pixmap_new((gchar**)build_xpm));
-	btnStop = AddToolButton("Stop", IDM_STOPEXECUTE, pixmap_new((gchar**)stop_xpm));
+	btnCompile = AddToolButton("Compile", IDM_COMPILE, pixmap_new(compile_xpm));
+	btnBuild = AddToolButton("Build", IDM_BUILD, pixmap_new(build_xpm));
+	btnStop = AddToolButton("Stop", IDM_STOPEXECUTE, pixmap_new(stop_xpm));
 
 	AddToolSpace(GTK_TOOLBAR(PWidget(wToolBar)));
-	AddToolButton("Previous", IDM_PREVFILE, pixmap_new((gchar**)prev_xpm));
-	AddToolButton("Next Buffer", IDM_NEXTFILE, pixmap_new((gchar**)next_xpm));
+	AddToolButton("Previous", IDM_PREVFILE, pixmap_new(prev_xpm));
+	AddToolButton("Next Buffer", IDM_NEXTFILE, pixmap_new(next_xpm));
 }
 
 std::string SciTEGTK::TranslatePath(const char *path) {
@@ -3672,7 +3326,7 @@ std::string SciTEGTK::TranslatePath(const char *path) {
 		spath.append("/");
 		size_t end = spath.find("/");
 		while (spath.length() > 1) {
-			std::string segment(spath.c_str(), 0, end);
+			std::string segment(spath, 0, end);
 			GUI::gui_string segmentLocalised = localiser.Text(segment.c_str());
 			std::replace(segmentLocalised.begin(), segmentLocalised.end(), '/', '|');
 			spathTranslated.append("/");
@@ -3684,16 +3338,6 @@ std::string SciTEGTK::TranslatePath(const char *path) {
 	} else {
 		return path ? path : std::string();
 	}
-}
-
-static std::string WithoutUnderscore(const char *s) {
-	std::string ret;
-	while (*s) {
-		if (*s != '_')
-			ret += *s;
-		s++;
-	}
-	return ret;
 }
 
 void SciTEGTK::CreateTranslatedMenu(int n, const SciTEItemFactoryEntry items[],
@@ -3728,10 +3372,10 @@ void SciTEGTK::CreateTranslatedMenu(int n, const SciTEItemFactoryEntry items[],
 			itemAccel = userDefinedAccels[i].c_str();
 		}
 
-		translatedItems[i].path = (gchar*) items[i].path;
-		translatedItems[i].accelerator = (gchar*) itemAccel;
+		translatedItems[i].path = items[i].path;
+		translatedItems[i].accelerator = itemAccel;
 		translatedItems[i].callback_action = items[i].callback_action;
-		translatedItems[i].item_type = (gchar*) items[i].item_type;
+		translatedItems[i].item_type = items[i].item_type;
 		translatedText[i] = TranslatePath(translatedItems[i].path);
 		translatedItems[i].path = translatedText[i].c_str();
 		translatedRadios[i] = TranslatePath(translatedItems[i].item_type);
@@ -3739,7 +3383,7 @@ void SciTEGTK::CreateTranslatedMenu(int n, const SciTEItemFactoryEntry items[],
 
 	}
 	for (; i < dim; i++) {
-		int suffix = i - n + startNum;
+		const int suffix = i - n + startNum;
 		std::string ssnum = StdStringFromInteger(suffix);
 		translatedText[i] = TranslatePath(prefix);
 		translatedText[i] += ssnum;
@@ -3773,9 +3417,9 @@ void SciTEGTK::CreateTranslatedMenu(int n, const SciTEItemFactoryEntry items[],
 			gtk_menu_shell_append(GTK_MENU_SHELL(menuParent), menuItemPullDown);
 			std::string baseName = WithoutUnderscore(afterSlash);
 			pulldowns[baseName] = menuPullDown;
-		} else {
+		} else if (lastSlash) {
 			// Item "/File/_New"
-			std::string itemName(lastSlash+1);
+			const std::string itemName(lastSlash+1);
 			GtkWidget *menuItemCommand = 0;
 			if (itemType.empty()) {
 				menuItemCommand = gtk_menu_item_new_with_mnemonic(itemName.c_str());
@@ -3886,17 +3530,18 @@ void SciTEGTK::CreateMenu() {
 	                                      {"/_Search", NULL, NULL, 0, "<Branch>"},
 	                                      {"/Search/_Find...", "<control>F", menuSig, IDM_FIND, 0},
 	                                      {"/Search/Find _Next", "F3", menuSig, IDM_FINDNEXT, 0},
-	                                      {"/Search/Find Previou_s", "<shift>F3", menuSig, IDM_FINDNEXTBACK, 0},
+	                                      {"/Search/Find _Previous", "<shift>F3", menuSig, IDM_FINDNEXTBACK, 0},
 	                                      {"/Search/F_ind in Files...", "<control><shift>F", menuSig, IDM_FINDINFILES, 0},
-	                                      {"/Search/R_eplace...", "<control>H", menuSig, IDM_REPLACE, 0},
-	                                      {"/Search/Incrementa_l Search", "<control><alt>I", menuSig, IDM_INCSEARCH, 0},
-	                                      {"/Search/Selection A_dd Next", "<control><shift>D", menuSig, IDM_SELECTIONADDNEXT, 0},
-	                                      {"/Search/Selection _Add Each", "", menuSig, IDM_SELECTIONADDEACH, 0},
+	                                      {"/Search/_Replace...", "<control>H", menuSig, IDM_REPLACE, 0},
+	                                      {"/Search/Incremental _Search", "<control><alt>I", menuSig, IDM_INCSEARCH, 0},
+	                                      {"/Search/Fi_lter", "<control><alt>F", menuSig, IDM_FILTER, 0},
+	                                      {"/Search/Selection _Add Next", "<control><shift>D", menuSig, IDM_SELECTIONADDNEXT, 0},
+	                                      {"/Search/Selection Add _Each", "", menuSig, IDM_SELECTIONADDEACH, 0},
 	                                      {"/Search/sep3", NULL, NULL, 0, "<Separator>"},
 	                                      {"/Search/_Go To...", "<control>G", menuSig, IDM_GOTO, 0},
 	                                      {"/Search/Next Book_mark", "F2", menuSig, IDM_BOOKMARK_NEXT, 0},
 	                                      {"/Search/Pre_vious Bookmark", "<shift>F2", menuSig, IDM_BOOKMARK_PREV, 0},
-	                                      {"/Search/Toggle Bookmar_k", "<control>F2", menuSig, IDM_BOOKMARK_TOGGLE, 0},
+	                                      {"/Search/_Toggle Bookmark", "<control>F2", menuSig, IDM_BOOKMARK_TOGGLE, 0},
 	                                      {"/Search/_Clear All Bookmarks", "", menuSig, IDM_BOOKMARK_CLEARALL, 0},
 	                                      {"/Search/Select All _Bookmarks", "", menuSig, IDM_BOOKMARK_SELECT_ALL, 0},
 
@@ -4074,788 +3719,11 @@ SystemAppearance SciTEGTK::CurrentAppearance() const noexcept {
 	return currentAppearance;
 }
 
-void FindReplaceStrip::SetIncrementalBehaviour(int behaviour) {
-	incrementalBehaviour = static_cast<IncrementalBehaviour>(behaviour);
-}
-
-void FindReplaceStrip::MarkIncremental() {
- 	if (incrementalBehaviour == showAllMatches) {
-		pSearcher->MarkAll(Searcher::markIncremental);
-	}
-}
-
-void FindReplaceStrip::NextIncremental() {
-	if (initializingSearch)
-		return;
-
-	if (incrementalBehaviour == simple)
-		return;
-	if (pSearcher->findWhat.length()) {
-		pSearcher->MoveBack();
-	}
-
-	pSearcher->SetFindText(wComboFind.Text());
-
-	if (pSearcher->FindHasText()) {
-		pSearcher->FindNext(pSearcher->reverseFind, false, true);
-		pSearcher->SetCaretAsStart();
-	}
-	MarkIncremental();
-	WEntry::SetValid(wComboFind.Entry(), !pSearcher->FindHasText() || !pSearcher->failedfind);
-	wComboFind.InvalidateAll();
-}
-
-void FindStrip::Creation(GtkWidget *container) {
-	WTable table(1, 10);
-	SetID(table);
-	Strip::Creation(container);
-	gtk_container_set_border_width(GTK_CONTAINER(GetID()), 1);
-	gtk_box_pack_start(GTK_BOX(container), GTK_WIDGET(GetID()), FALSE, FALSE, 0);
-	wStaticFind.Create(localiser->Text(textFindPrompt).c_str());
-	table.Label(wStaticFind);
-
-	g_signal_connect(G_OBJECT(GetID()), "set-focus-child", G_CALLBACK(ChildFocusSignal), this);
-	g_signal_connect(G_OBJECT(GetID()), "focus", G_CALLBACK(FocusSignal), this);
-
-	wComboFind.Create();
-	table.Add(wComboFind, 1, true, 0, 0);
-
-	gtk_widget_show(wComboFind);
-
-	gtk_widget_show(GTK_WIDGET(GetID()));
-
-	g_signal_connect(G_OBJECT(wComboFind.Entry()),"changed",
-		G_CALLBACK(FindComboChanged), this);
-
-	g_signal_connect(G_OBJECT(wComboFind.Entry()), "key-press-event",
-		G_CALLBACK(EscapeSignal), this);
-
-	g_signal_connect(G_OBJECT(wComboFind.Entry()), "activate",
-		G_CALLBACK(ActivateSignal), this);
-
-	gtk_label_set_mnemonic_widget(GTK_LABEL(wStaticFind.GetID()), GTK_WIDGET(wComboFind.Entry()));
-
-	static ObjectSignal<FindStrip, &FindStrip::FindNextCmd> sigFindNext;
-	wButton.Create(localiser->Text(textFindNext), G_CALLBACK(sigFindNext.Function), this);
-	table.Add(wButton, 1, false, 0, 0);
-
-	static ObjectSignal<FindStrip, &FindStrip::MarkAllCmd> sigMarkAll;
-	wButtonMarkAll.Create(localiser->Text(textMarkAll), G_CALLBACK(sigMarkAll.Function), this);
-	table.Add(wButtonMarkAll, 1, false, 0, 0);
-
-#if !GTK_CHECK_VERSION(3,4,0)
-	gtk_widget_ensure_style(wButton);
-#endif
-
-	for (int i=0;i<checks;i++) {
-#if GTK_CHECK_VERSION(3,4,0)
-		wCheck[i].Create(xpmImages[i], localiser->Text(toggles[i].label), NULL);
-#elif GTK_CHECK_VERSION(3,0,0)
-		wCheck[i].Create(xpmImages[i], localiser->Text(toggles[i].label), gtk_widget_get_style(wButton.Pointer()));
-#else
-		wCheck[i].Create(xpmImages[i], localiser->Text(toggles[i].label), wButton.Pointer()->style);
-#endif
-		wCheck[i].SetActive(pSearcher->FlagFromCmd(toggles[i].cmd));
-		table.Add(wCheck[i], 1, false, 0, 0);
-		wCheck[i].SetChangeFunction(ToggleChanged, this);
-	}
-}
-
-void FindStrip::Destruction() {
-}
-
-void FindStrip::Show(int buttonHeight) {
-	pSearcher->failedfind = false;
-	WEntry::SetValid(wComboFind.Entry(), true);
-	pSearcher->SetCaretAsStart();
-	Strip::Show(buttonHeight);
-
-	gtk_widget_set_size_request(wButton, -1, buttonHeight);
-	gtk_widget_set_size_request(wButtonMarkAll, -1, buttonHeight);
-	gtk_widget_set_size_request(wComboFind, widthCombo, buttonHeight);
-	gtk_widget_set_size_request(GTK_WIDGET(wComboFind.Entry()), -1, buttonHeight);
-	gtk_widget_set_size_request(wStaticFind, -1, heightStatic);
-
-	initializingSearch = true;	// Avoid search for initial value in search entry
-	wComboFind.FillFromMemory(pSearcher->memFinds.AsVector());
-	gtk_entry_set_text(wComboFind.Entry(), pSearcher->findWhat.c_str());
-	SetToggles();
-	initializingSearch = false;
-	MarkIncremental();
-
-	gtk_widget_grab_focus(GTK_WIDGET(wComboFind.Entry()));
-}
-
-void FindStrip::Close() {
-	if (visible) {
-		if (pSearcher->havefound) {
-			pSearcher->InsertFindInMemory();
-		}
-		Strip::Close();
-		pSearcher->UIClosed();
-	}
-}
-
-bool FindStrip::KeyDown(GdkEventKey *event) {
-	if (visible) {
-		if (Strip::KeyDown(event))
-			return true;
-		if (event->state & GDK_MOD1_MASK) {
-			for (int i=SearchOption::tWord; i<=SearchOption::tUp; i++) {
-				GUI::gui_string localised = localiser->Text(toggles[i].label);
-				char key = KeyFromLabel(localised);
-				if (static_cast<unsigned int>(key) == event->keyval) {
-					wCheck[i].Toggle();
-					return true;
-				}
-			}
-		}
-	}
-	return false;
-}
-
-void FindStrip::MenuAction(guint action) {
-	if (allowMenuActions) {
-		pSearcher->FlagFromCmd(action) = !pSearcher->FlagFromCmd(action);
-		SetToggles();
-		InvalidateAll();
-	}
-}
-
-void FindStrip::ActivateSignal(GtkWidget *, FindStrip *pStrip) {
-	pStrip->FindNextCmd();
-}
-
-void FindStrip::FindComboChanged(GtkEditable *, FindStrip *pStrip) {
-	pStrip->GrabToggles();
-	pStrip->NextIncremental();
-}
-
-void FindStrip::ToggleChanged(WCheckDraw *, void *user) {
-	FindStrip *pStrip = static_cast<FindStrip *>(user);
-	pStrip->GrabToggles();
-	pStrip->NextIncremental();
-}
-
-gboolean FindStrip::EscapeSignal(GtkWidget *w, GdkEventKey *event, FindStrip *pStrip) {
-	if (event->keyval == GKEY_Escape) {
-		g_signal_stop_emission_by_name(G_OBJECT(w), "key-press-event");
-		pStrip->Close();
-	}
-	return FALSE;
-}
-
-void FindStrip::GrabFields() {
-	pSearcher->SetFind(wComboFind.Text());
-	GrabToggles();
-}
-
-void FindStrip::GrabToggles() {
-	if (!initializingSearch) {
-		for (int i=0;i<checks;i++) {
-			pSearcher->FlagFromCmd(toggles[i].cmd) = wCheck[i].Active();
-		}
-	}
-}
-
-void FindStrip::SetToggles() {
-	for (int i=0;i<checks;i++) {
-		wCheck[i].SetActive(pSearcher->FlagFromCmd(toggles[i].cmd));
-	}
-}
-
-void FindStrip::ShowPopup() {
-	GUI::Menu popup;
-	popup.CreatePopUp();
-	for (int i=SearchOption::tWord; i<=SearchOption::tUp; i++) {
-		AddToPopUp(popup, toggles[i].label, toggles[i].cmd, pSearcher->FlagFromCmd(toggles[i].cmd));
-	}
-	GUI::Rectangle rcButton = wCheck[0].GetPosition();
-	GUI::Point pt(rcButton.left, rcButton.bottom);
-	popup.Show(pt, *this);
-}
-
-void FindStrip::FindNextCmd() {
-	GrabFields();
-	bool found = false;
-	if (pSearcher->FindHasText()) {
-		found = pSearcher->FindNext(pSearcher->reverseFind) >= 0;
-	}
-	if (pSearcher->ShouldClose(found))
-		Close();
-	else
-		wComboFind.FillFromMemory(pSearcher->memFinds.AsVector());
-}
-
-void FindStrip::MarkAllCmd() {
-	GrabFields();
-	pSearcher->MarkAll();
-	const bool found = pSearcher->FindNext(pSearcher->reverseFind) >= 0;
-	if (pSearcher->ShouldClose(found))
-		Close();
-	else
-		wComboFind.FillFromMemory(pSearcher->memFinds.AsVector());
-}
-
-void FindStrip::ChildFocus(GtkWidget *widget) {
-	Strip::ChildFocus(widget);
-	pSearcher->UIHasFocus();
-}
-
-gboolean FindStrip::Focus(GtkDirectionType direction) {
-	const int lastFocusCheck = 5;
-	if ((direction == GTK_DIR_TAB_BACKWARD) && wComboFind.HasFocusOnSelfOrChild()) {
-		gtk_widget_grab_focus(wCheck[lastFocusCheck]);
-		return TRUE;
-	} else if ((direction == GTK_DIR_TAB_FORWARD) && wCheck[lastFocusCheck].HasFocus()) {
-		gtk_widget_grab_focus(GTK_WIDGET(wComboFind.Entry()));
-		return TRUE;
-	}
-	return FALSE;
-}
-
-void ReplaceStrip::Creation(GtkWidget *container) {
-	WTable tableReplace(2, 7);
-	SetID(tableReplace);
-	Strip::Creation(container);
-	tableReplace.PackInto(GTK_BOX(container), false);
-
-	wStaticFind.Create(localiser->Text(textFindPrompt));
-	tableReplace.Label(wStaticFind);
-
-	g_signal_connect(G_OBJECT(GetID()), "set-focus-child", G_CALLBACK(ChildFocusSignal), this);
-	g_signal_connect(G_OBJECT(GetID()), "focus", G_CALLBACK(FocusSignal), this);
-
-	wComboFind.Create();
-	tableReplace.Add(wComboFind, 1, true, 0, 0);
-	wComboFind.Show();
-
-	g_signal_connect(G_OBJECT(wComboFind.Entry()),"changed",
-		G_CALLBACK(FindComboChanged), this);
-
-	g_signal_connect(G_OBJECT(wComboFind.Entry()), "key-press-event",
-		G_CALLBACK(EscapeSignal), this);
-
-	g_signal_connect(G_OBJECT(wComboFind.Entry()), "activate",
-		G_CALLBACK(ActivateSignal), this);
-
-	gtk_label_set_mnemonic_widget(GTK_LABEL(wStaticFind.GetID()), GTK_WIDGET(wComboFind.Entry()));
-
-	static ObjectSignal<ReplaceStrip, &ReplaceStrip::FindCmd> sigFindNext;
-	wButtonFind.Create(localiser->Text(textFindNext),
-			G_CALLBACK(sigFindNext.Function), this);
-	tableReplace.Add(wButtonFind, 1, false, 0, 0);
-
-	static ObjectSignal<ReplaceStrip, &ReplaceStrip::ReplaceAllCmd> sigReplaceAll;
-	wButtonReplaceAll.Create(localiser->Text("Replace _All"),
-			G_CALLBACK(sigReplaceAll.Function), this);
-	tableReplace.Add(wButtonReplaceAll, 1, false, 0, 0);
-
-#if !GTK_CHECK_VERSION(3,4,0)
-	gtk_widget_ensure_style(wButtonFind);
-#endif
-
-	for (int i=0;i<checks;i++) {
-#if GTK_CHECK_VERSION(3,4,0)
-		wCheck[i].Create(xpmImages[i], localiser->Text(toggles[i].label), NULL);
-#elif GTK_CHECK_VERSION(3,0,0)
-		wCheck[i].Create(xpmImages[i], localiser->Text(toggles[i].label), gtk_widget_get_style(wButtonFind.Pointer()));
-#else
-		wCheck[i].Create(xpmImages[i], localiser->Text(toggles[i].label), wButtonFind.Pointer()->style);
-#endif
-		wCheck[i].SetActive(pSearcher->FlagFromCmd(toggles[i].cmd));
-		wCheck[i].SetChangeFunction(ToggleChanged, this);
-	}
-
-	tableReplace.Add(wCheck[SearchOption::tWord], 1, false, 0, 0);
-	tableReplace.Add(wCheck[SearchOption::tCase], 1, false, 0, 0);
-	tableReplace.Add(wCheck[SearchOption::tRegExp], 1, false, 0, 0);
-
-	wStaticReplace.Create(localiser->Text(textReplacePrompt));
-	tableReplace.Label(wStaticReplace);
-
-	wComboReplace.Create();
-	tableReplace.Add(wComboReplace, 1, true, 0, 0);
-
-	g_signal_connect(G_OBJECT(wComboReplace.Entry()), "key-press-event",
-		G_CALLBACK(EscapeSignal), this);
-
-	g_signal_connect(G_OBJECT(wComboReplace.Entry()), "activate",
-		G_CALLBACK(ActivateSignal), this);
-
-	gtk_label_set_mnemonic_widget(GTK_LABEL(wStaticReplace.GetID()), GTK_WIDGET(wComboReplace.Entry()));
-
-	static ObjectSignal<ReplaceStrip, &ReplaceStrip::ReplaceCmd> sigReplace;
-	wButtonReplace.Create(localiser->Text(textReplace),
-			G_CALLBACK(sigReplace.Function), this);
-	tableReplace.Add(wButtonReplace, 1, false, 0, 0);
-
-	static ObjectSignal<ReplaceStrip, &ReplaceStrip::ReplaceInSelectionCmd> sigReplaceInSelection;
-	wButtonReplaceInSelection.Create(localiser->Text(textInSelection),
-			G_CALLBACK(sigReplaceInSelection.Function), this);
-	tableReplace.Add(wButtonReplaceInSelection, 1, false, 0, 0);
-
-	tableReplace.Add(wCheck[SearchOption::tBackslash], 1, false, 0, 0);
-	tableReplace.Add(wCheck[SearchOption::tWrap], 1, false, 0, 0);
-
-	// Make the fccus chain move down before moving right
-	GList *focusChain = 0;
-	focusChain = g_list_append(focusChain, wComboFind.Pointer());
-	focusChain = g_list_append(focusChain, wComboReplace.Pointer());
-	focusChain = g_list_append(focusChain, wButtonFind.Pointer());
-	focusChain = g_list_append(focusChain, wButtonReplace.Pointer());
-	focusChain = g_list_append(focusChain, wButtonReplaceAll.Pointer());
-	focusChain = g_list_append(focusChain, wButtonReplaceInSelection.Pointer());
-	focusChain = g_list_append(focusChain, wCheck[SearchOption::tWord].Pointer());
-	focusChain = g_list_append(focusChain, wCheck[SearchOption::tBackslash].Pointer());
-	focusChain = g_list_append(focusChain, wCheck[SearchOption::tCase].Pointer());
-	focusChain = g_list_append(focusChain, wCheck[SearchOption::tWrap].Pointer());
-	focusChain = g_list_append(focusChain, wCheck[SearchOption::tRegExp].Pointer());
-	gtk_container_set_focus_chain(GTK_CONTAINER(GetID()), focusChain);
-	g_list_free(focusChain);
-}
-
-void ReplaceStrip::Destruction() {
-}
-
-void ReplaceStrip::Show(int buttonHeight) {
-	pSearcher->failedfind = false;
-	WEntry::SetValid(wComboFind.Entry(), true);
-	pSearcher->SetCaretAsStart();
-	Strip::Show(buttonHeight);
-
-	gtk_widget_set_size_request(wButtonFind, -1, buttonHeight);
-	gtk_widget_set_size_request(wButtonReplaceAll, -1, buttonHeight);
-	gtk_widget_set_size_request(wButtonReplace, -1, buttonHeight);
-	gtk_widget_set_size_request(wButtonReplaceInSelection, -1, buttonHeight);
-
-	gtk_widget_set_size_request(wComboFind, widthCombo, buttonHeight);
-	gtk_widget_set_size_request(GTK_WIDGET(wComboFind.Entry()), -1, buttonHeight);
-	gtk_widget_set_size_request(wComboReplace, widthCombo, buttonHeight);
-	gtk_widget_set_size_request(GTK_WIDGET(wComboReplace.Entry()), -1, buttonHeight);
-
-	gtk_widget_set_size_request(wStaticFind, -1, heightStatic);
-	gtk_widget_set_size_request(wStaticReplace, -1, heightStatic);
-
-	initializingSearch = true;	// Avoid search for initial value in search entry
-	wComboFind.FillFromMemory(pSearcher->memFinds.AsVector());
-	wComboReplace.FillFromMemory(pSearcher->memReplaces.AsVector());
-
-	gtk_entry_set_text(wComboFind.Entry(), pSearcher->findWhat.c_str());
-
-	SetToggles();
-	initializingSearch = false;
-	MarkIncremental();
-
-	gtk_widget_grab_focus(GTK_WIDGET(wComboFind.Entry()));
-}
-
-void ReplaceStrip::Close() {
-	if (visible) {
-		if (pSearcher->havefound) {
-			pSearcher->InsertFindInMemory();
-		}
-		Strip::Close();
-		pSearcher->UIClosed();
-	}
-}
-
-bool ReplaceStrip::KeyDown(GdkEventKey *event) {
-	if (visible) {
-		if (Strip::KeyDown(event))
-			return true;
-		if (event->state & GDK_MOD1_MASK) {
-			for (int i=SearchOption::tWord; i<=SearchOption::tWrap; i++) {
-				GUI::gui_string localised = localiser->Text(toggles[i].label);
-				char key = KeyFromLabel(localised);
-				if (static_cast<unsigned int>(key) == event->keyval) {
-					wCheck[i].Toggle();
-					return true;
-				}
-			}
-		}
-	}
-	return false;
-}
-
-void ReplaceStrip::MenuAction(guint action) {
-	if (allowMenuActions) {
-		pSearcher->FlagFromCmd(action) = !pSearcher->FlagFromCmd(action);
-		SetToggles();
-		InvalidateAll();
-	}
-}
-
-void ReplaceStrip::ActivateSignal(GtkWidget *, ReplaceStrip *pStrip) {
-	pStrip->FindCmd();
-}
-
-void ReplaceStrip::FindComboChanged(GtkEditable *, ReplaceStrip *pStrip) {
-	pStrip->GrabToggles();
-	pStrip->NextIncremental();
-}
-
-void ReplaceStrip::ToggleChanged(WCheckDraw *, void *user) {
-	ReplaceStrip *pStrip = static_cast<ReplaceStrip *>(user);
-	pStrip->GrabToggles();
-	pStrip->NextIncremental();
-}
-
-gboolean ReplaceStrip::EscapeSignal(GtkWidget *w, GdkEventKey *event, ReplaceStrip *pStrip) {
-	if (event->keyval == GKEY_Escape) {
-		g_signal_stop_emission_by_name(G_OBJECT(w), "key-press-event");
-		pStrip->Close();
-	}
-	return FALSE;
-}
-
-void ReplaceStrip::GrabFields() {
-	pSearcher->SetFind(wComboFind.Text());
-	pSearcher->SetReplace(wComboReplace.Text());
-	GrabToggles();
-}
-
-void ReplaceStrip::GrabToggles() {
-	if (!initializingSearch) {
-		for (int i=0;i<checks;i++) {
-			pSearcher->FlagFromCmd(toggles[i].cmd) = wCheck[i].Active();
-		}
-	}
-}
-
-void ReplaceStrip::SetToggles() {
-	for (int i=0;i<checks;i++) {
-		wCheck[i].SetActive(pSearcher->FlagFromCmd(toggles[i].cmd));
-	}
-}
-
-void ReplaceStrip::FindCmd() {
-	GrabFields();
-	if (pSearcher->FindHasText()) {
-		pSearcher->FindNext(pSearcher->reverseFind);
-		wComboFind.FillFromMemory(pSearcher->memFinds.AsVector());
-	}
-}
-
-void ReplaceStrip::ReplaceAllCmd() {
-	GrabFields();
-	if (pSearcher->FindHasText()) {
-		pSearcher->ReplaceAll(false);
-		NextIncremental();	// Show not found colour if no more matches.
-		wComboReplace.FillFromMemory(pSearcher->memReplaces.AsVector());
-		wComboFind.FillFromMemory(pSearcher->memFinds.AsVector());
-	}
-}
-
-void ReplaceStrip::ReplaceCmd() {
-	GrabFields();
-	pSearcher->ReplaceOnce(incrementalBehaviour == simple);
-	NextIncremental();	// Show not found colour if no more matches.
-	wComboReplace.FillFromMemory(pSearcher->memReplaces.AsVector());
-	wComboFind.FillFromMemory(pSearcher->memFinds.AsVector());
-}
-
-void ReplaceStrip::ReplaceInSelectionCmd() {
-	GrabFields();
-	if (pSearcher->FindHasText()) {
-		pSearcher->ReplaceAll(true);
-		NextIncremental();	// Show not found colour if no more matches.
-		wComboReplace.FillFromMemory(pSearcher->memReplaces.AsVector());
-		wComboFind.FillFromMemory(pSearcher->memFinds.AsVector());
-	}
-}
-
-void ReplaceStrip::ShowPopup() {
-	GUI::Menu popup;
-	popup.CreatePopUp();
-	for (int i=SearchOption::tWord; i<=SearchOption::tWrap; i++) {
-		AddToPopUp(popup, toggles[i].label, toggles[i].cmd, pSearcher->FlagFromCmd(toggles[i].cmd));
-	}
-	GUI::Rectangle rcButton = wCheck[0].GetPosition();
-	GUI::Point pt(rcButton.left, rcButton.bottom);
-	popup.Show(pt, *this);
-}
-
-void ReplaceStrip::ChildFocus(GtkWidget *widget) {
-	Strip::ChildFocus(widget);
-	pSearcher->UIHasFocus();
-}
-
-gboolean ReplaceStrip::Focus(GtkDirectionType direction) {
-	const int lastFocusCheck = 2;	// Due to last column starting with the thirs checkbox
-	if ((direction == GTK_DIR_TAB_BACKWARD) && wComboFind.HasFocusOnSelfOrChild()) {
-		gtk_widget_grab_focus(wCheck[lastFocusCheck]);
-		return TRUE;
-	} else if ((direction == GTK_DIR_TAB_FORWARD) && wCheck[lastFocusCheck].HasFocus()) {
-		gtk_widget_grab_focus(GTK_WIDGET(wComboFind.Entry()));
-		return TRUE;
-	}
-	return FALSE;
-}
-
-void UserStrip::Creation(GtkWidget *container) {
-	SetID(tableUser);
-	Strip::Creation(container);
-	gtk_container_set_border_width(GTK_CONTAINER(GetID()), 1);
-	tableUser.PackInto(GTK_BOX(container), false);
-	g_signal_connect(G_OBJECT(GetID()), "set-focus-child", G_CALLBACK(ChildFocusSignal), this);
-	g_signal_connect(G_OBJECT(GetID()), "focus", G_CALLBACK(FocusSignal), this);
-}
-
-void UserStrip::Destruction() {
-}
-
-void UserStrip::Show(int buttonHeight) {
-	Strip::Show(buttonHeight);
-	for (const std::vector<UserControl> &line : psd->controls) {
-		for (const UserControl &ctl : line) {
-			if (ctl.controlType == UserControl::ucStatic) {
-				gtk_widget_set_size_request(GTK_WIDGET(ctl.w.GetID()), -1, heightStatic);
-			} else if (ctl.controlType == UserControl::ucEdit) {
-				gtk_widget_set_size_request(GTK_WIDGET(ctl.w.GetID()), -1, buttonHeight);
-			} else if (ctl.controlType == UserControl::ucCombo) {
-				GtkEntry *entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(ctl.w.GetID())));
-				gtk_widget_set_size_request(GTK_WIDGET(entry), -1, buttonHeight);
-			} else if (ctl.controlType == UserControl::ucButton || ctl.controlType == UserControl::ucDefaultButton) {
-				gtk_widget_set_size_request(GTK_WIDGET(ctl.w.GetID()), -1, buttonHeight);
-			}
-		}
-	}
-}
-
-void UserStrip::Close() {
-	if (visible) {
-		Strip::Close();
-		if (pSciTEGTK)
-			pSciTEGTK->UserStripClosed();
-	}
-}
-
-bool UserStrip::KeyDown(GdkEventKey *event) {
-	if (visible) {
-		if (Strip::KeyDown(event))
-			return true;
-	}
-	return false;
-}
-
-void UserStrip::ActivateSignal(GtkWidget *, UserStrip *pStrip) {
-	// Treat Enter as pressing the first default button
-	for (const std::vector<UserControl> &line : pStrip->psd->controls) {
-		for (const UserControl &ctl : line) {
-			if (ctl.controlType == UserControl::ucDefaultButton) {
-				pStrip->extender->OnUserStrip(ctl.item, scClicked);
-				return;
-			}
-		}
-	}
-}
-
-gboolean UserStrip::EscapeSignal(GtkWidget *w, GdkEventKey *event, UserStrip *pStrip) {
-	if (event->keyval == GKEY_Escape) {
-		g_signal_stop_emission_by_name(G_OBJECT(w), "key-press-event");
-		pStrip->Close();
-	}
-	return FALSE;
-}
-
-void UserStrip::ClickThis(GtkWidget *w) {
-	for (const std::vector<UserControl> &line : psd->controls) {
-		for (const UserControl &ctl : line) {
-			if (w == GTK_WIDGET(ctl.w.GetID())) {
-				extender->OnUserStrip(ctl.item, scClicked);
-			}
-		}
-	}
-}
-
-void UserStrip::ClickSignal(GtkWidget *w, UserStrip *pStrip) {
-	pStrip->ClickThis(w);
-}
-
-void UserStrip::ChildFocus(GtkWidget *widget) {
-	Strip::ChildFocus(widget);
-}
-
-static bool WidgetHasFocus(UserControl *ctl) {
-	if (!ctl) {
-		return false;
-	} else if (ctl->controlType == UserControl::ucCombo) {
-		WComboBoxEntry *pwc = static_cast<WComboBoxEntry *>(&(ctl->w));
-		return pwc->HasFocusOnSelfOrChild();
-	} else {
-		return ctl->w.HasFocus();
-	}
-}
-
-gboolean UserStrip::Focus(GtkDirectionType direction) {
-	UserControl *ctlFirstFocus = 0;
-	UserControl *ctlLastFocus = 0;
-	for (std::vector<UserControl> &line : psd->controls) {
-		for (UserControl &ctl : line) {
-			if (ctl.controlType != UserControl::ucStatic) {
-				// Widget can have focus
-				ctlLastFocus = &ctl;
-				if (!ctlFirstFocus)
-					ctlFirstFocus = ctlLastFocus;
-			}
-		}
-	}
-	if ((direction == GTK_DIR_TAB_BACKWARD) && WidgetHasFocus(ctlFirstFocus)) {
-		gtk_widget_grab_focus(GTK_WIDGET(ctlLastFocus->w.GetID()));
-		return TRUE;
-	} else if ((direction == GTK_DIR_TAB_FORWARD) && WidgetHasFocus(ctlLastFocus)) {
-		gtk_widget_grab_focus(GTK_WIDGET(ctlFirstFocus->w.GetID()));
-		return TRUE;
-	}
-	return FALSE;
-}
-
-void UserStrip::SetDescription(const char *description) {
-	if (psd) {
-		for (const std::vector<UserControl> &line : psd->controls) {
-			for (const UserControl &ctl : line) {
-				gtk_widget_destroy(GTK_WIDGET(ctl.w.GetID()));
-			}
-		}
-	}
-	delete psd;
-	psd = new StripDefinition(description);
-	tableUser.Resize(psd->controls.size(), psd->columns);
-
-	bool hasSetFocus = false;
-	GtkWidget *pwWithAccelerator = 0;
-	for (std::vector<UserControl> &line : psd->controls) {
-		for (UserControl &ctl : line) {
-			UserControl *puc = &ctl;
-			std::string sCaption = GtkFromWinCaption(puc->text.c_str());
-			switch (puc->controlType) {
-			case UserControl::ucEdit: {
-					WEntry we;
-					we.Create(puc->text.c_str());
-					puc->w.SetID(we.GetID());
-					tableUser.Add(we, 1, true, 0, 0);
-					break;
-				}
-			case UserControl::ucCombo: {
-					WComboBoxEntry wc;
-					wc.Create();
-					wc.SetText(puc->text.c_str());
-					puc->w.SetID(wc.GetID());
-					tableUser.Add(wc, 1, true, 0, 0);
-					break;
-				}
-			case UserControl::ucButton:
-			case UserControl::ucDefaultButton: {
-					WButton wb;
-					wb.Create(sCaption.c_str(), G_CALLBACK(UserStrip::ClickSignal), this);
-					puc->w.SetID(wb.GetID());
-					tableUser.Add(wb, 1, false, 0, 0);
-					if (puc->controlType == UserControl::ucDefaultButton) {
-						gtk_widget_grab_default(GTK_WIDGET(puc->w.GetID()));
-					}
-					break;
-				}
-			default: {
-					WStatic ws;
-					ws.Create(sCaption.c_str());
-					puc->w.SetID(ws.GetID());
-#if GTK_CHECK_VERSION(3,14,0)
-					gtk_widget_set_halign(GTK_WIDGET(puc->w.GetID()), GTK_ALIGN_END);
-					gtk_widget_set_valign(GTK_WIDGET(puc->w.GetID()), GTK_ALIGN_BASELINE);
-#else
-					gtk_misc_set_alignment(GTK_MISC(puc->w.GetID()), 1.0, 0.5);
-#endif
-					tableUser.Add(ws, 1, false, 5, 0);
-					if (ws.HasMnemonic())
-						pwWithAccelerator = GTK_WIDGET(puc->w.GetID());
-				}
-			}
-			gtk_widget_show(GTK_WIDGET(puc->w.GetID()));
-			if (!hasSetFocus && (puc->controlType != UserControl::ucStatic)) {
-				gtk_widget_grab_focus(GTK_WIDGET(puc->w.GetID()));
-				hasSetFocus = true;
-			}
-			if (pwWithAccelerator && (puc->controlType != UserControl::ucStatic)) {
-				gtk_label_set_mnemonic_widget(GTK_LABEL(pwWithAccelerator), GTK_WIDGET(puc->w.GetID()));
-				pwWithAccelerator = 0;
-			}
-		}
-		tableUser.NextLine() ;
-	}
-
-	for (const std::vector<UserControl> &line : psd->controls) {
-		for (const UserControl &ctl : line) {
-			if ((ctl.controlType == UserControl::ucEdit) || (ctl.controlType == UserControl::ucCombo)) {
-				GtkEntry *entry;
-				if (ctl.controlType == UserControl::ucEdit)
-					entry = GTK_ENTRY(ctl.w.GetID());
-				else
-					entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(ctl.w.GetID())));
-
-				g_signal_connect(G_OBJECT(entry), "key-press-event", G_CALLBACK(EscapeSignal), this);
-				g_signal_connect(G_OBJECT(entry), "activate", G_CALLBACK(ActivateSignal), this);
-			}
-		}
-	}
-}
-
-void UserStrip::SetExtender(Extension *extender_) {
-	extender = extender_;
-}
-
-void UserStrip::SetSciTE(SciTEGTK *pSciTEGTK_) {
-	pSciTEGTK = pSciTEGTK_;
-}
-
-void UserStrip::Set(int control, const char *value) {
-	if (psd) {
-		UserControl *ctl = psd->FindControl(control);
-		if (ctl) {
-			if (ctl->controlType == UserControl::ucEdit) {
-				WEntry *pwe = static_cast<WEntry *>(&(ctl->w));
-				pwe->SetText(value);
-			} else if (ctl->controlType == UserControl::ucCombo) {
-				WComboBoxEntry *pwc = static_cast<WComboBoxEntry *>(&(ctl->w));
-				pwc->SetText(value);
-			}
-		}
-	}
-}
-
-void UserStrip::SetList(int control, const char *value) {
-	if (psd) {
-		UserControl *ctl = psd->FindControl(control);
-		if (ctl) {
-			if (ctl->controlType == UserControl::ucCombo) {
-				GUI::gui_string sValue = GUI::StringFromUTF8(value);
-				std::vector<std::string> listValues = ListFromString(sValue);
-				WComboBoxEntry *pwc = static_cast<WComboBoxEntry *>(&(ctl->w));
-				pwc->FillFromMemory(listValues);
-			}
-		}
-	}
-}
-
-std::string UserStrip::GetValue(int control) {
-	if (psd) {
-		UserControl *ctl = psd->FindControl(control);
-		if (ctl->controlType == UserControl::ucEdit) {
-			WEntry *pwe = static_cast<WEntry *>(&(ctl->w));
-			return pwe->Text();
-		} else if (ctl->controlType == UserControl::ucCombo) {
-			WComboBoxEntry *pwc = static_cast<WComboBoxEntry *>(&(ctl->w));
-			return pwc->Text();
-		}
-	}
-	return "";
-}
-
 void SciTEGTK::CreateStrips(GtkWidget *boxMain) {
 	backgroundStrip.SetLocalizer(&localiser);
 	backgroundStrip.Creation(boxMain);
 
-	userStrip.SetSciTE(this);
+	userStrip.SetUserStripWatcher(this);
 	userStrip.SetExtender(extender);
 	userStrip.SetLocalizer(&localiser);
 	userStrip.Creation(boxMain);
@@ -4867,10 +3735,14 @@ void SciTEGTK::CreateStrips(GtkWidget *boxMain) {
 	replaceStrip.SetLocalizer(&localiser);
 	replaceStrip.SetSearcher(this);
 	replaceStrip.Creation(boxMain);
+
+	filterStrip.SetLocalizer(&localiser);
+	filterStrip.SetSearcher(this);
+	filterStrip.Creation(boxMain);
 }
 
 bool SciTEGTK::StripHasFocus() const {
-	return findStrip.VisibleHasFocus() || replaceStrip.VisibleHasFocus() || userStrip.VisibleHasFocus();
+	return findStrip.VisibleHasFocus() || replaceStrip.VisibleHasFocus() || filterStrip.VisibleHasFocus() || userStrip.VisibleHasFocus();
 }
 
 void SciTEGTK::LayoutUI() {
@@ -5083,7 +3955,7 @@ void SciTEGTK::CreateUI() {
 	gtk_statusbar_push(GTK_STATUSBAR(PWidget(wStatusBar)), sbContextID, "Initial");
 	sbVisible = false;
 
-	static const GtkTargetEntry dragtypes[] = { { (gchar*)"text/uri-list", 0, 0 } };
+	static const GtkTargetEntry dragtypes[] = { { const_cast<gchar*>("text/uri-list"), 0, 0 } };
 	static const gint n_dragtypes = std::size(dragtypes);
 
 	gtk_drag_dest_set(PWidget(wSciTE), GTK_DEST_DEFAULT_ALL, dragtypes,
@@ -5097,8 +3969,8 @@ void SciTEGTK::CreateUI() {
 		gtk_window_move(GTK_WINDOW(PWidget(wSciTE)), left, top);
 	if ((width != useDefault) && (height != useDefault))
 		gtk_window_set_default_size(GTK_WINDOW(PWidget(wSciTE)), width, height);
-	gtk_widget_show_all(PWidget(wSciTE));
 	SetIcon();
+	gtk_widget_show_all(PWidget(wSciTE));
 
 	if (maximize)
 		gtk_window_maximize(GTK_WINDOW(PWidget(wSciTE)));
@@ -5108,6 +3980,7 @@ void SciTEGTK::CreateUI() {
 	gtk_widget_hide(wIncrementPanel);
 	gtk_widget_hide(PWidget(findStrip));
 	gtk_widget_hide(PWidget(replaceStrip));
+	gtk_widget_hide(PWidget(filterStrip));
 
 #if GTK_CHECK_VERSION(3,0,0)
 	// Create a named style "entryInvalid" that can be applied to a search entry
@@ -5132,6 +4005,17 @@ void SciTEGTK::CreateUI() {
 #endif
 
 	UIAvailable();
+}
+
+void SciTEGTK::CloseOtherFinders(int cmdID) {
+	if (cmdID != IDM_FIND)
+		findStrip.Close();
+	if (cmdID != IDM_REPLACE)
+		replaceStrip.Close();
+	if (cmdID != IDM_INCSEARCH)
+		gtk_widget_hide(wIncrementPanel);
+	if (cmdID != IDM_FILTER)
+		filterStrip.Close();
 }
 
 void SciTEGTK::FindIncrementSetColour(bool valid) {
@@ -5181,13 +4065,31 @@ gboolean SciTEGTK::FindIncrementFocusOutSignal(GtkWidget *) {
 }
 
 void SciTEGTK::FindIncrement() {
-	findStrip.Close();
-	replaceStrip.Close();
+	CloseOtherFinders(IDM_INCSEARCH);
 	FindIncrementSetColour(true);
 	failedfind = false;
 	gtk_widget_show(wIncrementPanel);
 	gtk_widget_grab_focus(GTK_WIDGET(IncSearchEntry));
 	gtk_entry_set_text(GTK_ENTRY(IncSearchEntry), "");
+}
+
+void SciTEGTK::Filter() {
+	if (!FilterShowing()) {
+		// Save current folds
+		SaveFolds(CurrentBuffer()->foldState);
+		// Then unfold them all so filtering is only source of line hiding
+		wEditor.FoldAll(SA::FoldAction::Expand);
+	}
+	SelectionIntoFind();
+	CloseOtherFinders(IDM_FILTER);
+	filterStrip.visible = true;
+	failedfind = false;
+	SizeSubWindows();
+	filterStrip.Show(props.GetInt("strip.button.height", -1));
+}
+
+bool SciTEGTK::FilterShowing() {
+	return filterStrip.visible || (replaceStrip.visible && filterState);
 }
 
 void SciTEGTK::SetIcon() {
@@ -5206,7 +4108,8 @@ struct CallbackData {
 	SciTEGTK *pSciTE;
 	int cmd;
 	Worker *pWorker;
-	CallbackData(SciTEGTK *pSciTE_, int cmd_, Worker *pWorker_) : pSciTE(pSciTE_), cmd(cmd_), pWorker(pWorker_) {
+	CallbackData(SciTEGTK *pSciTE_, int cmd_, Worker *pWorker_) noexcept :
+		pSciTE(pSciTE_), cmd(cmd_), pWorker(pWorker_) {
 	}
 };
 
@@ -5230,7 +4133,7 @@ void SciTEGTK::SetStartupTime(const char *timestamp) {
 		char *end;
 		// Reset errno from any previous errors
 		errno = 0;
-		gulong ts = strtoul(timestamp, &end, 0);
+		const gulong ts = strtoul(timestamp, &end, 0);
 		if (end != timestamp && errno == 0) {
 			startupTimestamp = ts;
 		}
@@ -5316,7 +4219,7 @@ bool SciTEGTK::CheckForRunningInstance(int argc, char *argv[]) {
 			pipeFileName = g_build_filename(tmpdir, filename, NULL);
 
 			// Attempt to open the pipe as a writer to send out data.
-			int sendPipe = open(pipeFileName, O_WRONLY | O_NONBLOCK);
+			const int sendPipe = open(pipeFileName, O_WRONLY | O_NONBLOCK);
 
 			// If open succeeded, write filename data.
 			if (sendPipe != -1) {

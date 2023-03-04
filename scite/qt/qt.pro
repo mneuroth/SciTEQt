@@ -31,7 +31,7 @@ wasm {
 include(qhtml5file/qhtml5file.pri)
 
 HEADERS += applicationdata.h\
-           ../../scintilla/lexilla/src/Lexilla.h \
+           ../../lexilla/include/Lexilla.h \
            applicationui.hpp \
            findinfiles.h \
            sciteqtenvironmentforjavascript.h \
@@ -41,7 +41,7 @@ HEADERS += applicationdata.h\
            sciteqt.h
 SOURCES += applicationdata.cpp\
            GUIQt.cpp\
-           ../../scintilla/lexilla/src/Lexilla.cxx\
+           ../../lexilla/src/Lexilla.cxx\
            findinfiles.cpp \
            sciteqtenvironmentforjavascript.cpp \
            scriptexecution.cpp \
@@ -61,14 +61,10 @@ HEADERS += ../src/Cookie.h\
             ../src/GUI.h\
             ../src/IFaceTable.h\
             ../src/JobQueue.h\
-            ../src/LexillaLibrary.h\
             ../src/LuaExtension.h\
             ../src/MatchMarker.h\
             ../src/MultiplexExtension.h\
             ../src/PropSetFile.h\
-            ../src/ScintillaCall.h\
-            ../src/ScintillaMessages.h\
-            ../src/ScintillaTypes.h\
             ../src/ScintillaWindow.h\
             ../src/SciTE.h\
             ../src/SciTEBase.h\
@@ -79,8 +75,11 @@ HEADERS += ../src/Cookie.h\
             ../src/StripDefinition.h\
             ../src/StyleDefinition.h\
             ../src/StyleWriter.h\
+            ../src/PathMatch.h\
             ../src/Utf8_16.h\
-            ../src/Worker.h
+            ../src/Worker.h\
+            ../src/Searcher.h\
+            ../../lexilla/access/LexillaAccess.h
 
 SOURCES +=  ../src/Cookie.cxx\
             ../src/Credits.cxx\
@@ -94,12 +93,10 @@ SOURCES +=  ../src/Cookie.cxx\
             ../src/FileWorker.cxx\
             ../src/IFaceTable.cxx\
             ../src/JobQueue.cxx\
-            ../src/LexillaLibrary.cxx\
             ../src/LuaExtension.cxx\
             ../src/MatchMarker.cxx\
             ../src/MultiplexExtension.cxx\
             ../src/PropSetFile.cxx\
-            ../src/ScintillaCall.cxx\
             ../src/ScintillaWindow.cxx\
             ../src/SciTEBase.cxx\
             ../src/SciTEBuffers.cxx\
@@ -109,6 +106,7 @@ SOURCES +=  ../src/Cookie.cxx\
             ../src/StringList.cxx\
             ../src/StyleDefinition.cxx\
             ../src/StyleWriter.cxx\
+            ../src/PathMatch.cxx\
             ../src/Utf8_16.cxx\
             ../lua/src/lapi.c\
             ../lua/src/lauxlib.c\
@@ -142,9 +140,12 @@ SOURCES +=  ../src/Cookie.cxx\
             ../lua/src/lundump.c\
             ../lua/src/lutf8lib.c\
             ../lua/src/lvm.c\
-            ../lua/src/lzio.c
+            ../lua/src/lzio.c\
+            ../../scintilla/call/ScintillaCall.cxx\
+            ../../scintilla/src/Geometry.cxx\
+            ../../lexilla/access/LexillaAccess.cxx
 
-INCLUDEPATH += ../lua/src ../src ../../scintilla/qt/ScintillaEdit ../../scintilla/qt/ScintillaEditBase ../../scintilla/include ../../scintilla/src ../../scintilla/lexilla/src ../../scintilla/lexlib
+INCLUDEPATH += ../lua/src ../src ../../scintilla/qt/ScintillaEdit ../../scintilla/qt/ScintillaEditBase ../../scintilla/include ../../scintilla/src ../../lexilla/include ../../lexilla/src ../../lexilla/lexlib ../../lexilla/access
 
 unix {
     LIBS += -ldl
@@ -544,7 +545,7 @@ ANDROID_ABIS = armeabi-v7a arm64-v8a x86 x86_64
 #ANDROID_ABIS = arm64-v8a
 
 !small {
-    LIBS += -L$$OUT_PWD/../../scintilla/bin-$${ARCH_PATH}/ -lScintillaEditBase
+    LIBS += -L$$OUT_PWD/../../scintilla/bin-$${ARCH_PATH}/ -L$$OUT_PWD/../../lexilla/bin -lScintillaEditBase -lLexilla
 }
 
 small {

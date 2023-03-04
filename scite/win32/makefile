@@ -3,8 +3,6 @@
 # The License.txt file describes the conditions under which this software may be distributed.
 # This makefile assumes the mingw32 version of GCC 4.x is used and changes will
 # be needed to use other compilers.
-# For a build with no lexers, loading Scintilla.DLL instead of SciLexer.DLL,
-# define LOAD_SCINTILLA on the command line.
 
 .PHONY: all clean analyze depend
 
@@ -73,16 +71,16 @@ PROG	= ../bin/SciTE.exe
 PROGSTATIC = ../bin/Sc1.exe
 DEFINES += -DUNICODE -D_UNICODE
 
-vpath %.h ../src ../../scintilla/include
-vpath %.cxx ../src
-vpath %.a ../../scintilla/bin
+vpath %.h ../src ../../lexilla/include ../../lexilla/access ../../scintilla/include
+vpath %.cxx ../src ../../lexilla/access ../../scintilla/call
+vpath %.a ../../lexilla/bin ../../scintilla/bin
 
 LIBS += -lgdi32 -luser32 -limm32 -lole32 -luuid -loleaut32 -lmsimg32 -lshell32 -lcomdlg32 -lcomctl32 -ladvapi32
 
 CXXFLAGS += --std=c++17
 
 DEFINES += -D$(if $(DEBUG),DEBUG,NDEBUG)
-BASE_FLAGS += $(if $(DEBUG),-g,-Os)
+BASE_FLAGS += $(if $(DEBUG),-g,-O3)
 
 ifndef DEBUG
 ifndef CLANG
@@ -108,11 +106,7 @@ else
 DEFINES += -DNO_LUA
 endif
 
-ifdef LOAD_SCINTILLA
-DEFINES += -DLOAD_SCINTILLA
-endif
-
-INCLUDES += -I ../../scintilla/include -I ../src
+INCLUDES += -I ../../lexilla/include -I ../../lexilla/access -I ../../scintilla/include -I ../src
 RCINCLUDEDIRS=--include-dir ../src
 
 CBASEFLAGS = $(LUA_DEFINES) $(WIDEFLAGS)
@@ -139,9 +133,10 @@ SHAREDOBJS=\
 	GUIWin.o \
 	IFaceTable.o \
 	JobQueue.o \
-	LexillaLibrary.o \
+	LexillaAccess.o \
 	MatchMarker.o \
 	MultiplexExtension.o \
+	PathMatch.o \
 	PropSetFile.o \
 	ScintillaCall.o \
 	ScintillaWindow.o \
@@ -163,7 +158,7 @@ OTHER_OBJS = $(SHAREDOBJS) $(LUA_OBJS) SciTERes.o SciTEWin.o
 
 OBJS = Credits.o $(OTHER_OBJS)
 
-DLLS=../bin/Scintilla.dll ../bin/SciLexer.dll ../bin/lexilla.dll
+DLLS=../bin/Scintilla.dll ../bin/lexilla.dll
 
 NOTBINPROPS=SciTE.properties Embedded.properties
 PROPS=$(addprefix ../bin/,$(filter-out $(NOTBINPROPS), $(notdir $(wildcard ../src/*.properties))))
@@ -178,6 +173,9 @@ analyze:
 
 depend deps.mak:
 	$(PYTHON) AppDepGen.py
+
+../bin/%.dll:	../../lexilla/bin/%.dll
+	$(COPY) $(call normalize,$< $(@D))
 
 ../bin/%.dll:	../../scintilla/bin/%.dll
 	$(COPY) $(call normalize,$< $(@D))
@@ -200,7 +198,7 @@ OBJSSTATIC = \
 $(PROGSTATIC): $(OBJSSTATIC)
 	$(CXX) $(BASE_FLAGS) $(STRIPFLAG) $(SUBSYSTEM_OPT) -static -o $@ $^ $(LDFLAGS) $(LIBS) $(LDLIBS)
 
-# Automatically generate dependencies for most files with "make deps"
+# Automatically generate dependencies for most files with "make depend"
 include deps.mak
 
 Sc1.o: SciTEWin.cxx SciTEWin.h SciTE.h PropSetFile.h \

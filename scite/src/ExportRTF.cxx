@@ -11,11 +11,13 @@
 #include <cstdio>
 #include <ctime>
 
+#include <tuple>
 #include <string>
 #include <string_view>
 #include <vector>
 #include <map>
 #include <set>
+#include <optional>
 #include <memory>
 #include <chrono>
 #include <sstream>
@@ -45,6 +47,7 @@
 #include "Cookie.h"
 #include "Worker.h"
 #include "MatchMarker.h"
+#include "Searcher.h"
 #include "SciTEBase.h"
 
 
@@ -154,7 +157,7 @@ void SciTEBase::SaveToStreamRTF(std::ostream &os, SA::Position start, SA::Positi
 	std::vector<std::string> colors;
 	os << RTF_HEADEROPEN << RTF_FONTDEFOPEN;
 	fonts.push_back(defaultStyle.font);
-	os << "{\\f" << 0 << "\\fnil\\fcharset" << characterset << " " << defaultStyle.font.c_str() << ";}";
+	os << "{\\f" << 0 << "\\fnil\\fcharset" << characterset << " " << defaultStyle.font << ";}";
 	colors.push_back(defaultStyle.fore);
 	colors.push_back(defaultStyle.back);
 
@@ -169,7 +172,7 @@ void SciTEBase::SaveToStreamRTF(std::ostream &os, SA::Position start, SA::Positi
 				iFont = FindCaseInsensitive(fonts, sd.font);
 				if (iFont >= fonts.size()) {
 					fonts.push_back(sd.font);
-					os << "{\\f" << iFont << "\\fnil\\fcharset" << characterset << " " << sd.font.c_str() << ";}";
+					os << "{\\f" << iFont << "\\fnil\\fcharset" << characterset << " " << sd.font << ";}";
 				}
 			}
 			osStyle << RTF_SETFONTFACE << iFont;
@@ -265,7 +268,7 @@ void SciTEBase::SaveToStreamRTF(std::ostream &os, SA::Position start, SA::Positi
 			column = -1;
 		} else if (isUTF8 && !IsASCII(ch)) {
 			const SA::Position nextPosition = wEditor.PositionAfter(iPos);
-			wEditor.SetTarget(SA::Range(iPos, nextPosition));
+			wEditor.SetTarget(SA::Span(iPos, nextPosition));
 			char u8Char[5] = "";
 			wEditor.TargetAsUTF8(u8Char);
 			const unsigned int u32 = UTF32Character(u8Char);

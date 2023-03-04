@@ -6,21 +6,17 @@
 // Copyright 1998-2010 by Neil Hodgson <neilh@scintilla.org>
 // The License.txt file describes the conditions under which this software may be distributed.
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstdio>
+#include <ctime>
 
 #include <string>
 #include <vector>
 #include <chrono>
 #include <sstream>
 
-#ifdef __MINGW_H
-#define _WIN32_IE	0x0400
-#endif
-
 #undef _WIN32_WINNT
-#define _WIN32_WINNT  0x0602
+#define _WIN32_WINNT  0x0A00
 #include <windows.h>
 
 #include "ScintillaTypes.h"
@@ -142,9 +138,9 @@ gui_string StringFromUTF8(const char *s) {
 	}
 	const size_t sLen = strlen(s);
 	const size_t wideLen = UTF16Length(s, sLen);
-	std::vector<gui_char> vgc(wideLen);
-	UTF16FromUTF8(s, sLen, &vgc[0], wideLen);
-	return gui_string(&vgc[0], wideLen);
+	gui_string us(wideLen, 0);
+	UTF16FromUTF8(s, sLen, us.data(), wideLen);
+	return us;
 }
 
 gui_string StringFromUTF8(const std::string &s) {
@@ -153,20 +149,31 @@ gui_string StringFromUTF8(const std::string &s) {
 	}
 	const size_t sLen = s.length();
 	const size_t wideLen = UTF16Length(s.c_str(), sLen);
-	std::vector<gui_char> vgc(wideLen);
-	UTF16FromUTF8(s.c_str(), sLen, &vgc[0], wideLen);
-	return gui_string(&vgc[0], wideLen);
+	gui_string us(wideLen, 0);
+	UTF16FromUTF8(s.c_str(), sLen, us.data(), wideLen);
+	return us;
 }
 
-std::string UTF8FromString(const gui_string &s) {
-	if (s.empty()) {
+gui_string StringFromUTF8(std::string_view sv) {
+	if (sv.empty()) {
+		return gui_string();
+	}
+	const size_t sLen = sv.length();
+	const size_t wideLen = UTF16Length(sv.data(), sLen);
+	gui_string us(wideLen, 0);
+	UTF16FromUTF8(sv.data(), sLen, us.data(), wideLen);
+	return us;
+}
+
+std::string UTF8FromString(gui_string_view sv) {
+	if (sv.empty()) {
 		return std::string();
 	}
-	const size_t sLen = s.size();
-	const size_t narrowLen = UTF8Length(s.c_str(), sLen);
-	std::vector<char> vc(narrowLen);
-	UTF8FromUTF16(s.c_str(), sLen, &vc[0]);
-	return std::string(&vc[0], narrowLen);
+	const size_t sLen = sv.size();
+	const size_t narrowLen = UTF8Length(sv.data(), sLen);
+	std::string us(narrowLen, 0);
+	UTF8FromUTF16(sv.data(), sLen, us.data());
+	return us;
 }
 
 gui_string StringFromInteger(long i) {
@@ -180,7 +187,7 @@ gui_string StringFromLongLong(long long i) {
 gui_string HexStringFromInteger(long i) {
 	char number[32];
 	sprintf(number, "%0lx", i);
-	gui_char gnumber[32];
+	gui_char gnumber[32] {};
 	size_t n = 0;
 	while (number[n]) {
 		gnumber[n] = static_cast<gui_char>(number[n]);
@@ -205,10 +212,10 @@ std::string LowerCaseUTF8(std::string_view sv) {
 void Window::Destroy() {
 	if (wid)
 		::DestroyWindow(static_cast<HWND>(wid));
-	wid = 0;
+	wid = {};
 }
 
-bool Window::HasFocus() {
+bool Window::HasFocus() const noexcept {
 	return ::GetFocus() == wid;
 }
 
@@ -245,21 +252,29 @@ void Window::SetTitle(const gui_char *s) {
 	::SetWindowTextW(static_cast<HWND>(wid), s);
 }
 
+void Window::SetRedraw(bool redraw) {
+	::SendMessage(static_cast<HWND>(GetID()), WM_SETREDRAW, redraw, 0);
+	if (redraw) {
+		::RedrawWindow(static_cast<HWND>(GetID()), nullptr, {},
+			RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN);
+	}
+}
+
 void Menu::CreatePopUp() {
 	Destroy();
 	mid = ::CreatePopupMenu();
 }
 
-void Menu::Destroy() {
+void Menu::Destroy() noexcept {
 	if (mid)
 		::DestroyMenu(static_cast<HMENU>(mid));
-	mid = 0;
+	mid = {};
 }
 
 void Menu::Show(Point pt, Window &w) {
 	::TrackPopupMenu(static_cast<HMENU>(mid),
 			 TPM_RIGHTBUTTON, pt.x - 4, pt.y, 0,
-			 static_cast<HWND>(w.GetID()), NULL);
+			 static_cast<HWND>(w.GetID()), nullptr);
 	Destroy();
 }
 
@@ -268,7 +283,7 @@ intptr_t ScintillaPrimitive::Send(unsigned int msg, uintptr_t wParam, intptr_t l
 }
 
 bool IsDBCSLeadByte(int codePage, char ch) {
-	if (Scintilla::API::CpUtf8 == codePage)
+	if (Scintilla::CpUtf8 == codePage)
 		// For lexing, all characters >= 0x80 are treated the
 		// same so none is considered a lead byte.
 		return false;

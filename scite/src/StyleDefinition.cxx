@@ -23,22 +23,7 @@
 #include "StringHelpers.h"
 #include "StyleDefinition.h"
 
-namespace SA = Scintilla::API;
-
-namespace {
-
-typedef std::tuple<std::string_view, std::string_view> ViewPair;
-
-// Split view around first separator returning the portion before and after the separator.
-// If the separator is not present then return whole view and an empty view.
-ViewPair ViewSplit(std::string_view view, char separator) noexcept {
-	const size_t sepPos = view.find_first_of(separator);
-	std::string_view first = view.substr(0, sepPos);
-	std::string_view second = sepPos == (std::string_view::npos) ? "" : view.substr(sepPos + 1);
-	return { first, second };
-}
-
-}
+namespace SA = Scintilla;
 
 StyleDefinition::StyleDefinition(std::string_view definition) :
 	sizeFractional(10.0), size(10), fore("#000000"), back("#FFFFFF"),
@@ -99,9 +84,13 @@ bool StyleDefinition::ParseStyleDefinition(std::string_view definition) {
 			back = optionValue;
 		}
 		if ((optionName == "size") && !optionValue.empty()) {
-			specified = static_cast<flags>(specified | sdSize);
-			sizeFractional = std::stof(std::string(optionValue));
-			size = static_cast<int>(sizeFractional);
+			try {
+				sizeFractional = std::stof(std::string(optionValue));
+				size = static_cast<int>(sizeFractional);
+				specified = static_cast<flags>(specified | sdSize);
+			} catch (...) {
+				// Ignore parsing problems
+			}
 		}
 		if (optionName == "eolfilled") {
 			specified = static_cast<flags>(specified | sdEOLFilled);
@@ -147,6 +136,10 @@ bool StyleDefinition::ParseStyleDefinition(std::string_view definition) {
 			specified = static_cast<flags>(specified | sdChangeable);
 			changeable = false;
 		}
+		if ((optionName == "invisiblerepresentation") && !optionValue.empty()) {
+			specified = static_cast<flags>(specified | sdInvisibleRep);
+			invisibleRep = optionValue;
+		}
 	}
 	return true;
 }
@@ -167,18 +160,6 @@ bool StyleDefinition::IsBold() const noexcept {
 	return weight > SA::FontWeight::Normal;
 }
 
-int IntFromHexDigit(int ch) noexcept {
-	if ((ch >= '0') && (ch <= '9')) {
-		return ch - '0';
-	} else if (ch >= 'A' && ch <= 'F') {
-		return ch - 'A' + 10;
-	} else if (ch >= 'a' && ch <= 'f') {
-		return ch - 'a' + 10;
-	} else {
-		return 0;
-	}
-}
-
 int IntFromHexByte(std::string_view hexByte) noexcept {
 	return IntFromHexDigit(hexByte[0]) * 16 + IntFromHexDigit(hexByte[1]);
 }
@@ -189,6 +170,18 @@ SA::Colour ColourFromString(const std::string &s) {
 		const int g = IntFromHexByte(&s[3]);
 		const int b = IntFromHexByte(&s[5]);
 		return ColourRGB(r, g, b);
+	} else {
+		return 0;
+	}
+}
+
+SA::ColourAlpha ColourAlphaFromString(std::string_view s) {
+	if (s.length() >= 7) {
+		const int r = IntFromHexByte(&s[1]);
+		const int g = IntFromHexByte(&s[3]);
+		const int b = IntFromHexByte(&s[5]);
+		const int a = (s.length() >= 9)? IntFromHexByte(&s[7]) : 0xff;
+		return ColourRGBA(r, g, b, a);
 	} else {
 		return 0;
 	}
@@ -230,6 +223,7 @@ bool IndicatorDefinition::ParseIndicatorDefinition(std::string_view definition) 
 		{ "pointcharacter", SA::IndicatorStyle::PointCharacter },
 		{ "gradient", SA::IndicatorStyle::Gradient },
 		{ "gradientverticalcentred", SA::IndicatorStyle::GradientCentre },
+		{ "pointtop", SA::IndicatorStyle::PointTop },
 	};
 
 	std::string val(definition);
@@ -273,6 +267,93 @@ bool IndicatorDefinition::ParseIndicatorDefinition(std::string_view definition) 
 			}
 		} catch (std::logic_error &) {
 			// Ignore bad values, either non-numeric or out of range numberic
+		}
+	}
+	return true;
+}
+
+MarkerDefinition::MarkerDefinition(std::string_view definition) :
+	style(SA::MarkerSymbol::Circle) {
+	ParseMarkerDefinition(definition);
+}
+
+bool MarkerDefinition::ParseMarkerDefinition(std::string_view definition) {
+	if (definition.empty()) {
+		return false;
+	}
+	struct NameValue {
+		std::string_view name;
+		SA::MarkerSymbol value;
+	};
+	const NameValue markerStyleNames[] = {
+		{"circle", SA::MarkerSymbol::Circle },
+		{"roundrect", SA::MarkerSymbol::RoundRect },
+		{"arrow", SA::MarkerSymbol::Arrow },
+		{"smallrect", SA::MarkerSymbol::SmallRect },
+		{"shortarrow", SA::MarkerSymbol::ShortArrow },
+		{"empty", SA::MarkerSymbol::Empty },
+		{"arrowdown", SA::MarkerSymbol::ArrowDown },
+		{"minus", SA::MarkerSymbol::Minus },
+		{"plus", SA::MarkerSymbol::Plus },
+		{"vline", SA::MarkerSymbol::VLine },
+		{"lcorner", SA::MarkerSymbol::LCorner },
+		{"tcorner", SA::MarkerSymbol::TCorner },
+		{"boxplus", SA::MarkerSymbol::BoxPlus },
+		{"boxplusconnected", SA::MarkerSymbol::BoxPlusConnected },
+		{"boxminus", SA::MarkerSymbol::BoxMinus },
+		{"boxminusconnected", SA::MarkerSymbol::BoxMinusConnected },
+		{"lcornercurve", SA::MarkerSymbol::LCornerCurve },
+		{"tcornercurve", SA::MarkerSymbol::TCornerCurve },
+		{"circleplus", SA::MarkerSymbol::CirclePlus },
+		{"circleplusconnected", SA::MarkerSymbol::CirclePlusConnected },
+		{"circleminus", SA::MarkerSymbol::CircleMinus },
+		{"circleminusconnected", SA::MarkerSymbol::CircleMinusConnected },
+		{"background", SA::MarkerSymbol::Background },
+		{"dotdotdot", SA::MarkerSymbol::DotDotDot },
+		{"arrows", SA::MarkerSymbol::Arrows },
+		{"pixmap", SA::MarkerSymbol::Pixmap },
+		{"fullrect", SA::MarkerSymbol::FullRect },
+		{"leftrect", SA::MarkerSymbol::LeftRect },
+		{"available", SA::MarkerSymbol::Available },
+		{"underline", SA::MarkerSymbol::Underline },
+		{"rgbaimage", SA::MarkerSymbol::RgbaImage },
+		{"bookmark", SA::MarkerSymbol::Bookmark },
+		{"verticalbookmark", SA::MarkerSymbol::VerticalBookmark },
+		{"bar", SA::MarkerSymbol::Bar },
+	};
+
+	std::string val(definition);
+	LowerCaseAZ(val);
+	std::string_view markerDefinition = val;
+	while (!markerDefinition.empty()) {
+		// Find attribute separator ',' and select front attribute
+		const ViewPair optionRest = ViewSplit(markerDefinition, ',');
+		const std::string_view option = std::get<0>(optionRest);
+		markerDefinition = std::get<1>(optionRest);
+		// Find value separator ':' and break into name and value
+		const auto [optionName, optionValue] = ViewSplit(option, ':');
+
+		try {
+			if (!optionValue.empty() && (optionName == "style")) {
+				bool found = false;
+				for (const NameValue &indicStyleName : markerStyleNames) {
+					if (optionValue == indicStyleName.name) {
+						style = indicStyleName.value;
+						found = true;
+					}
+				}
+				if (!found) {
+					style = static_cast<SA::MarkerSymbol>(std::stoi(std::string(optionValue)));
+				}
+			}
+			if (!optionValue.empty() && ((optionName == "colour") || (optionName == "color") || (optionName == "fore"))) {
+				colour = ColourAlphaFromString(std::string(optionValue));
+			}
+			if (!optionValue.empty() && (optionName == "back")) {
+				back = ColourAlphaFromString(std::string(optionValue));
+			}
+		} catch (std::logic_error &) {
+			// Ignore bad values, either non-numeric or out of range numeric
 		}
 	}
 	return true;

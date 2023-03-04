@@ -11,9 +11,9 @@ import pathlib
 downloadHome = "https://www.scintilla.org/"
 
 def ExtractFileName(s):
-    pre, quote, rest = s.partition('"')
-    url, quote, rest = rest.partition('"')
-    domain, slash, name = url.rpartition('/')
+    pre, _quote, rest = s.partition('"')
+    url, _quote, rest = rest.partition('"')
+    _domain, _slash, name = url.rpartition('/')
     return name
 
 def FileSizeInMB(filePath):
@@ -28,14 +28,16 @@ def FileSizesInDirectory(base):
 def UpdateFileSizes(scriptsPath):
     sciteRoot = scriptsPath.parent
     scintillaRoot = sciteRoot.parent / "scintilla"
+    lexillaRoot = sciteRoot.parent / "lexilla"
     releaseRoot = sciteRoot.parent.parent / "arc"
 
     uploadDocs = [
         sciteRoot / "doc" / "SciTEDownload.html",
-        scintillaRoot / "doc" / "ScintillaDownload.html"
+        scintillaRoot / "doc" / "ScintillaDownload.html",
+        lexillaRoot / "doc" / "LexillaDownload.html",
     ]
 
-    version = (scintillaRoot / "version.txt").read_text().strip()
+    version = (sciteRoot / "version.txt").read_text().strip()
     currentRelease = releaseRoot / ("upload" + version)
     fileSizes = FileSizesInDirectory(currentRelease)
     if not fileSizes:
