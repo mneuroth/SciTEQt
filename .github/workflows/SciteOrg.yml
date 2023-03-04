@@ -58,7 +58,6 @@ jobs:
         cd ..
         cd ..
         dir
-        cd ..
         cd scite
         cd win32        
         dir 
