@@ -57,7 +57,7 @@ jobs:
         dir
         cd ..
         cd ..
-        dir bin
+        dir
         cd ..
         cd scite
         cd win32        
