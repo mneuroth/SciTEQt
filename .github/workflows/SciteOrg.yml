@@ -50,7 +50,7 @@ jobs:
         nmake -f scintilla.mak
         dir
         cd ..
-        dir bin
+        cd ..
         cd lexilla
         cd src
         nmake -f lexilla.mak
