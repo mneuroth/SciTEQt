@@ -33,7 +33,7 @@ jobs:
         # Force a Qt mirror in case the default is not working
         #mirror: # optional
         # Whether or not to actually download Qt
-        cached: # optional, default is false
+        #cached: # optional, default is false
         # Version of aqtinstall to use in case of issues
         aqtversion: # optional, default is ==0.8
         # Version of py7zr to use in case of issues
