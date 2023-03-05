@@ -4,15 +4,15 @@ TEMPLATE 	= subdirs
 SUBDIRS		= scintilla/qt/ScintillaEditBase
 
 !small {
-    SUBDIRS         += scite/qt
     SUBDIRS         += lexilla/src
+    SUBDIRS         += scite/qt
 }
 
 android {
     SUBDIRS	+= CppLispInterpreter/CppLispInterpreter.pro
 }
 
-scite/qt.depends = scintilla/qt/ScintillaEditBase lexilla/src
+scite/qt.depends = lexilla/src scintilla/qt/ScintillaEditBase
 
 android {
     scite/qt.depends = CppLispInterpreter/CppLispInterpreter.pro
