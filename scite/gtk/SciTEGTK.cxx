@@ -571,7 +571,7 @@ protected:
 	FilePath GetSciteUserHome() override;
 
 	void SetStatusBarText(const char *s) override;
-	void TabInsert(int index, const GUI::gui_char *title) override;
+	void TabInsert(int index, const GUI::gui_char *title, /*for SciteQt*/const GUI::gui_char *fullPath) override;
 	void TabSelect(int index) override;
 	void RemoveAllTabs() override;
 	void SetFileProperties(PropSetFile &ps) override;
