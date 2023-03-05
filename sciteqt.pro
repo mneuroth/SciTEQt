@@ -12,7 +12,8 @@ android {
     SUBDIRS	+= CppLispInterpreter/CppLispInterpreter.pro
 }
 
-scite/qt.depends = scintilla/qt/ScintillaEditBase
+scite/qt.depends += scintilla/qt/ScintillaEditBase
+scite/qt.depends += lexilla/src
 
 android {
     scite/qt.depends = CppLispInterpreter/CppLispInterpreter.pro
