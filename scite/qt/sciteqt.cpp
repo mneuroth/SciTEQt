@@ -724,13 +724,13 @@ void SciTEQt::Find()
     Searcher * pSearcher = this;
 
     QStringList findHistory;
-    for (int i = 0; i < pSearcher->memFinds.Length(); i++) {
+    for (uint i = 0; i < pSearcher->memFinds.Length(); i++) {
         GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memFinds.At(i));
         findHistory.append(ConvertGuiStringToQString(gs));
     }
 
     QStringList replaceHistory;
-    for (int i = 0; i < pSearcher->memReplaces.Length(); i++) {
+    for (uint i = 0; i < pSearcher->memReplaces.Length(); i++) {
         GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memReplaces.At(i));
         replaceHistory.append(ConvertGuiStringToQString(gs));
     }
@@ -847,13 +847,13 @@ void SciTEQt::FindIncrement()
     Searcher * pSearcher = this;
 
     QStringList findHistory;
-    for (int i = 0; i < pSearcher->memFinds.Length(); i++) {
+    for (uint i = 0; i < pSearcher->memFinds.Length(); i++) {
         GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memFinds.At(i));
         findHistory.append(ConvertGuiStringToQString(gs));
     }
 
     QStringList replaceHistory;
-    for (int i = 0; i < pSearcher->memReplaces.Length(); i++) {
+    for (uint i = 0; i < pSearcher->memReplaces.Length(); i++) {
         GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memReplaces.At(i));
         replaceHistory.append(ConvertGuiStringToQString(gs));
     }
@@ -870,19 +870,19 @@ void SciTEQt::FindInFiles()
 
     // see: SciTEWin::FillCombos() and SciTEWin::FillCombosForGrep()
     QStringList findHistory;
-    for (int i = 0; i < pSearcher->memFinds.Length(); i++) {
+    for (uint i = 0; i < pSearcher->memFinds.Length(); i++) {
         GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memFinds.At(i));
         findHistory.append(ConvertGuiStringToQString(gs));
     }
 
     QStringList filePatternHistory;
-    for (int i = 0; i < memFiles.Length(); i++) {
+    for (uint i = 0; i < memFiles.Length(); i++) {
         GUI::gui_string gs = GUI::StringFromUTF8(memFiles.At(i));
         filePatternHistory.append(ConvertGuiStringToQString(gs));
     }
 
     QStringList directoryHistory;
-    for (int i = 0; i < memDirectory.Length(); i++) {
+    for (uint i = 0; i < memDirectory.Length(); i++) {
         GUI::gui_string gs = GUI::StringFromUTF8(memDirectory.At(i));
         directoryHistory.append(ConvertGuiStringToQString(gs));
     }
@@ -907,13 +907,13 @@ void SciTEQt::Replace()
     Searcher * pSearcher = this;
 
     QStringList findHistory;
-    for (int i = 0; i < pSearcher->memFinds.Length(); i++) {
+    for (uint i = 0; i < pSearcher->memFinds.Length(); i++) {
         GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memFinds.At(i));
         findHistory.append(ConvertGuiStringToQString(gs));
     }
 
     QStringList replaceHistory;
-    for (int i = 0; i < pSearcher->memReplaces.Length(); i++) {
+    for (uint i = 0; i < pSearcher->memReplaces.Length(); i++) {
         GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memReplaces.At(i));
         replaceHistory.append(ConvertGuiStringToQString(gs));
     }
@@ -1109,16 +1109,16 @@ void SciTEQt::SaveSettingsForQt()
     QSettings aSettings;
 
     QString sKey = QString("%1.%2").arg(KEY_FIND_EXTENSIONS).arg(KEY_FIND_COUNT);
-    aSettings.setValue(sKey, QVariant(memFiles.Length()));
-    for(int i=0; i<memFiles.Length(); i++)
+    aSettings.setValue(sKey, QVariant((uint)memFiles.Length()));
+    for(uint i=0; i<memFiles.Length(); i++)
     {
         QString sKey = QString("%1.%2").arg(KEY_FIND_EXTENSIONS).arg(i);
         aSettings.setValue(sKey, QVariant(QString::fromStdString(memFiles.At(i))));
     }
 
     sKey = QString("%1.%2").arg(KEY_FIND_PATHS).arg(KEY_FIND_COUNT);
-    aSettings.setValue(sKey, QVariant(memDirectory.Length()));
-    for(int i=0; i<memDirectory.Length(); i++)
+    aSettings.setValue(sKey, QVariant((uint)memDirectory.Length()));
+    for(uint i=0; i<memDirectory.Length(); i++)
     {
         QString sKey = QString("%1.%2").arg(KEY_FIND_PATHS).arg(i);
         aSettings.setValue(sKey, QVariant(QString::fromStdString(memDirectory.At(i))));
