@@ -28,6 +28,11 @@ jobs:
         ls -lrt
         cd ..
         cd ..
+        cd lexilla/src
+        make -j 4
+        ls -lrt
+        cd ..
+        cd ..
         cd scite/gtk
         ls -lrt
         make -j 4
