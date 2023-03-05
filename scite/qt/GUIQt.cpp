@@ -138,27 +138,7 @@ inline QQuickWindow * GetQuickWindow(QObject * qObj)
 #if defined(WIN32)
 
 // from GUIWin.cxx
-/*
-static unsigned int UTF8Length(const char *uptr, size_t tlen) noexcept {
-    unsigned int len = 0;
-    for (size_t i = 0; i < tlen && uptr[i];) {
-        const unsigned int uch = uptr[i];
-        if (uch < 0x80) {
-            len++;
-        } else if (uch < 0x800) {
-            len += 2;
-        } else if ((uch >= SURROGATE_LEAD_FIRST) &&
-                (uch <= SURROGATE_TRAIL_LAST)) {
-            len += 4;
-            i++;
-        } else {
-            len += 3;
-        }
-        i++;
-    }
-    return len;
-}
-*/
+
 static unsigned int UTF8Length(const wchar_t *uptr, size_t tlen) noexcept {
     unsigned int len = 0;
     for (size_t i = 0; i < tlen && uptr[i];) {
@@ -178,34 +158,7 @@ static unsigned int UTF8Length(const wchar_t *uptr, size_t tlen) noexcept {
     }
     return len;
 }
-/*
-static void UTF8FromUTF16(const char *uptr, size_t tlen, char *putf) noexcept {
-    int k = 0;
-    for (size_t i = 0; i < tlen && uptr[i];) {
-        const unsigned int uch = uptr[i];
-        if (uch < 0x80) {
-            putf[k++] = static_cast<char>(uch);
-        } else if (uch < 0x800) {
-            putf[k++] = static_cast<char>(0xC0 | (uch >> 6));
-            putf[k++] = static_cast<char>(0x80 | (uch & 0x3f));
-        } else if ((uch >= SURROGATE_LEAD_FIRST) &&
-                (uch <= SURROGATE_TRAIL_LAST)) {
-            // Half a surrogate pair
-            i++;
-            const unsigned int xch = 0x10000 + ((uch & 0x3ff) << 10) + (uptr[i] & 0x3ff);
-            putf[k++] = static_cast<char>(0xF0 | (xch >> 18));
-            putf[k++] = static_cast<char>(0x80 | ((xch >> 12) & 0x3f));
-            putf[k++] = static_cast<char>(0x80 | ((xch >> 6) & 0x3f));
-            putf[k++] = static_cast<char>(0x80 | (xch & 0x3f));
-        } else {
-            putf[k++] = static_cast<char>(0xE0 | (uch >> 12));
-            putf[k++] = static_cast<char>(0x80 | ((uch >> 6) & 0x3f));
-            putf[k++] = static_cast<char>(0x80 | (uch & 0x3f));
-        }
-        i++;
-    }
-}
-*/
+
 static void UTF8FromUTF16(const wchar_t *uptr, size_t tlen, char *putf) noexcept {
     int k = 0;
     for (size_t i = 0; i < tlen && uptr[i];) {
@@ -311,18 +264,7 @@ gui_string StringFromUTF8(const std::string &s) {
     UTF16FromUTF8(s.c_str(), sLen, &vgc[0], wideLen);
     return gui_string(&vgc[0], wideLen);
 }
-/*
-std::string UTF8FromString(const std::string &s) {
-    if (s.empty()) {
-        return std::string();
-    }
-    const size_t sLen = s.size();
-    const size_t narrowLen = UTF8Length(s.c_str(), sLen);
-    std::vector<char> vc(narrowLen);
-    UTF8FromUTF16(s.c_str(), sLen, &vc[0]);
-    return std::string(&vc[0], narrowLen);
-}
-*/
+
 std::string UTF8FromString(const gui_string &s) {
     if (s.empty()) {
         return std::string();
