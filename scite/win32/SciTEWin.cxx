@@ -888,7 +888,7 @@ void SciTEWin::ExecuteGrep(const Job &jobToRun) {
 	if (cmdWorker.outputScroll == 1)
 		gf = gf | GrepFlags::scroll;
 	SA::Position positionEnd = wOutput.Send(SCI_GETCURRENTPOS);
-	InternalGrep(gf, jobToRun.directory, GUI::StringFromUTF8(files), GUI::StringFromUTF8(excluded),
+	InternalGrep(gf, jobToRun.directory, GUI::StringFromUTF8((const std::string)files), GUI::StringFromUTF8((const std::string)excluded),
 		text, positionEnd);
 	if (FlagIsSet(gf, GrepFlags::scroll) && returnOutputToCommand)
 		wOutput.Send(SCI_GOTOPOS, positionEnd);

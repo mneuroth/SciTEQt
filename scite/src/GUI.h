@@ -45,7 +45,7 @@ public:
 	}
 };
 
-#if defined(GTK) || defined(__APPLE__)
+#if defined(GTK) || defined(__APPLE__) || defined(__ANDROID__) || defined(__linux__) || defined(__EMSCRIPTEN__)
 
 // On GTK and macOS use UTF-8 char strings
 

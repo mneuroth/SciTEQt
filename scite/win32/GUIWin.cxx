@@ -165,7 +165,7 @@ gui_string StringFromUTF8(std::string_view sv) {
 	return us;
 }
 
-std::string UTF8FromString(gui_string_view sv) {
+std::string UTF8FromString(const gui_string/*_view*/ & sv) {
 	if (sv.empty()) {
 		return std::string();
 	}
