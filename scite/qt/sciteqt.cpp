@@ -806,7 +806,7 @@ SciTEQt::MessageBoxChoice SciTEQt::ShowWindowMessageBox(const QString & msg, Mes
     // can we handle as an async call for WASM? assync possible if default value for style is given !
     if(style == mbsIconWarning)
     {
-        return MessageBoxChoice::mbCancel;
+        return MessageBoxChoice::cancel;
     }
 #endif
     return ProcessModalWindowSynchronious(name);
