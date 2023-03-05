@@ -894,7 +894,7 @@ void SciTEGTK::SetStatusBarText(const char *s) {
 	gtk_statusbar_push(GTK_STATUSBAR(PWidget(wStatusBar)), sbContextID, s);
 }
 
-void SciTEGTK::TabInsert(int index, const GUI::gui_char *title) {
+void SciTEGTK::TabInsert(int index, const GUI::gui_char *title, /*for SciteQt*/const GUI::gui_char *fullPath) {
 	if (wTabBar.GetID()) {
 		GtkWidget *tablabel = gtk_label_new(title);
 		GtkWidget *tabcontent;

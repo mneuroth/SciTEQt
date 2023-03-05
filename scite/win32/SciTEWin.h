@@ -303,7 +303,7 @@ protected:
 	void SetStatusBarText(const char *s) override;
 
 	void UpdateTabs(const std::vector<GUI::gui_string> &tabNames) override;
-	void TabInsert(int index, const GUI::gui_char *title) override;
+	void TabInsert(int index, const GUI::gui_char *title, /*for SciteQt*/const GUI::gui_char *fullPath) override;
 	void TabSelect(int index) override;
 	void RemoveAllTabs() override;
 

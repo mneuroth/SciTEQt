@@ -125,7 +125,7 @@ void SciTEWin::UpdateTabs(const std::vector<GUI::gui_string> &tabNames) {
 	assert(tabNamesCurrent == tabNames);
 }
 
-void SciTEWin::TabInsert(int index, const GUI::gui_char *title) {
+void SciTEWin::TabInsert(int index, const GUI::gui_char *title, /*for SciteQt*/const GUI::gui_char *fullPath) {
 	// This is no longer called as UpdateTabs performs all changes to tabs
 	TCITEMW tie {};
 	tie.mask = TCIF_TEXT | TCIF_IMAGE;
