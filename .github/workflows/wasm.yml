@@ -75,3 +75,71 @@ jobs:
         ls -lrt
         unzip -v sciteqt_wasm_6_2_4.zip
         pwd
+
+  linux_wasm_6_4_2:
+  
+    runs-on: ubuntu-latest
+      
+    steps:
+    - uses: actions/checkout@v3
+    - uses: mymindstorm/setup-emsdk@v7
+    - uses: jurplel/install-qt-action@v3
+      with:
+        # Directory to install Qt
+        dir: # optional
+        # Version of Qt to install
+        version: '6.4.2'
+        # Host platform
+        host: # optional
+        # Target platform for build
+        target: 'desktop'
+        # Architecture for Windows/Android
+        arch: 'wasm_32' # optional
+        # Whether or not to install Qt dependencies on Linux
+        install-deps: 'true'
+        # Additional Qt modules to install
+        modules: 'qt5compat' #'qtscript' # qtcharts, qtdatavis3d, qtpurchasing, qtvirtualkeyboard, qtwebengine, qtnetworkauth, qtwebglplugin, qtscript, debug_info, qtscripttools
+        # Force a Qt mirror in case the default is not working
+        #mirror: # optional
+        # Whether or not to actually download Qt
+        cached: # optional, default is false
+        # Version of aqtinstall to use in case of issues
+        aqtversion: # optional, default is ==0.8
+        # Version of py7zr to use in case of issues
+        py7zrversion: # optional, default is ==0.6
+        # Any extra arguments to append to the back
+        extra: # optional
+    - name: Install Qt and compile
+      run: |
+        em++ --version
+        which em++
+        echo $PATH
+        #python3 -m aqt install -O /home/runner/work/SciTEQt/Qt 5.14.2 linux desktop wasm_32 -m qtscript qtscripttools
+        emsdk install 2.0.14
+        emsdk activate --embedded 2.0.14
+        echo $PATH
+        echo $EMSDK
+        . $EMSDK/emsdk_env.sh
+        em++ --version
+        which em++
+        ls -lrt
+        ls -lrt ..
+        ls -lrt ../Qt
+        cd ../Qt
+        aqt install-qt linux desktop 6.4.2 gcc_64
+        cd /home/runner/work/SciTEQt/SciTEQt
+        which qmake
+        qmake -v
+        ../Qt/6.4.2/wasm_32/bin/qmake -v
+        ../Qt/6.4.2/wasm_32/bin/qmake -r sciteqt.pro
+        ls -lrt
+        make
+        ls -lrt
+        ls -lrt scintilla/bin
+        ls -lrt scite/qt
+        ls -lrt scite/bin
+        cd scite/qt
+        zip sciteqt_wasm_6_4_2.zip sciteqt.js sciteqt.wasm sciteqt.html qtlogo.svg qtloader.js
+        ls -lrt
+        unzip -v sciteqt_wasm_6_4_2.zip
+        pwd

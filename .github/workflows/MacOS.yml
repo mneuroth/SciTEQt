@@ -8,7 +8,7 @@ on:
 
 jobs:
             
-  macos_6_4_1_build:
+  macos_6_4_2_build:
 
     runs-on: macos-latest
 
@@ -19,7 +19,7 @@ jobs:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '6.4.1'
+        version: '6.4.2'
         # Host platform
         host: 'mac'
         # Target platform for build

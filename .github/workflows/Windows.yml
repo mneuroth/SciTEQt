@@ -45,7 +45,7 @@ jobs:
         name: release_url
         path: release_url.txt        
 
-  windows_6_4_1_gcc_build:
+  windows_6_4_2_gcc_build:
 
     runs-on: windows-latest
     needs: create_release
@@ -58,7 +58,7 @@ jobs:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '6.4.1'
+        version: '6.4.2'
         # Host platform
         host: # optional
         # Target platform for build
@@ -97,9 +97,9 @@ jobs:
         dir d:\a
         dir d:\a\SciteQt
         dir d:\a\SciteQt\Qt
-        dir d:\a\SciteQt\Qt\6.4.1
-        dir d:\a\SciteQt\Qt\6.4.1\mingw_64
-        dir d:\a\SciteQt\Qt\6.4.1\mingw_64\bin
+        dir d:\a\SciteQt\Qt\6.4.2
+        dir d:\a\SciteQt\Qt\6.4.2\mingw_64
+        dir d:\a\SciteQt\Qt\6.4.2\mingw_64\bin
         dir d:\a\SciteQt\Qt\Tools
         dir d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\
         gcc -v
@@ -116,8 +116,8 @@ jobs:
         dir
         cd ..\..\..
         dir
-        #binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw_6_4_1_broken.exe
-        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.5\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw_6_4_1_broken.exe        
+        #binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw_6_4_2_broken.exe
+        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.5\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMingw_6_4_2_broken.exe        
         dir 
     - name: Upload Release Asset
       if: contains(github.ref, 'release')
@@ -127,11 +127,11 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/dist/SciTEQtInstallerMingw_6_4_1_broken.exe
-        asset_name: SciTEQtInstallerMingw_6_4_1_broken.exe
+        asset_path: scite/qt/dist/SciTEQtInstallerMingw_6_4_2_broken.exe
+        asset_name: SciTEQtInstallerMingw_6_4_2_broken.exe
         asset_content_type: application/exe
 
-  windows_6_4_1_msc_build:
+  windows_6_4_2_msc_build:
 
     runs-on: windows-latest
     needs: create_release
@@ -144,7 +144,7 @@ jobs:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '6.4.1'
+        version: '6.4.2'
         # Host platform
         host: # optional
         # Target platform for build
@@ -185,9 +185,9 @@ jobs:
         dir d:\a
         dir d:\a\SciteQt
         dir d:\a\SciteQt\Qt
-        dir d:\a\SciteQt\Qt\6.4.1
-        dir d:\a\SciteQt\Qt\6.4.1\msvc2019_64
-        dir d:\a\SciteQt\Qt\6.4.1\msvc2019_64\bin
+        dir d:\a\SciteQt\Qt\6.4.2
+        dir d:\a\SciteQt\Qt\6.4.2\msvc2019_64
+        dir d:\a\SciteQt\Qt\6.4.2\msvc2019_64\bin
         dir d:\a\SciteQt\Qt\Tools
         dir d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\
         cl
@@ -206,10 +206,10 @@ jobs:
         dir
         cd ..\..\..
         dir
-        #binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_6_4_1.exe
-        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.5\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_6_4_1.exe
+        #binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_6_4_2.exe
+        d:\a\SciTEQt\Qt\Tools\QtInstallerFramework\4.5\bin\binarycreator --offline-only -c config\config.xml -p packages SciTEQtInstallerMsc_6_4_2.exe
         dir 
-        powershell Compress-7Zip "SciTEQtInstallerMsc_6_4_1.exe" -ArchiveFileName "SciTEQtInstallerMsc_6_4_1.zip" -Format Zip
+        powershell Compress-7Zip "SciTEQtInstallerMsc_6_4_2.exe" -ArchiveFileName "SciTEQtInstallerMsc_6_4_2.zip" -Format Zip
         dir 
     - name: Upload Release Asset
       if: contains(github.ref, 'release')
@@ -219,8 +219,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/dist/SciTEQtInstallerMsc_6_4_1.exe
-        asset_name: SciTEQtInstallerMsc_6_4_1.exe
+        asset_path: scite/qt/dist/SciTEQtInstallerMsc_6_4_2.exe
+        asset_name: SciTEQtInstallerMsc_6_4_2.exe
         asset_content_type: application/exe
     - name: Upload zip Release Asset
       if: contains(github.ref, 'release')
@@ -230,12 +230,12 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/dist/SciTEQtInstallerMsc_6_4_1.zip
-        asset_name: SciTEQtInstallerMsc_6_4_1.zip
+        asset_path: scite/qt/dist/SciTEQtInstallerMsc_6_4_2.zip
+        asset_name: SciTEQtInstallerMsc_6_4_2.zip
         asset_content_type: application/zip
 
   # this is a copy of the content MacOS.yml used only to upload binary for release
-  macos_6_4_1_build:
+  macos_6_4_2_build:
 
     runs-on: macos-latest
     needs: create_release
@@ -247,7 +247,7 @@ jobs:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '6.4.1'
+        version: '6.4.2'
         # Host platform
         host: 'mac'
         # Target platform for build
@@ -295,7 +295,7 @@ jobs:
         which macdeployqt
         macdeployqt sciteqt.app -dmg -verbose=2 -qmldir=qml
         ls -lrt
-        cp sciteqt.dmg sciteqt_6_4_1.dmg
+        cp sciteqt.dmg sciteqt_6_4_2.dmg
         ls -lrt        
     # this step is added for the release    
     - name: Upload Release Asset
@@ -306,8 +306,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/sciteqt_6_4_1.dmg
-        asset_name: sciteqt_6_4_1.dmg
+        asset_path: scite/qt/sciteqt_6_4_2.dmg
+        asset_name: sciteqt_6_4_2.dmg
         asset_content_type: application/exe
         
   # this is a copy of the content MacOS.yml used only to upload binary for release
