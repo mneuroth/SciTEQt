@@ -33,6 +33,10 @@ gui_string StringFromUTF8(const std::string &s) {
 	return s;
 }
 
+std::string UTF8FromString(const gui_string &s) {
+	return s;
+}
+
 gui_string StringFromUTF8(std::string_view sv) {
 	return gui_string(sv);
 }
