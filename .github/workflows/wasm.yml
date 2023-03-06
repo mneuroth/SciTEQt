@@ -82,7 +82,7 @@ jobs:
       
     steps:
     - uses: actions/checkout@v3
-    - uses: mymindstorm/setup-emsdk@v7
+    - uses: mymindstorm/setup-emsdk@v12
     - uses: jurplel/install-qt-action@v3
       with:
         # Directory to install Qt
@@ -150,7 +150,7 @@ jobs:
       
     steps:
     - uses: actions/checkout@v3
-    - uses: mymindstorm/setup-emsdk@v7
+    - uses: mymindstorm/setup-emsdk@v12
     - uses: jurplel/install-qt-action@v3
       with:
         # Directory to install Qt
