@@ -820,7 +820,21 @@ SciTEQt::MessageBoxChoice SciTEQt::WindowMessageBox(GUI::Window &w, const GUI::g
 
 void SciTEQt::Filter()
 {
-// TODO gulp -> not implemented YET !!! new in scite 5.3.2
+// TODO gulp -> not implemented yet !!! new in scite 5.3.2
+/*
+    if (!FilterShowing()) {
+        // Save current folds
+        SaveFolds(CurrentBuffer()->foldState);
+        // Then unfold them all so filtering is only source of line hiding
+        wEditor.FoldAll(SA::FoldAction::Expand);
+    }
+    SelectionIntoFind();
+    CloseOtherFinders(IDM_FILTER);
+    filterStrip.visible = true;
+    failedfind = false;
+    SizeSubWindows();
+    filterStrip.ShowStrip();
+*/
 }
 
 void SciTEQt::FindMessageBox(const std::string &msg, const std::string *findItem)

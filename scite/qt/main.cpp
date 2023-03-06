@@ -221,12 +221,6 @@ int main(int argc, char *argv[])
 #endif
 #endif
 
-//    LexillaSetDefaultDirectory(/*GetSciTEPath(FilePath()).AsUTF8()*/".");
-/*TODO SciteQt Patch*///    Scintilla_LinkLexers();
-    //Scintilla_RegisterClasses(hInstance);
-//    LexillaSetDefault([](const char *name) {
-//        return CreateLexer(name);
-//    });
     Lexilla::SetDefaultDirectory(/*GetSciTEPath(FilePath()).AsUTF8()*/".");
     Lexilla::SetDefault(CreateLexer);
 

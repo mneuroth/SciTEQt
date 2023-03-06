@@ -311,20 +311,20 @@ jobs:
         asset_content_type: application/exe
         
   # this is a copy of the content MacOS.yml used only to upload binary for release
-  linux_wasm_6_2_4:
+  linux_wasm_6_4_2:
   
     runs-on: ubuntu-latest
     needs: create_release
       
     steps:
     - uses: actions/checkout@v3
-    - uses: mymindstorm/setup-emsdk@v7
+    - uses: mymindstorm/setup-emsdk@v12
     - uses: jurplel/install-qt-action@v3
       with:
         # Directory to install Qt
         dir: # optional
         # Version of Qt to install
-        version: '6.2.4'
+        version: '6.4.2'
         # Host platform
         host: # optional
         # Target platform for build
@@ -352,8 +352,8 @@ jobs:
         which em++
         echo $PATH
         #python3 -m aqt install -O /home/runner/work/SciTEQt/Qt 5.14.2 linux desktop wasm_32 -m qtscript qtscripttools
-        emsdk install 2.0.14
-        emsdk activate --embedded 2.0.14
+        emsdk install 3.1.14
+        emsdk activate --embedded 3.1.14
         echo $PATH
         echo $EMSDK
         . $EMSDK/emsdk_env.sh
@@ -363,12 +363,12 @@ jobs:
         ls -lrt ..
         ls -lrt ../Qt
         cd ../Qt
-        aqt install-qt linux desktop 6.2.4 gcc_64
+        aqt install-qt linux desktop 6.4.2 gcc_64
         cd /home/runner/work/SciTEQt/SciTEQt
         which qmake
         qmake -v
-        ../Qt/6.2.4/wasm_32/bin/qmake -v
-        ../Qt/6.2.4/wasm_32/bin/qmake -r sciteqt.pro
+        ../Qt/6.4.2/wasm_32/bin/qmake -v
+        ../Qt/6.4.2/wasm_32/bin/qmake -r sciteqt.pro
         ls -lrt
         make
         ls -lrt
@@ -376,9 +376,9 @@ jobs:
         ls -lrt scite/qt
         ls -lrt scite/bin
         cd scite/qt
-        zip sciteqt_wasm_6_2_4.zip sciteqt.js sciteqt.wasm sciteqt.html qtlogo.svg qtloader.js
+        zip sciteqt_wasm_6_4_2.zip sciteqt.js sciteqt.wasm sciteqt.html qtlogo.svg qtloader.js
         ls -lrt
-        unzip -v sciteqt_wasm_6_2_4.zip
+        unzip -v sciteqt_wasm_6_4_2.zip
         pwd
     # this step is added for the release    
     - name: Upload Release Asset
@@ -389,6 +389,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: scite/qt/sciteqt_wasm_6_2_4.zip
-        asset_name: sciteqt_wasm_6_2_4.zip
+        asset_path: scite/qt/sciteqt_wasm_6_4_2.zip
+        asset_name: sciteqt_wasm_6_4_2.zip
         asset_content_type: application/zip

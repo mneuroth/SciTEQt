@@ -444,14 +444,13 @@ void Window::SetTitle(const gui_char *s)
 }
 
 void Window::SetRedraw(bool redraw) {
-// TODO gulp !!!
-    /*
-    ::SendMessage(static_cast<HWND>(GetID()), WM_SETREDRAW, redraw, 0);
     if (redraw) {
-        ::RedrawWindow(static_cast<HWND>(GetID()), nullptr, {},
-            RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN);
-    }
-    */
+        QQuickWindow * window = GetQuickWindow(GetQObject(GetID()));
+        if( window != 0 )
+        {
+            window->update();
+        }
+    }    
 }
 
 void Menu::CreatePopUp()
