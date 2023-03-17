@@ -49,6 +49,11 @@ AutoSizingMenu {
         action: actions.actionIncrementalSearch
     }
     MenuItem {
+        id: actionFilter
+        text: processMenuItem2(actions.actionFilter.text, actionFilter)
+        action: actions.actionFilter
+    }
+    MenuItem {
         id: actionSelectionAddNext
         text: processMenuItem2(actions.actionSelectionAddNext.text, actionSelectionAddNext)
         action: actions.actionSelectionAddNext

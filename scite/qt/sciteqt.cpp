@@ -739,7 +739,7 @@ void SciTEQt::Find()
 //        replaceStrip.Close();
 //        findStrip.SetIncrementalBehaviour(props.GetInt("find.strip.incremental"));
 //        findStrip.Show(props.GetInt("strip.button.height", -1));
-        emit showFindStrip(findHistory, replaceHistory, QString::fromStdString(findWhat), false, false, !(pSearcher->closeFind == CloseFind::closePrevent));
+        emit showFindStrip(findHistory, replaceHistory, QString::fromStdString(findWhat), false, false, !(pSearcher->closeFind == CloseFind::closePrevent), /*isFilter=*/false);
     } else {
 //        if (findStrip.visible || replaceStrip.visible)
 //            return;
@@ -834,7 +834,24 @@ void SciTEQt::Filter()
     failedfind = false;
     SizeSubWindows();
     filterStrip.ShowStrip();
+--> aehnlich zur inkrementellen suche -> nur im strip modus !
 */
+    SelectionIntoFind();    // findWhat
+    //CloseOtherFinders(IDM_FILTER);
+    failedfind = false;
+
+    Searcher * pSearcher = this;
+
+    QStringList findHistory;
+    for (uint i = 0; i < pSearcher->memFinds.Length(); i++) {
+        GUI::gui_string gs = GUI::StringFromUTF8(pSearcher->memFinds.At(i));
+        findHistory.append(ConvertGuiStringToQString(gs));
+    }
+
+    QStringList replaceHistory;
+
+// TODO gulp -> set focus !
+    emit showFindStrip(findHistory, replaceHistory, QString::fromStdString(findWhat), true, false, /*!(pSearcher->closeFind == CloseFind::closePrevent)*/false, /*isFilter=*/true);
 }
 
 void SciTEQt::FindMessageBox(const std::string &msg, const std::string *findItem)
@@ -872,7 +889,7 @@ void SciTEQt::FindIncrement()
         replaceHistory.append(ConvertGuiStringToQString(gs));
     }
 
-    emit showFindStrip(findHistory, replaceHistory, "", true, false, !(pSearcher->closeFind == CloseFind::closePrevent));
+    emit showFindStrip(findHistory, replaceHistory, "", true, false, !(pSearcher->closeFind == CloseFind::closePrevent), /*isFilter=*/false);
 }
 
 void SciTEQt::FindInFiles()
@@ -941,7 +958,7 @@ void SciTEQt::Replace()
         //SizeSubWindows();
         //replaceStrip.SetIncrementalBehaviour(props.GetInt("replace.strip.incremental"));
         //replaceStrip.ShowStrip();
-        emit showFindStrip(findHistory, replaceHistory, QString::fromStdString(findWhat), false, true, !(pSearcher->closeFind == CloseFind::closePrevent));
+        emit showFindStrip(findHistory, replaceHistory, QString::fromStdString(findWhat), false, true, !(pSearcher->closeFind == CloseFind::closePrevent), /*isFilter=*/false);
         havefound = false;
     } else {
         //if (searchStrip.visible || findStrip.visible)
@@ -1563,7 +1580,7 @@ void SciTEQt::setScintilla(QObject * obj)
     wEditor.SetID(base->sqt);
     base->sqt->UpdateInfos(IDM_SRCWIN);
 
-    connect(base->sqt,SIGNAL(notifyParent(SCNotification)),this,SLOT(OnNotifiedFromScintilla(SCNotification)));
+    connect(base->sqt,SIGNAL(notifyParent(Scintilla::NotificationData/*SCNotification*/)),this,SLOT(OnNotifiedFromScintilla(SCNotification)));
 
     connect(base,SIGNAL(uriDropped(QString)),this,SLOT(OnUriDroppedFromScintilla(QString)));
 }
@@ -1578,7 +1595,7 @@ void SciTEQt::setOutput(QObject * obj)
     wOutput.SetID(base->sqt);
 	base->sqt->UpdateInfos(IDM_RUNWIN);
 
-	connect(base->sqt, SIGNAL(notifyParent(SCNotification)), this, SLOT(OnNotifiedFromOutput(SCNotification)));
+    connect(base->sqt, SIGNAL(notifyParent(Scintilla::NotificationData/*SCNotification*/)), this, SLOT(OnNotifiedFromOutput(SCNotification)));
 }
 
 void SciTEQt::setAboutScite(QObject * obj)
@@ -2025,6 +2042,11 @@ void SciTEQt::cmdReplace()
 void SciTEQt::cmdIncrementalSearch()
 {
     MenuCommand(IDM_INCSEARCH);
+}
+
+void SciTEQt::cmdFilter()
+{
+    MenuCommand(IDM_FILTER);
 }
 
 void SciTEQt::cmdSelectionAddNext()
@@ -2986,21 +3008,37 @@ QVariant SciTEQt::fillToLengthWithFont(const QString & text, const QString & sho
     return QVariant(text + fill + shortcut);
 }
 
-void SciTEQt::setFindText(const QString & text, bool incremental)
+void SciTEQt::setFindText(const QString & text, bool incremental, bool isFilter)
 {
+// TODO gulp -> FilterAll()
     if( incremental )
     {
         // see: SearchStrip::Next(bool select)
-        MoveBack();
-        SetFind(text.toStdString().c_str());
-        FindNext(reverseFind);
-        SetCaretAsStart();
+        if(isFilter)
+        {
+            SetFind(text.toStdString().c_str());
+            InsertFindInMemory();
+            FilterAll(true);
+            SetCaretAsStart();
+        }
+        else
+        {
+            MoveBack();
+            SetFind(text.toStdString().c_str());
+            FindNext(reverseFind);
+            SetCaretAsStart();
+        }
     }
     else
     {
         SetFind(text.toStdString().c_str());
         FindNext(reverseFind);
     }
+}
+
+void SciTEQt::clearFilterAll()
+{
+    FilterAll(false);
 }
 
 QObject * SciTEQt::getDialog(const QString & objectName)

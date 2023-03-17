@@ -395,6 +395,7 @@ Item {
     property alias actionFindInFiles: actionFindInFiles
     property alias actionReplace: actionReplace
     property alias actionIncrementalSearch: actionIncrementalSearch
+    property alias actionFilter: actionFilter
     property alias actionSelectionAddNext: actionSelectionAddNext
     property alias actionSelectionAddEach: actionSelectionAddEach
     property alias actionGoto: actionGoto
@@ -436,9 +437,15 @@ Item {
     }
     Action {
         id: actionIncrementalSearch
-        text: qsTr("Incrementa&l Search...")
+        text: qsTr("Incremental &Search...")
         shortcut: "Ctrl+Alt+I"
         onTriggered: sciteQt.cmdIncrementalSearch()
+    }
+    Action {
+        id: actionFilter
+        text: qsTr("Fi&lter...")
+        shortcut: "Ctrl+Alt+F"
+        onTriggered: sciteQt.cmdFilter()
     }
     Action {
         id: actionSelectionAddNext

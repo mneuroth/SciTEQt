@@ -49,8 +49,7 @@
 #include <QList>
 #include <QPair>
 
-class Point;
-//TODO: extern void ProcessScintillaContextMenu(/*Scintilla::*/Point pt, Scintilla::Internal::Window & w, const QList<QPair<QString, QPair<int, bool>>> & menu);
+extern void ProcessScintillaContextMenu(Scintilla::Internal::Point pt, const Scintilla::Internal::Window & w, const QList<QPair<QString, QPair<int, bool>>> & menu);
 #endif
 
 using namespace Scintilla;
@@ -1378,6 +1377,7 @@ void Menu::Destroy() noexcept
 	}
 	mid = nullptr;
 }
+
 void Menu::Show(Point pt, const Window & w)
 {
 #ifndef PLAT_QT_QML
@@ -1385,7 +1385,7 @@ void Menu::Show(Point pt, const Window & w)
 	menu->exec(QPoint(pt.x, pt.y));
 #else
 	QList<QPair<QString, QPair<int, bool>>> *menu = static_cast<QList<QPair<QString, QPair<int, bool>>> *>(mid);
-//TODO:    ProcessScintillaContextMenu(pt, w, *menu);
+    ProcessScintillaContextMenu(pt, w, *menu);
 #endif
 	Destroy();
 }

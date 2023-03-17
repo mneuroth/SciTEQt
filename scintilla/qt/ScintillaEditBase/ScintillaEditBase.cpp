@@ -575,7 +575,7 @@ void ScintillaEditBase::mousePressEvent(QMouseEvent *event)
 
 
 #ifdef PLAT_QT_QML
-void ProcessScintillaContextMenu(Point pt, Scintilla::Internal::Window & w, const QList<QPair<QString, QPair<int, bool>>> & menu)
+void ProcessScintillaContextMenu(Scintilla::Internal::Point pt, const Scintilla::Internal::Window & w, const QList<QPair<QString, QPair<int, bool>>> & menu)
 {
 	ScintillaEditBase * pQtObj = static_cast<ScintillaEditBase *>(w.GetID());
 

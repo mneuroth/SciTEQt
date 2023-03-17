@@ -317,7 +317,7 @@ ApplicationWindow {
         dlg.findWhatInput.focus = true
     }
 
-    function showFindStrip(findHistory, replaceHistory, text, incremental, withReplace, closeOnFind) {
+    function showFindStrip(findHistory, replaceHistory, text, incremental, withReplace, closeOnFind, isFilter) {
         stripFindWhatModel.clear()
         stripFindWhatModel.append({"text":text})
         for (var i=0; i<findHistory.length; i++) {
@@ -341,7 +341,14 @@ ApplicationWindow {
         }
 
         isIncrementalSearch = incremental
+        isFilterSearch = isFilter
         isCloseOnFind = closeOnFind
+
+        if( isFilter ) {
+            findLabel.text = sciteQt.getLocalisedText(qsTr("Filter:"))
+        } else {
+            findLabel.text = sciteQt.getLocalisedText(qsTr("Find:"))
+        }
 
         stripFindVisible(true)
     }
@@ -511,8 +518,12 @@ ApplicationWindow {
             stackView.pop()
         }
         else {
-            findDialog.close()
-            replaceDialog.close()
+            if(findDialog.visible) {
+                findDialog.close()
+            }
+            if(replaceDialog.visible) {
+                replaceDialog.close()
+            }
         }
         focusToEditor()
     }
@@ -554,6 +565,10 @@ ApplicationWindow {
         replaceInput.visible = false
 
         stripFindVisible(false)
+
+        if(isFilterSearch) {
+            sciteQt.clearFilterAll()
+        }
     }
 
     function focusToEditor() {
@@ -1567,6 +1582,7 @@ ApplicationWindow {
     }
 
     property bool isIncrementalSearch: false
+    property bool isFilterSearch: false
     property bool isCloseOnFind: true
     property int stripAreaMargin: findInput.visible ? 5 : 0
 
@@ -1820,14 +1836,15 @@ ApplicationWindow {
         anchors.bottomMargin: stripAreaMargin
 
         onAccepted: {
-            sciteQt.setFindText(getCurrentFindText(), isIncrementalSearch)
+            sciteQt.setFindText(getCurrentFindText(), isIncrementalSearch, isFilterSearch)
             if(isCloseOnFind) {     // TODO: handling of close after find is not correct !
                 hideFindRow()
             }
         }
         onEditTextChanged: {
+// TODO gulp -> handle new Filter() function !!! -> FilterStrip::Filter
             if( isIncrementalSearch ) {
-                sciteQt.setFindText(editText, isIncrementalSearch)
+                sciteQt.setFindText(editText, isIncrementalSearch, isFilterSearch)
             }
         }
 
@@ -1855,7 +1872,7 @@ ApplicationWindow {
 
         text: sciteQt.getLocalisedText(qsTr("&Find Next"),false)
         onClicked: {
-            sciteQt.setFindText(getCurrentFindText(), isIncrementalSearch)
+            sciteQt.setFindText(getCurrentFindText(), isIncrementalSearch, isFilterSearch)
             sciteQt.cmdFindNext()
             hideFindRow()
         }
@@ -1879,7 +1896,7 @@ ApplicationWindow {
 
         text: sciteQt.getLocalisedText(qsTr("Mark &All"),false)
         onClicked: {
-            sciteQt.setFindText(getCurrentFindText(), isIncrementalSearch)
+            sciteQt.setFindText(getCurrentFindText(), isIncrementalSearch, isFilterSearch)
             sciteQt.cmdMarkAll()
             hideFindRow()
         }
@@ -2129,7 +2146,7 @@ ApplicationWindow {
         anchors.bottomMargin: stripAreaMargin
 
         onAccepted: {
-            sciteQt.setFindText(getCurrentFindText(), isIncrementalSearch)
+            sciteQt.setFindText(getCurrentFindText(), isIncrementalSearch, isFilterSearch)
             //hideFindRow()
         }
 
@@ -2227,7 +2244,7 @@ ApplicationWindow {
         function onShowSupportSciteQtDialog() { showSupportSciteQtDialog() }
 
         function onShowFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory, wholeWord, caseSensitive, regularExpression) { showFindInFilesDialog(text, findHistory, filePatternHistory, directoryHistory, wholeWord, caseSensitive, regularExpression) }
-        function onShowFindStrip(findHistory, replaceHistory, text, incremental, withReplace, closeOnFind) { showFindStrip(findHistory, replaceHistory, text, incremental, withReplace, closeOnFind) }
+        function onShowFindStrip(findHistory, replaceHistory, text, incremental, withReplace, closeOnFind, isFilter) { showFindStrip(findHistory, replaceHistory, text, incremental, withReplace, closeOnFind, isFilter) }
         function onShowFind(findHistory, text, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down) { showFind(findHistory, text, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down) }
         function onShowReplace(findHistory, replaceHistory, text, replace, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down) { showReplace(findHistory, replaceHistory, text, replace, wholeWord, caseSensitive, regExpr, wrap, transformBackslash, down) }
         function onShowGoToDialog(currentLine, currentColumn, maxLine) { showGoToDialog(currentLine, currentColumn, maxLine) }

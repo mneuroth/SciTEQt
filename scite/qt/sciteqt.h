@@ -341,6 +341,7 @@ public:
     Q_INVOKABLE void cmdFindInFiles();
     Q_INVOKABLE void cmdReplace();
     Q_INVOKABLE void cmdIncrementalSearch();
+    Q_INVOKABLE void cmdFilter();
     Q_INVOKABLE void cmdSelectionAddNext();
     Q_INVOKABLE void cmdSelectionAddEach();
     Q_INVOKABLE void cmdGoto();
@@ -437,7 +438,8 @@ public:
     Q_INVOKABLE QVariant fillToLength(const QString & text, const QString & shortcut);
     Q_INVOKABLE QVariant fillToLengthWithFont(const QString & text, const QString & shortcut, const QFont & font);
 
-    Q_INVOKABLE void setFindText(const QString & text, bool incremental);
+    Q_INVOKABLE void setFindText(const QString & text, bool incremental, bool isFilter);
+    Q_INVOKABLE void clearFilterAll();
 
     Q_INVOKABLE void onStatusbarClicked();
 
@@ -546,7 +548,7 @@ signals:
     void showSupportSciteQtDialog();
 
     void showFindInFilesDialog(const QString & text, const QStringList & findHistory, const QStringList & filePatternHistory, const QStringList & directoryHistory, bool wholeWord, bool caseSensitive, bool regularExpression);
-    void showFindStrip(const QStringList & findHistory, const QStringList & replaceHistory, const QString & text, bool incremental, bool withReplace, bool closeOnFind);
+    void showFindStrip(const QStringList & findHistory, const QStringList & replaceHistory, const QString & text, bool incremental, bool withReplace, bool closeOnFind, bool isFilter);
     void showFind(const QStringList & findHistory, const QString & text, bool wholeWord, bool caseSensitive, bool regExpr, bool wrap, bool transformBackslash, bool down);
     void showReplace(const QStringList & findHistory, const QStringList & replaceHistory, const QString & text, const QString & replace, bool wholeWord, bool caseSensitive, bool regExpr, bool wrap, bool transformBackslash, bool down);
     void showGoToDialog(int currentLine, int currentColumn, int maxLine);
